@@ -126,17 +126,20 @@ async function getJson<T>(path: string, mock: MockName): Promise<T> {
   return (await r.json()) as T;
 }
 
-let localEdgeAvailable: boolean | null = null;
+// Once the laptop's edge answered, keep it; a miss is retried (it may still be waking up).
+let localEdgeAvailable = false;
+let localEdgeCheckedAt = 0;
 
 export const getSite = () => getJson<Site>("/site", "site");
 export const getCameras = async () => {
   const list = await getJson<Camera[]>("/cameras", "cameras");
   let activeUrl = EDGE_URL;
   if (typeof window !== "undefined") {
-    if (localEdgeAvailable === null) {
+    if (!localEdgeAvailable && Date.now() - localEdgeCheckedAt > 5_000) {
+      localEdgeCheckedAt = Date.now();
       try {
         const r = await fetch("http://127.0.0.1:8765/health", {
-          signal: AbortSignal.timeout(300),
+          signal: AbortSignal.timeout(1500),
           cache: "no-store",
         });
         localEdgeAvailable = r.ok;
