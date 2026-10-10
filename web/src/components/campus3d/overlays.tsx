@@ -135,7 +135,7 @@ export function PostPin({
     <button
       type="button"
       onClick={onClick}
-      aria-label={`Patrol post ${post.id} at ${post.location}, ${post.when}`}
+      aria-label={`Post ${post.rank} at ${post.location}, ${post.when}: ${post.assignee ?? "nobody yet"}`}
       aria-pressed={selected}
       className={cn(
         "pointer-events-auto absolute inline-flex min-h-[30px] -translate-x-1/2 -translate-y-1/2 items-center gap-[5px] whitespace-nowrap rounded-full border-2 bg-signal py-[3px] pl-[5px] pr-[9px] text-[11px] font-extrabold text-white",
@@ -144,7 +144,7 @@ export function PostPin({
       style={at(pos)}
     >
       <PersonIcon size={14} />
-      {post.id} · {post.when}
+      {post.rank} · {post.assignee ?? "Nobody yet"}
     </button>
   );
 }
@@ -466,7 +466,7 @@ export function PostCard({
           )}
         >
           <span className="size-[7px] rounded-full bg-white" />
-          PATROL POST {post.id}
+          POST {post.rank} · {post.assignee ?? "NOBODY YET"}
         </span>
       }
     >
@@ -479,9 +479,11 @@ export function PostCard({
         </div>
         <div className="flex flex-col gap-0.5 border border-[#A9B6F2] bg-signal-tint p-2">
           <span className="font-mono text-[20px] font-bold text-signal-ink">
-            {post.avoidedPerWeek.toFixed(2)}
+            ~{Math.round(post.incidents4w * 0.6)}
           </span>
-          <span className="text-[11px] text-signal-ink">avoided a week</span>
+          <span className="text-[11px] text-signal-ink">
+            prevented a month
+          </span>
         </div>
         <div className="flex flex-col gap-0.5 border border-line bg-raised p-2">
           <span className="font-mono text-[20px] font-bold">{hrs}</span>

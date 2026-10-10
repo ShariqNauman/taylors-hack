@@ -360,6 +360,8 @@ export function countHours(hours: string): number {
 
 export interface PlanPost {
   id: string; // "P/01"
+  rank: number; // 1-based, the plan's order
+  assignee: string | null; // slot.assigned_to: who stands there this week
   location: string;
   when: string; // "MON–THU 13:00–14:00"
   incidents4w: number;
@@ -396,6 +398,8 @@ export function planPosts(
     if (!geo) return;
     out.push({
       id: `P/${String(i + 1).padStart(2, "0")}`,
+      rank: i + 1,
+      assignee: s.assigned_to ?? null,
       location: s.location,
       when: `${s.days} ${s.hours}`.toUpperCase(),
       incidents4w: s.incidents_4w,

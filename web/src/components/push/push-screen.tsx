@@ -12,12 +12,15 @@ import {
   patchEvent,
   PatchError,
 } from "@/lib/api";
+import { fmtTime, normaliseStatus } from "@/lib/format";
 import {
-  daysInclude,
-  fmtTime,
-  mytWeekday,
-  normaliseStatus,
-} from "@/lib/format";
+  buildPosts,
+  mergeAssignments,
+  planWeek,
+  realIncidents,
+  suggest,
+  useLocalAssignments,
+} from "@/lib/patrol";
 import { fmtDistance, staffDistance } from "@/lib/geo";
 import { cameraKind } from "@/lib/camera-meta";
 import { staticFrame } from "@/lib/mock-poses";
@@ -279,16 +282,28 @@ export function PushScreen() {
     (e) => e.pushed_at && Date.parse(e.pushed_at) >= Date.now() - SHIFT_MS,
   ).length;
   const camsLive = cameras?.filter((c) => cameraKind(c) !== "black").length;
-  const me = site?.staff?.find((s) => s.name === staff);
-  const wd = mytWeekday();
-  const mySlot =
-    plan?.slots.find(
-      (s) =>
-        daysInclude(s.days, wd) &&
-        cameras?.some(
-          (c) => c.location === s.location && c.zone_type === me?.zone_type,
-        ),
-    ) ?? plan?.slots.find((s) => daysInclude(s.days, wd));
+  // This week's post: the plan's assigned_to, else what the supervisor picked in this
+  // browser, else the post the Plan page would suggest (said so on screen).
+  const week = useMemo(
+    () => (plan ? planWeek(plan.generated_at) : null),
+    [plan],
+  );
+  const posts = useMemo(
+    () =>
+      week ? buildPosts(plan, realIncidents(events, week), events) : [],
+    [plan, week, events],
+  );
+  const [localAssign] = useLocalAssignments(week?.key ?? null);
+  const assign = mergeAssignments(posts, localAssign);
+  const assigned = posts.find((p) => assign[p.key] === staff);
+  const suggested = assigned
+    ? undefined
+    : posts.find(
+        (p) =>
+          !assign[p.key] &&
+          suggest(p, posts, site?.staff ?? [], assign)?.name === staff,
+      );
+  const myPost = assigned ?? suggested;
 
   const pushed = view === "pushed";
   const bg = pushed ? "#C8241B" : view === "acked" ? "#E4F3EA" : "#F1F2F4";
@@ -382,14 +397,18 @@ export function PushScreen() {
               <span className="text-[12px] text-ink-2">cameras live</span>
             </div>
           </div>
-          {mySlot && (
+          {myPost && (
             <div className="flex flex-col gap-1 rounded-[2px] border border-line bg-white p-3">
-              <span className="ee-label">Your patrol slot today</span>
+              <span className="ee-label">
+                {assigned ? "Your post this week" : "Suggested post this week"}
+              </span>
               <span className="text-[18px] font-extrabold">
-                {mySlot.location} · {mySlot.hours}
+                {myPost.place}, {myPost.daysLabel} {myPost.hours}
               </span>
               <span className="text-[13px] text-ink-2">
-                From this week&apos;s patrol plan.
+                {assigned
+                  ? (myPost.slot.tip ?? "From this week's patrol plan.")
+                  : "Not confirmed by your supervisor yet."}
               </span>
             </div>
           )}

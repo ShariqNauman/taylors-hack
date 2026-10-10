@@ -3123,6 +3123,28 @@
     "staff_note": null
   },
   {
+    "incident_id": "INC-2026-00122",
+    "camera_id": "CAM-HC-01",
+    "location": "U Residence, corridor L3",
+    "zone_type": "hostel_corridor",
+    "start_time": "2026-09-21T22:08:00+08:00",
+    "end_time": "2026-09-21T22:09:10+08:00",
+    "type": "cornering",
+    "level": "fight_likely",
+    "peak_score": 0.84,
+    "eta_seconds": null,
+    "priority": 0.86,
+    "reason": "One person boxed in by three against the wall for 6 s.",
+    "people_count": 4,
+    "action": "Send Guard C now",
+    "nearest_staff": "Guard C",
+    "pushed_to": "Guard C",
+    "pushed_at": "2026-09-21T22:08:04+08:00",
+    "acked_at": "2026-09-21T22:08:10+08:00",
+    "status": "resolved",
+    "staff_note": "Residents separated; reported to the hostel office."
+  },
+  {
     "incident_id": "INC-2026-00105",
     "camera_id": "CAM-HC-01",
     "location": "U Residence, corridor L3",
@@ -3497,6 +3519,28 @@
         }
       ]
     }
+  },
+  {
+    "incident_id": "INC-2026-00124",
+    "camera_id": "CAM-CT-04",
+    "location": "Syopz Mall food court",
+    "zone_type": "canteen",
+    "start_time": "2026-09-25T12:35:00+08:00",
+    "end_time": "2026-09-25T12:37:20+08:00",
+    "type": "crowd",
+    "level": "fight_likely",
+    "peak_score": 0.79,
+    "eta_seconds": null,
+    "priority": 0.71,
+    "reason": "Crowd closing in on one point at the east entrance.",
+    "people_count": 7,
+    "action": "Send Guard A",
+    "nearest_staff": "Guard A",
+    "pushed_to": "Guard A",
+    "pushed_at": "2026-09-25T12:35:05+08:00",
+    "acked_at": "2026-09-25T12:35:11+08:00",
+    "status": "resolved",
+    "staff_note": "Queue pushing at the east entrance; cleared."
   },
   {
     "incident_id": "INC-2026-00107",
@@ -5064,6 +5108,28 @@
     }
   },
   {
+    "incident_id": "INC-2026-00123",
+    "camera_id": "CAM-HC-01",
+    "location": "U Residence, corridor L3",
+    "zone_type": "hostel_corridor",
+    "start_time": "2026-10-04T22:30:00+08:00",
+    "end_time": "2026-10-04T22:31:05+08:00",
+    "type": "fight",
+    "level": "fight_likely",
+    "peak_score": 0.88,
+    "eta_seconds": null,
+    "priority": 0.9,
+    "reason": "Fast whole-body motion while close, for 1.2 s.",
+    "people_count": 2,
+    "action": "Send Guard C now",
+    "nearest_staff": "Guard C",
+    "pushed_to": "Guard C",
+    "pushed_at": "2026-10-04T22:30:03+08:00",
+    "acked_at": "2026-10-04T22:30:08+08:00",
+    "status": "confirmed",
+    "staff_note": null
+  },
+  {
     "incident_id": "INC-2026-00115",
     "camera_id": "CAM-BC-03",
     "location": "Block C stairwell",
@@ -5533,6 +5599,25 @@
         }
       ]
     }
+  },
+  {
+    "incident_id": "INC-2026-00125",
+    "camera_id": "CAM-CT-04",
+    "location": "Syopz Mall food court",
+    "zone_type": "canteen",
+    "start_time": "2026-10-09T12:18:00+08:00",
+    "end_time": "2026-10-09T12:19:00+08:00",
+    "type": "crowd",
+    "level": "tense",
+    "peak_score": 0.66,
+    "eta_seconds": null,
+    "priority": 0.55,
+    "reason": "Six people stopped and faced the same point for 5 s.",
+    "people_count": 6,
+    "action": "Watch this camera",
+    "nearest_staff": "Guard A",
+    "status": "confirmed",
+    "staff_note": "Guard A was on post; it cleared within a minute."
   },
   {
     "incident_id": "INC-2026-00118",
