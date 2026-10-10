@@ -1,6 +1,6 @@
 "use client";
 
-// Cameras page: the campus map block. Map (2D) by default, 3D one tap away; both
+// Cameras page: the campus map block. 3D by default, Map (2D) one tap away; both
 // show the same pins, alarm state and on-duty guards, and both refresh every 2 s.
 import { useState } from "react";
 import useSWR from "swr";
@@ -32,7 +32,7 @@ export function CamerasMapBlock({
   const { data: plan } = useSWR("plan", getPatrolPlan, LIVE);
   const { data: events } = useSWR(["events", "full"], () => getEvents(), LIVE);
   const gl = useWebGL();
-  const [view, setView] = useState<MapView>("2d");
+  const [view, setView] = useState<MapView>("3d"); // 3D first; no WebGL falls back to the map
   const show3d = view === "3d" && gl === true;
   const evs = (events ?? []).map((e) => ({ ...e, status: normaliseStatus(e.status) }));
 
@@ -49,7 +49,7 @@ export function CamerasMapBlock({
         </div>
         {gl && <MapToggle view={view} onChange={setView} />}
       </div>
-      {!site || !cameras ? (
+      {!site || !cameras || (view === "3d" && gl === null) ? (
         <div className="h-[560px] rounded-[2px] border border-line bg-raised" aria-busy="true" />
       ) : show3d && plan ? (
         <Campus3D

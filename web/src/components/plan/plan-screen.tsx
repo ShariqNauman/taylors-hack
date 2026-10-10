@@ -81,7 +81,7 @@ export function PlanScreen() {
   const { mutate } = useSWRConfig();
   const router = useRouter();
   const now = useNow();
-  const [view, setView] = useState<"2d" | "3d">("2d");
+  const [view, setView] = useState<"2d" | "3d">("3d"); // 3D first; no WebGL falls back to the map
   const gl = useWebGL(); // no WebGL: the 2D map only, no toggle
   const [selected, setSelected] = useState<string | undefined>();
   const [busy, setBusy] = useState(false);
@@ -254,7 +254,9 @@ export function PlanScreen() {
             <SectionHead n={1} title="Where are the posts?" />
             {gl && <MapToggle view={view} onChange={setView} />}
           </div>
-          {view === "3d" && gl && cameras ? (
+          {view === "3d" && (gl === null || (gl && !cameras)) ? (
+            <div className="h-[620px] rounded-[2px] border border-line bg-raised" aria-busy="true" />
+          ) : view === "3d" && gl && cameras ? (
             <Campus3D
               mode="plan"
               lockLayer
