@@ -14,6 +14,7 @@ export function CameraWall({
   site,
   active,
   selectedId,
+  onScreenCam,
   pulsingCams,
   now,
 }: {
@@ -21,13 +22,16 @@ export function CameraWall({
   site?: Site;
   active: LiveEvent[];
   selectedId: string | null;
+  /** The camera on the big screen above; its tile is outlined. */
+  onScreenCam?: string | null;
   pulsingCams: Set<string>;
   now: Date;
 }) {
   const view = useAppStore((s) => s.view);
   const counts = {
     live: cameras.filter((c) => cameraKind(c) === "live").length,
-    rec: cameras.filter((c) => cameraKind(c) === "recorded").length,
+    rec: cameras.filter((c) => cameraKind(c) === "recorded" && !!c.edge_url)
+      .length,
     black: cameras.filter((c) => cameraKind(c) === "black").length,
   };
   return (
@@ -58,11 +62,13 @@ export function CameraWall({
           const t = level ? LEVEL_THEME[level] : null;
           const pulse = pulsingCams.has(c.camera_id);
           const sel = inc && inc.incident_id === selectedId;
+          const onScreen = c.camera_id === onScreenCam;
           return (
             <Link
               key={c.camera_id}
-              href={`/cameras?cam=${encodeURIComponent(c.camera_id)}`}
-              aria-label={`${c.camera_id}, ${c.location}${kind === "recorded" ? ", recording" : kind === "live" ? ", live webcam" : ", no signal"}${level ? `, ${LEVEL_LABEL[level]}` : ""}. Open all cameras.`}
+              href={`/?cam=${encodeURIComponent(c.camera_id)}`}
+              aria-current={onScreen ? "true" : undefined}
+              aria-label={`${c.camera_id}, ${c.location}${kind === "recorded" ? ", recording" : kind === "live" ? ", live webcam" : ", no signal"}${level ? `, ${LEVEL_LABEL[level]}` : ""}. Show on the big screen.`}
               className={cn(
                 "flex flex-col overflow-hidden rounded-[2px] bg-white text-ink no-underline",
                 pulse && "ee-pulse",
@@ -70,9 +76,11 @@ export function CameraWall({
               style={{
                 border: pulse
                   ? "2px solid #C8241B"
-                  : sel && t
-                    ? `2px solid ${t.border}`
-                    : "1px solid #DCDFE4",
+                  : onScreen
+                    ? "2px solid #0B0D10"
+                    : sel && t
+                      ? `2px solid ${t.border}`
+                      : "1px solid #DCDFE4",
               }}
             >
               <div className="relative">

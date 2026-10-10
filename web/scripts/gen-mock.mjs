@@ -49,7 +49,7 @@ const risk = Object.fromEntries(site.zones.map((z) => [z.zone_type, z.risk]));
 
 // ── cameras (brief §8.1). Mock route rebases last_frame_at to now and black_since to now − 3 days. ──
 const PEOPLE = { "CAM-AU-01": 2, "CAM-BC-03": 1, "CAM-CT-04": 14, "CAM-HC-01": 1, "CAM-SC-06": 6 };
-const PORT = { "CAM-AU-01": 8765, "CAM-BC-03": 8766, "CAM-SC-06": 8769 }; // CAM-CT-04, CAM-HC-01: no edge (see edge/cameras.json)
+const PORT = { "CAM-AU-01": 8765, "CAM-BC-03": 8766, "CAM-HC-01": 8768, "CAM-SC-06": 8769 }; // CAM-CT-04: no edge (see edge/cameras.json)
 const cameras = seed3d.cameras.map((c) => {
   const black = c.source === "black";
   const out = {

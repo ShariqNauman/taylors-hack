@@ -119,6 +119,8 @@ export function EvidencePanel({
     view === "onsite" &&
     !!camera?.edge_url &&
     streaming;
+  // A recording is never shown as live (brief §8.1).
+  const isRecording = camera?.source === "recorded";
   const lastAt = past[past.length - 1]?.at;
   const ago = lastAt ? Math.max(0, (nowMs - lastAt) / 1000) : null;
   let badge: { text: string; cls: string };
@@ -128,6 +130,11 @@ export function EvidencePanel({
     badge = {
       text: "RECORDED DEMO FEED · SKELETONS",
       cls: "bg-signal-tint text-signal-ink",
+    };
+  else if (onsiteStream && isRecording)
+    badge = {
+      text: "RECORDING · SAMPLE CCTV CLIP · LOOP",
+      cls: "bg-ground text-ink",
     };
   else if (onsiteStream)
     badge = {
@@ -151,12 +158,18 @@ export function EvidencePanel({
       mode === "replay"
         ? `REPLAY ${fmtTime(new Date(entry?.at ?? nowMs))}`
         : onsiteStream
-          ? `LIVE ${clock}`
+          ? isRecording
+            ? "REC · LOOP"
+            : `LIVE ${clock}`
           : replayDemo
             ? `DEMO ${clock}`
             : `SKELETONS ${clock}`,
     topRightDot:
-      mode === "replay" ? "#AEB7C2" : onsiteStream ? "#FF453A" : "#7FE0FF",
+      mode === "replay" || isRecording
+        ? "#AEB7C2"
+        : onsiteStream
+          ? "#FF453A"
+          : "#7FE0FF",
     bottomLeft: onsiteStream
       ? undefined
       : "NO PIXELS LEAVE THE SITE · 12 BODY KEYPOINTS PER PERSON",
