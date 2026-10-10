@@ -8488,8 +8488,8 @@
     "pushed_to": "Guard C",
     "pushed_at": "2026-10-10T22:13:52+08:00",
     "acked_at": null,
-    "status": "confirmed",
-    "staff_note": "Staged fight, filmed by the team on campus on 10 Oct to test the model. Recording kept on the edge laptop.",
+    "status": "pushed",
+    "staff_note": null,
     "peak_snapshot": {
       "t": "2026-10-10T22:13:53+08:00",
       "people": [
@@ -8798,8 +8798,8 @@
     "pushed_to": "Guard B",
     "pushed_at": "2026-10-10T22:14:23+08:00",
     "acked_at": null,
-    "status": "confirmed",
-    "staff_note": "Staged fight, filmed by the team on campus on 10 Oct to test the model. Recording kept on the edge laptop.",
+    "status": "pushed",
+    "staff_note": null,
     "peak_snapshot": {
       "t": "2026-10-10T22:14:24+08:00",
       "people": [
@@ -9108,8 +9108,8 @@
     "pushed_to": "Guard A",
     "pushed_at": "2026-10-10T22:15:50+08:00",
     "acked_at": null,
-    "status": "confirmed",
-    "staff_note": "Staged fight, filmed by the team on campus on 10 Oct to test the model. Recording kept on the edge laptop.",
+    "status": "pushed",
+    "staff_note": null,
     "peak_snapshot": {
       "t": "2026-10-10T22:15:51+08:00",
       "people": [
