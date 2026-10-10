@@ -269,6 +269,17 @@ export function useLiveFeed(replayOn: boolean) {
           : true;
         if (fresh)
           pushToast(e.pushed_to, e.pushed_at ?? new Date(), e.location);
+        // Same-browser demo: let an open /push tab see the replay's simulated push.
+        if (fresh && e.isReplay && typeof BroadcastChannel !== "undefined") {
+          const ch = new BroadcastChannel("earlyeye-push");
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          const { etaAt, isReplay, ...plain } = e;
+          ch.postMessage({
+            type: "push",
+            event: { ...plain, status: "pushed" },
+          });
+          ch.close();
+        }
       }
     }
     retain(keep);
