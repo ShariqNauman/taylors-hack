@@ -71,7 +71,8 @@ const CHIP_DASHED =
 function datesText(week: Week, days: number[]): string {
   const d = [...days].sort((a, b) => a - b).map((i) => week.days[i]);
   const month = (x: number) => new Date(x).getUTCMonth();
-  if (!d.every((x) => month(x) === month(d[0]))) return d.map(fmtWDM).join(", ");
+  if (!d.every((x) => month(x) === month(d[0])))
+    return d.map(fmtWDM).join(", ");
   const parts = d.map((x) => fmtWDM(x).replace(/ \w+$/, ""));
   return `${parts.join(", ")} ${fmtDM(d[0]).split(" ")[1]}`;
 }
@@ -155,8 +156,7 @@ export function PlanScreen() {
         if (sort === "quick") return b.perHour - a.perHour || a.rank - b.rank;
         if (sort === "open")
           return (
-            Number(!!assign[a.key]) - Number(!!assign[b.key]) ||
-            a.rank - b.rank
+            Number(!!assign[a.key]) - Number(!!assign[b.key]) || a.rank - b.rank
           );
         return a.rank - b.rank;
       }),
@@ -289,13 +289,17 @@ export function PlanScreen() {
 
   return (
     <PageShell
-      headerRight={<span className={CHIP_DASHED}>SYNTHETIC HISTORY · 8 WEEKS</span>}
+      headerRight={
+        <span className={CHIP_DASHED}>SYNTHETIC HISTORY · 8 WEEKS</span>
+      }
     >
       {/* ── Title ── */}
       <div className="flex flex-wrap items-end justify-between gap-3.5 print:hidden">
         <div className="flex max-w-[860px] flex-col gap-1.5">
           <span className="ee-label text-[12px]">
-            {week ? `Patrol plan · week of ${fmtWDM(week.start)}` : "Patrol plan"}
+            {week
+              ? `Patrol plan · week of ${fmtWDM(week.start)}`
+              : "Patrol plan"}
           </span>
           <h1 className="ee-display text-[44px] leading-[0.95] sm:text-[56px]">
             Where to put people this week
@@ -347,7 +351,9 @@ export function PlanScreen() {
             </span>
             <span className="flex flex-col gap-px">
               <span className="text-[16px] font-extrabold">{st.title}</span>
-              <span className="text-[13px] text-muted-foreground">{st.sub}</span>
+              <span className="text-[13px] text-muted-foreground">
+                {st.sub}
+              </span>
             </span>
           </li>
         ))}
@@ -394,7 +400,9 @@ export function PlanScreen() {
               className="text-[14px] font-bold text-signal-ink"
               aria-live="polite"
             >
-              {shared === "copied" ? "Copied. Paste it into your team chat." : ""}
+              {shared === "copied"
+                ? "Copied. Paste it into your team chat."
+                : ""}
             </span>
           </span>
           <span className="text-[13px] text-muted-foreground print:hidden">
@@ -564,7 +572,11 @@ export function PlanScreen() {
               type="button"
               aria-pressed={zone === z.zone_type}
               onClick={() => setZone(z.zone_type)}
-              className={cn(BTN_TOGGLE, "min-h-[38px]", toggle(zone === z.zone_type))}
+              className={cn(
+                BTN_TOGGLE,
+                "min-h-[38px]",
+                toggle(zone === z.zone_type),
+              )}
             >
               {z.label}
             </button>
@@ -760,14 +772,18 @@ export function PlanScreen() {
                   <span
                     className={cn(
                       "inline-flex size-10 items-center justify-center rounded-full font-extrabold",
-                      g.on_duty ? "bg-signal text-white" : "bg-ground text-ink-2",
+                      g.on_duty
+                        ? "bg-signal text-white"
+                        : "bg-ground text-ink-2",
                     )}
                   >
                     {initial(g.name)}
                   </span>
                   <span className="flex min-w-0 flex-col gap-0.5">
                     <span className="flex flex-wrap items-center gap-2">
-                      <span className="text-[17px] font-extrabold">{g.name}</span>
+                      <span className="text-[17px] font-extrabold">
+                        {g.name}
+                      </span>
                       {g.role && (
                         <span className="text-[13px] text-muted-foreground">
                           {g.role}
@@ -776,7 +792,9 @@ export function PlanScreen() {
                       <span
                         className={cn(
                           "inline-flex items-center gap-[5px] text-[13px] font-bold",
-                          g.on_duty ? "text-signal-ink" : "text-muted-foreground",
+                          g.on_duty
+                            ? "text-signal-ink"
+                            : "text-muted-foreground",
                         )}
                       >
                         <span
@@ -788,7 +806,9 @@ export function PlanScreen() {
                         {g.on_duty ? "On duty now" : "Off duty"}
                       </span>
                     </span>
-                    <span className="text-[14px] text-ink-2">{shiftText(g)}</span>
+                    <span className="text-[14px] text-ink-2">
+                      {shiftText(g)}
+                    </span>
                     <span className="text-[14px] font-bold">
                       {mine.length
                         ? mine
@@ -800,7 +820,10 @@ export function PlanScreen() {
                         : "No posts this week"}
                     </span>
                   </span>
-                  <span className="ee-display text-right text-[26px] normal-case">
+                  <span
+                    className="ee-display text-right text-[26px]"
+                    style={{ textTransform: "none" }}
+                  >
                     {hrs ? `${hrs} h` : "—"}
                   </span>
                 </div>
