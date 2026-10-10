@@ -13,7 +13,7 @@ const NAV = [
   { href: "/cameras", label: "Cameras" },
   { href: "/plan", label: "Plan" },
   { href: "/incidents", label: "Incidents" },
-  { href: "/proof", label: "Proof" },
+  { href: "/proof", label: "Track record" },
 ];
 
 /**

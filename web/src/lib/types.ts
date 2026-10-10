@@ -208,6 +208,9 @@ export interface Proof {
 }
 
 export type Outcome = "sorted" | "hurt" | "backup" | "nothing";
+export interface CameraPatch {
+  zone_type: string;
+}
 
 export interface StatusPatch {
   status?: Status;

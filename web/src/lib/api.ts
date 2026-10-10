@@ -2,6 +2,7 @@ import type {
   Camera,
   HandoverBrief,
   HandoverFacts,
+  CameraPatch,
   Event,
   Hotspot,
   PatrolPlan,
@@ -268,6 +269,33 @@ export async function setOnDuty(name: string, on_duty: boolean): Promise<SavedWh
     // offline: the phone still works; the desk won't see the change
   }
   return "this-computer";
+}
+
+/**
+ * PATCH /cameras/:id {zone_type}: the manager moves a camera to another zone
+ * ("Make it a sports zone"). Resolves false when there is no API or it refused,
+ * so the caller keeps the change in this browser instead.
+ */
+export async function patchCamera(
+  camera_id: string,
+  patch: CameraPatch,
+): Promise<boolean> {
+  if (usingMock) return false;
+  try {
+    const r = await fetch(
+      `${API_URL}/cameras/${encodeURIComponent(camera_id)}`,
+      {
+        signal: AbortSignal.timeout(API_TIMEOUT_MS * 2),
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(patch),
+      },
+    );
+    return r.ok;
+  } catch {
+    useAppStore.getState().setApiDown(true);
+    return false;
+  }
 }
 
 /** Back-compat alias. */
