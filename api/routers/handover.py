@@ -34,9 +34,11 @@ router = APIRouter(prefix="", tags=["handover"])
 
 MYT = ZoneInfo("Asia/Kuala_Lumpur")
 
-# The dashboard aborts at 6 s (HANDOVER_TIMEOUT_MS). Stay well inside it: a late
-# brief is worse than a templated one, because the drawer would show neither.
-CLAUDE_TIMEOUT_S = 4.5
+# Measured: a Claude round trip from Render takes ~6 s, so the 4.5 s this started
+# with fell back to the template every time. Reports already use 20-25 s here and
+# 45 s in the browser. The drawer renders the facts immediately and says "Writing
+# the brief…", so waiting costs nothing; returning the template always does.
+CLAUDE_TIMEOUT_S = 20.0
 CLAUDE_MAX_TOKENS = 300
 
 LEVEL_WORDS = {
