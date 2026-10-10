@@ -24,7 +24,7 @@ sys.path.insert(0, str(HERE))
 import earlyeye_edge as ee  # noqa: E402
 
 
-def annotate(src: str, out: str, camera_id: str, stride: int = 2, max_w: int = 960) -> dict:
+def annotate(src: str, out: str, camera_id: str, stride: int = 2, max_w: int = 960, label: str = "") -> dict:
     worker = ee.PredictProcess() if sys.platform == "darwin" else None   # OpenMP clash on macOS
     import cv2
     import pandas as pd
@@ -49,7 +49,7 @@ def annotate(src: str, out: str, camera_id: str, stride: int = 2, max_w: int = 9
 
     cap = cv2.VideoCapture(src)
     fps = cap.get(cv2.CAP_PROP_FPS) or 30.0
-    a = SimpleNamespace(camera_id=camera_id, label="")
+    a = SimpleNamespace(camera_id=camera_id, label=label)
     rows, frame_times = deque(), deque()
     next_score, level, score = ld.SHORT_S, "CALM", 0.0
     writer, tmp, size = None, out_p.with_name(f".{out_p.stem}.tmp.mp4"), None
@@ -58,6 +58,7 @@ def annotate(src: str, out: str, camera_id: str, stride: int = 2, max_w: int = 9
     # What really happened, for Incidents' "How it unfolded": every level change with the video
     # second, the model's score and the people count (same shape as the live edge's timeline).
     timeline: list[dict] = []
+    track: list[dict] = []   # every scoring step, for edge/playback_edge.py (no model at play time)
     i = -1
     while True:
         ok, frame = cap.read()
@@ -96,6 +97,7 @@ def annotate(src: str, out: str, camera_id: str, stride: int = 2, max_w: int = 9
             else:
                 score, level = float(raw), "FIGHT" if raw >= ld.FIGHT_AT else "TENSE" if raw >= ld.TENSE_AT else "CALM"
             score = float(score)
+            track.append({"t": round(t, 2), "level": level.lower(), "score": round(score, 3), "people": people})
         dt = stride / fps
         stats["frames"] += 1
         if score > stats["max_score"]:
@@ -133,6 +135,8 @@ def annotate(src: str, out: str, camera_id: str, stride: int = 2, max_w: int = 9
     stats["max_score"] = round(stats["max_score"], 2)
     stats["fight_s"], stats["tense_s"] = round(stats["fight_s"], 1), round(stats["tense_s"], 1)
     stats["timeline"] = timeline
+    stats["track"] = track
+    stats["fps"] = round(fps / stride, 3)
     return stats
 
 
@@ -142,6 +146,13 @@ if __name__ == "__main__":
     ap.add_argument("out")
     ap.add_argument("--camera-id", default="CAM")
     ap.add_argument("--stride", type=int, default=2, help="score every Nth frame (2 = half the frames)")
+    ap.add_argument("--label", default="", help='e.g. "SAMPLE CCTV CLIP", drawn like the live edge does')
+    ap.add_argument("--track", help="also write every scoring step here (for edge/playback_edge.py)")
     args = ap.parse_args()
     import json
-    print(json.dumps(annotate(args.src, args.out, args.camera_id, args.stride)), flush=True)
+    track_path = Path(args.track).resolve() if args.track else None   # annotate() changes directory
+    res = annotate(args.src, args.out, args.camera_id, args.stride, label=args.label)
+    if track_path:
+        track_path.write_text(json.dumps({"fps": res["fps"], "track": res["track"]}))
+    res.pop("track")
+    print(json.dumps(res), flush=True)

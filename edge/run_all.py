@@ -26,6 +26,15 @@ for r in cfg["recordings"]:
     if not f.exists():
         print(f"skip {r['camera_id']}: {r['file']} not found", flush=True)
         continue
+    # Already run through the model (edge/annotate_clip.py --track): play it back with no model,
+    # so the GPU is only for the live webcam.
+    played, track = f.parent / "played" / f.name, f.parent / "played" / f"{f.stem}.track.json"
+    if played.exists() and track.exists():
+        print(f"starting {r['camera_id']}: port {r['port']} (pre-analysed playback, no model)", flush=True)
+        procs.append(subprocess.Popen([py, str(REPO / "edge" / "playback_edge.py"), "--video", str(played),
+                                       "--track", str(track), "--camera-id", r["camera_id"],
+                                       "--port", str(r["port"])], cwd=REPO))
+        continue
     # Sample recordings share the laptop with the live webcam: cap their pose rate so the webcam keeps
     # most of the GPU (the live model needs >= ~15 pose fps; recordings never post incidents).
     start(["--camera", str(f), "--loop", "--source", "recorded", "--no-post", "--pose-fps", str(RECORDING_POSE_FPS),
