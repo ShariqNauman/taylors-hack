@@ -72,10 +72,10 @@ const cam = Object.fromEntries(cameras.map((c) => [c.camera_id, c]));
 
 const STAFF_FOR = { stairwell: "Guard B", canteen: "Guard A", hostel_corridor: "Guard C", auditorium: "Guard B", sports_court: "Guard C" };
 const REASONS = {
-  fight: ["Fast whole-body motion while close, for 1.2 s.", "Arm above shoulder; second person leaning back.", "Shove: sudden lunge; second person pushed back.", "Repeated fast strikes toward head height.", "Pair moving closer; body motion rising."],
-  cornering: ["One person against the wall, three within 2 torso-lengths for 7 s.", "1 against 4 within 1.5 torso-lengths for 9 s; the one has not moved."],
-  crowd: ["Five people stopped and faced the same point for 4 s.", "Eight people formed a ring in 4 s; two in the centre."],
-  play: ["Rhythmic arm swings, no approach; ball in play. Sports-zone threshold applied.", "Fast arm movement but bodies stayed apart; no approach."],
+  fight: ["Two people moved fast with their whole bodies while standing close, for over a second.", "One person raised an arm above the shoulder while the other leaned back.", "One person shoved another hard, and the other person was pushed back.", "One person swung at the other person's head, again and again.", "Two people moved closer together and started moving faster."],
+  cornering: ["One person was backed against the wall by three others for 7 seconds.", "Four people closed in on one person, who stayed still for 9 seconds."],
+  crowd: ["Five people stopped and all faced the same spot for 4 seconds.", "Eight people formed a ring within 4 seconds, with two people in the middle."],
+  play: ["Fast arm movements and a ball in play, but nobody moved in on anyone. This is a sports area.", "Fast arm movements, but everyone stayed apart."],
 };
 const prio = (level, score, zt, n) => r2(Math.min(1, { calm: 0.05, tense: 0.4, fight_likely: 0.8, fight: 1 }[level] * score * (risk[zt] ?? 0.5) * Math.min(1, 0.6 + n * 0.1)));
 const actionFor = (level, staff) => level === "tense" ? "Watch this camera" : level === "calm" ? "No action" : level === "fight" ? `Send ${staff} now; call the security lead` : `Send ${staff} now`;
@@ -158,18 +158,18 @@ events.forEach((e, i) => { e.incident_id = `INC-2026-${String(80 + i).padStart(5
 const T0 = NOW + 60e3;
 const R = [
   // offset s, level, type, score, eta, reason, keyframe
-  [0, "calm", "play", 0.12, null, "Two people talking. Little body motion.", 0],
-  [1, "calm", "play", 0.15, null, "Close contact, bodies still. Hug pattern.", 1],
-  [2, "calm", "play", 0.18, null, "One fast arm, bodies apart. High-five pattern.", 2],
-  [3, "tense", "fight", 0.46, 10, "Pair moving closer; body motion rising.", 3],
-  [4, "tense", "fight", 0.52, 9, "Arm raised toward the other person; motion rising.", 4],
-  [5, "tense", "fight", 0.58, 8, "Wrist speed rising while close.", 5],
-  [7, "fight_likely", "fight", 0.71, 6, "Fast whole-body motion while close, for 1.2 s.", 6],
-  [9, "fight_likely", "fight", 0.78, 4, "Arm above shoulder; second person leaning back.", 7],
-  [11, "fight_likely", "fight", 0.84, 2, "Both arms raised; bodies almost touching.", 8],
-  [13, "fight", "fight", 0.93, null, "Shove: sudden lunge; second person pushed back.", 9],
-  [14, "fight", "fight", 0.95, null, "Repeated fast strikes toward head height.", 10],
-  [15, "fight", "fight", 0.91, null, "Strikes continuing; a third person is approaching.", 11],
+  [0, "calm", "play", 0.12, null, "Two people talking, barely moving.", 0],
+  [1, "calm", "play", 0.15, null, "Two people hugging: close, but still.", 1],
+  [2, "calm", "play", 0.18, null, "A high five: one quick arm, then apart.", 2],
+  [3, "tense", "fight", 0.46, 10, "Two people moved closer together and started moving faster.", 3],
+  [4, "tense", "fight", 0.52, 9, "One person raised an arm toward the other.", 4],
+  [5, "tense", "fight", 0.58, 8, "Arms moving faster while standing close.", 5],
+  [7, "fight_likely", "fight", 0.71, 6, "Two people moved fast with their whole bodies while standing close, for over a second.", 6],
+  [9, "fight_likely", "fight", 0.78, 4, "One person raised an arm above the shoulder while the other leaned back.", 7],
+  [11, "fight_likely", "fight", 0.84, 2, "Both arms raised, bodies almost touching.", 8],
+  [13, "fight", "fight", 0.93, null, "One person shoved another hard, and the other person was pushed back.", 9],
+  [14, "fight", "fight", 0.95, null, "One person swung at the other person's head, again and again.", 10],
+  [15, "fight", "fight", 0.91, null, "Still swinging, and a third person is coming over.", 11],
 ];
 const REPLAY_PRIORITY = [0.01, 0.01, 0.01, 0.12, 0.13, 0.15, 0.36, 0.4, 0.43, 0.6, 0.61, 0.58];
 const replay = R.map(([off, level, type, score, eta, reason, kf]) => {
