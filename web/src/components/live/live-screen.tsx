@@ -31,6 +31,9 @@ const ACTIVE_WINDOW_MS = 20 * 60_000;
 const HANDLED_MS = 2 * 60_000;
 const handledNow = (e: { outcome_at?: string | null }, now: number) =>
   !!e.outcome_at && now - Date.parse(e.outcome_at) < HANDLED_MS;
+/** The guard closed it from the scene. "Need backup" is still open. */
+const reportedBack = (e: { outcome?: string | null }) =>
+  !!e.outcome && e.outcome !== "backup";
 
 export function LiveScreen() {
   const params = useSearchParams();
@@ -89,6 +92,8 @@ export function LiveScreen() {
             (!!e.pushed_to && !e.outcome && e.status === "pushed" && !!e.pushed_at &&
               Date.now() - Date.parse(e.pushed_at) < 10 * 60_000 && (e.isReplay || e.isEdge || e.end_time == null)) ||
             (e.end_time == null &&
+            // Reported back and past the 2-minute "Handled" card: off the Live queue.
+            !reportedBack(e) &&
             // An open record older than the window is stale history (the API cannot close
             // records yet); the edge and the replay are always current.
             (e.isEdge ||

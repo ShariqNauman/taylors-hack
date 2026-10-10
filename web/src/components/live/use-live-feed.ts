@@ -378,7 +378,10 @@ export function useLiveFeed(
         e.end_time == null &&
         e.status !== "dismissed" &&
         e.status !== "resolved";
-      if (!open || !isAlarmLevel(e.level)) continue;
+      // The guard reported back (sorted, hurt, nothing there): the alarm stops even if the
+      // camera still sees motion. "Need backup" keeps it sounding.
+      const reported = !!e.outcome && e.outcome !== "backup";
+      if (!open || !isAlarmLevel(e.level) || reported) continue;
       keep.add(e.incident_id);
       const firstSight = !seenAlarm.current.has(e.incident_id);
       seenAlarm.current.add(e.incident_id);
