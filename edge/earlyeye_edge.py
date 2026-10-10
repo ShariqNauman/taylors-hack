@@ -205,7 +205,8 @@ def _predict_worker(conn, model_dir: str):
         if feats is None:
             return
         try:
-            conn.send(float(predict(feats)))
+            f, seq = feats if isinstance(feats, tuple) else (feats, None)
+            conn.send(float(predict(f, seq) if seq is not None else predict(f)))
         except Exception as e:  # report, keep serving
             conn.send(("error", str(e)))
 
@@ -218,8 +219,8 @@ class PredictProcess:
         self.proc = ctx.Process(target=_predict_worker, args=(child, str(MODEL_DIR)), daemon=True)
         self.proc.start()
 
-    def __call__(self, feats: dict) -> float:
-        self.conn.send(feats)
+    def __call__(self, feats: dict, seq=None) -> float:
+        self.conn.send((feats, seq))
         out = self.conn.recv()
         if isinstance(out, tuple):
             raise RuntimeError(out[1])
@@ -249,10 +250,15 @@ def run_model(s: State):
     sys.path.insert(0, str(MODEL_DIR))
     import live_detector as ld               # noqa: E402  (model/live_detector.py, not modified)
     from features import window_features     # noqa: E402
+    import predict as predict_module         # noqa: E402
+    needs_seq = bool(getattr(predict_module, "NEEDS_SEQUENCE", False))   # v4 ensemble: LightGBM + 1D-CNN
+    if needs_seq:
+        from seq_features import window_inputs   # noqa: E402
     if worker is None:
-        from predict import predict          # noqa: E402
+        predict = predict_module.predict
     else:
         predict = worker
+    fight_at = getattr(ld, "ACTIVE_FIGHT_AT", ld.FIGHT_AT)   # the model team's live threshold
 
     a = s.args
     cap = open_capture(cv2, src)
@@ -325,10 +331,15 @@ def run_model(s: State):
         if t < next_score:
             continue
         next_score = t + ld.SCORE_EVERY_S
-        feats = window_features(pd.DataFrame(list(rows)), t, frame_times)
-        raw = predict(feats)
+        kp = pd.DataFrame(list(rows))
+        if needs_seq:   # same single people-finding pass as model/live_detector.py
+            feats, seq = window_inputs(kp, t, frame_times)
+            raw = predict(feats, seq)
+        else:
+            feats = window_features(kp, t, frame_times)
+            raw = predict(feats)
         smooth = ld.SMOOTH_ALPHA * raw + (1 - ld.SMOOTH_ALPHA) * smooth
-        high_since = (high_since if high_since is not None else t) if smooth >= ld.FIGHT_AT else None
+        high_since = (high_since if high_since is not None else t) if smooth >= fight_at else None
         if high_since is not None and t - high_since >= ld.MIN_DURATION:
             fight_until = t + ld.FIGHT_HOLD
         level = "FIGHT" if t <= fight_until else "TENSE" if smooth >= ld.TENSE_AT else "CALM"
