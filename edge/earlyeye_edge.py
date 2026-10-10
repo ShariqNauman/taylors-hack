@@ -33,6 +33,8 @@ import json
 import math
 import os
 import random
+import shutil
+import subprocess
 import sys
 import threading
 import time
@@ -44,6 +46,8 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[1]
+CLIPS = Path(__file__).resolve().parent / "clips"  # <incident_id>.mp4, kept on this laptop, never uploaded
+CLIP_PRE_S, CLIP_POST_S, CLIP_FPS, CLIP_W = 5.0, 5.0, 10, 640   # the "10-second clip": 5 s before the alarm, 5 s after
 MODEL_DIR = REPO / "model"
 MYT = timezone(timedelta(hours=8))
 
@@ -81,6 +85,74 @@ class State:
         self.calm_since: float | None = None
         self.posted: set[str] = set()
         self.post_log = deque(maxlen=20)
+        self.clips = ClipRecorder() if args.source == "live" else None   # recordings never make clips
+
+
+class ClipRecorder:
+    """Keeps the last few seconds of camera frames; on an alarm writes edge/clips/<incident_id>.mp4
+    (H.264, so the desk's browser plays it). Video stays on this laptop; only the event JSON goes up."""
+
+    def __init__(self):
+        self.lock = threading.Lock()
+        self.buf: deque = deque()            # (t, small BGR frame), last CLIP_PRE_S seconds
+        self.jobs: dict[str, dict] = {}      # incident_id -> {"frames": [...], "until": t}
+        self.last_t = 0.0
+
+    def add(self, frame, now: float):
+        if now - self.last_t < 0.9 / CLIP_FPS:
+            return
+        self.last_t = now
+        import cv2
+        h, w = frame.shape[:2]
+        small = cv2.resize(frame, (CLIP_W, int(h * CLIP_W / w) // 2 * 2)) if w > CLIP_W else frame.copy()
+        done = []
+        with self.lock:
+            self.buf.append((now, small))
+            while self.buf and now - self.buf[0][0] > CLIP_PRE_S:
+                self.buf.popleft()
+            for iid, job in self.jobs.items():
+                job["frames"].append((now, small))
+                if now >= job["until"]:
+                    done.append((iid, job["frames"]))
+            for iid, _ in done:
+                self.jobs.pop(iid, None)
+        for iid, frames in done:
+            threading.Thread(target=self._write, args=(iid, frames), daemon=True).start()
+
+    def start(self, incident_id: str, now: float):
+        with self.lock:
+            if incident_id in self.jobs or (CLIPS / f"{incident_id}.mp4").exists():
+                return
+            self.jobs[incident_id] = {"frames": list(self.buf), "until": now + CLIP_POST_S}
+
+    @staticmethod
+    def _write(incident_id: str, timed: list):
+        if len(timed) < 2:
+            return
+        import cv2
+        # Real capture rate, so the clip plays at true speed whatever the camera delivered.
+        fps = max(1.0, min(30.0, (len(timed) - 1) / max(0.1, timed[-1][0] - timed[0][0])))
+        frames = [f for _, f in timed]
+        CLIPS.mkdir(exist_ok=True)
+        h, w = frames[0].shape[:2]
+        out = CLIPS / f"{incident_id}.mp4"
+        tmp = CLIPS / f".{incident_id}.tmp.mp4"
+        wr = cv2.VideoWriter(str(tmp), cv2.VideoWriter_fourcc(*"avc1"), fps, (w, h))
+        h264 = wr.isOpened()
+        if not h264:   # e.g. Windows OpenCV without H.264: write MPEG-4, then convert with ffmpeg if present
+            wr = cv2.VideoWriter(str(tmp), cv2.VideoWriter_fourcc(*"mp4v"), fps, (w, h))
+        for f in frames:
+            wr.write(f)
+        wr.release()
+        if not h264 and shutil.which("ffmpeg"):
+            conv = CLIPS / f".{incident_id}.h264.mp4"
+            subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", str(tmp), "-c:v", "libx264", "-pix_fmt", "yuv420p",
+                            "-movflags", "+faststart", str(conv)], check=False)
+            if conv.exists():
+                tmp.unlink(missing_ok=True)
+                tmp = conv
+        tmp.replace(out)
+        print(f"clip saved: {out.name} ({len(frames)} frames, {'H.264' if h264 else 'converted' if tmp.name.endswith('.h264.mp4') else 'MPEG-4'})", flush=True)
 
 
 # ------------------------------------------------------------------ incident logic
@@ -153,6 +225,8 @@ def tick_incident(s: State, now: float):
     # Level never steps down inside an open incident until it closes (FIGHT_HOLD covers dips).
     if inc["level"] != "fight":
         inc["level"] = lv
+    if inc["level"] == "fight" and s.clips is not None:
+        s.clips.start(inc["incident_id"], now)
     inc["people_count"] = people
     inc["reason"] = reason_from(s.feats, level, people)
     inc["action"] = f"Send {a.staff} now; call the security lead" if inc["level"] == "fight" else "Watch this camera"
@@ -308,6 +382,8 @@ def run_model(s: State):
                 time.sleep(max(0.0, n / file_fps - (time.time() - t0)))
             with s.lock:
                 s.frame, s.frame_id = frame, s.frame_id + 1
+            if s.clips is not None:
+                s.clips.add(frame, time.time())
         s.running = False
 
     threading.Thread(target=capture, daemon=True).start()
@@ -492,6 +568,46 @@ def make_handler(s: State):
             self.end_headers()
             self.wfile.write(data)
 
+        def _clip(self, name):
+            # Only <incident_id>.mp4 straight inside edge/clips/. Byte ranges so the browser can seek.
+            f = CLIPS / name
+            if "/" in name or name.startswith(".") or not name.endswith(".mp4") or not f.is_file():
+                return self._json({"error": "no clip for this incident on this laptop"}, 404)
+            size = f.stat().st_size
+            start, end = 0, size - 1
+            rng = self.headers.get("Range", "")
+            if rng.startswith("bytes="):
+                a, _, b = rng[6:].split(",")[0].partition("-")
+                start = int(a) if a else max(0, size - int(b or 0))
+                end = min(int(b), size - 1) if a and b else end
+            if start > end:
+                self.send_response(416)
+                self._cors()
+                self.send_header("Content-Range", f"bytes */{size}")
+                self.end_headers()
+                return None
+            self.send_response(206 if rng else 200)
+            self._cors()
+            self.send_header("Content-Type", "video/mp4")
+            self.send_header("Accept-Ranges", "bytes")
+            self.send_header("Content-Length", str(end - start + 1))
+            if rng:
+                self.send_header("Content-Range", f"bytes {start}-{end}/{size}")
+            self.end_headers()
+            try:
+                with f.open("rb") as fh:
+                    fh.seek(start)
+                    left = end - start + 1
+                    while left > 0:
+                        chunk = fh.read(min(1 << 16, left))
+                        if not chunk:
+                            break
+                        self.wfile.write(chunk)
+                        left -= len(chunk)
+            except (BrokenPipeError, ConnectionResetError):
+                pass
+            return None
+
         def do_GET(self):
             path = self.path.split("?")[0]
             a = s.args
@@ -525,8 +641,11 @@ def make_handler(s: State):
                 except (BrokenPipeError, ConnectionResetError):
                     pass
                 return None
+            if path in ("/clips", "/clips/"):
+                ids = sorted(p.stem for p in CLIPS.glob("*.mp4") if not p.name.startswith(".")) if CLIPS.is_dir() else []
+                return self._json({"incident_ids": ids})
             if path.startswith("/clips/"):
-                return self._json({"error": "clips are not recorded yet"}, 404)
+                return self._clip(path[len("/clips/"):])
             return self._json({"error": "not found"}, 404)
     return H
 

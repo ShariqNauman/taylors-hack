@@ -2,3 +2,4 @@ recordings/*
 !recordings/README.md
 .venv/
 .venv
+clips/
