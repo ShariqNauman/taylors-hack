@@ -469,29 +469,6 @@ export function IncidentsScreen() {
   );
 }
 
-/** Clipboard API, with the older selection copy as a fallback (some browsers block the API). */
-async function copyText(text: string): Promise<boolean> {
-  try {
-    await navigator.clipboard.writeText(text);
-    return true;
-  } catch {
-    try {
-      const ta = document.createElement("textarea");
-      ta.value = text;
-      ta.setAttribute("readonly", "");
-      ta.style.position = "fixed";
-      ta.style.opacity = "0";
-      document.body.appendChild(ta);
-      ta.select();
-      const ok = document.execCommand("copy");
-      ta.remove();
-      return ok;
-    } catch {
-      return false;
-    }
-  }
-}
-
 function TodoCard({
   n,
   title,
@@ -615,8 +592,6 @@ function CaseStory({
   const view = useAppStore((s) => s.view);
   const onsite = view === "onsite";
   const [clipFailed, setClipFailed] = useState(false);
-  const [summaryOpen, setSummaryOpen] = useState(false);
-  const [copied, setCopied] = useState(false);
   const [note, setNote] = useState(e.staff_note ?? "");
   const [noteSaved, setNoteSaved] = useState(false);
   useEffect(() => setNote(e.staff_note ?? ""), [e.staff_note]);
@@ -698,24 +673,6 @@ function CaseStory({
         ? ["Nothing to follow up."]
         : NEXT_STEPS[e.type];
   const done = e.status === "resolved";
-  const decisionWord =
-    bucket === "decide"
-      ? "Not decided yet"
-      : bucket === "real"
-        ? done
-          ? "Real incident, closed"
-          : "Real incident, follow-up open"
-        : "False alarm";
-  const noteText = note.trim();
-  const summary =
-    `${title}${building ? ` (${building})` : ""}, ${dayLong(e.start_time)} at ${hm(e.start_time)}. ` +
-    `What EarlyEye saw: ${e.reason.trim().replace(/([^.!?])$/, "$1.")} ` +
-    (e.pushed_to
-      ? `The alarm sounded and ${guard} ${reply != null ? `replied in ${reply} seconds` : "was alerted"}${e.outcome ? `, and reported: ${OUTCOME_WORDS[e.outcome].toLowerCase()}` : ""}. `
-      : "It stayed on the desk screen, so no guard was alerted. ") +
-    `Decision: ${decisionWord}. ` +
-    `Note: ${noteText ? noteText.replace(/([^.!?])$/, "$1.") : "none yet."} ` +
-    `Reference ${e.incident_id}.`;
 
   // Earlier at this place, last 4 weeks.
   const since = now.getTime() - WEEK4;
@@ -927,46 +884,12 @@ function CaseStory({
               </li>
             ))}
           </ul>
-          {bucket === "real" && (
-            <button
-              type="button"
-              onClick={() => {
-                setSummaryOpen((o) => !o);
-                setCopied(false);
-              }}
-              className="min-h-11 self-start rounded-[2px] border-2 border-ink bg-white px-4 text-[15px] font-extrabold"
-            >
-              {summaryOpen
-                ? "Hide the summary"
-                : "Write a summary for your report"}
-            </button>
-          )}
-          {bucket === "real" && summaryOpen && (
-            <div className="flex flex-col gap-2.5 rounded-[2px] border border-line bg-raised px-3.5 py-3">
-              <span className={h3}>SUMMARY FOR YOUR REPORT</span>
-              <p className="m-0 text-[15px] leading-[1.55]">{summary}</p>
-              <span className="flex flex-wrap items-center gap-2.5">
-                <button
-                  type="button"
-                  onClick={async () => {
-                    if (await copyText(summary)) setCopied(true);
-                    else
-                      toast.error(
-                        "Could not copy. Select the text and copy it instead.",
-                      );
-                  }}
-                  className="min-h-10 rounded-[2px] bg-signal px-3.5 text-[14px] font-extrabold text-white"
-                >
-                  Copy summary
-                </button>
-                {copied && (
-                  <span className="text-[14px] font-bold text-signal-ink">
-                    Copied. Paste it into your email or report.
-                  </span>
-                )}
-              </span>
-            </div>
-          )}
+          <Link
+            href={`/reports?period=daily&date=${dayKey(e.start_time)}`}
+            className="min-h-11 self-start rounded-[2px] border-2 border-ink bg-white px-4 py-2.5 text-[15px] font-extrabold text-ink no-underline"
+          >
+            Report for this day (PDF)
+          </Link>
         </div>
 
         <div className="flex min-w-0 flex-[1_1_320px] flex-col gap-2.5">
