@@ -334,7 +334,21 @@ export function useLiveFeed(
     [replayIncident, replayEvents, replay.startedAt, replay.duration, bufferTick],
   );
 
-  // Mirrored pushes: keep the guard's "camera now" in step with the level.
+  // Mirrored pushes: keep the guard's "camera now" in step with the level. The stored copy is
+  // the incident record: highest level reached, and an end_time once the scene is calm again
+  // (like the API), so Incidents and Track record count it as the alarm it was.
+  const LV = ["calm", "tense", "fight_likely", "fight"] as const;
+  const peaks = useRef(new Map<string, { level: Level; score: number; priority: number }>());
+  const forStore = useCallback((e: LiveEvent): Event => {
+    const p = peaks.current.get(e.incident_id);
+    const level = p && LV.indexOf(p.level) > LV.indexOf(e.level) ? p.level : e.level;
+    const next = { level, score: Math.max(p?.score ?? 0, e.peak_score), priority: Math.max(p?.priority ?? 0, e.priority) };
+    peaks.current.set(e.incident_id, next);
+    const calm = e.end_time ?? (e.level === "calm" ? new Date(calmAt.current.get(e.incident_id) ?? Date.now()).toISOString() : null);
+    return { ...plainEvent(e), level: next.level, peak_score: next.score, priority: next.priority, end_time: calm, status: "pushed" };
+    // LV is a constant
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const mirrored = useRef(new Map<string, string>());
   const resetOnce = useRef(new Set<string>());
   useEffect(() => {
@@ -343,9 +357,9 @@ export function useLiveFeed(
       const nowKey = `${e.level}|${e.end_time}`;
       if (was == null || was === nowKey) continue;
       mirrored.current.set(e.incident_id, nowKey);
-      void mirrorEvent({ ...plainEvent(e), status: "pushed" });
+      void mirrorEvent(forStore(e));
     }
-  }, [events]);
+  }, [events, forStore]);
 
   // Two-tier alarm: sound + toast on the transition into fight_likely / fight.
   const upsert = useAlarmStore((s) => s.upsert);
@@ -400,7 +414,7 @@ export function useLiveFeed(
           // page load, so a guard who is already on the way stays on the way.
           const reset = !!e.isReplay && !resetOnce.current.has(e.incident_id);
           resetOnce.current.add(e.incident_id);
-          void mirrorEvent({ ...plainEvent(e), status: "pushed" }, reset);
+          void mirrorEvent(forStore(e), reset);
         }
         // Same-browser demo: let an open /push tab see the replay's simulated push.
         if (fresh && e.isReplay && typeof BroadcastChannel !== "undefined") {
@@ -416,7 +430,7 @@ export function useLiveFeed(
       }
     }
     retain(keep);
-  }, [events, upsert, retain, decide]);
+  }, [events, upsert, retain, decide, forStore]);
 
   // Operator actions.
   const act = useCallback(
@@ -448,10 +462,10 @@ export function useLiveFeed(
       pushToast(name, at, e.location);
       if (usingMock) {
         mirrored.current.set(e.incident_id, `${e.level}|${e.end_time}`);
-        void mirrorEvent({ ...plainEvent(e), status: "pushed", pushed_to: name, pushed_at: at });
+        void mirrorEvent({ ...forStore(e), pushed_to: name, pushed_at: at });
       }
     },
-    [act],
+    [act, forStore],
   );
 
   // Without the API nobody else applies the two-tier rule to the live webcam: push the
