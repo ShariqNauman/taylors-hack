@@ -62,9 +62,17 @@ def shift_start(now: datetime | None = None) -> str:
     return (now - timedelta(hours=SHIFT_HOURS)).isoformat()
 
 
-def patch_update(status: str | None, staff_note: str | None, acked_at: str | None) -> dict:
-    """PATCH body -> columns to update. The phone sends acked_at only; the desk sends status."""
+def patch_update(status: str | None, staff_note: str | None, acked_at: str | None,
+                 arrived_at: str | None = None, outcome: str | None = None,
+                 outcome_at: str | None = None) -> dict:
+    """PATCH body -> columns to update. The phone sends acked_at / arrived_at / outcome; the desk sends status."""
     out: dict = {}
+    if arrived_at is not None:
+        out["arrived_at"] = arrived_at
+    if outcome is not None:
+        out["outcome"] = outcome
+    if outcome_at is not None:
+        out["outcome_at"] = outcome_at
     if status is not None:
         out["status"] = status
     if staff_note is not None:
@@ -78,7 +86,7 @@ def without_unknown_columns(row: dict, error_text: str) -> dict | None:
     """Supabase/PostgREST rejects a column that the table does not have yet (before the
     migration runs). Return the row without that column so the write can be retried, or None."""
     text = error_text or ""
-    for col in ("acked_at", "snapshot", "peak_snapshot", "top_features", "updated_at"):
+    for col in ("acked_at", "arrived_at", "outcome", "outcome_at", "snapshot", "peak_snapshot", "top_features", "updated_at"):
         if col in row and col in text:
             r = dict(row)
             r.pop(col)

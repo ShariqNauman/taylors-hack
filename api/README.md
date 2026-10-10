@@ -55,13 +55,16 @@ Interactive API docs: `http://localhost:8000/docs`
 | Method | Path | Description |
 |---|---|---|
 | `GET` | `/health` | Render uptime & health check |
-| `GET` | `/site` | Site metadata and configured risk zones (Taylor's Lakeside) |
+| `GET` | `/site` | Site metadata, risk zones and the team (`staff`: call sign, display_name, photo_url, role, shift) |
 | `GET` | `/cameras` | Camera status, online check, "black for 3 days" inactive detection |
 | `POST` | `/events` | Ingest edge alert, compute priority, 2-tier staff auto-push |
 | `GET` | `/events?since=<iso>` | Live incident queue for dashboard polling (2s) |
-| `PATCH` | `/events/{incident_id}` | Operator confirm / dismiss / resolve action |
+| `PATCH` | `/events/{incident_id}` | Desk: confirm / dismiss / resolve. Guard phone: `acked_at`, `arrived_at`, `outcome` (sorted / hurt / backup / nothing) + `outcome_at` |
 | `GET` | `/hotspots` | Aggregated temporal/spatial incident clusters (>= 3) |
-| `GET` | `/plan` | Weekly automated patrol plan (Decide screen) |
+| `GET` | `/plan` | Standing guard posts (active + suggested) with this week's check-ins. First call after 06:00 MYT runs the daily recheck |
+| `POST` | `/plan/recheck` | Run the recheck now: last 28 days, new patterns → `suggested`, posts quiet 14 days → `suggestion: "end"`. Never changes an active post |
+| `PATCH` | `/plan/slots/{id}` | `{status}` accept / end / "Not now", `{assigned_to}` pick a guard (null = nobody; resets `seen_at`), `{seen_at}` |
+| `POST` | `/plan/slots/{id}/checkins` | `{staff}` guard checked in at an active post |
 | `GET` | `/proof` | Model metrics, latency, CCTV-domain, IR check |
 | `PUT` | `/proof` | Update proof metrics (used by ML team) |
 
@@ -80,3 +83,8 @@ Interactive API docs: `http://localhost:8000/docs`
 | `GET` | `/sites` | **Multi-Site Catalog** (Universities, Boarding Hostels, Malls) |
 | `POST` | `/auth/login` | **JWT Role-Based Auth** (`operator`, `warden`, `manager`, `admin`) |
 | `GET` | `/auth/me` | Fetch authenticated staff profile and active sector |
+
+### Standing guard posts (migration_plan_guard.sql)
+Run `api/sql/migration_plan_guard.sql` once in the Supabase SQL editor. Until then `GET /plan` answers
+with posts generated from hotspots and the slot write routes return 503. Rules live in
+`api/services/plan_logic.py` (tests: `python api/test_plan_logic.py`).
