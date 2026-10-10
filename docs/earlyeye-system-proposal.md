@@ -2,6 +2,7 @@
 
 **From:** Kayla (Web B) · **Date:** Sat 10 Oct 2026 · **Status:** proposal, needs approval
 **Reads with:** `docs/earlyeye-TEAM-FINAL.md` (team plan), `docs/kayla-frontend-plan.md` (frontend plan), `docs/hackathon-brief.md`
+**Backend Link:** https://earl-eye-backend.onrender.com/
 
 This covers how EarlyEye works end to end, who uses it, and each user's path through it. Eight decisions need a yes from the tech team. They are in section 2, with a sign-off checklist at the end.
 
