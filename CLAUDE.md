@@ -52,6 +52,7 @@ Persona: Ah Seng, printing shop, Kajang, RM65k/month (inside MyInvois Phase 5), 
 - `docs/kirakira-research-and-pivot.md` — judges and sponsor, Malaysian stats with URLs, MyInvois facts, local competitors, US/China inspiration, ladder rung figures, promise-to-pay spec, honesty lines.
 - `docs/kirakira-review.md`, `docs/kirakira-review-v2.md` — external reviews; all fixes applied to the plan.
 - `docs/kirakira-dataset-shortlist.md` — dataset profiling (IBM primary, Kaggle optional), leakage checks, known quirks.
+- `docs/hackathon-brief.md` — organiser rubric, submission rules, pitch format, timeline, judges, sponsor, verbatim.
 
 ## Git attribution
 - **Never add `Co-Authored-By` trailers or "Generated with Claude Code" footers** to commits or PRs in this repo. Commits are authored by the team member only. `.claude/settings.json` enforces this; this line is the backup.
