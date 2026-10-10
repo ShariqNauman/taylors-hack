@@ -174,7 +174,8 @@ export function GuardApp() {
     [dev],
   );
 
-  // An alert pushed to me, not yet answered.
+  // An alert pushed to me that is still in progress. Unanswered: ring. Already answered on another
+  // phone of mine (the real phone, or the demo frame beside the desk): join at that step, silently.
   useEffect(() => {
     if (!me || !shift || flow) return;
     const t = Date.now();
@@ -182,19 +183,41 @@ export function GuardApp() {
       .filter(
         (e) =>
           (e.pushed_to === me || (!e.pushed_to && e.nearest_staff === me && e.status === "pushed")) &&
-          e.status === "pushed" &&
-          !e.acked_at &&
-          e.end_time == null &&
+          (e.status === "pushed" || !!e.acked_at) &&
+          !e.outcome &&
+          (e.end_time == null || t - Date.parse(e.pushed_at ?? e.start_time) < 3 * 60_000) &&
           t - Date.parse(e.pushed_at ?? e.start_time) < FRESH_MS &&
           !handled.current.has(pushKey(e)),
       )
       .sort((a, b) => Date.parse(b.pushed_at ?? b.start_time) - Date.parse(a.pushed_at ?? a.start_time));
-    // Ring for the newest only. Older unanswered pushes and scenes already calm are history.
+    // The newest only. Older pushes are history.
     for (const e of waiting.slice(1)) markHandled(pushKey(e));
     const next = waiting[0];
-    if (next && next.level === "calm") markHandled(pushKey(next));
-    else if (next) raise(next);
+    if (!next) return;
+    if (next.acked_at) {
+      markHandled(pushKey(next));
+      setFlow({ kind: next.arrived_at ? "found" : "enroute", event: next });
+    } else if (next.level === "calm" && next.end_time) markHandled(pushKey(next));
+    else raise(next);
   }, [events, me, shift, flow, raise]);
+
+  // Keep step with the other phone: when the record moves ahead (On my way, I'm here, an outcome
+  // tapped elsewhere), this screen follows within one poll.
+  useEffect(() => {
+    if (!flow || flow.test) return;
+    const rec = events.find((e) => e.incident_id === flow.event.incident_id);
+    if (!rec) return;
+    if (rec.outcome && flow.kind !== "done") {
+      dev.silence();
+      setFlow({ ...flow, kind: "done", outcome: rec.outcome, outcomeAt: rec.outcome_at ?? undefined });
+    } else if (rec.arrived_at && (flow.kind === "alert" || flow.kind === "enroute")) {
+      dev.silence();
+      setFlow({ ...flow, kind: "found" });
+    } else if (rec.acked_at && flow.kind === "alert") {
+      dev.silence();
+      setFlow({ ...flow, kind: "enroute" });
+    }
+  }, [events, flow, dev]);
 
   // Same browser as the desk (demo): the Live tab announces its pushes.
   useEffect(() => {
