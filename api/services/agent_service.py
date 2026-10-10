@@ -18,7 +18,9 @@ import json
 from datetime import datetime, timezone
 from typing import Any
 
-from api.config import ANTHROPIC_API_KEY, OPENAI_API_KEY
+import httpx
+
+from api.config import ANTHROPIC_API_KEY, ANTHROPIC_MODEL, OPENAI_API_KEY
 from api.db import get_supabase
 from api.models import AgentChatResponse, AgentToolCall, ChatMessage
 from api.services.knowledge_service import knowledge_service
@@ -228,6 +230,39 @@ class AgentService:
         if disp_call:
             d = disp_call.output
             sections.append(f"[DISPATCH] **Dispatch Action Executed:** Alert dispatched to **{d.get('dispatched_to')}** for incident `{d.get('incident_id')}`.")
+
+        # If Claude key is configured, synthesize an authoritative response using claude-sonnet-5
+        if ANTHROPIC_API_KEY and sections:
+            try:
+                system_prompt = (
+                    "You are the EarlyEye AI Control-Room Copilot on duty at Taylor's Lakeside Campus. "
+                    "Your role is to assist security operators and wardens with concise, professional, "
+                    "actionable insights. Ground your answer in the provided system observations and tools data. "
+                    "Cite incident IDs, camera IDs, and SOP guidelines specifically when relevant. Keep answers under 3 paragraphs."
+                )
+                user_content = (
+                    f"Operator Query: {message}\n\n"
+                    f"System & Tool Observations:\n" + "\n\n".join(sections)
+                )
+                with httpx.Client(timeout=20.0) as client:
+                    res = client.post(
+                        "https://api.anthropic.com/v1/messages",
+                        headers={
+                            "x-api-key": ANTHROPIC_API_KEY,
+                            "anthropic-version": "2023-06-01",
+                            "content-type": "application/json",
+                        },
+                        json={
+                            "model": ANTHROPIC_MODEL,
+                            "max_tokens": 600,
+                            "system": system_prompt,
+                            "messages": [{"role": "user", "content": user_content}],
+                        },
+                    )
+                    if res.status_code == 200:
+                        return res.json()["content"][0]["text"]
+            except Exception:
+                pass  # Fall through to analytical sections
 
         if not sections:
             # General overview

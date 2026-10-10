@@ -14,7 +14,7 @@ from datetime import datetime, timezone
 from fastapi import APIRouter
 import httpx
 
-from api.config import ANTHROPIC_API_KEY
+from api.config import ANTHROPIC_API_KEY, ANTHROPIC_MODEL
 from api.db import get_supabase
 from api.models import ReportRequest, ReportResponse
 from api.routers.hotspots import get_hotspots, get_plan
@@ -65,7 +65,7 @@ def generate_report(req: ReportRequest):
                 f"Sample Incident IDs: {cited_ids[:4]}. "
                 f"Write in formal English with a short Bahasa Malaysia summary at the end."
             )
-            with httpx.Client(timeout=15.0) as client:
+            with httpx.Client(timeout=20.0) as client:
                 res = client.post(
                     "https://api.anthropic.com/v1/messages",
                     headers={
@@ -74,8 +74,8 @@ def generate_report(req: ReportRequest):
                         "content-type": "application/json",
                     },
                     json={
-                        "model": "claude-3-5-sonnet-20241022",
-                        "max_tokens": 600,
+                        "model": ANTHROPIC_MODEL,
+                        "max_tokens": 800,
                         "messages": [{"role": "user", "content": prompt}],
                     },
                 )
