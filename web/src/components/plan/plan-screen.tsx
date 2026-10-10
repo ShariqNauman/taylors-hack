@@ -151,7 +151,7 @@ export function PlanScreen() {
             This week on the campus
           </h2>
           <span className="font-mono text-[12px] text-muted-ink">
-            BLUE PIN: WHERE TO STAND · COLUMN HEIGHT: INCIDENTS IN 4 WEEKS ·
+            BLUE PIN: WHERE TO STAND · ONE FIGURE PER PERSON TO STATION ·
             CLICK A POST
           </span>
         </div>
