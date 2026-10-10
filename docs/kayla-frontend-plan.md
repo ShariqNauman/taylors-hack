@@ -50,7 +50,7 @@ type Keypoint = [x: number, y: number, conf: number];          // x, y normalise
 interface PoseFrame { t: string; people: { id: number; kp: Keypoint[] }[] }   // kp = 12 body keypoints, order: l_shoulder, r_shoulder, l_elbow, r_elbow, l_wrist, r_wrist, l_hip, r_hip, l_knee, r_knee, l_ankle, r_ankle (COCO 5–16, no face points)
 interface GeoPoint { lat: number; lng: number; alt_m?: number }  // WGS84, placed on the OpenStreetMap footprints of the campus
 
-interface Site { site_id: string; name: string; site_type: SiteType; zones: { zone_type: string; label: string; risk: number }[]; staff: { name: string; zone_type: string; on_duty: boolean; post?: GeoPoint; role?: string; shift?: { label: string; days: number[]; from: number; to: number } }[]; campus?: { center: GeoPoint; buildings: string }; }   // buildings = URL of the campus GeoJSON
+interface Site { site_id: string; name: string; site_type: SiteType; zones: { zone_type: string; label: string; risk: number }[]; staff: { name: string; zone_type: string; on_duty: boolean; post?: GeoPoint; role?: string; shift?: { label: string; days: number[]; from: number; to: number }; display_name?: string; photo_url?: string }[];   // name stays the call sign (Guard B); display_name is the person (Aiman Hakimi) campus?: { center: GeoPoint; buildings: string }; }   // buildings = URL of the campus GeoJSON
 
 interface Camera { camera_id: string; location: string; zone_type: string; online: boolean; last_frame_at: string; black_since?: string; people_count?: number; geo?: GeoPoint & { building?: string; floor?: string }; source?: "live" | "recorded"; recorded_at?: string; edge_url?: string; }   // source: the one live webcam or one of our labelled recordings; edge_url: that camera's edge process (stream, clips, health), on-site view only
 
@@ -72,7 +72,7 @@ interface Event {
 
 interface Hotspot { location: string; zone_type: string; weekday: number; hour: number; count: number; last_seen: string; }
 
-interface PatrolSlot { location: string; days: string; hours: string; incidents_4w: number; expected_avoided_per_week: number; avoided_per_patrol_hour: number; rationale: string; assigned_to?: string | null; tip?: string; seen_at?: string | null; checkins?: { staff: string; at: string }[]; }   // v3: assigned_to = staff name; days index 0 = Mon in staff.shift.days; from/to are hours, to may exceed 24 for night shifts
+interface PatrolSlot { location: string; days: string; hours: string; incidents_4w: number; expected_avoided_per_week: number; avoided_per_patrol_hour: number; rationale: string; assigned_to?: string | null; tip?: string; seen_at?: string | null; checkins?: { staff: string; at: string }[]; id?: string; status?: 'active' | 'suggested' | 'ended'; since?: string; }   // standing posts: checked daily at 06:00 over 28 days; changes are suggestions until the supervisor accepts   // v3: assigned_to = staff name; days index 0 = Mon in staff.shift.days; from/to are hours, to may exceed 24 for night shifts
 interface PatrolPlan { generated_at: string; slots: PatrolSlot[]; assumption: string; review?: { location: string; assigned_to: string | null; covered_days: number; planned_days: number; incidents_during_post: number; baseline_per_week: number; verdict: string }[]; }   // top-3 ranked by expected_avoided_per_week; Block C = 5 × 0.6 / 4 = 0.75/week ("~3 a month"); assumption = "60% of hotspot incidents avoided when a person is present (stated, not measured)"
 
 interface Proof {

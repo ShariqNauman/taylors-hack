@@ -341,34 +341,39 @@ Never show: `peak_score`, priority, zone risk, keypoint or skeleton jargon, rule
 
 ### 6.4 Plan (`/plan`), design file `L3Plan.dc.html`
 
-**Who uses it and why.** A security supervisor who opens it for the first time must understand it without help. The page is five numbered questions, each answered by one picture. The post numbers 1, 2 and 3 are the same in every picture. Picking a guard sends the post to their phone (section 6.6).
+**The model: standing posts, checked daily, changed only by the supervisor.** A plan that resets every week, or changes every day as new incidents arrive, cannot be trusted by guards. So:
+- **Standing posts.** A post (place, days, hour) stays active until the supervisor ends it. Each post shows "standing post since Mon 5 Oct".
+- **A daily check.** Every morning at 06:00, EarlyEye rechecks the last 28 days with the hotspot rule: 3 or more real incidents at the same place and hour.
+- **Suggestions only.** A new pattern becomes a **suggestion** ("Add a post at the sports pitch, Tue and Thu 17:00–18:00", with **Add this post** and **Not now**). A post that has been quiet for 14 days becomes a suggestion to end it. Nothing changes without the supervisor.
+- **A rolling view.** The timetable is always today plus the next 6 days, with dates, so it never runs out.
 
 **Layout, top to bottom:**
-- **Title:** H1 "Guard posts this week". Kicker `PATROL PLAN · WEEK OF 12–18 OCT`. One plain sentence: "Three places on campus keep having trouble at the same time of day. Put one guard at each place at that time."
-- **Four summary tiles with icons:**
-  - "3 places · need a guard this week"
-  - "10 hours · of guard time this week"
+- **Title:** H1 "Guard posts". Kicker `PATROL PLAN · CHECKED TODAY, SAT 10 OCT, 06:00`. The rule in one sentence, plus "Based on incidents from 13 Sep to 10 Oct · next check tomorrow at 06:00".
+- **Four tiles with icons:**
+  - "3 posts · running now"
+  - "Sun 22:00 · next post starts" (place and guard)
   - "2 of 3 · posts have a guard"
-  - "8 of 10 · post days covered last week"
-1. **Where does trouble keep happening?** A top-down 2D campus map, north up, drawn from the real footprints with the building names on it. Each post is a numbered blue circle, sized by its incidents in 4 weeks, with a guard-name tag beside it (dashed "Nobody yet" when empty). It has a legend, a north arrow and a 50 m scale bar. A **Map | 3D** toggle swaps in `<Campus3D mode="plan">`.
-2. **Who is going?** Beside the map, one row per post:
-   - the number, place, days, hours and this week's dates;
-   - the guard chip with the phone status ("Seen on their phone · Sun 18:02" or "Sent to their phone, not seen yet") and **Change**;
-   - or, when empty, a dashed "Nobody yet" with **Send Guard A** (the suggestion) and **Someone else**. The chooser greys out anyone not free and shows the reason.
-   - Under the rows: the black-camera note.
-3. **When do they need to be there?** A timetable with one row per post and Mon to Sun columns with dates. A filled blue block shows "13:00–14:00 · Guard B"; a dashed block shows "Nobody yet". Empty days are pale.
-4. **Why these places and times?** One card per post:
-   - the headline "5 of 7 incidents here happened between 13:00 and 14:00";
-   - an hour-of-day bar chart from 07:00 to 23:00 with counts on the bars and the guard's hour in blue;
-   - a Mon–Sun count strip with the post days shaded;
-   - the dates.
-5. **Did last week's posts work?** One card per post: four weekly bars (14 Sep, 21 Sep, 28 Sep, Last week, with last week in blue), one plain sentence and a verdict ("Working. Keep it." or "Cover every night this week."). Footer: "One week is too short to be sure."
+  - "1 suggestion · to review"
+- **Suggestion card** in signal tint, with the dates behind it. After a choice, it becomes one line: "Post 4 added…" or "Not now…".
+1. **Where are the posts?** A 2D campus map, north up, with building names. Numbered circles are sized by incidents in 28 days and tagged with the guard's first name. A suggested post shows as a dashed "+". There's a **Map | 3D** toggle.
+2. **Who is going?**
+   - A team strip with a **picture and name** for each person, "On duty now · Guard B" or "Off duty".
+   - One row per post: number, place, days, hours, "standing post since …", then the guard's picture, name, call sign and shift, the app status ("Seen in the app · Sun 4 Oct, 18:02" or "Sent to the app, not seen yet") and **Change**. When empty: "Nobody yet", **Send Wei Jie** and **Someone else**.
+   - The chooser shows pictures. Anyone not free is greyed out with the reason. It also offers **Nobody** and **End this post**.
+3. **When: the next 7 days.** A timetable with one row per post and columns from Today through 6 more days, with dates. Blue blocks show the time and the guard's first name; dashed blocks show "Nobody yet".
+- **Statistics, optional and folded:** "The numbers behind this plan", with a one-line summary. Inside are two tabs: **Why these times** (hour-of-day bars with the guard's hour in blue, plus the dates) and **Did the posts work?** (4 weekly bars, the last week in blue, and a verdict).
+
+**People:**
+- Show a **picture and full name** everywhere a person appears, with the call sign (Guard B) small, so the names match Live and Incidents.
+- Pictures come from `site.staff[].photo_url`, with initials as the fallback.
+- Staff pictures are employee data: only the security team sees them.
 
 **Data:**
-- Counts, hours and dates come from real incidents (`confirmed` or `resolved`) in the last 28 days.
-- Weekly bars count incidents inside each post's hours.
-- Assigning calls `PATCH /plan/slots/:rank {assigned_to}`. The phone status comes from `seen_at`, and coverage comes from check-ins. Until Web A adds these, mock them and show "Saved on this computer".
-- Charts are plain HTML bars, with no chart library needed.
+- Real incidents only (`confirmed` or `resolved`).
+- Slots carry `status` (`active`, `suggested` or `ended`), `since` and `assigned_to`.
+- Accept or end a post: `PATCH /plan/slots/:id {status}`. Assign: `PATCH /plan/slots/:id {assigned_to}`.
+- `seen_at` and `checkins` come from the guard app.
+- Until Web A adds these, mock them and show "Saved on this computer".
 
 ### 6.5 Proof (`/proof`), design file `L3Proof.dc.html`
 
@@ -392,21 +397,30 @@ Show **real numbers from `model/REPORT.md` v2** and say clearly what is not meas
 
 **Data:** read `GET /proof` and map it. Show a metric as **not measured** when its source is missing: `own_footage_minutes === 0`, an empty `lead_time_s`, no `cctv_domain`, or `ir_check.frames === 0`. The report-only figures (75.7%, 13.7%, 0.902, 2.1 s, feature gains) are not in the contract. Keep them in `web/src/lib/model-report.ts` with a `// source: model/REPORT.md v2` comment. Never invent a number. A slot with no source says "not measured".
 
-### 6.6 Guard phone (`/push?staff=Guard%20B`), design files `GuardPhone.dc.html` and `L3GuardFlow.dc.html`
+### 6.6 Guard mobile app (`/guard`, design files `GuardPhone.dc.html` and `L3GuardFlow.dc.html`)
 
-**The phone runs the guard's whole shift, not just the alarm.** It is 390 px, with big buttons only, and no chat or profiles. Every tap tells the desk something:
+**A mobile app on the guard's own phone**, built from the same Next.js code as an installable web app:
+- It has a web app manifest, a home-screen icon, full-screen display, `start_url=/guard` and a service worker for the app shell.
+- Guards install it with "Add to Home Screen" (iPhone) or "Install app" (Android).
+- No app store is needed for the pilot.
+- Keep `/push?staff=` working as an alias.
+
+**Screens**, at 390 px with big buttons:
 
 | Screen | What the guard sees | What the desk gets |
 |---|---|---|
-| Start | "Guard B · Day shift 10:00–18:00" and **Start my shift** (72 px). The tap unlocks audio, keeps the screen awake and goes fullscreen. | `on_duty = true` |
-| Today | A "New from your supervisor" card with **Got it** when a post is new. **Next** shows the post, time, tip and **I'm at my post**. Below: today's timeline and "My week". | Plan shows "Seen" (`seen_at`) |
-| At the post | "Block C stairwell · until 14:00 · 58 min left", "✓ Checked in at 13:02", and the tip | A check-in, which is how Plan counts covered days |
-| Alarm | Full red screen: level, place, "Level 1 landing · about 10 m from you", the reason in plain words, and **On my way** (96 px). Looped sound and vibration. | `acked_at`. With no answer in 20 s, the desk sees the next nearest guard. |
-| On the way | Place, "Camera now: Still tense" (live level), a small map from you to the spot, and **I'm here** | `arrived_at` |
-| What did you find? | Four big buttons: **Sorted, nobody hurt** · **Sorted, someone hurt** · **Need backup** · **Nothing there**. Optional quick notes. | `outcome`, `outcome_at`. Need backup turns the desk banner red with the next guard. |
-| Done | "Thanks. The desk has it.", what you reported, "Camera: calm for 30 seconds", and **Back to my post** | The Live card shows "Sorted · camera agrees: calm". The desk confirms with one tap. |
+| Who is using this phone? (first time) | The team list with pictures, names, call signs and shifts. Tapping one links the phone (saved on the device). | The device is linked to that staff member |
+| Start my shift | Big picture, "Hi, Aiman", shift, and **Start my shift**. The tap unlocks audio, keeps the screen awake and goes full screen. | `on_duty = true` |
+| **Today** tab | "New from your supervisor" (standing post) with **Got it**; **Next** with the post, time, tip and **I'm at my post**, which turns into "At your post · until 14:00 · checked in 13:02"; and today's timeline | `seen_at`, then a check-in |
+| **Schedule** tab | The next 7 days with dates, shift and post for each day. Today is highlighted. The note says it's a standing post. | nothing |
+| **Alerts** tab | The guard's own alert history: level, time, place, what they reported, reply time | nothing |
+| **Me** tab | Picture, name, call sign and role; shift, sound, vibrate, screen awake and installed; **Test the alarm**, **End my shift** and "Not Aiman? Switch person" | `on_duty = false` on End |
+| Alarm, over any tab | Full red screen: "Aiman, you're the nearest guard", level, place, distance, the reason in plain words, and **On my way** (96 px). Looped sound and vibration. | `acked_at` |
+| On the way | Live camera level, a small map, and **I'm here** | `arrived_at` |
+| What did you find? | **Sorted, nobody hurt** · **Sorted, someone hurt** · **Need backup** · **Nothing there**, plus quick notes | `outcome`, `outcome_at` |
+| Done | What you reported, what the camera says now, and **Back to my post** | The Live card closes the loop |
 
-Poll every 2 s: `GET /events?since=` for alerts with `pushed_to === staff`, and `GET /plan` for posts assigned to this person. No external notification service is used. The page is the channel, which is why the guard keeps it open during the shift.
+Poll every 2 s: `GET /events?since=` for alerts where `pushed_to` is this person, and `GET /plan` for their posts. There is no external notification service in the pilot. Web Push is the production answer, and the app stays open during the shift.
 
 ## 7. Alarm and two-tier state machine
 

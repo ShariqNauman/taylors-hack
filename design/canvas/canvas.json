@@ -104,9 +104,9 @@
     },
     "L3Plan.dc.html": {
       "expand": "fill",
-      "h": 2700,
+      "h": 2300,
       "is_interactive": true,
-      "title": "7d · v3 Plan: guard posts (where, who, when, why, did it work)",
+      "title": "7d · v3 Plan: standing guard posts, rolling 7 days",
       "w": 1440,
       "x": 4560,
       "y": 14500
@@ -250,19 +250,19 @@
       "y": 17900
     },
     "L3GuardFlow.dc.html": {
-      "h": 1240,
+      "h": 2300,
       "is_interactive": true,
-      "title": "7k · Guard phone: the whole shift",
-      "w": 3000,
+      "title": "7k · Guard mobile app: the whole shift",
+      "w": 2560,
       "x": 7600,
-      "y": 17900
+      "y": 20400
     },
     "GuardPhone.dc.html": {
       "h": 844,
       "is_interactive": true,
-      "title": "7l · Guard phone component (clickable)",
+      "title": "7l · Guard app component (clickable)",
       "w": 390,
-      "x": 10700,
+      "x": 10300,
       "y": 17900
     }
   },
