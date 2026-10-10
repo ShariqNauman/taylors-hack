@@ -204,6 +204,11 @@ def _predict_worker(conn, model_dir: str):
             return
         if feats is None:
             return
+        if isinstance(feats, tuple) and len(feats) == 2 and feats[0] == "config":
+            import predict as predict_module  # noqa: E402
+            for k, v in feats[1].items():      # e.g. CLIP_FEATURES, set by live_detector at import
+                setattr(predict_module, k, v)
+            continue
         try:
             f, seq = feats if isinstance(feats, tuple) else (feats, None)
             conn.send(float(predict(f, seq) if seq is not None else predict(f)))
@@ -225,6 +230,9 @@ class PredictProcess:
         if isinstance(out, tuple):
             raise RuntimeError(out[1])
         return out
+
+    def configure(self, settings: dict):
+        self.conn.send(("config", settings))
 
     def close(self):
         try:
@@ -259,6 +267,15 @@ def run_model(s: State):
     else:
         predict = worker
     fight_at = getattr(ld, "ACTIVE_FIGHT_AT", ld.FIGHT_AT)   # the model team's live threshold
+    # v5: the model team's level logic (sensitivity preset + guards) decides the level, as in live_detector.
+    logic = None
+    if hasattr(ld, "LOGIC_CONFIG"):
+        from guards import LevelLogic        # noqa: E402
+        logic = LevelLogic(ld.LOGIC_CONFIG)
+    if worker is not None and hasattr(ld, "CLIP_FEATURES"):
+        worker.configure({"CLIP_FEATURES": ld.CLIP_FEATURES})
+    print(f"Model: predict MODE={getattr(predict_module, 'MODE', '?')}, "
+          f"sensitivity={getattr(ld, 'SENSITIVITY', 'n/a')}, fight_at={fight_at}", flush=True)
 
     a = s.args
     cap = open_capture(cv2, src)
@@ -338,11 +355,14 @@ def run_model(s: State):
         else:
             feats = window_features(kp, t, frame_times)
             raw = predict(feats)
-        smooth = ld.SMOOTH_ALPHA * raw + (1 - ld.SMOOTH_ALPHA) * smooth
-        high_since = (high_since if high_since is not None else t) if smooth >= fight_at else None
-        if high_since is not None and t - high_since >= ld.MIN_DURATION:
-            fight_until = t + ld.FIGHT_HOLD
-        level = "FIGHT" if t <= fight_until else "TENSE" if smooth >= ld.TENSE_AT else "CALM"
+        if logic is not None:
+            level, smooth, _blocked = logic.step(t, raw, feats)
+        else:
+            smooth = ld.SMOOTH_ALPHA * raw + (1 - ld.SMOOTH_ALPHA) * smooth
+            high_since = (high_since if high_since is not None else t) if smooth >= fight_at else None
+            if high_since is not None and t - high_since >= ld.MIN_DURATION:
+                fight_until = t + ld.FIGHT_HOLD
+            level = "FIGHT" if t <= fight_until else "TENSE" if smooth >= ld.TENSE_AT else "CALM"
         with s.lock:
             s.level, s.score, s.feats, s.updated_at = level, float(smooth), feats, iso_now()
             tick_incident(s, time.time())
