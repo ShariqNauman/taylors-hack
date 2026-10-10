@@ -34,6 +34,7 @@ import predict as predict_module
 from features import FEATURE_NAMES, SHORT_S, window_features
 from predict import predict
 from extract_keypoints_v2 import KEYPOINTS as EXTRACT_KEYPOINTS
+from guards import Config, LevelLogic
 from seq_features import window_inputs
 
 # ---------------- Tunable constants ----------------
@@ -47,15 +48,28 @@ CAM_W, CAM_H, CAM_FPS = 640, 480, 30   # requested webcam mode
 SCORE_EVERY_S = 0.5      # score a new window every 0.5 s (features use the last LONG_S = 2 s)
 HISTORY_S = 3.0          # how much pose history to keep for resampling
 SMOOTH_ALPHA = 0.6       # exponential smoothing: higher = reacts faster, lower = steadier
-# FIGHT_AT per scoring mode (predict.MODE), each fixed on the training part (out-of-fold) so that 9% of
-# normal clips reach FIGHT. Hold-out result for the ensemble: 78.5% of fights, 11.0% of normal clips,
-# 11.1% of AIRTLab hugs/claps, 68.4% of weapon clips reach FIGHT (REPORT.md Part A0).
-# Not yet tuned on our own webcam footage: record a labelled session, then tune_live.py.
+# Sensitivity preset (ensemble). Both thresholds were chosen on the training part only (out-of-fold,
+# full-body clips): "strict" = 9% of normal clips reach FIGHT, "sensitive" = 15%. Hold-out results per
+# preset and guard: REPORT.md Part V5. Not yet tuned on our own webcam footage (tune_live.py).
+SENSITIVITY = "strict"  # "strict" or "sensitive"
 TENSE_AT = 0.5          # smoothed score >= this -> TENSE
-FIGHT_AT = 0.656        # ensemble: smoothed score >= this ...
-FIGHT_AT_LGBM = 0.67    # used instead when predict.MODE == "lgbm"
+FIGHT_AT = 0.656        # "strict": smoothed score >= this ...
+FIGHT_AT_SENSITIVE = 0.541   # "sensitive"
+FIGHT_AT_LGBM = 0.67    # used instead when predict.MODE == "lgbm" (strict)
 MIN_DURATION = 1.0       # ... for at least this many seconds -> FIGHT
 FIGHT_HOLD = 2.0         # keep showing FIGHT this many seconds after it triggers
+# Guards (True = on). A hot window blocked by a guard is shown on the overlay ("blocked: PROX").
+# Defaults from the hold-out test (REPORT.md V5.5): all off except CLIP_FEATURES; each guard costs recall.
+# FIGHT is never shown with fewer than 2 tracked people (single-person rule, always on).
+GUARD_PROX = False       # FIGHT needs the pair within PROX_MAX torso lengths in the last 2 s
+PROX_MAX = 2.0
+GUARD_TWO_KEY = False    # FIGHT needs a wrist moving toward the other person (>= 3 torso/s) or contact
+GUARD_K_OF_N = False     # longer persistence: the 1 s FIGHT count starts only once K_OF_N[0] of the last
+                         # K_OF_N[1] windows are above FIGHT_AT (~2 s in all). Best lever if the room still
+                         # gives false alarms: hold-out hugs 11% -> 0%, normal 5.2% -> 1.9%, fights 64.5% -> 44.6%
+K_OF_N = (3, 4)
+GUARD_MIN_TRACK = False  # a person counts only once tracked for features.MIN_TRACK_S (1 s)
+CLIP_FEATURES = True     # clip features to the training 1st-99th percentile before scoring
 LOG_CSV = "live_features.csv"
 MIN_DRAW_CONF = 0.5      # only draw keypoints at least this confident
 LABEL_KEYS = {"F": "fight", "H": "hug", "N": "normal"}  # hold key -> label; nothing held = normal
@@ -68,7 +82,13 @@ KEYPOINTS = {name: i for i, name in enumerate(EXTRACT_KEYPOINTS)}
 BODY_POINTS = [KEYPOINTS[n] for n in KEYPOINTS if n not in ("nose", "l_eye", "r_eye", "l_ear", "r_ear")]
 BONES = [(5, 7), (7, 9), (6, 8), (8, 10), (5, 6), (5, 11), (6, 12), (11, 12),
          (11, 13), (13, 15), (12, 14), (14, 16)]
-ACTIVE_FIGHT_AT = FIGHT_AT_LGBM if predict_module.MODE == "lgbm" else FIGHT_AT
+ACTIVE_FIGHT_AT = (FIGHT_AT_LGBM if predict_module.MODE == "lgbm"
+                   else FIGHT_AT_SENSITIVE if SENSITIVITY == "sensitive" else FIGHT_AT)
+predict_module.CLIP_FEATURES = CLIP_FEATURES
+LOGIC_CONFIG = Config(alpha=SMOOTH_ALPHA, tense_at=TENSE_AT, fight_at=ACTIVE_FIGHT_AT, min_duration=MIN_DURATION,
+                      fight_hold=FIGHT_HOLD, min_track=GUARD_MIN_TRACK,
+                      prox_max=PROX_MAX if GUARD_PROX else None, two_key=GUARD_TWO_KEY,
+                      k_of_n=K_OF_N if GUARD_K_OF_N else None)
 LEVEL_COLORS = {"CALM": (0, 180, 0), "TENSE": (0, 200, 255), "FIGHT": (0, 0, 255)}  # BGR
 # ---------------------------------------------------
 
@@ -88,6 +108,7 @@ class Shared:
         self.frame, self.frame_t, self.frame_id = None, 0.0, 0
         self.pose = None                       # (xy, conf) of the newest pose result, for drawing
         self.score, self.level = 0.0, "CALM"
+        self.blocked = []                      # guards that blocked an alarm in the last window
         self.pose_fps, self.display_fps = 0.0, 0.0
         self.labels = deque()                  # (time, label) samples from the keyboard
         self.kp_writer = None                  # csv.DictWriter for --save-keypoints (pose thread only)
@@ -160,7 +181,7 @@ def capture_loop(cap, s, is_file, file_fps):
 def pose_loop(model, device, s, log):
     rows, frame_times = deque(), deque()  # pose history (rows per person, and every pose frame time)
     last_id, next_score, last_tick = 0, SHORT_S, time.time()
-    smooth, high_since, fight_until = 0.0, None, -1.0
+    logic = LevelLogic(LOGIC_CONFIG)
     while s.running:
         with s.lock:
             frame, t, fid = s.frame, s.frame_t, s.frame_id
@@ -202,15 +223,9 @@ def pose_loop(model, device, s, log):
         else:
             feats, seq = window_features(kp, t, frame_times), None
         raw = predict(feats, seq)
-        smooth = SMOOTH_ALPHA * raw + (1 - SMOOTH_ALPHA) * smooth
-        # Single-person rule: with fewer than 2 tracked people the level is capped at TENSE (never FIGHT).
-        pair_seen = feats.get("n_people", 2) >= 2
-        high_since = (high_since if high_since is not None else t) if smooth >= ACTIVE_FIGHT_AT and pair_seen else None
-        if high_since is not None and t - high_since >= MIN_DURATION:
-            fight_until = t + FIGHT_HOLD
-        level = "FIGHT" if t <= fight_until and pair_seen else "TENSE" if smooth >= TENSE_AT else "CALM"
+        level, smooth, blocked = logic.step(t, raw, feats)   # same logic as evaluate_guards.py
         with s.lock:
-            s.score, s.level = smooth, level
+            s.score, s.level, s.blocked = smooth, level, blocked
         log.writerow([round(t, 2), *[round(feats[f], 3) for f in FEATURE_NAMES],
                       round(raw, 3), round(smooth, 3), level, window_label(s, t)])
 
@@ -252,6 +267,9 @@ def draw_hud(frame, s, label, model_name):
         x = x0 + int((x1 - x0) * th)
         cv2.line(frame, (x, y0 - 4), (x, y1 + 4), (255, 255, 255), 1)
     cv2.putText(frame, f"{s.level}  risk {s.score:.2f}", (10, h - 40), cv2.FONT_HERSHEY_SIMPLEX, 0.8, color, 2)
+    if s.blocked:  # an alarm-level score was stopped by a guard: say which
+        cv2.putText(frame, "blocked: " + ", ".join(s.blocked), (10, h - 70), cv2.FONT_HERSHEY_SIMPLEX, 0.7,
+                    (0, 200, 255), 2)
 
 
 def held_label(key, last):

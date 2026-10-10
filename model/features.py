@@ -42,6 +42,7 @@ CLOSE_DIST = 1.5         # torsos closer than this (torso lengths) count as "clo
 MIN_ARM_SPEED = 0.5      # arm symmetry is only measured when the arms move faster than this
 DUP_IOU = 0.7            # two boxes overlapping this much in one frame = one person detected twice
 ZOOM = 2.0               # "close to camera" variant: person scaled up this much around the shoulders
+MIN_TRACK_S = 1.0        # live guard: a person counts once tracked this long inside the window
 # ---------------------------------------------------
 
 FEATURE_NAMES = [
@@ -344,6 +345,8 @@ def compute_features(win: pd.DataFrame, t_end: float = None, people: dict = None
     people: _people(win) if the caller already has it (seq_features.window_inputs shares it)."""
     feats = dict.fromkeys(FEATURE_NAMES, np.nan)
     feats["n_people"] = 0        # tracked people in the window (single-person rule; not a model feature)
+    feats["n_people_1s"] = 0     # ... tracked for at least MIN_TRACK_S (live guard; not a model feature)
+    feats["pair_min_dist"] = np.nan  # closest the active pair got in the window (live guard; not a model feature)
     if win is None or win.empty:
         return feats
     if t_end is None:
@@ -351,6 +354,7 @@ def compute_features(win: pd.DataFrame, t_end: float = None, people: dict = None
     t_short = t_end - SHORT_S
     people = _people(win) if people is None else people
     feats["n_people"] = len(people)
+    feats["n_people_1s"] = sum(p.t[-1] - p.t[0] >= MIN_TRACK_S - 1e-6 for p in people.values())
     if not people:
         return feats
 
@@ -372,6 +376,7 @@ def compute_features(win: pd.DataFrame, t_end: float = None, people: dict = None
     if len(tc) == 0:
         return feats
     dist = np.linalg.norm(a.centre[ia] - b.centre[ib], axis=1) / ((a.scale + b.scale) / 2)
+    feats["pair_min_dist"] = float(dist.min())
     recent = tc >= t_short
 
     # ---- Pair features, last 1 s ----

@@ -69,6 +69,58 @@ AIRTLab hug false alarms: 11.1% (2/18).
 - **The trade-off:** on clean full-body footage it is more cautious. AUC drops by 0.012, and it catches 14 points fewer fights at its threshold, while halving normal-clip false alarms.
 - **The v4 file as shipped** was trained on the hold-out clips, so it is not compared here.
 
+## V5.5 Live sensitivity presets and guards
+
+**Shared logic:** live and the evaluation run the same code (`guards.LevelLogic`). `evaluate_guards.py` tests it on the hold-out (second look). With guards off, it reproduces V5.3 exactly.
+
+**Presets** (both chosen on the training part, out-of-fold, full-body clips):
+
+| Preset | FIGHT_AT | Normal clips reaching FIGHT (training part) |
+|---|---|---|
+| `strict` | 0.656 | 9% |
+| `sensitive` | 0.541 | 15% |
+
+Note: 0.656 already *is* the training part's 9% threshold, so "sensitive" was set at 15%.
+
+**Guards:**
+
+| Guard | Rule |
+|---|---|
+| `PROX` | Pair within 2 torso lengths in the last 2 s |
+| `TWO_KEY` | A wrist moving toward the other person at ≥ 3 torso/s, or contact |
+| `K_OF_N` (3, 4) | Persistence: in practice ~2 s of hot windows instead of 1 s |
+| `MIN_TRACK` | A person counts only once tracked for ≥ 1 s |
+| `CLIP_FEATURES` | Features clipped to the training range |
+
+The single-person rule is always on.
+
+**Hold-out results:**
+
+| Setting | Fights caught | Normal → FIGHT | Hugs → FIGHT | Weapon caught | Waist-up / chest-up fights | Chest-up hugs | Single / close |
+|---|---|---|---|---|---|---|---|
+| **strict, guards off (default)** | **64.5%** | 5.2% | 11.1% | 47.4% | 64.9 / 62.4% | 11.1% | 0 / 0% |
+| strict, PROX only | 40.9% | 1.9% | 5.6% | 5.3% | 32.6 / 33.9% | 11.1% | 0 / 0% |
+| strict, TWO_KEY only | 54.5% | 3.8% | 11.1% | 42.1% | 50.8 / 43.4% | 11.1% | 0 / 0% |
+| strict, K_OF_N only | 44.6% | 1.9% | **0.0%** | 21.1% | 45.9 / 42.1% | 5.6% | 0 / 0% |
+| strict, MIN_TRACK only | 47.9% | 3.8% | 11.1% | 21.1% | 44.2 / 44.2% | 11.1% | 0 / 0% |
+| strict, CLIP_FEATURES only | 64.5% | 5.2% | 11.1% | 47.4% | 64.9 / 62.4% | 11.1% | 0 / 0% |
+| strict, all on | 16.5% | 0.5% | 0.0% | 0.0% | 12.0 / 12.4% | 5.6% | 0 / 0% |
+| sensitive, guards off | **75.6%** | 9.5% | 22.2% | **57.9%** | 77.7 / 78.5% | 22.2% | 0 / 0% |
+| sensitive, K_OF_N only | 57.0% | 4.3% | 5.6% | 47.4% | 64.0 / 62.0% | 16.7% | 0 / 0% |
+| sensitive, all on | 24.4% | 1.4% | 5.6% | 5.3% | 17.8 / 20.7% | 16.7% | 0 / 0% |
+
+The remaining rows are in `guards_results.json`.
+
+**Default: `strict`, all guards off except `CLIP_FEATURES`.**
+
+- **Each guard costs more recall than it saves.**
+  - `PROX` misses most weapon clips: many real fights have no clean pair distance, and missing counts as "not close".
+  - `TWO_KEY` and `MIN_TRACK` cost 10–26 points of fights or weapons for small false-alarm gains.
+- **`K_OF_N` is the switch to use if the room still gives false alarms:** hugs and normal clips drop to almost zero, at about 20 points of recall.
+- **`sensitive`:** use it when missing a fight costs more than a false alarm.
+- **`CLIP_FEATURES` costs nothing:** no hold-out clip has extreme values. It stays on to guard against close-to-camera spikes live.
+- **The overlay shows which guard blocked** an alarm-level score.
+
 ## V5.4 Limits
 
 - **Not tested in our own room yet.** No session has been recorded with `--save-keypoints`, so the synthetic negatives stand in for real footage of our room.
