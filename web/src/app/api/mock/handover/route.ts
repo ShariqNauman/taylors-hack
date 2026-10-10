@@ -2,9 +2,45 @@ import { NextResponse } from "next/server";
 import type { HandoverBrief, HandoverFacts } from "@/lib/types";
 
 /**
- * Mock POST /handover: a 4-sentence brief assembled from the posted facts with plain
- * string rules (no model), so the feature demos with the API down. Same shape as the API.
+ * POST /handover for the deployed demo.
+ *
+ * The dashboard runs on `public/mock/*.json` because the API is seeded with a
+ * different site (its events name cameras the mock wall does not have), so
+ * `NEXT_PUBLIC_API_URL` stays unset and `lib/api.ts` routes every call here.
+ * The brief is the one thing that does not care whose data it is — it only
+ * words the facts the drawer already counted — so when EE_API_URL is set this
+ * forwards to the real service and the deployed site gets Claude's wording
+ * with none of the data mismatch.
+ *
+ * EE_API_URL has no NEXT_PUBLIC_ prefix on purpose: it is read on the server,
+ * never inlined into the browser bundle. No model key is ever needed here —
+ * the key lives on the API, and this only talks to the API.
+ *
+ * Falls back to the four-sentence string template below whenever the variable
+ * is unset or the call fails, and says so in `model`, which the drawer prints.
  */
+
+/** Under the drawer's 25 s abort (HANDOVER_TIMEOUT_MS), over a Render cold start. */
+const PROXY_TIMEOUT_MS = 20_000;
+
+async function fromApi(facts: unknown): Promise<HandoverBrief | null> {
+  const base = process.env.EE_API_URL?.replace(/\/$/, "");
+  if (!base) return null;
+  try {
+    const r = await fetch(`${base}/handover`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(facts),
+      cache: "no-store",
+      signal: AbortSignal.timeout(PROXY_TIMEOUT_MS),
+    });
+    if (!r.ok) return null;
+    const b = (await r.json()) as HandoverBrief;
+    return typeof b?.text === "string" && b.text.trim() ? b : null;
+  } catch {
+    return null; // cold, slow or down: the template below is already correct
+  }
+}
 const LEVEL: Record<string, string> = {
   calm: "calm",
   tense: "tense",
@@ -40,6 +76,9 @@ function isFacts(x: unknown): x is HandoverFacts {
 export async function POST(req: Request) {
   const f = await req.json().catch(() => null);
   if (!isFacts(f)) return NextResponse.json({ error: "expected HandoverFacts" }, { status: 422 });
+
+  const live = await fromApi(f);
+  if (live) return NextResponse.json(live, { headers: { "Cache-Control": "no-store" } });
 
   const s1 =
     `Shift from ${time(f.shift_start)} to ${time(f.now)}: ${plural(f.pushes, "push", "pushes")} used out of ${f.budget}, ` +
