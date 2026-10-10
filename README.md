@@ -111,6 +111,33 @@ A deployed build without `NEXT_PUBLIC_API_URL` shows the chip **Demo data · cha
 
 The dashboard renders every screen from `web/public/mock/*.json` when no API is reachable, so the demo never depends on a cold Render instance. Mock skeletons are stamped **SYNTHETIC POSES** in the UI; `web/public/mock/proof.json` is byte-identical to `model/proof.json`, so the page can never show a number the model did not produce.
 
+## Deploy
+
+**Dashboard — Vercel.** Root Directory **`web`** (the repo root is not the app). Build and output settings are the Next.js defaults.
+
+| Variable | Value |
+|---|---|
+| `EE_API_URL` | `https://earl-eye-backend.onrender.com` |
+
+That is the only one to set. It is read on the server, never inlined into the browser bundle, and it does one job: the end-of-shift brief is forwarded to the API so the deployed site gets Claude's wording. **No model key belongs in the frontend** — no frontend code path reads one.
+
+Leave `NEXT_PUBLIC_API_URL` unset. Every screen then renders from `web/public/mock/*.json`, which is what makes the deployed link demo itself with no camera and no cold Render instance. The API is seeded with a different site — its events name cameras (`CAM-ASR-03`, `CAM-CPK-01`, …) that the mock camera wall and the 3D campus do not have — so pointing the dashboard at it puts incidents on screen with nowhere to show them. See `web/.env.example`.
+
+**API — Render.** Blueprint in `render.yaml`; `pip install -r api/requirements.txt`, then `uvicorn api.main:app`. Set in the dashboard:
+
+| Variable | Value |
+|---|---|
+| `SUPABASE_URL`, `SUPABASE_KEY` | from Supabase → Project Settings → API |
+| `ANTHROPIC_API_KEY` | the API is the only place a model key lives |
+| `ANTHROPIC_MODEL` | `claude-sonnet-5-5` |
+| `CORS_ORIGINS` | `*` |
+
+`OPENAI_API_KEY` is optional and only used for knowledge-bank embeddings; nothing in the demo path needs it.
+
+The service boots without any of them: `/health` and `/proof` answer regardless, because `/proof` reads `model/proof.json` from disk rather than the database. Endpoints that need Supabase fail individually instead of taking the process down.
+
+**Edge stays on the laptop by design** — the video never leaves the site, so there is nothing to deploy.
+
 ## Repo
 
 ```
