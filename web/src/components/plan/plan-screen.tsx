@@ -354,8 +354,7 @@ export function PlanScreen() {
       </div>
 
       <section aria-label="When" className="flex flex-col gap-3 rounded-[2px] border border-line bg-white p-4">
-        <SectionHead n={3} title="When: the next 7 days" />
-        <PostTimetable posts={roster} people={people} now={now} />
+        <PostTimetable posts={roster} people={people} now={now} renderHead={(t) => <SectionHead n={3} title={t} />} />
       </section>
 
       <PostStats posts={roster} events={events ?? []} end={checkAt} assumption={plan.assumption || ASSUMPTION} />
