@@ -27,9 +27,11 @@ import {
   STATUS_WORDS,
   TYPE_WORDS,
   type Bucket,
+  OUTCOME_WORDS,
 } from "@/lib/plain";
 import { useAppStore } from "@/lib/store/app-store";
 import { useClock } from "@/hooks/use-clock";
+import { useFirstName } from "@/hooks/use-first-name";
 import { cn } from "@/lib/utils";
 import { PageShell } from "@/components/chrome/page-shell";
 import { LevelPill } from "@/components/chrome/level-pill";
@@ -57,6 +59,7 @@ const label =
   "font-mono text-[12px] font-bold tracking-[0.08em] text-muted-ink";
 
 export function IncidentsScreen() {
+  const firstName = useFirstName();
   const params = useSearchParams();
   const router = useRouter();
   const now = useClock(30_000);
@@ -395,7 +398,7 @@ export function IncidentsScreen() {
                         <LevelPill level={e.level} size="sm" />
                         <StatusChip status={e.status} />
                         <span className="text-[13px] text-muted-ink">
-                          {guardLine(e)}
+                          {guardLine(e, firstName)}
                         </span>
                       </span>
                     </span>
@@ -586,6 +589,9 @@ function CaseStory({
   const title = caseTitle(e);
   const building = buildingLine(camera);
   const reply = secondsBetween(e.pushed_at, e.acked_at);
+  const firstName = useFirstName();
+  const guard = e.pushed_to ? firstName(e.pushed_to) : null;
+  const arrived = secondsBetween(e.acked_at ?? e.pushed_at, e.arrived_at);
 
   // How it unfolded: only steps with a real timestamp, plus the decision (which has none).
   const trail: { t: string; text: string; dot: string }[] = [
@@ -601,14 +607,26 @@ function CaseStory({
   if (e.pushed_at)
     trail.push({
       t: hm(e.pushed_at),
-      text: `${e.level === "fight" ? "It looked like a fight." : "It looked likely to turn into a fight."} The alarm sounded and ${e.pushed_to ?? "the guard on duty"} got an alert on their phone.`,
+      text: `${e.level === "fight" ? "It looked like a fight." : "It looked likely to turn into a fight."} The alarm sounded and ${guard ?? "the guard on duty"} got an alert on their phone.`,
       dot: "#C8241B",
     });
   if (e.acked_at && reply != null)
     trail.push({
       t: hm(e.acked_at),
-      text: `${e.pushed_to ?? "The guard"} replied "On my way" ${reply} seconds later.`,
+      text: `${guard ?? "The guard"} replied "On my way" ${reply} seconds later.`,
       dot: "#2742D9",
+    });
+  if (e.arrived_at)
+    trail.push({
+      t: hm(e.arrived_at),
+      text: `${guard ?? "The guard"} got there${arrived != null ? `, ${arrived} s later` : ""}.`,
+      dot: "#2742D9",
+    });
+  if (e.outcome)
+    trail.push({
+      t: e.outcome_at ? hm(e.outcome_at) : "",
+      text: `${guard ?? "The guard"}: ${OUTCOME_WORDS[e.outcome]}${e.outcome === "nothing" ? ". The desk still decides whether it was a false alarm." : "."}`,
+      dot: "#0B0D10",
     });
   if (e.end_time)
     trail.push({
@@ -657,7 +675,7 @@ function CaseStory({
     `${title}${building ? ` (${building})` : ""}, ${dayLong(e.start_time)} at ${hm(e.start_time)}. ` +
     `What EarlyEye saw: ${e.reason.trim().replace(/([^.!?])$/, "$1.")} ` +
     (e.pushed_to
-      ? `The alarm sounded and ${e.pushed_to} ${reply != null ? `replied in ${reply} seconds` : "was alerted"}. `
+      ? `The alarm sounded and ${guard} ${reply != null ? `replied in ${reply} seconds` : "was alerted"}${e.outcome ? `, and reported: ${OUTCOME_WORDS[e.outcome].toLowerCase()}` : ""}. `
       : "It stayed on the desk screen, so no guard was alerted. ") +
     `Decision: ${decisionWord}. ` +
     `Note: ${noteText ? noteText.replace(/([^.!?])$/, "$1.") : "none yet."} ` +

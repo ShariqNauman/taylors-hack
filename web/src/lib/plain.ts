@@ -71,13 +71,23 @@ export function buildingLine(c: Camera | undefined): string | null {
   return c.geo.floor ? `${c.geo.building}, ${c.geo.floor}` : c.geo.building;
 }
 
-/** "Guard B replied in 4 s" / "Alarm sent to Guard B, no reply recorded" / "Desk screen only, no alarm". */
-export function guardLine(e: Event): string {
+/** What the guard reported, in their words on the phone. */
+export const OUTCOME_WORDS: Record<NonNullable<Event["outcome"]>, string> = {
+  sorted: "Sorted, nobody hurt",
+  hurt: "Sorted, someone hurt",
+  backup: "Needed backup",
+  nothing: "Nothing there",
+};
+
+/** "Aiman replied in 4 s · Sorted, nobody hurt" / "Alarm sent to Aiman, no reply recorded" / "Desk screen only, no alarm". */
+export function guardLine(e: Event, nameOf: (call: string) => string = (c) => c): string {
   if (!e.pushed_to) return "Desk screen only, no alarm";
+  const who = nameOf(e.pushed_to);
   const s = secondsBetween(e.pushed_at, e.acked_at);
+  const out = e.outcome ? ` · ${OUTCOME_WORDS[e.outcome]}` : "";
   return s != null
-    ? `${e.pushed_to} replied in ${s} s`
-    : `Alarm sent to ${e.pushed_to}, no reply recorded`;
+    ? `${who} replied in ${s} s${out}`
+    : `Alarm sent to ${who}, no reply recorded${out}`;
 }
 
 const fmt = (o: Intl.DateTimeFormatOptions) =>
