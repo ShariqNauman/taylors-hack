@@ -129,6 +129,11 @@ REPORT_RULES = (
     "detects verbal or online bullying, sees at night, or identifies people. "
     "If data_source is 'synthetic history', say once that the numbers are demo data. "
     "Plain English, short sentences, no markdown headings, no bold. "
+    "Field meanings: incidents = every alert at tense or above; alarms = those that reached 'fight likely' or 'fight'; "
+    "fights = those that reached the top level, 'fight'; by_type = the rule-based type of each incident (a different count "
+    "from fights, never combine them); confirmed/dismissed/resolved/open = the desk's decision; guard_alerts = alerts pushed "
+    "to a guard's phone; median_response_s = push to the guard's tap; start is inclusive and end is exclusive, so a week "
+    "from 4 Oct with end 11 Oct 00:00 is 4 to 10 October. "
     "Format: two short paragraphs (what happened; how the team responded), then a line 'Actions:' "
     "and at most three lines starting with '- ', each one concrete action that follows from the facts."
 )
