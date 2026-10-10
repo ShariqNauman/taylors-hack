@@ -43,6 +43,8 @@ export interface PatrolPostSeed {
 
 export interface CampusSeed {
   patrol_posts?: PatrolPostSeed[];
+  /** heading_deg: compass degrees the camera faces. Estimated (heading_estimated) until checked on site. */
+  cameras?: { camera_id: string; heading_deg?: number; heading_estimated?: boolean }[];
 }
 
 export const DEFAULT_BUILDINGS_URL = "/campus/taylors-lakeside-campus.geojson";
@@ -298,14 +300,16 @@ export function cameraLevel(events: Event[], cameraId: string): Level {
 // ── Staff ──
 
 export interface Guard {
-  name: string;
+  name: string; // call sign
   post: GeoPoint;
+  display_name?: string | null;
+  photo_url?: string | null;
 }
 
 export function onDutyGuards(site: Site | undefined): Guard[] {
   return (site?.staff ?? [])
     .filter((s) => s.on_duty && s.post)
-    .map((s) => ({ name: s.name, post: s.post as GeoPoint }));
+    .map((s) => ({ name: s.name, post: s.post as GeoPoint, display_name: s.display_name, photo_url: s.photo_url }));
 }
 
 export function nearestGuard(

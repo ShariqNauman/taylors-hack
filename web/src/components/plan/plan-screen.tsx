@@ -24,11 +24,11 @@ import {
   team,
 } from "@/lib/posts";
 import type { PatrolSlot, SlotPatch } from "@/lib/types";
-import { cn } from "@/lib/utils";
 import { PageShell } from "@/components/chrome/page-shell";
 import { Campus3D } from "@/components/campus3d";
 import type { PostView } from "@/components/campus3d/types";
-import { PostMap } from "./post-map";
+import { useWebGL } from "@/components/campus3d/webgl";
+import { CampusMap2D, MapToggle } from "@/components/map2d";
 import { PostRow, type RosterPost, TeamStrip } from "./post-roster";
 import { PostStats } from "./post-stats";
 import { PostTimetable } from "./post-timetable";
@@ -81,7 +81,8 @@ export function PlanScreen() {
   const { mutate } = useSWRConfig();
   const router = useRouter();
   const now = useNow();
-  const [view, setView] = useState<"2d" | "3d">("2d");
+  const [view, setView] = useState<"2d" | "3d">("3d"); // 3D first; no WebGL falls back to the map
+  const gl = useWebGL(); // no WebGL: the 2D map only, no toggle
   const [selected, setSelected] = useState<string | undefined>();
   const [busy, setBusy] = useState(false);
   const [note, setNote] = useState<string | null>(null);
@@ -251,26 +252,14 @@ export function PlanScreen() {
         <section aria-label="Where" className="flex min-w-0 flex-[1_1_500px] flex-col gap-3 rounded-[2px] border border-line bg-white p-4">
           <div className="flex flex-wrap items-center justify-between gap-2.5">
             <SectionHead n={1} title="Where are the posts?" />
-            <div role="group" aria-label="Map type" className="inline-flex overflow-hidden rounded-[2px] border border-line-strong">
-              {(["2d", "3d"] as const).map((v) => (
-                <button key={v} type="button" aria-pressed={view === v} onClick={() => setView(v)} className={cn("min-h-9 px-3.5 text-[14px] font-bold", v === "3d" && "border-l border-line-strong", view === v ? "bg-ink text-white" : "bg-white")}>
-                  {v === "2d" ? "Map" : "3D"}
-                </button>
-              ))}
-            </div>
+            {gl && <MapToggle view={view} onChange={setView} />}
           </div>
-          {view === "2d" ? (
-            <>
-              <PostMap url={site.campus?.buildings ?? "/campus/taylors-lakeside-campus.geojson"} posts={posts3d} selectedId={selected} onSelect={select} />
-              <div className="flex flex-wrap items-center gap-x-[18px] gap-y-2 text-[14px] text-ink-2">
-                <span className="inline-flex items-center gap-1.5"><span className="inline-flex size-[22px] items-center justify-center rounded-full bg-signal text-[12px] font-extrabold text-white">1</span>Guard post</span>
-                <span className="inline-flex items-center gap-1.5"><span className="inline-block size-[26px] rounded-full border-2 border-signal bg-[rgba(39,66,217,0.16)]" />Bigger = more incidents in 28 days</span>
-                <span className="inline-flex items-center gap-1.5"><span className="inline-block h-4 w-[26px] rounded-lg border-[1.5px] border-dashed border-signal" />Dashed = nobody yet, or suggested</span>
-              </div>
-            </>
-          ) : cameras ? (
+          {view === "3d" && (gl === null || (gl && !cameras)) ? (
+            <div className="h-[620px] rounded-[2px] border border-line bg-raised" aria-busy="true" />
+          ) : view === "3d" && gl && cameras ? (
             <Campus3D
               mode="plan"
+              lockLayer
               cameras={cameras}
               site={site}
               events={events ?? []}
@@ -282,7 +271,7 @@ export function PlanScreen() {
               onOpenCamera={(id) => router.push(`/cameras?cam=${encodeURIComponent(id)}`)}
             />
           ) : (
-            <div className="h-[620px] rounded-[2px] border border-line bg-raised" aria-busy="true" />
+            <CampusMap2D layer="posts" site={site} posts={posts3d} selectedPostId={selected} onSelectPost={select} />
           )}
         </section>
 
