@@ -92,8 +92,91 @@ def test_all():
     assert r.status_code == 200
     assert updated["status"] == "confirmed"
 
+    # ── ADVANCED FEATURES (SHOULD & CUT LIST) ─────────────────────────────────
+
+    print("\n=== Testing POST /report (SHOULD #8: Executive Report) ===")
+    r = client.post("/report", json={"period": "last_week", "language": "bilingual"})
+    print("Report status:", r.status_code)
+    rep = r.json()
+    print(f"Report for {rep['period']} generated: {rep['total_incidents']} total incidents, cited {len(rep['cited_incident_ids'])} IDs")
+    assert r.status_code == 200
+    assert rep["total_incidents"] > 0
+    assert len(rep["report_markdown"]) > 50
+
+    print("\n=== Testing GET & POST /knowledge (CUT #1: pgvector & RAG) ===")
+    r = client.get("/knowledge")
+    k_docs = r.json()
+    print("Knowledge docs count:", len(k_docs))
+    assert r.status_code == 200
+    assert len(k_docs) >= 5
+
+    r = client.post("/knowledge/search", json={"query": "Seksyen 507 hukuman buli fizikal asrama", "limit": 2})
+    search_res = r.json()
+    print("Search results count:", len(search_res))
+    assert r.status_code == 200
+    assert len(search_res) > 0
+    print(f"Top RAG Match: '{search_res[0]['title']}' (similarity: {search_res[0].get('similarity')})")
+
+    print("\n=== Testing POST /agent/chat (CUT #2: AI Agent Tool Loop) ===")
+    r = client.post("/agent/chat", json={"message": "Any dead or offline cameras currently on site? What is the SOP?"})
+    agent_res = r.json()
+    print("Agent status:", r.status_code)
+    print("Agent tool calls executed:", [tc["tool"] for tc in agent_res["tool_calls"]])
+    print(f"Agent response snippet:\n{agent_res['response'][:250]}...")
+    assert r.status_code == 200
+    assert len(agent_res["tool_calls"]) > 0
+
+    print("\n=== Testing POST /notifications/dispatch (CUT #4: Notification Sending) ===")
+    r = client.post(
+        "/notifications/dispatch",
+        json={
+            "incident_id": new_id,
+            "recipient_name": "Warden B",
+            "recipient_contact": "0123456789",
+            "channel": "whatsapp",
+        },
+    )
+    notif = r.json()
+    print("Notification status:", r.status_code)
+    print(f"WhatsApp URL: {notif.get('whatsapp_url')[:60]}...")
+    assert r.status_code == 200
+    assert "https://wa.me/" in notif.get("whatsapp_url", "")
+
+    print("\n=== Testing POST & GET /events/{id}/clip (CUT #5: 10s Clip Storage) ===")
+    r = client.post(
+        f"/events/{new_id}/clip",
+        params={"clip_url": f"https://storage.earlyeye.internal/clips/{new_id}.mp4", "camera_id": "CAM-BLK-C1"},
+    )
+    clip_res = r.json()
+    print("Clip upload status:", r.status_code)
+    assert r.status_code == 200
+
+    r = client.get(f"/events/{new_id}/clip")
+    assert r.status_code == 200
+    print("Clip fetch verified:", r.json()["clip_url"])
+
+    print("\n=== Testing GET /sites (CUT #6: Multi-Site Catalog) ===")
+    r = client.get("/sites")
+    sites_list = r.json()
+    print(f"Available sites: {[s['name'] for s in sites_list]}")
+    assert r.status_code == 200
+    assert len(sites_list) >= 3
+
+    print("\n=== Testing POST /auth/login (CUT #7: Auth & Roles) ===")
+    r = client.post("/auth/login", json={"username": "operator", "password": "password123"})
+    print("Login status:", r.status_code)
+    auth_data = r.json()
+    token = auth_data["access_token"]
+    print(f"Authenticated as: {auth_data['user']['full_name']} ({auth_data['user']['role']})")
+    assert r.status_code == 200
+    assert token is not None
+
+    r = client.get("/auth/me", headers={"Authorization": f"Bearer {token}"})
+    assert r.status_code == 200
+    print("Verified /auth/me for:", r.json()["username"])
+
     print("\n" + "=" * 50)
-    print("[SUCCESS] ALL 8 CONTRACT ENDPOINTS TESTED AND VERIFIED 100% OPERATIONAL!")
+    print("[SUCCESS] ALL CORE (MUST) + ADVANCED (CUT/SHOULD) ENDPOINTS VERIFIED 100% OPERATIONAL!")
     print("=" * 50)
 
 

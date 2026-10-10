@@ -51,15 +51,32 @@ Interactive API docs: `http://localhost:8000/docs`
 
 ## 📡 API Endpoints
 
+### Core Endpoints (MUST)
 | Method | Path | Description |
 |---|---|---|
 | `GET` | `/health` | Render uptime & health check |
-| `GET` | `/site` | Site metadata and configured risk zones |
-| `GET` | `/cameras` | Camera status, online check, inactive warnings |
-| `POST` | `/events` | Ingest edge alert, compute priority, 2-tier push |
+| `GET` | `/site` | Site metadata and configured risk zones (Taylor's Lakeside) |
+| `GET` | `/cameras` | Camera status, online check, "black for 3 days" inactive detection |
+| `POST` | `/events` | Ingest edge alert, compute priority, 2-tier staff auto-push |
 | `GET` | `/events?since=<iso>` | Live incident queue for dashboard polling (2s) |
 | `PATCH` | `/events/{incident_id}` | Operator confirm / dismiss / resolve action |
 | `GET` | `/hotspots` | Aggregated temporal/spatial incident clusters (>= 3) |
 | `GET` | `/plan` | Weekly automated patrol plan (Decide screen) |
 | `GET` | `/proof` | Model metrics, latency, CCTV-domain, IR check |
 | `PUT` | `/proof` | Update proof metrics (used by ML team) |
+
+### Advanced Analytics & Copilot (SHOULD & CUT List)
+| Method | Path | Description |
+|---|---|---|
+| `POST` | `/report` | Weekly executive security audit report in EN & BM citing incident IDs |
+| `GET` | `/knowledge` | Browse safety standards, KPM guidelines, and Penal Code statutes |
+| `POST` | `/knowledge/search` | **pgvector Semantic Search** over de-escalation protocols and SOPs |
+| `POST` | `/agent/chat` | **AI Security Desk Copilot** with automated tool-calling loop |
+| `GET` | `/agent/tools` | Inspect registered agent tools (cameras, incidents, RAG, dispatch) |
+| `POST` | `/notifications/dispatch` | Push alert to warden with **instant 1-click WhatsApp dispatch URL** |
+| `GET` | `/notifications` | Immutable audit log of all sent alerts and webhooks |
+| `POST` | `/events/{id}/clip` | Register/store 10s incident video buffer & thumbnail keyframe |
+| `GET` | `/events/{id}/clip` | Retrieve video playback URL and metadata for an incident |
+| `GET` | `/sites` | **Multi-Site Catalog** (Universities, Boarding Hostels, Malls) |
+| `POST` | `/auth/login` | **JWT Role-Based Auth** (`operator`, `warden`, `manager`, `admin`) |
+| `GET` | `/auth/me` | Fetch authenticated staff profile and active sector |

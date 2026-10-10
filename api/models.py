@@ -203,3 +203,142 @@ class Staff(BaseModel):
     name: str
     role: str
     zone: Optional[str] = None
+
+
+# ── Reports (SHOULD #8) ───────────────────────────────────────────────────────
+
+class ReportRequest(BaseModel):
+    period: str = "last_week"  # 'last_week', 'last_month', 'all_time'
+    site_id: Optional[str] = None
+    language: str = "bilingual"  # 'bilingual', 'en', 'bm'
+
+
+class ReportResponse(BaseModel):
+    generated_at: str
+    period: str
+    total_incidents: int
+    severity_breakdown: dict[str, int]
+    type_breakdown: dict[str, int]
+    hotspot_summary: list[dict]
+    cited_incident_ids: list[str]
+    report_markdown: str
+
+
+# ── Knowledge Bank (CUT #1: pgvector & RAG) ───────────────────────────────────
+
+class KnowledgeCategory(str, Enum):
+    sop = "sop"
+    legal = "legal"
+    de_escalation = "de_escalation"
+    site_policy = "site_policy"
+
+
+class KnowledgeCreate(BaseModel):
+    title: str
+    category: KnowledgeCategory
+    content: str
+    metadata: dict = Field(default_factory=dict)
+
+
+class KnowledgeDoc(BaseModel):
+    id: int
+    title: str
+    category: str
+    content: str
+    metadata: dict = Field(default_factory=dict)
+    similarity: Optional[float] = None
+
+
+class KnowledgeSearchQuery(BaseModel):
+    query: str
+    category: Optional[KnowledgeCategory] = None
+    limit: int = 4
+    match_threshold: float = 0.3
+
+
+# ── AI Agent Tool Loop & Staff Chat (CUT #2) ──────────────────────────────────
+
+class ChatMessage(BaseModel):
+    role: str  # 'user', 'assistant', 'system'
+    content: str
+
+
+class AgentChatRequest(BaseModel):
+    message: str
+    history: list[ChatMessage] = Field(default_factory=list)
+    site_id: Optional[str] = "TAYLORS-LK"
+
+
+class AgentToolCall(BaseModel):
+    tool: str
+    input: dict
+    output: dict
+
+
+class AgentChatResponse(BaseModel):
+    response: str
+    tool_calls: list[AgentToolCall] = Field(default_factory=list)
+    cited_knowledge: list[str] = Field(default_factory=list)
+    cited_incidents: list[str] = Field(default_factory=list)
+
+
+# ── Notifications (CUT #4) ────────────────────────────────────────────────────
+
+class NotificationRequest(BaseModel):
+    incident_id: str
+    recipient_name: str
+    recipient_contact: str  # e.g. "60123456789"
+    channel: str = "whatsapp"  # 'whatsapp', 'sms', 'webhook'
+    custom_message: Optional[str] = None
+
+
+class NotificationResponse(BaseModel):
+    id: Optional[int] = None
+    incident_id: str
+    recipient_name: str
+    recipient_contact: str
+    channel: str
+    message: str
+    whatsapp_url: Optional[str] = None
+    status: str
+    sent_at: str
+
+
+# ── Incident Clip Storage (CUT #5) ───────────────────────────────────────────
+
+class ClipMetadata(BaseModel):
+    clip_id: Optional[int] = None
+    incident_id: str
+    clip_url: str
+    thumbnail_url: Optional[str] = None
+    duration_seconds: float = 10.0
+    fps: int = 25
+    camera_id: Optional[str] = None
+    created_at: Optional[str] = None
+
+
+# ── Auth & Role Management (CUT #7) ───────────────────────────────────────────
+
+class UserRole(str, Enum):
+    operator = "operator"
+    warden = "warden"
+    security_manager = "security_manager"
+    admin = "admin"
+
+
+class LoginRequest(BaseModel):
+    username: str
+    password: str
+
+
+class UserProfile(BaseModel):
+    username: str
+    full_name: str
+    role: UserRole
+    site_id: Optional[str] = None
+
+
+class TokenResponse(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+    user: UserProfile

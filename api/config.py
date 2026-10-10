@@ -16,8 +16,17 @@ load_dotenv()
 SUPABASE_URL: str = os.getenv("SUPABASE_URL", "")
 SUPABASE_KEY: str = os.getenv("SUPABASE_KEY", "")  # service-role or anon key
 
-# ── Anthropic (SHOULD: weekly report only) ────────────────────────────────────
+# ── AI Keys (SHOULD & CUT: Agent, RAG, Weekly Report) ─────────────────────────
 ANTHROPIC_API_KEY: str = os.getenv("ANTHROPIC_API_KEY", "")
+OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY", "")
+
+# ── Auth & Security ───────────────────────────────────────────────────────────
+JWT_SECRET: str = os.getenv("JWT_SECRET", "earlyeye-dormathon-secret-jwt-key-2026")
+JWT_ALGORITHM: str = "HS256"
+JWT_EXPIRE_HOURS: int = int(os.getenv("JWT_EXPIRE_HOURS", "24"))
+
+# ── Notifications ─────────────────────────────────────────────────────────────
+DEFAULT_ALERT_WEBHOOK_URL: str = os.getenv("DEFAULT_ALERT_WEBHOOK_URL", "")
 
 # ── CORS ──────────────────────────────────────────────────────────────────────
 CORS_ORIGINS: list[str] = os.getenv("CORS_ORIGINS", "*").split(",")

@@ -13,7 +13,19 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from api.config import APP_DESCRIPTION, APP_TITLE, APP_VERSION, CORS_ORIGINS
-from api.routers import events, hotspots, proof, site
+from api.routers import (
+    agent,
+    auth,
+    clips,
+    events,
+    hotspots,
+    knowledge,
+    notifications,
+    proof,
+    reports,
+    site,
+    sites,
+)
 
 
 # ── App ───────────────────────────────────────────────────────────────────────
@@ -34,12 +46,22 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# ── Routers ───────────────────────────────────────────────────────────────────
+# ── Core Routers (MUST Items) ─────────────────────────────────────────────────
 
 app.include_router(site.router)
 app.include_router(events.router)
 app.include_router(hotspots.router)
 app.include_router(proof.router)
+
+# ── Advanced Routers (SHOULD & CUT Items) ─────────────────────────────────────
+
+app.include_router(reports.router)
+app.include_router(knowledge.router)
+app.include_router(agent.router)
+app.include_router(notifications.router)
+app.include_router(clips.router)
+app.include_router(sites.router)
+app.include_router(auth.router)
 
 
 # ── Health check (Render uses this to know the service is up) ─────────────────
