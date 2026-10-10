@@ -1,0 +1,575 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>EarlyEye v2 Live</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Mono:wght@400;500;700&amp;family=Atkinson+Hyperlegible+Next:wght@400;500;700;800&amp;family=Saira+Condensed:wght@600;700;800&amp;display=swap">
+<style>
+body{margin:0;background:#0A0D11}
+a{color:#8EA2FF}a:hover{color:#B7C4FF}
+button{font-family:inherit}
+</style>
+</helmet>
+<div style="font-family: 'Atkinson Hyperlegible Next', system-ui, sans-serif; color: #ECEFF3; background: #0A0D11; min-height: 100vh; box-sizing: border-box; position: relative">
+
+<header style="border-bottom: 1px solid #232A33; background: #0A0D11">
+<div style="max-width: 1680px; margin: 0 auto; padding: 10px 24px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 22px">
+<a href="V2Live.dc.html" style="display: flex; align-items: center; gap: 10px; text-decoration: none; color: #ECEFF3">
+<svg width="28" height="28" viewBox="0 0 32 32" aria-hidden="true"><path d="M3 16c3.5-6 8-9 13-9s9.5 3 13 9c-3.5 6-8 9-13 9s-9.5-3-13-9z" fill="none" stroke="#ECEFF3" stroke-width="2.5" stroke-linejoin="round"></path><circle cx="16" cy="16" r="4.5" fill="#ECEFF3"></circle></svg>
+<span style="font-family: 'Saira Condensed', sans-serif; font-size: 26px; font-weight: 800; letter-spacing: 0.04em">EARLYEYE</span>
+</a>
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 13px; color: #808A97">TAYLOR'S LAKESIDE · 6 CAMERAS</span>
+<nav aria-label="Main" style="display: flex; gap: 2px; flex-wrap: wrap">
+<a href="V2Live.dc.html" aria-current="page" style="font-size: 15px; font-weight: 700; padding: 10px 14px; border-radius: 2px; background: #171D25; color: #ECEFF3; text-decoration: none; box-shadow: inset 0 -2px 0 #8EA2FF">Live</a>
+<a href="V2Plan.dc.html" style="font-size: 15px; font-weight: 700; padding: 10px 14px; color: #AEB7C2; text-decoration: none">Plan</a>
+<a href="V2Incidents.dc.html" style="font-size: 15px; font-weight: 700; padding: 10px 14px; color: #AEB7C2; text-decoration: none">Incidents</a>
+<a href="V2Proof.dc.html" style="font-size: 15px; font-weight: 700; padding: 10px 14px; color: #AEB7C2; text-decoration: none">Proof</a>
+</nav>
+<div style="margin-left: auto; display: flex; flex-wrap: wrap; align-items: center; gap: 10px">
+<div role="group" aria-label="Where this screen is open" style="display: inline-flex; border: 1px solid #36404C; border-radius: 2px; overflow: hidden">
+<button type="button" onClick="{{setOnsite}}" aria-pressed="{{onsitePressed}}" style="min-height: 40px; padding: 0 12px; border: none; background: {{onsiteBg}}; color: {{onsiteFg}}; font-size: 13px; font-weight: 700; cursor: pointer">On-site desk</button>
+<button type="button" onClick="{{setRemote}}" aria-pressed="{{remotePressed}}" style="min-height: 40px; padding: 0 12px; border: none; border-left: 1px solid #36404C; background: {{remoteBg}}; color: {{remoteFg}}; font-size: 13px; font-weight: 700; cursor: pointer">Remote link</button>
+</div>
+<button type="button" onClick="{{armSound}}" style="display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 12px; border-radius: 2px; border: 1px solid {{soundBorder}}; background: transparent; color: #ECEFF3; font-size: 13px; font-weight: 700; cursor: pointer">
+<svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z" fill="none" stroke="#ECEFF3" stroke-width="2" stroke-linejoin="round"></path><path d="{{soundIcon}}" fill="none" stroke="#ECEFF3" stroke-width="2" stroke-linecap="round"></path></svg>{{soundLabel}}</button>
+<span style="display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 0 12px; border-radius: 2px; background: #171D25; font-size: 13px; font-weight: 700"><span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 15px">{{pushes}}/3</span> pushes this shift</span>
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 16px; font-weight: 700">{{clock}} <span style="font-size: 11px; color: #808A97">MYT</span></span>
+</div>
+</div>
+</header>
+
+<sc-if value="{{bannerOn}}" hint-placeholder-val="{{ true }}">
+<div role="alert" style="background: {{bannerBg}}; color: #FFFFFF; border-bottom: 1px solid #FF8A80">
+<div style="max-width: 1680px; margin: 0 auto; padding: 10px 24px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 18px">
+<svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 2h8l6 6v8l-6 6H8l-6-6V8z" fill="#FFFFFF"></path><path d="M12 7v6M12 16.5v.5" stroke="{{bannerBg}}" stroke-width="2.6" stroke-linecap="round"></path></svg>
+<span style="font-family: 'Saira Condensed', sans-serif; font-size: 30px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.02em; line-height: 1">{{bannerTitle}}</span>
+<span style="font-size: 16px; font-weight: 500">{{bannerSub}}</span>
+<div style="margin-left: auto; display: flex; align-items: center; gap: 12px">
+<sc-if value="{{alarmSounding}}" hint-placeholder-val="{{ true }}">
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 14px; font-weight: 700">ALARM SOUNDING</span>
+<button type="button" onClick="{{silence}}" style="min-height: 40px; padding: 0 16px; border-radius: 2px; border: 2px solid #FFFFFF; background: transparent; color: #FFFFFF; font-size: 15px; font-weight: 800; cursor: pointer">Silence</button>
+</sc-if>
+<sc-if value="{{alarmQuiet}}" hint-placeholder-val="{{ false }}">
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 14px; font-weight: 700">ALARM SILENCED</span>
+</sc-if>
+</div>
+</div>
+</div>
+</sc-if>
+
+<main style="max-width: 1680px; margin: 0 auto; padding: 18px 24px 32px; display: flex; flex-direction: column; gap: 16px">
+
+<div style="display: flex; flex-wrap: wrap; gap: 16px; align-items: stretch">
+
+<section aria-label="Evidence" style="flex: 3 1 640px; min-width: 0; background: #11161C; border: 1px solid #232A33; border-radius: 4px; padding: 14px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px">
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 13px; font-weight: 700; letter-spacing: 0.06em">EVIDENCE · {{ev.cam}} · {{ev.id}}</span>
+<span style="display: inline-flex; align-items: center; gap: 8px; min-height: 28px; padding: 0 10px; border-radius: 2px; border: 1px solid #36404C; font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; font-weight: 700; color: #AEB7C2">{{modeChip}}</span>
+</div>
+<div style="position: relative; background: #0E1217; border: 1px solid #232A33">
+<span style="position: absolute; left: 6px; top: 6px; width: 18px; height: 18px; border-left: 2px solid #8EA2FF; border-top: 2px solid #8EA2FF"></span>
+<span style="position: absolute; right: 6px; top: 6px; width: 18px; height: 18px; border-right: 2px solid #8EA2FF; border-top: 2px solid #8EA2FF"></span>
+<span style="position: absolute; left: 6px; bottom: 6px; width: 18px; height: 18px; border-left: 2px solid #8EA2FF; border-bottom: 2px solid #8EA2FF"></span>
+<span style="position: absolute; right: 6px; bottom: 6px; width: 18px; height: 18px; border-right: 2px solid #8EA2FF; border-bottom: 2px solid #8EA2FF"></span>
+<svg viewBox="0 0 640 360" role="img" aria-label="{{ev.aria}}" style="display: block; width: 100%; height: auto">
+<rect x="0" y="0" width="640" height="360" fill="{{bgFill}}"></rect>
+<path d="{{bgLines}}" stroke="{{bgStroke}}" stroke-width="{{bgWidth}}" fill="none"></path>
+<rect x="{{ev.boxX}}" y="{{ev.boxY}}" width="{{ev.boxW}}" height="{{ev.boxH}}" fill="none" stroke="{{ev.boxColor}}" stroke-width="2.5"></rect>
+<rect x="{{ev.boxX}}" y="{{ev.labelY}}" width="{{ev.labelW}}" height="24" fill="{{ev.boxColor}}"></rect>
+<text x="{{ev.labelX}}" y="{{ev.labelTY}}" font-family="'Atkinson Hyperlegible Mono', monospace" font-size="14" font-weight="700" fill="{{ev.labelFg}}">{{ev.label}}</text>
+<polyline points="{{ev.trail}}" fill="none" stroke="#7FE0FF" stroke-width="3" stroke-opacity="0.55" stroke-dasharray="2 5" stroke-linecap="round"></polyline>
+<path d="{{ev.grey}}" stroke="#C9CED6" stroke-width="4" stroke-linecap="round" fill="none"></path>
+<path d="{{ev.cyan}}" stroke="#7FE0FF" stroke-width="4" stroke-linecap="round" fill="none"></path>
+<path d="{{ev.violet}}" stroke="#C9A7FF" stroke-width="4" stroke-linecap="round" fill="none"></path>
+<path d="{{ev.joints}}" fill="#FFFFFF"></path>
+<path d="{{ev.ball}}" fill="none" stroke="#ECEFF3" stroke-width="2.5"></path>
+<line x1="{{ev.dx1}}" y1="{{ev.dy}}" x2="{{ev.dx2}}" y2="{{ev.dy}}" stroke="{{ev.distStroke}}" stroke-width="2" stroke-dasharray="5 4"></line>
+<text x="{{ev.distX}}" y="{{ev.distTY}}" text-anchor="middle" font-family="'Atkinson Hyperlegible Mono', monospace" font-size="13" font-weight="700" fill="{{ev.distStroke}}">{{ev.distText}}</text>
+<text x="18" y="34" font-family="'Atkinson Hyperlegible Mono', monospace" font-size="13" font-weight="700" fill="#ECEFF3">{{ev.cam}} · {{ev.locCaps}}</text>
+<circle cx="{{recX}}" cy="29" r="6" fill="{{recFill}}"></circle>
+<text x="{{recTX}}" y="34" font-family="'Atkinson Hyperlegible Mono', monospace" font-size="13" font-weight="700" fill="#ECEFF3">{{recText}}</text>
+<text x="18" y="342" font-family="'Atkinson Hyperlegible Mono', monospace" font-size="12" fill="#AEB7C2">{{footText}}</text>
+</svg>
+</div>
+
+<sc-if value="{{ev.hasTimeline}}" hint-placeholder-val="{{ true }}">
+<div style="display: flex; flex-direction: column; gap: 8px">
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px">
+<button type="button" onClick="{{back}}" aria-label="Step back" style="width: 40px; height: 40px; border-radius: 2px; border: 1px solid #36404C; background: transparent; cursor: pointer; display: inline-flex; align-items: center; justify-content: center"><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="#ECEFF3" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"></path></svg></button>
+<button type="button" onClick="{{play}}" style="min-width: 96px; height: 40px; padding: 0 14px; border-radius: 2px; border: none; background: #3B55E6; color: #FFFFFF; font-size: 14px; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px"><svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{playIcon}}" fill="#FFFFFF"></path></svg>{{playLabel}}</button>
+<button type="button" onClick="{{next}}" aria-label="Step forward" style="width: 40px; height: 40px; border-radius: 2px; border: 1px solid #36404C; background: transparent; cursor: pointer; display: inline-flex; align-items: center; justify-content: center"><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="#ECEFF3" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"></path></svg></button>
+<button type="button" onClick="{{reset}}" style="height: 40px; padding: 0 12px; border-radius: 2px; border: 1px solid #36404C; background: transparent; color: #ECEFF3; font-size: 14px; font-weight: 700; cursor: pointer">Reset</button>
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 13px; color: #AEB7C2">REPLAY · {{speedLabel}} · EVENT {{stepLabel}}/12</span>
+<span style="margin-left: auto; font-size: 14px; font-weight: 700">{{leadText}}</span>
+</div>
+<div style="position: relative">
+<div role="group" aria-label="Timeline" style="display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 2px">
+<sc-for list="{{cells}}" as="c" hint-placeholder-count="12">
+<button type="button" onClick="{{c.go}}" aria-label="{{c.aria}}" style="height: 22px; border: none; border-radius: 1px; background: {{c.bg}}; opacity: {{c.op}}; cursor: pointer; padding: 0"></button>
+</sc-for>
+</div>
+<span style="position: absolute; top: -4px; bottom: -4px; left: {{playhead}}; width: 2px; background: #FFFFFF; box-shadow: 0 0 0 1px #0A0D11"></span>
+</div>
+<div style="display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 2px; font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 11px; color: #AEB7C2">
+<sc-for list="{{marks}}" as="m" hint-placeholder-count="12">
+<span style="white-space: nowrap; overflow: visible">{{m}}</span>
+</sc-for>
+</div>
+</div>
+</sc-if>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px">
+<sc-for list="{{ev.features}}" as="f" hint-placeholder-count="4">
+<div style="background: #171D25; border: 1px solid {{f.border}}; border-radius: 2px; padding: 10px 12px; display: flex; flex-direction: column; gap: 6px">
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; color: #808A97">{{f.k}}</span>
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 22px; font-weight: 700; line-height: 1">{{f.v}}</span>
+<span style="position: relative; height: 6px; background: #232A33; border-radius: 1px"><span style="position: absolute; left: 0; top: 0; bottom: 0; width: {{f.w}}; background: {{f.fill}}"></span><span style="position: absolute; top: -3px; bottom: -3px; left: {{f.tick}}; width: 2px; background: #ECEFF3"></span></span>
+<span style="font-size: 12px; color: {{f.noteColor}}">{{f.note}}</span>
+</div>
+</sc-for>
+</div>
+<div style="font-size: 12px; color: #808A97">What the model saw. Values come from the canned replay, not from a live model run. The white tick is the line the rule uses.</div>
+</section>
+
+<div style="flex: 2 1 420px; min-width: 0; display: flex; flex-direction: column; gap: 16px">
+
+<section aria-label="Current alert" style="background: {{card.tint}}; border: 2px solid {{card.border}}; border-radius: 4px; padding: 20px; display: flex; flex-direction: column; gap: 16px">
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px">
+<span style="display: inline-flex; align-items: center; gap: 12px; padding: 8px 20px 8px 14px; border-radius: 2px; background: {{card.pillBg}}; color: {{card.pillFg}}; border: 2px solid {{card.pillBorder}}">
+<svg width="30" height="30" viewBox="0 0 24 24" aria-hidden="true"><path d="{{card.glyph}}" fill="{{card.pillFg}}"></path></svg>
+<span style="font-family: 'Saira Condensed', sans-serif; font-size: 48px; font-weight: 800; text-transform: uppercase; line-height: 0.95">{{card.label}}</span>
+</span>
+<sc-if value="{{card.showType}}" hint-placeholder-val="{{ true }}">
+<span style="display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 12px; border-radius: 2px; border: 1px solid #ECEFF3; font-size: 18px; font-weight: 800"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="{{card.typeIcon}}" fill="none" stroke="#ECEFF3" stroke-width="2" stroke-linejoin="round"></path></svg>{{card.typeLabel}}</span>
+</sc-if>
+</div>
+<div style="font-family: 'Saira Condensed', sans-serif; font-size: 44px; font-weight: 800; text-transform: uppercase; line-height: 1">{{card.etaText}}</div>
+<div style="display: flex; flex-direction: column; gap: 4px">
+<h1 style="margin: 0; font-size: 30px; font-weight: 800; line-height: 1.1">{{card.loc}}</h1>
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 13px; color: #AEB7C2">{{card.meta}}</span>
+</div>
+<p style="margin: 0; font-size: 22px; line-height: 1.35; font-weight: 500">{{card.reason}}</p>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 8px">
+<div style="background: #0A0D11; border: 1px solid #232A33; border-radius: 2px; padding: 12px 14px; display: flex; flex-direction: column; gap: 4px"><span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; color: #808A97">DO THIS</span><span style="font-size: 19px; font-weight: 800; line-height: 1.25">{{card.action}}</span></div>
+<div style="background: #0A0D11; border: 1px solid #232A33; border-radius: 2px; padding: 12px 14px; display: flex; flex-direction: column; gap: 4px"><span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; color: #808A97">PERSON ON DUTY</span><span style="font-size: 19px; font-weight: 800">{{card.nearest}} <span style="font-size: 14px; font-weight: 500; color: #AEB7C2">{{card.dist}}</span></span><span style="font-size: 13px; color: #AEB7C2">{{card.nearestState}}</span></div>
+</div>
+<ol aria-label="Progress" style="margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px">
+<sc-for list="{{card.steps}}" as="s" hint-placeholder-count="4">
+<li style="border-top: 3px solid {{s.color}}; padding-top: 6px; display: flex; flex-direction: column; gap: 2px">
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 11px; font-weight: 700; color: {{s.color}}">{{s.n}} {{s.label}}</span>
+<span style="font-size: 12px; color: #AEB7C2">{{s.when}}</span>
+</li>
+</sc-for>
+</ol>
+<sc-if value="{{card.showPushNow}}" hint-placeholder-val="{{ false }}">
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
+<button type="button" onClick="{{card.onPush}}" style="min-height: 60px; border-radius: 2px; border: none; background: #3B55E6; color: #FFFFFF; font-size: 19px; font-weight: 800; cursor: pointer">Push {{card.nearest}} now</button>
+<button type="button" onClick="{{card.onDismiss}}" style="min-height: 60px; border-radius: 2px; border: 2px solid #ECEFF3; background: transparent; color: #ECEFF3; font-size: 19px; font-weight: 800; cursor: pointer">Dismiss</button>
+</div>
+</sc-if>
+<sc-if value="{{card.showConfirm}}" hint-placeholder-val="{{ true }}">
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
+<button type="button" onClick="{{card.onConfirm}}" style="min-height: 60px; border-radius: 2px; border: none; background: #ECEFF3; color: #0A0D11; font-size: 19px; font-weight: 800; cursor: pointer">Confirm: real</button>
+<button type="button" onClick="{{card.onDismiss}}" style="min-height: 60px; border-radius: 2px; border: 2px solid #ECEFF3; background: transparent; color: #ECEFF3; font-size: 19px; font-weight: 800; cursor: pointer">Dismiss: false alarm</button>
+</div>
+</sc-if>
+<sc-if value="{{card.decided}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px; border: 1px solid #ECEFF3; border-radius: 2px; padding: 12px 14px">
+<span style="font-size: 18px; font-weight: 800">{{card.decidedText}}</span>
+<span style="font-size: 13px; color: #AEB7C2">Saved as a label for this camera.</span>
+<button type="button" onClick="{{card.onUndo}}" style="margin-left: auto; min-height: 40px; padding: 0 14px; border-radius: 2px; border: 1px solid #36404C; background: transparent; color: #ECEFF3; font-size: 14px; font-weight: 700; cursor: pointer">Undo</button>
+</div>
+</sc-if>
+<sc-if value="{{card.isCalm}}" hint-placeholder-val="{{ false }}">
+<div style="font-size: 16px; color: #AEB7C2; border: 1px dashed #36404C; border-radius: 2px; padding: 12px 14px">Nothing to do. Chats, hugs and high-fives stay calm by design.</div>
+</sc-if>
+</section>
+
+<section aria-labelledby="q-h" style="background: #11161C; border: 1px solid #232A33; border-radius: 4px; padding: 14px; display: flex; flex-direction: column; gap: 8px">
+<div style="display: flex; justify-content: space-between; align-items: baseline; gap: 8px">
+<h2 id="q-h" style="margin: 0; font-family: 'Saira Condensed', sans-serif; font-size: 24px; font-weight: 800; text-transform: uppercase">Active now</h2>
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; color: #808A97">BY PRIORITY · ALL CAMERAS</span>
+</div>
+<sc-for list="{{queue}}" as="q" hint-placeholder-count="3">
+<button type="button" onClick="{{q.pick}}" aria-pressed="{{q.selected}}" style="text-align: left; width: 100%; box-sizing: border-box; border-radius: 2px; border: {{q.border}}; background: {{q.bg}}; color: #ECEFF3; padding: 10px 12px; cursor: pointer; display: grid; grid-template-columns: 22px minmax(0, 1fr) auto; gap: 2px 10px; align-items: center">
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 16px; font-weight: 700; grid-row: span 2">{{q.rank}}</span>
+<span style="display: flex; align-items: center; gap: 8px; min-width: 0"><span style="display: inline-flex; align-items: center; gap: 5px; padding: 2px 8px 2px 6px; border-radius: 1px; background: {{q.pillBg}}; color: {{q.pillFg}}; border: 1px solid {{q.pillBorder}}; font-size: 12px; font-weight: 800; white-space: nowrap; text-transform: uppercase"><svg width="11" height="11" viewBox="0 0 24 24" aria-hidden="true"><path d="{{q.glyph}}" fill="{{q.pillFg}}"></path></svg>{{q.label}}</span><span style="font-size: 15px; font-weight: 800; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{q.loc}}</span></span>
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 16px; font-weight: 700">{{q.prio}}</span>
+<span style="font-size: 13px; color: #AEB7C2">{{q.typeLabel}} · since {{q.since}}</span>
+<span></span>
+</button>
+</sc-for>
+</section>
+
+</div>
+</div>
+
+<section aria-labelledby="wall-h" style="display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 8px">
+<h2 id="wall-h" style="margin: 0; font-family: 'Saira Condensed', sans-serif; font-size: 24px; font-weight: 800; text-transform: uppercase">Camera wall</h2>
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; color: #808A97">{{wallNote}}</span>
+</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px">
+<sc-for list="{{tiles}}" as="c" hint-placeholder-count="6">
+<div style="background: #11161C; border: {{c.border}}; border-radius: 2px; overflow: hidden; display: flex; flex-direction: column">
+<div style="position: relative">
+<svg viewBox="0 0 640 360" aria-hidden="true" style="display: block; width: 100%; height: auto">
+<rect x="0" y="0" width="640" height="360" fill="{{c.bgFill}}"></rect>
+<path d="{{c.bgLines}}" stroke="{{c.bgStroke}}" stroke-width="{{c.bgWidth}}" fill="none"></path>
+<path d="{{c.grey}}" stroke="#C9CED6" stroke-width="6" stroke-linecap="round" fill="none"></path>
+<path d="{{c.cyan}}" stroke="#7FE0FF" stroke-width="6" stroke-linecap="round" fill="none"></path>
+<path d="{{c.violet}}" stroke="#C9A7FF" stroke-width="6" stroke-linecap="round" fill="none"></path>
+<path d="{{c.ball}}" fill="none" stroke="#ECEFF3" stroke-width="4"></path>
+</svg>
+<sc-if value="{{c.black}}" hint-placeholder-val="{{ false }}">
+<div style="position: absolute; inset: 0; background: #000000; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px">
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 13px; font-weight: 700; letter-spacing: 0.08em">NO SIGNAL</span>
+<span style="font-size: 13px; font-weight: 800; padding: 3px 8px; border-radius: 1px; background: #ECEFF3; color: #0A0D11">Black for 3 days</span>
+</div>
+</sc-if>
+<sc-if value="{{c.idle}}" hint-placeholder-val="{{ false }}">
+<div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; padding: 10px; text-align: center; font-size: 12px; color: #808A97">No incident · skeletons appear only during one</div>
+</sc-if>
+<span style="position: absolute; left: 8px; top: 8px; display: inline-flex; align-items: center; gap: 5px; font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 11px; font-weight: 700; padding: 2px 6px; background: rgba(10, 13, 17, 0.8); border-radius: 1px"><span style="width: 7px; height: 7px; border-radius: 50%; background: {{c.liveDot}}"></span>{{c.id}}</span>
+<span style="position: absolute; right: 8px; top: 8px; display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 800; padding: 2px 6px; border-radius: 1px; background: {{c.pillBg}}; color: {{c.pillFg}}; border: 1px solid {{c.pillBorder}}; text-transform: uppercase">{{c.levelLabel}}</span>
+</div>
+<div style="padding: 8px 10px; display: flex; justify-content: space-between; gap: 6px; align-items: baseline">
+<span style="font-size: 14px; font-weight: 800; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{c.loc}}</span>
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 11px; color: #808A97; white-space: nowrap">{{c.last}}</span>
+</div>
+</div>
+</sc-for>
+</div>
+</section>
+
+</main>
+
+<sc-if value="{{toastOn}}" hint-placeholder-val="{{ true }}">
+<div role="status" style="position: fixed; right: 24px; bottom: 24px; z-index: 10; max-width: 380px; background: #ECEFF3; color: #0A0D11; border-radius: 2px; padding: 14px 16px; display: flex; gap: 12px; align-items: flex-start">
+<div style="display: flex; flex-direction: column; gap: 4px">
+<span style="font-size: 17px; font-weight: 800">{{toastText}}</span>
+<span style="font-size: 13px; color: #3A4350">One person only. They see the skeleton snapshot, not video.</span>
+<a href="V2Push.dc.html" style="color: #1E3A8A; font-size: 14px; font-weight: 700">Open their phone card</a>
+</div>
+<button type="button" onClick="{{closeToast}}" aria-label="Close" style="margin-left: auto; width: 32px; height: 32px; border: none; background: transparent; cursor: pointer"><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="#0A0D11" stroke-width="2.4" stroke-linecap="round"></path></svg></button>
+</div>
+</sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"startState":{"editor":"enum","options":["calm","tense","fight_likely","fight"],"default":"fight_likely"},"replaySpeed":{"editor":"enum","options":["0.5","1","2"],"default":"1","unit":"s per event"},"view":{"editor":"enum","options":["onsite","remote"],"default":"onsite"},"$preview":{"width":1440,"height":1180}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = this.initial(props, null);
+  }
+  initial(props, step) {
+    const map = { calm: 1, tense: 4, fight_likely: 6, fight: 10 };
+    const st = (props && props.startState) || 'fight_likely';
+    return {
+      t: step == null ? (map[st] == null ? 6 : map[st]) : step,
+      playing: false, dec: {}, manual: {}, silenced: false, toastClosed: false, toastManual: null,
+      sel: null, sound: false, view: (props && props.view) || 'onsite'
+    };
+  }
+  componentDidUpdate(prev) {
+    if (prev.startState !== this.props.startState || prev.view !== this.props.view) { this.stop(); this.setState(this.initial(this.props, null)); }
+  }
+  componentWillUnmount() { this.stop(); }
+  stop() { if (this.timer) { clearInterval(this.timer); this.timer = null; } }
+  go(i) { this.stop(); this.setState({ t: Math.max(0, Math.min(11, i)), playing: false }); }
+  togglePlay(speed) {
+    if (this.state.playing) { this.stop(); this.setState({ playing: false }); return; }
+    const restart = this.state.t >= 11;
+    const patch = { playing: true, t: restart ? 0 : Math.floor(this.state.t) };
+    if (restart) Object.assign(patch, { dec: {}, manual: {}, silenced: false, toastClosed: false, toastManual: null, sel: null });
+    this.setState(patch);
+    this.timer = setInterval(() => {
+      const nt = Math.round((this.state.t + 0.1 / speed) * 1000) / 1000;
+      if (nt >= 11) { this.stop(); this.setState({ t: 11, playing: false }); return; }
+      this.setState({ t: nt });
+    }, 100);
+  }
+  fig(p, T, G) {
+    const rad = (d) => d * Math.PI / 180;
+    const legL = 0.58 * T;
+    const hip = [p.x, G - 2 * legL * 0.97];
+    const L = rad(p.lean || 0);
+    const neck = [hip[0] + p.dir * T * Math.sin(L), hip[1] - T * Math.cos(L)];
+    const head = [neck[0] + p.dir * 0.34 * T * Math.sin(L), neck[1] - 0.34 * T * Math.cos(L)];
+    const arm = (a, e) => {
+      const A = rad(a), E = rad(a + e);
+      const el = [neck[0] + p.dir * 0.5 * T * Math.sin(A), neck[1] + 0.5 * T * Math.cos(A)];
+      return [el, [el[0] + p.dir * 0.46 * T * Math.sin(E), el[1] + 0.46 * T * Math.cos(E)]];
+    };
+    const leg = (s) => {
+      const S = rad(s), S2 = rad(s * 0.4);
+      const k = [hip[0] + p.dir * legL * Math.sin(S), hip[1] + legL * Math.cos(S)];
+      return [k, [k[0] + p.dir * legL * Math.sin(S2), k[1] + legL * Math.cos(S2)]];
+    };
+    const r = arm(p.ra[0], p.ra[1]), l = arm(p.la[0], p.la[1]);
+    const st = p.stride == null ? 8 : p.stride;
+    const rl = leg(st), ll = leg(-st);
+    const f = (n) => Math.round(n * 10) / 10;
+    const seg = (a, b) => 'M' + f(a[0]) + ' ' + f(a[1]) + 'L' + f(b[0]) + ' ' + f(b[1]);
+    const hr = 0.2 * T;
+    const circ = (c, rr) => 'M' + f(c[0] - rr) + ' ' + f(c[1]) + 'a' + f(rr) + ' ' + f(rr) + ' 0 1 0 ' + f(2 * rr) + ' 0a' + f(rr) + ' ' + f(rr) + ' 0 1 0 ' + f(-2 * rr) + ' 0';
+    return {
+      bones: [seg(hip, neck), seg(neck, r[0]), seg(r[0], r[1]), seg(neck, l[0]), seg(l[0], l[1]), seg(hip, rl[0]), seg(rl[0], rl[1]), seg(hip, ll[0]), seg(ll[0], ll[1])].join('') + circ(head, hr),
+      joints: [neck, r[0], r[1], l[0], l[1], hip, rl[0], rl[1], ll[0], ll[1]].map((q) => circ(q, 2.8)).join(''),
+      wrist: r[1], neck: neck, hip: hip, top: head[1] - hr
+    };
+  }
+  lerpPose(a, b, k) {
+    const m = (x, y) => x + (y - x) * k;
+    return { x: m(a.x, b.x), dir: a.dir, lean: m(a.lean, b.lean), ra: [m(a.ra[0], b.ra[0]), m(a.ra[1], b.ra[1])], la: [m(a.la[0], b.la[0]), m(a.la[1], b.la[1])], stride: m(a.stride, b.stride) };
+  }
+  renderVals() {
+    const s = this.state;
+    const speed = parseFloat(this.props.replaySpeed == null ? '1' : this.props.replaySpeed) || 1;
+    const onsite = s.view !== 'remote';
+    const T = 56, G = 318;
+    const GLYPH = { calm: 'M12 4a8 8 0 1 1-0.01 0z', tense: 'M12 3 22 20H2z', fight_likely: 'M12 2 22 12 12 22 2 12z', fight: 'M8 2h8l6 6v8l-6 6H8l-6-6V8z' };
+    const LV = {
+      calm: { label: 'Calm', pillBg: 'transparent', pillFg: '#7FE0A8', pillBorder: '#2F8F5B', tint: '#11161C', border: '#232A33', box: '#3FB27A', boxFg: '#06140C', bar: '#2F8F5B' },
+      tense: { label: 'Tense', pillBg: '#F5B323', pillFg: '#1A1200', pillBorder: '#F5B323', tint: '#1E1A0C', border: '#F5B323', box: '#F5B323', boxFg: '#1A1200', bar: '#F5B323' },
+      fight_likely: { label: 'Fight likely', pillBg: '#D92D20', pillFg: '#FFFFFF', pillBorder: '#D92D20', tint: '#24100F', border: '#D92D20', box: '#FF5A4F', boxFg: '#1A0503', bar: '#D92D20' },
+      fight: { label: 'Fight', pillBg: '#A3160D', pillFg: '#FFFFFF', pillBorder: '#FF8A80', tint: '#2A0D0B', border: '#FF8A80', box: '#FF8A80', boxFg: '#1A0503', bar: '#FF8A80' }
+    };
+    const TYPE = { fight: 'Fight', cornering: 'Cornering', crowd: 'Crowd gathering', play: 'Play / sports' };
+    const TICON = {
+      fight: 'M13 2 4 14h7l-1 8 9-12h-7z',
+      crowd: 'M10.2 4.5a1.8 1.8 0 1 0 3.6 0a1.8 1.8 0 1 0-3.6 0M16.2 8a1.8 1.8 0 1 0 3.6 0a1.8 1.8 0 1 0-3.6 0M16.2 16a1.8 1.8 0 1 0 3.6 0a1.8 1.8 0 1 0-3.6 0M10.2 19.5a1.8 1.8 0 1 0 3.6 0a1.8 1.8 0 1 0-3.6 0M4.2 16a1.8 1.8 0 1 0 3.6 0a1.8 1.8 0 1 0-3.6 0M4.2 8a1.8 1.8 0 1 0 3.6 0a1.8 1.8 0 1 0-3.6 0',
+      play: 'M12 3a9 9 0 1 1-0.01 0zM3 12h18M12 3c3.5 3 3.5 15 0 18M12 3c-3.5 3-3.5 15 0 18'
+    };
+    const R = [
+      ['calm', 'play', 0.12, null, 0.01, 'Two people chatting at 0.9 torso-lengths; no fast movement.', 'No action'],
+      ['calm', 'play', 0.15, null, 0.01, 'Brief hug; arms around shoulders, no strike pattern.', 'No action'],
+      ['calm', 'play', 0.18, null, 0.01, 'High-five; single fast arm, distance stayed above 0.8 torso-lengths.', 'No action'],
+      ['tense', 'fight', 0.46, 12, 0.12, 'Distance dropped to 0.6 torso-lengths; both torsos squared up.', 'Watch this camera'],
+      ['tense', 'fight', 0.52, 9, 0.13, 'One step closer; arm raised to chest height for 0.6 s.', 'Watch this camera'],
+      ['tense', 'fight', 0.58, 8, 0.15, 'Wrist speed rising; distance 0.5 torso-lengths for 1.0 s.', 'Watch this camera'],
+      ['fight_likely', 'fight', 0.71, 6, 0.36, 'Wrist speed spiked; distance below 0.5 torso-lengths for 1.2 s.', 'Send Guard B now'],
+      ['fight_likely', 'fight', 0.78, 4, 0.40, 'Arm above shoulder height; second person leaned back.', 'Send Guard B now'],
+      ['fight_likely', 'fight', 0.84, 2, 0.43, 'Both arms raised; distance 0.3 torso-lengths.', 'Send Guard B now'],
+      ['fight', 'fight', 0.93, null, 0.60, 'Shove: upper-body lunge, second person displaced 0.7 torso-lengths.', 'Send Guard B now; call the security lead'],
+      ['fight', 'fight', 0.95, null, 0.61, 'Repeated strikes toward head height.', 'Send Guard B now; call the security lead'],
+      ['fight', 'fight', 0.91, null, 0.58, 'Strikes continuing; third person approaching.', 'Send Guard B now; call the security lead']
+    ].map((r) => ({ level: r[0], type: r[1], score: r[2], eta: r[3], priority: r[4], reason: r[5], action: r[6] }));
+    const PA = [
+      [296, 2, 12, 8, -8, 6, 7], [313, 10, 105, 55, 95, 60, 8], [288, 0, 165, 5, -5, 5, 8], [300, 6, 30, 20, 25, 20, 12],
+      [305, 8, 80, 60, 25, 20, 14], [307, 10, 100, 35, 35, 30, 14], [309, 12, 125, 15, 45, 40, 16], [311, 14, 155, 5, 60, 50, 16],
+      [315, 10, 145, 10, 135, 15, 16], [327, 28, 95, 0, 90, 0, 22], [338, 18, 150, -20, 80, 40, 18], [342, 16, 120, 10, 150, -10, 18]
+    ].map((v) => ({ x: v[0], dir: 1, lean: v[1], ra: [v[2], v[3]], la: [v[4], v[5]], stride: v[6] }));
+    const PB = [
+      [350, 2, 15, 10, -6, 8, 7], [337, 10, 105, 55, 95, 60, 8], [342, 0, 165, 5, -5, 5, 8], [336, 4, 28, 20, 22, 20, 12],
+      [334, 2, 30, 30, 20, 20, 10], [335, 0, 40, 40, 20, 20, 10], [334, -4, 60, 70, 30, 30, 10], [338, -14, 70, 80, 40, 40, 14],
+      [332, -10, 120, 70, 110, 70, 14], [372, -24, 60, 40, 150, 20, 18], [366, -12, 125, 70, 115, 70, 14], [369, -14, 125, 70, 115, 70, 14]
+    ].map((v) => ({ x: v[0], dir: -1, lean: v[1], ra: [v[2], v[3]], la: [v[4], v[5]], stride: v[6] }));
+    const WS = [0.3, 0.5, 2.1, 0.9, 1.4, 2.2, 3.4, 3.1, 3.3, 4.6, 5.1, 4.8];
+    const t = Math.max(0, Math.min(11, s.t));
+    const i0 = Math.floor(t), i1 = Math.min(11, i0 + 1), k = t - i0;
+    const step = Math.min(11, Math.floor(t + 1e-6));
+    const cur = R[step];
+    const pose = (P, tt) => { const a = Math.floor(tt), b = Math.min(11, a + 1); return this.lerpPose(P[a], P[b], tt - a); };
+    const pad = (n) => String(n).padStart(2, '0');
+    const clock = '14:31:' + pad(Math.floor(t));
+    const f1 = (n) => Math.round(n * 10) / 10;
+
+    const replayScene = (tt, small) => {
+      const A = this.fig(pose(PA, tt), T, G), B = this.fig(pose(PB, tt), T, G);
+      let grey = '', jointsC = '';
+      if (tt > 10.2) {
+        const cx = 600 - (Math.min(tt, 11) - 10.2) / 0.8 * 80;
+        const C = this.fig({ x: cx, dir: -1, lean: 6, ra: [25, 10], la: [-20, 10], stride: 18 }, T, G);
+        grey = C.bones; jointsC = C.joints;
+      }
+      const ax = pose(PA, tt).x, bx = pose(PB, tt).x;
+      const lv = R[Math.min(11, Math.floor(tt + 1e-6))].level;
+      const minX = Math.min(ax, bx) - 0.85 * T, maxX = Math.max(ax, bx) + 0.85 * T;
+      const top = Math.min(A.top, B.top) - 10;
+      const trailPts = [Math.max(0, tt - 0.8), Math.max(0, tt - 0.4), tt].map((q) => { const w = this.fig(pose(PA, q), T, G).wrist; return f1(w[0]) + ',' + f1(w[1]); }).join(' ');
+      return {
+        cyan: A.bones, violet: B.bones, grey: grey, joints: A.joints + B.joints + jointsC, ball: '',
+        box: { x: Math.round(minX), y: Math.round(top), w: Math.round(maxX - minX), h: Math.round(G + 4 - top), color: LV[lv].box, fg: LV[lv].boxFg, level: lv },
+        dist: (bx - ax) / T, dx1: f1(ax), dx2: f1(bx), dy: f1(A.hip[1] - 22),
+        trail: lv === 'calm' && !small ? trailPts : trailPts,
+        armUp: A.wrist[1] < A.neck[1]
+      };
+    };
+    const staticScene = (kind) => {
+      const figs = kind === 'crowd'
+        ? [[232, 1, 4, 10, 5, -5, 5, 8], [282, 1, 6, 15, 10, -5, 5, 10], [330, 1, 2, 20, 30, 10, 10, 6], [392, -1, 6, 12, 8, -6, 6, 10], [444, -1, 4, 10, 6, -4, 5, 8]]
+        : [[250, 1, -6, 170, 0, 150, 10, 22], [420, -1, -4, 150, 10, 20, 10, 20]];
+      const built = figs.map((v) => this.fig({ x: v[0], dir: v[1], lean: v[2], ra: [v[3], v[4]], la: [v[5], v[6]], stride: v[7] }, T, G));
+      const xs = figs.map((v) => v[0]);
+      const top = Math.min.apply(null, built.map((b) => b.top)) - 10;
+      return {
+        cyan: built[0].bones, violet: built[1].bones, grey: built.slice(2).map((b) => b.bones).join(''),
+        joints: built.map((b) => b.joints).join(''),
+        ball: kind === 'play' ? 'M321 112a14 14 0 1 0 28 0a14 14 0 1 0 -28 0' : '',
+        box: { x: Math.round(Math.min.apply(null, xs) - 0.8 * T), y: Math.round(top), w: Math.round(Math.max.apply(null, xs) - Math.min.apply(null, xs) + 1.6 * T), h: Math.round(G + 4 - top), color: LV.tense.box, fg: LV.tense.boxFg, level: 'tense' },
+        dist: null, trail: '', armUp: false
+      };
+    };
+
+    const RID = 'INC-2026-00142';
+    const autoPushed = step >= 6;
+    const items = [
+      { id: RID, cam: 'CAM-BC-03', loc: 'Block C stairwell', zone: 'Stairwell', risk: '0.8', type: cur.type, level: cur.level, score: cur.score, eta: cur.eta, priority: cur.priority,
+        people: t > 10.2 ? 3 : 2, reason: cur.reason, action: cur.action, nearest: 'Guard B', dist: '~40 m', since: '14:31:00', pushed: autoPushed || !!s.manual[RID], pushedAt: autoPushed ? '14:31:06' : s.manual[RID], replay: true, scene: 'replay' },
+      { id: 'INC-2026-00141', cam: 'CAM-CT-04', loc: 'Canteen, east entrance', zone: 'Canteen', risk: '0.7', type: 'crowd', level: 'tense', score: 0.44, eta: null, priority: 0.10, people: 5,
+        reason: 'Five people stopped and faced the same point for 4 s.', action: 'Watch this camera', nearest: 'Guard A', dist: '~60 m', since: '14:30:22', pushed: !!s.manual['INC-2026-00141'], pushedAt: s.manual['INC-2026-00141'], scene: 'crowd' },
+      { id: 'INC-2026-00140', cam: 'CAM-SC-06', loc: 'Sports court, north', zone: 'Sports court', risk: '0.3', type: 'play', level: 'tense', score: 0.41, eta: null, priority: 0.03, people: 2,
+        reason: 'Fast arm swings with no approach; ball in play. Sports-zone threshold applied.', action: 'No action; sports zone', nearest: 'Guard C', dist: '~25 m', since: '14:28:40', pushed: !!s.manual['INC-2026-00140'], pushedAt: s.manual['INC-2026-00140'], scene: 'play' }
+    ];
+    items.forEach((it) => { it.decision = s.dec[it.id] || null; });
+    const replayItem = items[0];
+    const active = items.filter((it) => it.level !== 'calm' && it.decision !== 'dismissed').sort((a, b) => b.priority - a.priority);
+    let it = s.sel ? items.find((x) => x.id === s.sel) : null;
+    if (it && it.replay && it.level === 'calm') it = null;
+    if (!it) it = active[0] || replayItem;
+    const lv = LV[it.level];
+    const isCalm = it.level === 'calm';
+    const dec = it.decision;
+
+    const sc = it.scene === 'replay' ? replayScene(t, false) : staticScene(it.scene);
+    const evLevel = sc.box.level;
+    const labelText = (LV[evLevel].label.toUpperCase()) + ' ' + (it.scene === 'replay' ? R[step].score.toFixed(2) : it.score.toFixed(2));
+    const wsNow = WS[i0] + (WS[i1] - WS[i0]) * k;
+    const features = it.scene === 'replay' ? [
+      { k: 'DISTANCE', v: sc.dist.toFixed(2) + ' TL', w: Math.round(Math.max(0, Math.min(1, (1.2 - sc.dist) / 1.2)) * 100) + '%', tick: Math.round((1.2 - 0.5) / 1.2 * 100) + '%', on: sc.dist < 0.5, note: sc.dist < 0.5 ? 'Closer than 0.5: signal' : 'Above 0.5: no signal' },
+      { k: 'WRIST SPEED', v: wsNow.toFixed(1) + ' TL/s', w: Math.round(Math.min(1, wsNow / 6) * 100) + '%', tick: '50%', on: wsNow > 3, note: wsNow > 3 ? 'Above 3: signal' : 'Below 3: no signal' },
+      { k: 'ARM HEIGHT', v: sc.armUp ? 'Above' : 'Below', w: sc.armUp ? '100%' : '35%', tick: '60%', on: sc.armUp, note: sc.armUp ? 'Above shoulder: signal' : 'Below shoulder' },
+      { k: 'RISK SCORE', v: R[step].score.toFixed(2), w: Math.round(R[step].score * 100) + '%', tick: '65%', on: R[step].score >= 0.65, note: R[step].score >= 0.65 ? 'Above the alarm line' : (R[step].score >= 0.4 ? 'Above the tense line' : 'Below the tense line') }
+    ] : [
+      { k: 'PEOPLE CLOSE', v: String(it.people), w: Math.min(100, it.people * 16) + '%', tick: '80%', on: it.people >= 5, note: it.people >= 5 ? '5 or more within 3 TL' : 'Fewer than 5' },
+      { k: 'MOTION', v: it.type === 'play' ? 'Rhythmic' : 'Low', w: it.type === 'play' ? '70%' : '20%', tick: '50%', on: it.type === 'play', note: it.type === 'play' ? 'Sports pattern' : 'Standing still' },
+      { k: 'ZONE RISK', v: it.risk, w: Math.round(parseFloat(it.risk) * 100) + '%', tick: '50%', on: parseFloat(it.risk) >= 0.5, note: it.zone },
+      { k: 'RISK SCORE', v: it.score.toFixed(2), w: Math.round(it.score * 100) + '%', tick: '65%', on: false, note: 'Above the tense line' }
+    ];
+    const ev = {
+      id: it.id, cam: it.cam, locCaps: it.loc.toUpperCase(),
+      aria: 'Skeleton view of ' + it.loc + ', level ' + LV[evLevel].label,
+      boxX: sc.box.x, boxY: sc.box.y, boxW: sc.box.w, boxH: sc.box.h, boxColor: sc.box.color,
+      labelY: sc.box.y - 24, labelX: sc.box.x + 8, labelTY: sc.box.y - 7, labelW: Math.round(labelText.length * 8.6 + 16), labelFg: sc.box.fg, label: labelText,
+      cyan: sc.cyan, violet: sc.violet, grey: sc.grey, joints: sc.joints, ball: sc.ball, trail: sc.trail,
+      dx1: sc.dist == null ? 0 : sc.dx1, dx2: sc.dist == null ? 0 : sc.dx2, dy: sc.dist == null ? 0 : sc.dy,
+      distStroke: sc.dist == null ? 'none' : '#FFFFFF', distX: sc.dist == null ? 0 : f1((parseFloat(sc.dx1) + parseFloat(sc.dx2)) / 2), distTY: sc.dist == null ? 0 : sc.dy - 8,
+      distText: sc.dist == null ? '' : sc.dist.toFixed(2) + ' TL',
+      hasTimeline: it.scene === 'replay',
+      features: features.map((f) => Object.assign({}, f, { fill: f.on ? LV[evLevel].bar : '#36404C', border: f.on ? LV[evLevel].bar : '#232A33', noteColor: f.on ? '#ECEFF3' : '#808A97' }))
+    };
+    let grid = '';
+    for (let x = 0; x <= 640; x += 40) grid += 'M' + x + ' 0L' + x + ' 360';
+    for (let y = 0; y <= 360; y += 40) grid += 'M0 ' + y + 'L640 ' + y;
+    const scene = 'M0 318L640 318M0 318L120 230L520 230L640 318M120 230L120 0M520 230L520 0M520 230L560 230L560 205L590 205L590 180L620 180L620 155L640 155M150 60L230 60L230 130L150 130Z';
+    const bgFill = onsite ? '#161B22' : '#0E1217';
+    const bgLines = onsite ? scene : grid;
+    const bgStroke = onsite ? '#2A323C' : '#1A2028';
+    const bgWidth = onsite ? 2 : 1;
+
+    const set = (patch) => () => this.setState(patch);
+    const steps = [
+      { n: '01', label: 'DETECT', on: !isCalm, when: isCalm ? 'Watching' : 'from ' + it.since },
+      { n: '02', label: 'EXPLAIN', on: !isCalm, when: isCalm ? 'Waiting' : 'Reason ready' },
+      { n: '03', label: 'PUSH', on: !!it.pushed, when: it.pushed ? it.nearest + ' · ' + it.pushedAt : (it.level === 'tense' ? 'Silent at tense' : 'Waiting') },
+      { n: '04', label: 'CONFIRM', on: !!dec, when: dec === 'confirmed' ? 'Real' : (dec === 'dismissed' ? 'False alarm' : 'Waiting') }
+    ].map((x) => Object.assign(x, { color: x.on ? '#ECEFF3' : '#36404C' }));
+    const card = {
+      loc: it.loc, reason: it.reason, action: it.action, nearest: it.nearest, dist: it.dist,
+      label: lv.label, pillBg: lv.pillBg, pillFg: lv.pillFg, pillBorder: lv.pillBorder, tint: lv.tint, border: lv.border, glyph: GLYPH[it.level],
+      typeLabel: TYPE[it.type], typeIcon: TICON[it.type], showType: !isCalm, isCalm: isCalm,
+      etaText: it.eta != null ? ('Fight likely in ~' + it.eta + ' s') : (it.level === 'fight' ? 'Fight in progress' : (isCalm ? 'No build-up' : 'Watching · no ETA')),
+      meta: it.cam + ' · ' + it.zone.toUpperCase() + ' · RISK ' + it.risk + ' · ' + it.people + ' PEOPLE',
+      nearestState: dec === 'confirmed' ? 'Confirmed real · on the way' : (it.pushed ? 'Pushed at ' + it.pushedAt : (isCalm ? 'On patrol' : 'Not pushed; tense is silent')),
+      steps: steps,
+      showPushNow: !isCalm && !it.pushed && !dec, showConfirm: !isCalm && !!it.pushed && !dec, decided: !!dec,
+      decidedText: dec === 'confirmed' ? 'Confirmed: real incident' : 'Dismissed: false alarm',
+      onPush: () => { const m = Object.assign({}, s.manual); m[it.id] = clock; this.setState({ manual: m, sel: it.id, toastManual: 'Pushed to ' + it.nearest + ' · ' + clock, toastClosed: false }); },
+      onConfirm: () => { const d = Object.assign({}, s.dec); d[it.id] = 'confirmed'; this.setState({ dec: d, sel: it.id, silenced: it.replay ? true : s.silenced, toastClosed: true, toastManual: null }); },
+      onDismiss: () => { const d = Object.assign({}, s.dec); d[it.id] = 'dismissed'; this.setState({ dec: d, sel: it.id, toastClosed: true, toastManual: null }); },
+      onUndo: () => { const d = Object.assign({}, s.dec); delete d[it.id]; this.setState({ dec: d }); }
+    };
+    const queue = active.map((q, i) => {
+      const l = LV[q.level];
+      const on = q.id === it.id;
+      return { rank: i + 1, loc: q.loc, label: l.label, pillBg: l.pillBg, pillFg: l.pillFg, pillBorder: l.pillBorder, glyph: GLYPH[q.level], typeLabel: TYPE[q.type], since: q.since, prio: q.priority.toFixed(2),
+        selected: on ? 'true' : 'false', bg: on ? l.tint : '#0A0D11', border: on ? ('2px solid ' + l.border) : '1px solid #232A33', pick: set({ sel: q.id }) };
+    });
+    const sceneFor = { 'CAM-BC-03': items[0], 'CAM-CT-04': items[1], 'CAM-SC-06': items[2] };
+    const camsRaw = [
+      { id: 'CAM-HC-01', loc: 'Hostel U, corridor L3', last: '2 s ago' },
+      { id: 'CAM-HC-02', loc: 'Hostel U, corridor L5', last: 'Thu 02:00', black: true },
+      { id: 'CAM-BC-03', loc: 'Block C stairwell', last: '1 s ago' },
+      { id: 'CAM-CT-04', loc: 'Canteen, east entrance', last: '3 s ago' },
+      { id: 'CAM-CP-05', loc: 'Car park B, level 2', last: '2 s ago' },
+      { id: 'CAM-SC-06', loc: 'Sports court, north', last: '2 s ago' }
+    ];
+    const tiles = camsRaw.map((c) => {
+      const inc = sceneFor[c.id];
+      const live = inc && inc.decision !== 'dismissed' && inc.level !== 'calm';
+      const level = c.black ? null : (inc ? (inc.decision === 'dismissed' ? 'calm' : inc.level) : 'calm');
+      const showFigs = inc && (onsite || live);
+      const scn = showFigs ? (inc.scene === 'replay' ? replayScene(t, true) : staticScene(inc.scene)) : null;
+      const l = level ? LV[level] : null;
+      const sel = inc && inc.id === it.id;
+      return {
+        id: c.id, loc: c.loc, last: c.black ? 'last ' + c.last : c.last, black: !!c.black,
+        idle: !c.black && !onsite && !showFigs,
+        bgFill: c.black ? '#000000' : bgFill, bgLines: c.black ? '' : bgLines, bgStroke: bgStroke, bgWidth: onsite ? 3 : 1.5,
+        cyan: scn ? scn.cyan : '', violet: scn ? scn.violet : '', grey: scn ? scn.grey : '', ball: scn ? scn.ball : '',
+        liveDot: c.black ? '#808A97' : (onsite ? '#FF453A' : '#7FE0A8'),
+        levelLabel: l ? l.label : 'No signal', pillBg: l ? l.pillBg : '#ECEFF3', pillFg: l ? l.pillFg : '#0A0D11', pillBorder: l ? l.pillBorder : '#ECEFF3',
+        border: sel ? ('2px solid ' + l.border) : '1px solid #232A33'
+      };
+    });
+    const cells = R.map((r, i) => ({
+      bg: LV[r.level].pillBg === 'transparent' ? '#2F8F5B' : LV[r.level].pillBg, op: i <= step ? '1' : '0.35',
+      aria: 'Event ' + (i + 1) + ': ' + LV[r.level].label, go: () => this.go(i)
+    }));
+    const marks = R.map((r, i) => (i === 3 ? 'AMBER :03' : (i === 6 ? 'PUSHED :06' : (i === 9 ? 'SHOVE :09' : ''))));
+    const rDec = replayItem.decision;
+    const bannerOn = (cur.level === 'fight_likely' || cur.level === 'fight') && rDec !== 'dismissed';
+    const alarmSounding = bannerOn && !s.silenced && rDec !== 'confirmed';
+    const pushes = 1 + items.filter((q) => q.pushed).length;
+    const autoToast = autoPushed && !s.toastClosed && !rDec ? 'Pushed to Guard B · 14:31:06' : null;
+    const toastText = s.toastManual || autoToast;
+    return {
+      clock: clock, pushes: pushes,
+      onsitePressed: onsite ? 'true' : 'false', remotePressed: onsite ? 'false' : 'true',
+      onsiteBg: onsite ? '#ECEFF3' : 'transparent', onsiteFg: onsite ? '#0A0D11' : '#AEB7C2',
+      remoteBg: onsite ? 'transparent' : '#ECEFF3', remoteFg: onsite ? '#AEB7C2' : '#0A0D11',
+      setOnsite: set({ view: 'onsite' }), setRemote: set({ view: 'remote' }),
+      soundLabel: s.sound ? 'Sound armed' : 'Arm alarm sound', soundBorder: s.sound ? '#36404C' : '#F5B323',
+      soundIcon: s.sound ? 'M16 9a4 4 0 0 1 0 6' : 'M16 9l5 6M21 9l-5 6', armSound: set({ sound: true }),
+      bannerOn: bannerOn, alarmSounding: alarmSounding, alarmQuiet: bannerOn && !alarmSounding,
+      bannerBg: cur.level === 'fight' ? '#A3160D' : '#D92D20',
+      bannerTitle: (cur.level === 'fight' ? 'Fight' : 'Fight likely') + ' · Block C stairwell',
+      bannerSub: rDec === 'confirmed' ? 'Confirmed by desk · Guard B on the way' : 'Guard B pushed at 14:31:06',
+      silence: set({ silenced: true }),
+      modeChip: onsite ? 'ON-SITE VIDEO + OVERLAY · EDGE LAPTOP' : 'SKELETON REPLAY · NO VIDEO',
+      bgFill: bgFill, bgLines: bgLines, bgStroke: bgStroke, bgWidth: bgWidth,
+      recX: onsite ? 498 : 470, recTX: onsite ? 511 : 483, recFill: onsite ? '#FF453A' : '#8EA2FF',
+      recText: onsite ? 'REC ' + clock : 'KEYPOINTS ' + clock,
+      footText: onsite ? 'VIDEO FRAME PLACEHOLDER · REAL FOOTAGE PLAYS HERE ON SITE' : 'NO PIXELS LEAVE THE SITE · REBUILT FROM 17 KEYPOINTS PER PERSON',
+      ev: ev, card: card, queue: queue, tiles: tiles,
+      wallNote: onsite ? 'ON-SITE: LIVE VIDEO FROM THE EDGE LAPTOP' : 'REMOTE: SKELETONS ONLY, DURING INCIDENTS',
+      cells: cells, marks: marks, playhead: (t / 11 * 100).toFixed(2) + '%',
+      leadText: 'Warned 6 s before the shove on this replay',
+      playLabel: s.playing ? 'Pause' : 'Play', playIcon: s.playing ? 'M6 4h4v16H6zM14 4h4v16h-4z' : 'M7 4l13 8-13 8z',
+      play: () => this.togglePlay(speed), back: () => this.go(Math.ceil(t) - 1), next: () => this.go(Math.floor(t) + 1),
+      reset: () => { this.stop(); this.setState(Object.assign(this.initial(this.props, 0), { view: s.view, sound: s.sound })); },
+      speedLabel: speed + ' S PER EVENT', stepLabel: pad(step + 1),
+      toastOn: !!toastText, toastText: toastText || '', closeToast: set({ toastClosed: true, toastManual: null })
+    };
+  }
+}
+</script>
+</body>
+</html>

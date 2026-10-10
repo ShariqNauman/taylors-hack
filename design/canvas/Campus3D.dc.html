@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>EarlyEye 3D campus, Taylor's Lakeside</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Mono:wght@400;500;700&amp;family=Atkinson+Hyperlegible+Next:wght@400;500;700;800&amp;family=Saira+Condensed:wght@600;700;800&amp;display=swap">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="font-family: 'Atkinson Hyperlegible Next', system-ui, sans-serif; color: #0B0D10; width: 100%; aspect-ratio: 1200 / 640; position: relative; background: #E6EBF0; overflow: hidden; border: 1px solid #DCDFE4; border-radius: 2px; user-select: none; touch-action: none; cursor: {{cursor}}" onPointerDown="{{down}}" onPointerMove="{{move}}" onPointerUp="{{up}}" onPointerLeave="{{up}}">
+<svg viewBox="0 0 1200 640" role="img" aria-label="{{aria}}" style="position: absolute; inset: 0; width: 100%; height: 100%; display: block">
+<rect x="0" y="0" width="1200" height="640" fill="#E6EBF0"></rect>
+<path d="{{campus}}" fill="#F7F8FA" stroke="#B4BAC3" stroke-width="1.5" stroke-dasharray="6 4"></path>
+<path d="{{water}}" fill="#D6E3F1" stroke="#B9CDE2" stroke-width="1.5"></path>
+<path d="{{pitch}}" fill="#E3F1E7" stroke="#9FD3B4" stroke-width="1.5"></path>
+<path d="{{s0.l}}" fill="{{s0.cl}}" stroke="{{s0.st}}" stroke-width="0.8"></path><path d="{{s0.r}}" fill="{{s0.cr}}" stroke="{{s0.st}}" stroke-width="0.8"></path><path d="{{s0.t}}" fill="{{s0.ct}}" stroke="{{s0.st}}" stroke-width="1.2"></path>
+<path d="{{s1.l}}" fill="{{s1.cl}}" stroke="{{s1.st}}" stroke-width="0.8"></path><path d="{{s1.r}}" fill="{{s1.cr}}" stroke="{{s1.st}}" stroke-width="0.8"></path><path d="{{s1.t}}" fill="{{s1.ct}}" stroke="{{s1.st}}" stroke-width="1.2"></path>
+<path d="{{s2.l}}" fill="{{s2.cl}}" stroke="{{s2.st}}" stroke-width="0.8"></path><path d="{{s2.r}}" fill="{{s2.cr}}" stroke="{{s2.st}}" stroke-width="0.8"></path><path d="{{s2.t}}" fill="{{s2.ct}}" stroke="{{s2.st}}" stroke-width="1.2"></path>
+<path d="{{s3.l}}" fill="{{s3.cl}}" stroke="{{s3.st}}" stroke-width="0.8"></path><path d="{{s3.r}}" fill="{{s3.cr}}" stroke="{{s3.st}}" stroke-width="0.8"></path><path d="{{s3.t}}" fill="{{s3.ct}}" stroke="{{s3.st}}" stroke-width="1.2"></path>
+<path d="{{s4.l}}" fill="{{s4.cl}}" stroke="{{s4.st}}" stroke-width="0.8"></path><path d="{{s4.r}}" fill="{{s4.cr}}" stroke="{{s4.st}}" stroke-width="0.8"></path><path d="{{s4.t}}" fill="{{s4.ct}}" stroke="{{s4.st}}" stroke-width="1.2"></path>
+<path d="{{s5.l}}" fill="{{s5.cl}}" stroke="{{s5.st}}" stroke-width="0.8"></path><path d="{{s5.r}}" fill="{{s5.cr}}" stroke="{{s5.st}}" stroke-width="0.8"></path><path d="{{s5.t}}" fill="{{s5.ct}}" stroke="{{s5.st}}" stroke-width="1.2"></path>
+<path d="{{s6.l}}" fill="{{s6.cl}}" stroke="{{s6.st}}" stroke-width="0.8"></path><path d="{{s6.r}}" fill="{{s6.cr}}" stroke="{{s6.st}}" stroke-width="0.8"></path><path d="{{s6.t}}" fill="{{s6.ct}}" stroke="{{s6.st}}" stroke-width="1.2"></path>
+<path d="{{s7.l}}" fill="{{s7.cl}}" stroke="{{s7.st}}" stroke-width="0.8"></path><path d="{{s7.r}}" fill="{{s7.cr}}" stroke="{{s7.st}}" stroke-width="0.8"></path><path d="{{s7.t}}" fill="{{s7.ct}}" stroke="{{s7.st}}" stroke-width="1.2"></path>
+<path d="{{s8.l}}" fill="{{s8.cl}}" stroke="{{s8.st}}" stroke-width="0.8"></path><path d="{{s8.r}}" fill="{{s8.cr}}" stroke="{{s8.st}}" stroke-width="0.8"></path><path d="{{s8.t}}" fill="{{s8.ct}}" stroke="{{s8.st}}" stroke-width="1.2"></path>
+<path d="{{s9.l}}" fill="{{s9.cl}}" stroke="{{s9.st}}" stroke-width="0.8"></path><path d="{{s9.r}}" fill="{{s9.cr}}" stroke="{{s9.st}}" stroke-width="0.8"></path><path d="{{s9.t}}" fill="{{s9.ct}}" stroke="{{s9.st}}" stroke-width="1.2"></path>
+<path d="{{s10.l}}" fill="{{s10.cl}}" stroke="{{s10.st}}" stroke-width="0.8"></path><path d="{{s10.r}}" fill="{{s10.cr}}" stroke="{{s10.st}}" stroke-width="0.8"></path><path d="{{s10.t}}" fill="{{s10.ct}}" stroke="{{s10.st}}" stroke-width="1.2"></path>
+<path d="{{s11.l}}" fill="{{s11.cl}}" stroke="{{s11.st}}" stroke-width="0.8"></path><path d="{{s11.r}}" fill="{{s11.cr}}" stroke="{{s11.st}}" stroke-width="0.8"></path><path d="{{s11.t}}" fill="{{s11.ct}}" stroke="{{s11.st}}" stroke-width="1.2"></path>
+<path d="{{route}}" fill="none" stroke="#2742D9" stroke-width="3" stroke-dasharray="8 6"></path>
+</svg>
+
+<sc-if value="{{full}}" hint-placeholder-val="{{ true }}">
+<div style="position: absolute; left: 12px; top: 12px; display: flex; flex-direction: column; gap: 8px; max-width: calc(100% - 380px)">
+<div style="display: flex; flex-wrap: wrap; gap: 6px; align-items: center">
+<div role="group" aria-label="Layer" style="display: inline-flex; border: 1px solid #0B0D10; border-radius: 2px; overflow: hidden; background: #FFFFFF">
+<button type="button" onClick="{{setCams}}" aria-pressed="{{camsPressed}}" style="min-height: 36px; padding: 0 12px; border: none; background: {{camsBg}}; color: {{camsFg}}; font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; font-weight: 700; cursor: pointer">CAMERAS</button>
+<button type="button" onClick="{{setPlan}}" aria-pressed="{{planPressed}}" style="min-height: 36px; padding: 0 12px; border: none; border-left: 1px solid #0B0D10; background: {{planBg}}; color: {{planFg}}; font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; font-weight: 700; cursor: pointer">PATROL PLAN</button>
+</div>
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 11px; font-weight: 700; padding: 3px 8px; background: rgba(255, 255, 255, 0.92); border: 1px solid #DCDFE4">TAYLOR'S UNIVERSITY · LAKESIDE CAMPUS</span>
+</div>
+<div role="group" aria-label="Jump to a building" style="display: flex; flex-wrap: wrap; gap: 4px">
+<sc-for list="{{jumps}}" as="j" hint-placeholder-count="6">
+<button type="button" onClick="{{j.go}}" style="min-height: 30px; padding: 0 9px; border-radius: 2px; border: 1px solid #B4BAC3; background: rgba(255, 255, 255, 0.94); font-size: 12px; font-weight: 700; cursor: pointer; color: #0B0D10">{{j.label}}</button>
+</sc-for>
+</div>
+</div>
+</sc-if>
+
+<sc-for list="{{guards}}" as="g" hint-placeholder-count="3">
+<span style="position: absolute; left: {{g.x}}; top: {{g.y}}; transform: translate(-50%, -50%); display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px 2px 4px; border-radius: 999px; background: #2742D9; color: #FFFFFF; font-size: 11px; font-weight: 800; white-space: nowrap; pointer-events: none"><svg width="12" height="12" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="7" r="4" fill="#FFFFFF"></circle><path d="M4 21c1-5 4-7 8-7s7 2 8 7z" fill="#FFFFFF"></path></svg>{{g.name}}</span>
+</sc-for>
+
+<sc-for list="{{labels}}" as="l" hint-placeholder-count="7">
+<button type="button" onClick="{{l.pick}}" style="position: absolute; left: {{l.x}}; top: {{l.y}}; transform: translate(-50%, -100%); display: inline-flex; align-items: center; gap: 5px; padding: 3px 8px; border-radius: 2px; border: 1px solid {{l.border}}; background: {{l.bg}}; color: {{l.fg}}; font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 11px; font-weight: 700; white-space: nowrap; cursor: pointer">{{l.text}}</button>
+</sc-for>
+
+<sc-for list="{{pins}}" as="p" hint-placeholder-count="6">
+<button type="button" onClick="{{p.pick}}" aria-label="{{p.aria}}" class="{{p.cls}}" style="position: absolute; left: {{p.x}}; top: {{p.y}}; transform: translate(-50%, -50%); display: inline-flex; align-items: center; gap: 5px; min-height: 30px; padding: 2px 8px 2px 2px; border-radius: 999px; border: {{p.border}}; background: {{p.bg}}; color: {{p.fg}}; font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 11px; font-weight: 700; white-space: nowrap; cursor: pointer">
+<span style="width: 24px; height: 24px; border-radius: 50%; background: {{p.dot}}; display: inline-flex; align-items: center; justify-content: center"><svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 8a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2zM16 10l5-3v10l-5-3" fill="none" stroke="#FFFFFF" stroke-width="2.2" stroke-linejoin="round"></path></svg></span>{{p.text}}</button>
+</sc-for>
+
+<sc-for list="{{posts}}" as="q" hint-placeholder-count="3">
+<button type="button" onClick="{{q.pick}}" aria-label="{{q.aria}}" style="position: absolute; left: {{q.x}}; top: {{q.y}}; transform: translate(-50%, -50%); display: inline-flex; align-items: center; gap: 5px; min-height: 30px; padding: 3px 9px 3px 5px; border-radius: 999px; border: 2px solid {{q.border}}; background: #2742D9; color: #FFFFFF; font-size: 11px; font-weight: 800; white-space: nowrap; cursor: pointer"><svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="7" r="4" fill="#FFFFFF"></circle><path d="M4 21c1-5 4-7 8-7s7 2 8 7z" fill="#FFFFFF"></path></svg>{{q.text}}</button>
+</sc-for>
+
+<sc-if value="{{card.show}}" hint-placeholder-val="{{ true }}">
+<div style="position: absolute; right: 12px; top: 12px; width: 340px; max-width: calc(100% - 24px); background: #FFFFFF; border: 1px solid #0B0D10; border-radius: 2px; padding: 12px; display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; align-items: center; gap: 8px">
+<span style="display: inline-flex; align-items: center; gap: 6px; padding: 2px 8px; border-radius: 1px; background: {{card.srcBg}}; color: {{card.srcFg}}; font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 11px; font-weight: 700"><span style="width: 7px; height: 7px; border-radius: 50%; background: {{card.srcDot}}"></span>{{card.src}}</span>
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 11px; color: #5D6672">{{card.code}}</span>
+<button type="button" onClick="{{closeCard}}" aria-label="Close" style="margin-left: auto; width: 32px; height: 32px; border-radius: 2px; border: 1px solid #DCDFE4; background: #FFFFFF; cursor: pointer; display: inline-flex; align-items: center; justify-content: center"><svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="#0B0D10" stroke-width="2.4" stroke-linecap="round"></path></svg></button>
+</div>
+<div style="display: flex; flex-direction: column; gap: 2px">
+<span style="font-family: 'Saira Condensed', sans-serif; font-size: 28px; font-weight: 800; text-transform: uppercase; line-height: 0.95">{{card.title}}</span>
+<span style="font-size: 13px; color: #3A414B">{{card.sub}}</span>
+</div>
+<sc-if value="{{card.isCam}}" hint-placeholder-val="{{ true }}">
+<svg viewBox="0 0 640 360" role="img" aria-label="{{card.feedAria}}" style="display: block; width: 100%; height: auto; background: {{card.feedBg}}">
+<path d="{{card.scene}}" stroke="#2A323C" stroke-width="3" fill="none"></path>
+<path d="{{card.figA}}" stroke="#7FE0FF" stroke-width="6" stroke-linecap="round" fill="none"></path>
+<path d="{{card.figB}}" stroke="#C9A7FF" stroke-width="6" stroke-linecap="round" fill="none"></path>
+<path d="{{card.figC}}" stroke="#C9CED6" stroke-width="6" stroke-linecap="round" fill="none"></path>
+<text x="18" y="40" font-family="'Atkinson Hyperlegible Mono', monospace" font-size="22" font-weight="700" fill="#ECEFF3">{{card.feedText}}</text>
+<text x="18" y="340" font-family="'Atkinson Hyperlegible Mono', monospace" font-size="18" fill="#AEB7C2">{{card.feedFoot}}</text>
+</svg>
+<div style="display: flex; flex-wrap: wrap; gap: 6px; align-items: center">
+<span style="font-size: 12px; font-weight: 800; padding: 2px 8px; border-radius: 1px; background: {{card.lvBg}}; color: {{card.lvFg}}; border: 1px solid {{card.lvBorder}}; text-transform: uppercase">{{card.lvLabel}}</span>
+<span style="font-size: 13px; color: #3A414B">{{card.people}}</span>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 6px">
+<a href="L3Live.dc.html" style="display: inline-flex; align-items: center; min-height: 40px; padding: 0 12px; border-radius: 2px; background: #0B0D10; color: #FFFFFF; text-decoration: none; font-size: 13px; font-weight: 800">{{card.openLabel}}</a>
+<a href="L3Cameras.dc.html" style="display: inline-flex; align-items: center; min-height: 40px; padding: 0 12px; border-radius: 2px; border: 1px solid #B4BAC3; color: #0B0D10; text-decoration: none; font-size: 13px; font-weight: 700">Camera details</a>
+</div>
+</sc-if>
+<sc-if value="{{card.isPost}}" hint-placeholder-val="{{ false }}">
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px">
+<div style="background: #F7F8FA; border: 1px solid #DCDFE4; padding: 8px; display: flex; flex-direction: column; gap: 2px"><span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 20px; font-weight: 700">{{card.inc}}</span><span style="font-size: 11px; color: #3A414B">in 4 weeks</span></div>
+<div style="background: #E7EBFD; border: 1px solid #A9B6F2; padding: 8px; display: flex; flex-direction: column; gap: 2px"><span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 20px; font-weight: 700; color: #1F35B3">{{card.wk}}</span><span style="font-size: 11px; color: #1F35B3">avoided a week</span></div>
+<div style="background: #F7F8FA; border: 1px solid #DCDFE4; padding: 8px; display: flex; flex-direction: column; gap: 2px"><span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 20px; font-weight: 700">{{card.hrs}}</span><span style="font-size: 11px; color: #3A414B">hours a week</span></div>
+</div>
+<span style="font-size: 13px; line-height: 1.45; color: #3A414B">{{card.why}}</span>
+<div style="display: flex; flex-wrap: wrap; gap: 6px">
+<a href="L3Plan.dc.html" style="display: inline-flex; align-items: center; min-height: 40px; padding: 0 12px; border-radius: 2px; background: #0B0D10; color: #FFFFFF; text-decoration: none; font-size: 13px; font-weight: 800">Open in Plan</a>
+<a href="L3Incidents.dc.html" style="display: inline-flex; align-items: center; min-height: 40px; padding: 0 12px; border-radius: 2px; border: 1px solid #B4BAC3; color: #0B0D10; text-decoration: none; font-size: 13px; font-weight: 700">See the incidents</a>
+</div>
+</sc-if>
+</div>
+</sc-if>
+
+<sc-if value="{{compact}}" hint-placeholder-val="{{ false }}">
+<span style="position: absolute; left: 8px; top: 8px; font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 11px; font-weight: 700; background: #FFFFFF; border: 1px solid #DCDFE4; padding: 2px 6px">{{compactLabel}}</span>
+</sc-if>
+
+<sc-if value="{{full}}" hint-placeholder-val="{{ true }}">
+<div style="position: absolute; left: 12px; bottom: 12px; display: flex; flex-wrap: wrap; gap: 4px; align-items: center">
+<button type="button" onClick="{{rotL}}" aria-label="Rotate left" style="width: 36px; height: 36px; border-radius: 2px; border: 1px solid #B4BAC3; background: #FFFFFF; cursor: pointer; display: inline-flex; align-items: center; justify-content: center"><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 3-6.2M4 4v5h5" fill="none" stroke="#0B0D10" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"></path></svg></button>
+<button type="button" onClick="{{rotR}}" aria-label="Rotate right" style="width: 36px; height: 36px; border-radius: 2px; border: 1px solid #B4BAC3; background: #FFFFFF; cursor: pointer; display: inline-flex; align-items: center; justify-content: center"><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-3-6.2M20 4v5h-5" fill="none" stroke="#0B0D10" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"></path></svg></button>
+<button type="button" onClick="{{tiltUp}}" aria-label="Look more from above" style="height: 36px; padding: 0 8px; border-radius: 2px; border: 1px solid #B4BAC3; background: #FFFFFF; cursor: pointer; font-size: 12px; font-weight: 800">Top</button>
+<button type="button" onClick="{{tiltDown}}" aria-label="Tilt toward the horizon" style="height: 36px; padding: 0 8px; border-radius: 2px; border: 1px solid #B4BAC3; background: #FFFFFF; cursor: pointer; font-size: 12px; font-weight: 800">Tilt</button>
+<button type="button" onClick="{{zoomIn}}" aria-label="Zoom in" style="width: 36px; height: 36px; border-radius: 2px; border: 1px solid #B4BAC3; background: #FFFFFF; cursor: pointer; font-size: 18px; font-weight: 800">+</button>
+<button type="button" onClick="{{zoomOut}}" aria-label="Zoom out" style="width: 36px; height: 36px; border-radius: 2px; border: 1px solid #B4BAC3; background: #FFFFFF; cursor: pointer; font-size: 18px; font-weight: 800">−</button>
+<button type="button" onClick="{{reset}}" style="height: 36px; padding: 0 10px; border-radius: 2px; border: 1px solid #B4BAC3; background: #FFFFFF; cursor: pointer; font-size: 12px; font-weight: 700">Reset view</button>
+<span style="display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 50%; border: 1px solid #B4BAC3; background: #FFFFFF" title="North"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" style="transform: rotate({{north}})"><path d="M12 3l4 9h-8z" fill="#C8241B"></path><path d="M12 21l-4-9h8z" fill="#B4BAC3"></path></svg></span>
+</div>
+<div style="position: absolute; right: 12px; bottom: 12px; display: flex; flex-direction: column; align-items: flex-end; gap: 4px">
+<div style="display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 4px 10px; padding: 6px 8px; background: rgba(255, 255, 255, 0.92); border: 1px solid #DCDFE4; font-size: 11px; color: #3A414B">
+<span style="display: inline-flex; align-items: center; gap: 4px"><span style="width: 9px; height: 9px; border-radius: 50%; background: #FF453A"></span>Live webcam</span>
+<span style="display: inline-flex; align-items: center; gap: 4px"><span style="width: 9px; height: 9px; border-radius: 50%; background: #5D6672"></span>Recording</span>
+<span style="display: inline-flex; align-items: center; gap: 4px"><span style="width: 9px; height: 9px; border-radius: 50%; background: #0B0D10"></span>No signal</span>
+<span style="display: inline-flex; align-items: center; gap: 4px"><span style="width: 9px; height: 9px; border-radius: 50%; background: #2742D9"></span>Person on duty</span>
+</div>
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 10px; color: #5D6672; background: rgba(255, 255, 255, 0.85); padding: 2px 6px">FOOTPRINTS © OPENSTREETMAP CONTRIBUTORS · HEIGHTS ESTIMATED · DRAG TO ROTATE</span>
+</div>
+</sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"mode":{"editor":"enum","options":["cameras","plan"],"default":"cameras"},"compact":{"editor":"boolean","default":false},"focus":{"editor":"enum","options":["","aud","blockc","syopz","sports","ures"],"default":""},"$preview":{"width":1200,"height":640}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    const FC = { aud: [10, -175], blockc: [55, -125], syopz: [-80, -55], sports: [50, 145], ures: [-90, -120] };
+    const fc = props && props.focus ? FC[props.focus] : null;
+    const compact = !!(props && props.compact);
+    this.state = { mode: (props && props.mode) || 'cameras', th: 90, pitch: compact ? 60 : 52, zoom: fc ? 2.2 : 1.2, fx: fc ? fc[0] : 0, fy: fc ? fc[1] : -12, sel: compact ? null : 'CAM-AU-01', post: null, drag: null };
+  }
+  componentDidUpdate(prev) { if (prev.mode !== this.props.mode) this.setState({ mode: this.props.mode || 'cameras', sel: null, post: null }); }
+  data() {
+    if (this._d) return this._d;
+    const D = {"B":[{"id":"blockab","label":"BLOCK A AND B","h":30,"p":[[-64,-209],[-64,-173],[-64,-165],[-64,-163],[38,-163],[38,-143],[71,-143],[71,-163],[76,-163],[76,-180],[77,-188],[79,-192],[79,-196],[78,-200],[76,-205],[74,-209],[-17,-209],[-16,-211],[-24,-211],[-24,-217],[-39,-217],[-39,-209]]},{"id":"blockc","label":"BLOCK C","h":38,"p":[[38,-143],[71,-143],[84,-143],[84,-135],[95,-135],[95,-113],[74,-113],[74,-100],[53,-100],[53,-113],[21,-114],[14,-114],[14,-143]]},{"id":"blockd","label":"BLOCK D","h":38,"p":[[112,-100],[112,-77],[74,-77],[74,-62],[54,-62],[54,-77],[16,-77],[17,-82],[16,-100],[21,-100],[53,-100],[74,-100]]},{"id":"blocke","label":"BLOCK E","h":38,"p":[[111,-62],[112,-40],[85,-40],[86,-25],[32,-25],[31,-41],[18,-42],[18,-63],[54,-62],[74,-62]]},{"id":"syopz","label":"SYOPZ MALL \u00b7 U RESIDENCE ABOVE","h":24,"p":[[-119,-145],[-119,-30],[-96,-29],[-96,-17],[-81,-17],[-81,-29],[-59,-29],[-59,-143],[-72,-143]]},{"id":"sports","label":"SPORTS CENTRE","h":12,"p":[[89,123],[90,170],[44,171],[43,122]]}],"campus":[[-94,-248],[55,-243],[83,-242],[98,-240],[136,-238],[141,-238],[152,-227],[154,-209],[155,-196],[156,-190],[160,-176],[160,-166],[160,-148],[158,-135],[154,-126],[150,-115],[148,-107],[141,-36],[140,-6],[137,53],[127,142],[124,169],[117,203],[82,201],[77,213],[72,219],[68,222],[64,224],[60,224],[57,223],[50,218],[35,202],[-18,142],[-28,131],[-35,137],[-57,157],[-78,175],[-90,181],[-97,184],[-104,184],[-109,183],[-113,179],[-121,168],[-131,145],[-132,140],[-133,134],[-132,127],[-127,113],[-124,102],[-122,92],[-122,82],[-124,10],[-124,-5],[-124,-31],[-151,-34],[-151,-147],[-148,-164],[-144,-178],[-124,-218],[-113,-238],[-103,-238],[-104,-242],[-103,-248]],"water":[[[-58,-19],[-60,76],[-56,94],[-49,106],[-38,117],[-24,119],[-8,117],[7,110],[14,100],[15,55],[14,-17],[8,-18],[7,-82],[-3,-81],[-3,-99],[-58,-99]],[[75,186],[65,210],[63,212],[59,212],[54,211],[45,206],[43,202],[45,195],[50,183],[53,179],[55,177],[67,177],[71,178],[74,180],[75,182]]],"pitch":[[[7,123],[7,146],[17,146],[17,123]],[[23,131],[23,169],[42,169],[42,131]]]};
+    const inside = (pt, poly) => { let c = false; for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) { const a = poly[i], b = poly[j]; if ((a[1] > pt[1]) !== (b[1] > pt[1]) && pt[0] < (b[0] - a[0]) * (pt[1] - a[1]) / (b[1] - a[1] + 1e-9) + a[0]) c = !c; } return c; };
+    D.B.forEach((b) => {
+      b.edges = b.p.map((a, i) => {
+        const c = b.p[(i + 1) % b.p.length];
+        const dx = c[0] - a[0], dy = c[1] - a[1], len = Math.hypot(dx, dy) || 1;
+        let n = [dy / len, -dx / len];
+        const m = [(a[0] + c[0]) / 2 + n[0] * 0.6, (a[1] + c[1]) / 2 + n[1] * 0.6];
+        if (inside(m, b.p)) n = [-n[0], -n[1]];
+        return { a: a, b: c, n: n };
+      });
+      b.c = [b.p.reduce((s, q) => s + q[0], 0) / b.p.length, b.p.reduce((s, q) => s + q[1], 0) / b.p.length];
+    });
+    this._d = D;
+    return D;
+  }
+  fig(p) {
+    const T = 56, G = 318, rad = (d) => d * Math.PI / 180, legL = 0.58 * T;
+    const hip = [p.x, G - 2 * legL * 0.97], L = rad(p.lean);
+    const neck = [hip[0] + p.dir * T * Math.sin(L), hip[1] - T * Math.cos(L)];
+    const head = [neck[0] + p.dir * 0.34 * T * Math.sin(L), neck[1] - 0.34 * T * Math.cos(L)];
+    const arm = (a, e) => { const A = rad(a), E = rad(a + e); const el = [neck[0] + p.dir * 0.5 * T * Math.sin(A), neck[1] + 0.5 * T * Math.cos(A)]; return [el, [el[0] + p.dir * 0.46 * T * Math.sin(E), el[1] + 0.46 * T * Math.cos(E)]]; };
+    const leg = (s) => { const S = rad(s), S2 = rad(s * 0.4); const k = [hip[0] + p.dir * legL * Math.sin(S), hip[1] + legL * Math.cos(S)]; return [k, [k[0] + p.dir * legL * Math.sin(S2), k[1] + legL * Math.cos(S2)]]; };
+    const r = arm(p.ra[0], p.ra[1]), l = arm(p.la[0], p.la[1]), rl = leg(p.st), ll = leg(-p.st);
+    const f = (n) => Math.round(n * 10) / 10, seg = (a, b) => 'M' + f(a[0]) + ' ' + f(a[1]) + 'L' + f(b[0]) + ' ' + f(b[1]);
+    const hr = 0.2 * T;
+    return [seg(hip, neck), seg(neck, r[0]), seg(r[0], r[1]), seg(neck, l[0]), seg(l[0], l[1]), seg(hip, rl[0]), seg(rl[0], rl[1]), seg(hip, ll[0]), seg(ll[0], ll[1])].join('') + 'M' + f(head[0] - hr) + ' ' + f(head[1]) + 'a' + f(hr) + ' ' + f(hr) + ' 0 1 0 ' + f(2 * hr) + ' 0a' + f(hr) + ' ' + f(hr) + ' 0 1 0 ' + f(-2 * hr) + ' 0';
+  }
+  renderVals() {
+    const s = this.state;
+    const D = this.data();
+    const plan = s.mode === 'plan';
+    const compact = !!this.props.compact;
+    const HZ = 1.5;
+    const th = s.th * Math.PI / 180, P = s.pitch * Math.PI / 180, S = 1.55 * s.zoom;
+    const cs = Math.cos(th), sn = Math.sin(th), sp = Math.sin(P), cp = Math.cos(P);
+    const pr = (x, y, z) => { const dx = x - s.fx, dy = y - s.fy; const u = dx * cs - dy * sn, v = dx * sn + dy * cs; return [600 + u * S, 330 + v * S * sp - (z || 0) * HZ * S * cp, v]; };
+    const f = (n) => Math.round(n * 10) / 10;
+    const poly = (pts, z) => 'M' + pts.map((q) => { const p = pr(q[0], q[1], z || 0); return f(p[0]) + ' ' + f(p[1]); }).join('L') + 'Z';
+    const pct = (p) => ({ x: (p[0] / 1200 * 100).toFixed(2) + '%', y: (p[1] / 640 * 100).toFixed(2) + '%' });
+
+    const CAMS = {
+      'CAM-AU-01': { loc: 'Grand Hall', where: 'Block B · level 2 · Grand Hall, stage left', src: 'live', level: 'fight_likely', people: 2, pos: [5, -160, 10], pose: 'fight', b: 'blockab' },
+      'CAM-BC-03': { loc: 'Block C stairwell', where: 'Block C · level 1 landing', src: 'rec', level: 'calm', people: 1, pos: [62, -108, 8], pose: 'one', b: 'blockc' },
+      'CAM-CT-04': { loc: 'Syopz Mall food court', where: 'Syopz Mall · east entrance', src: 'rec', level: 'tense', people: 14, pos: [-58, -78, 5], pose: 'crowd', b: 'syopz' },
+      'CAM-HC-01': { loc: 'U Residence, corridor L3', where: 'U Residence hostel, above Syopz Mall · level 3', src: 'rec', level: 'calm', people: 1, pos: [-100, -122, 16], pose: 'one', b: 'syopz' },
+      'CAM-HC-02': { loc: 'U Residence, corridor L5', where: 'U Residence hostel, above Syopz Mall · level 5', src: 'black', level: 'black', people: null, pos: [-78, -132, 22], pose: null, b: 'syopz' },
+      'CAM-SC-06': { loc: 'Sports pitch', where: 'Football pitch by the sports centre', src: 'rec', level: 'tense', people: 6, pos: [27, 150, 1], pose: 'play', b: 'sports' }
+    };
+    const POSTS = [
+      { id: 'P1', short: 'P/01', loc: 'Block C stairwell', when: 'MON–THU 13:00–14:00', pos: [45, -100], inc: 5, hrs: 4, b: 'blockc', why: 'Five incidents in the same lunch hour in 4 weeks. One person on the landing covers both flights.' },
+      { id: 'P2', short: 'P/02', loc: 'U Residence, corridor L3', when: 'SUN–THU 22:00–23:00', pos: [-95, -118], inc: 4, hrs: 5, b: 'syopz', why: 'Four incidents after lights-out. The L5 camera is black, so this is the only eye on the block.' },
+      { id: 'P3', short: 'P/03', loc: 'Syopz Mall food court', when: 'FRI 12:00–13:00', pos: [-70, -45], inc: 3, hrs: 1, b: 'syopz', why: 'Three crowd gatherings at Friday lunch. One person at the entrance thins the queue.' }
+    ];
+    const selCam = s.sel ? CAMS[s.sel] : null;
+    const selPost = s.post ? POSTS.find((p) => p.id === s.post) : null;
+    const selB = selCam ? selCam.b : (selPost ? selPost.b : null);
+    const alarmB = plan ? null : 'blockab';
+
+    const ents = D.B.map((b) => ({ kind: 'b', id: b.id, label: b.label, h: b.h, p: b.p, edges: b.edges, c: b.c }));
+    if (plan) POSTS.forEach((q) => {
+      const x = q.pos[0], y = q.pos[1], r = 5;
+      const p = [[x - r, y - r], [x + r, y - r], [x + r, y + r], [x - r, y + r]];
+      ents.push({ kind: 'col', id: 'col' + q.id, h: q.inc * 9, p: p, c: [x, y], edges: p.map((a, i) => { const b = p[(i + 1) % 4]; const n = [[0, -1], [1, 0], [0, 1], [-1, 0]][i]; return { a: a, b: b, n: n }; }) });
+    });
+    const shade = (e, side) => {
+      if (e.kind === 'col') return side === 't' ? '#3653DC' : (side === 'l' ? '#6E86E8' : '#1F35B3');
+      if (e.id === alarmB) return side === 't' ? '#FDEDEB' : (side === 'l' ? '#F6CFCB' : '#EBA7A1');
+      if (e.id === selB) return side === 't' ? '#E7EBFD' : (side === 'l' ? '#CFD8F7' : '#AEBBEF');
+      return side === 't' ? '#FFFFFF' : (side === 'l' ? '#E6E9EE' : '#C9D0D9');
+    };
+    const strokeOf = (e) => (e.kind === 'col' ? '#1F35B3' : (e.id === alarmB ? '#C8241B' : (e.id === selB ? '#2742D9' : '#8F99A5')));
+    const faces = (e) => {
+      let L = '', R = '';
+      e.edges.forEach((ed) => {
+        const nu = ed.n[0] * cs - ed.n[1] * sn, nv = ed.n[0] * sn + ed.n[1] * cs;
+        if (nv <= 0.001) return;
+        const a0 = pr(ed.a[0], ed.a[1], 0), b0 = pr(ed.b[0], ed.b[1], 0), b1 = pr(ed.b[0], ed.b[1], e.h), a1 = pr(ed.a[0], ed.a[1], e.h);
+        const face = 'M' + f(a0[0]) + ' ' + f(a0[1]) + 'L' + f(b0[0]) + ' ' + f(b0[1]) + 'L' + f(b1[0]) + ' ' + f(b1[1]) + 'L' + f(a1[0]) + ' ' + f(a1[1]) + 'Z';
+        if (nu < 0) L += face; else R += face;
+      });
+      return { l: L, cl: shade(e, 'l'), r: R, cr: shade(e, 'r'), t: poly(e.p, e.h), ct: shade(e, 't'), st: strokeOf(e) };
+    };
+    const sorted = ents.map((e) => ({ e: e, depth: pr(e.c[0], e.c[1], 0)[2] })).sort((a, b) => a.depth - b.depth).map((o) => faces(o.e));
+    const empty = { l: '', cl: 'none', r: '', cr: 'none', t: '', ct: 'none', st: 'none' };
+    const slots = {};
+    for (let i = 0; i < 12; i++) slots['s' + i] = sorted[i] || empty;
+
+    const LV = {
+      calm: { label: 'Calm', bg: '#E4F3EA', fg: '#17663D', border: '#9FD3B4' },
+      tense: { label: 'Tense', bg: '#F5B323', fg: '#1A1200', border: '#E5A41C' },
+      fight_likely: { label: 'Fight likely', bg: '#C8241B', fg: '#FFFFFF', border: '#C8241B' },
+      black: { label: 'No signal', bg: '#0B0D10', fg: '#FFFFFF', border: '#0B0D10' }
+    };
+    const pins = plan ? [] : Object.keys(CAMS).filter((id) => !compact || id === 'CAM-AU-01').map((id) => {
+      const c = CAMS[id]; const p = pct(pr(c.pos[0], c.pos[1], c.pos[2])); const on = id === s.sel; const lv = LV[c.level];
+      return {
+        x: p.x, y: p.y, text: id.replace('CAM-', '') + (c.src === 'live' ? ' · LIVE' : (c.src === 'rec' ? ' · REC' : '')),
+        aria: id + ', ' + c.loc + ', ' + (c.src === 'live' ? 'live webcam' : (c.src === 'rec' ? 'recording' : 'no signal')),
+        dot: c.src === 'live' ? '#FF453A' : (c.src === 'rec' ? '#5D6672' : '#0B0D10'),
+        bg: on ? '#0B0D10' : '#FFFFFF', fg: on ? '#FFFFFF' : '#0B0D10',
+        border: c.level === 'fight_likely' ? '2px solid #C8241B' : (on ? '2px solid #0B0D10' : '1px solid ' + lv.border),
+        cls: c.level === 'fight_likely' ? 'ee-pulse' : '',
+        pick: () => this.setState({ sel: id, post: null })
+      };
+    });
+    const posts = plan ? POSTS.map((q) => {
+      const p = pct(pr(q.pos[0], q.pos[1], q.inc * 9 + 4)); const on = q.id === s.post;
+      return { x: p.x, y: p.y, text: q.short + ' · ' + q.when, aria: 'Patrol post ' + q.short + ' at ' + q.loc + ', ' + q.when, border: on ? '#0B0D10' : '#FFFFFF', pick: () => this.setState({ post: q.id, sel: null }) };
+    }) : [];
+    const GUARDS = [{ name: 'Guard B', pos: [8, -122] }, { name: 'Guard A', pos: [-75, 0] }, { name: 'Guard C', pos: [-50, -105] }];
+    const guards = plan ? [] : GUARDS.filter((g) => !compact || g.name === 'Guard B').map((g) => { const p = pct(pr(g.pos[0], g.pos[1], 0)); return { name: g.name, x: p.x, y: p.y }; });
+    const camsOf = (id) => Object.keys(CAMS).filter((k) => CAMS[k].b === id);
+    const labels = compact ? [] : D.B.map((b) => {
+      const p = pct(pr(b.c[0], b.c[1], b.h + 3)); const on = b.id === selB; const cams = camsOf(b.id);
+      const live = cams.indexOf('CAM-AU-01') >= 0;
+      return {
+        x: p.x, y: p.y, text: (live ? 'GRAND HALL · ' : '') + b.label + (cams.length ? (live ? ' · LIVE' : ' · ' + cams.length + ' CAM') : ''),
+        bg: on ? '#0B0D10' : 'rgba(255, 255, 255, 0.94)', fg: on ? '#FFFFFF' : '#0B0D10', border: live && !plan ? '#C8241B' : (on ? '#0B0D10' : '#B4BAC3'),
+        pick: () => {
+          if (plan) { const q = POSTS.find((x) => x.b === b.id); this.setState(q ? { post: q.id, sel: null } : { post: null, sel: null }); }
+          else this.setState({ sel: cams[0] || null, post: null });
+        }
+      };
+    });
+    const lineOf = (pts) => 'M' + pts.map((q) => { const p = pr(q[0], q[1], 0); return f(p[0]) + ' ' + f(p[1]); }).join('L');
+    let route = '';
+    if (plan && selPost) route = lineOf([[selPost.pos[0] - 30, selPost.pos[1] + 30], [selPost.pos[0], selPost.pos[1] + 30], [selPost.pos[0], selPost.pos[1]]]);
+    if (!plan) route = lineOf([[8, -122], [8, -150], [5, -160]]);
+
+    const SCENE = 'M0 318L640 318M0 318L120 230L520 230L640 318M120 230L120 0M520 230L520 0';
+    const POSES = {
+      fight: [{ x: 309, dir: 1, lean: 12, ra: [125, 15], la: [45, 40], st: 16 }, { x: 334, dir: -1, lean: -4, ra: [60, 70], la: [30, 30], st: 10 }],
+      one: [{ x: 330, dir: 1, lean: 2, ra: [10, 8], la: [-6, 6], st: 14 }],
+      crowd: [{ x: 240, dir: 1, lean: 4, ra: [10, 5], la: [-5, 5], st: 8 }, { x: 300, dir: 1, lean: 6, ra: [15, 10], la: [-5, 5], st: 10 }, { x: 370, dir: -1, lean: 6, ra: [12, 8], la: [-6, 6], st: 10 }, { x: 430, dir: -1, lean: 4, ra: [10, 6], la: [-4, 5], st: 8 }],
+      play: [{ x: 250, dir: 1, lean: -6, ra: [170, 0], la: [150, 10], st: 22 }, { x: 420, dir: -1, lean: -4, ra: [150, 10], la: [20, 10], st: 20 }]
+    };
+    let card = { show: false, isCam: false, isPost: false };
+    if (!compact && selCam) {
+      const lv = LV[selCam.level];
+      const figs = selCam.pose ? POSES[selCam.pose].map((p) => this.fig(p)) : [];
+      const src = selCam.src;
+      card = {
+        show: true, isCam: true, isPost: false,
+        src: src === 'live' ? 'LIVE WEBCAM' : (src === 'rec' ? 'RECORDING · LOOP' : 'NO SIGNAL'),
+        srcBg: src === 'rec' ? '#F1F2F4' : '#0B0D10', srcFg: src === 'rec' ? '#3A414B' : '#FFFFFF', srcDot: src === 'live' ? '#FF453A' : (src === 'rec' ? '#5D6672' : '#8B939E'),
+        code: s.sel, title: selCam.loc, sub: selCam.where,
+        feedBg: src === 'black' ? '#000000' : '#161B22', scene: src === 'black' ? '' : SCENE,
+        figA: figs[0] || '', figB: figs[1] || '', figC: figs.slice(2).join(''),
+        feedText: src === 'live' ? 'LIVE · 14:31:06' : (src === 'rec' ? 'REC · RECORDED SAT 10 OCT 16:20' : 'NO SIGNAL · 3 DAYS'),
+        feedFoot: src === 'black' ? '' : (src === 'live' ? 'LAPTOP WEBCAM · VIDEO STAYS ON SITE' : 'OUR OWN STAGED RECORDING · LABELLED AS SUCH'),
+        feedAria: selCam.loc + ' feed',
+        lvLabel: lv.label, lvBg: lv.bg, lvFg: lv.fg, lvBorder: lv.border,
+        people: selCam.people == null ? 'People in view unknown' : selCam.people + ' people in view',
+        openLabel: src === 'live' ? 'Open live view' : (src === 'rec' ? 'Open recording' : 'Report repair')
+      };
+    } else if (!compact && selPost) {
+      const wk = selPost.inc * 0.6 / 4;
+      card = { show: true, isCam: false, isPost: true, src: 'PATROL POST ' + selPost.short, srcBg: '#2742D9', srcFg: '#FFFFFF', srcDot: '#FFFFFF', code: selPost.when, title: selPost.loc, sub: 'Place one person here · ' + selPost.when.toLowerCase(), inc: selPost.inc, wk: wk.toFixed(2), hrs: selPost.hrs + ' h', why: selPost.why };
+    }
+    const FOCUS = [['Grand Hall', [10, -175], 'blockab'], ['Block C', [55, -125], 'blockc'], ['Syopz Mall', [-80, -55], 'syopz', 'CAM-CT-04', 'P3'], ['U Residence', [-90, -120], 'syopz', 'CAM-HC-01', 'P2'], ['Sports centre', [50, 145], 'sports']];
+    const jumps = FOCUS.map((j) => ({ label: j[0], go: () => {
+      const cams = j[3] ? [j[3]] : camsOf(j[2]); const q = j[4] ? POSTS.find((x) => x.id === j[4]) : POSTS.find((x) => x.b === j[2]);
+      this.setState({ fx: j[1][0], fy: j[1][1], zoom: 2.2, sel: plan ? null : (cams[0] || null), post: plan ? (q ? q.id : null) : null });
+    } })).concat([{ label: 'Whole campus', go: () => this.setState({ fx: 0, fy: -12, zoom: 1.2, th: 90, pitch: 52 }) }]);
+    const set = (patch) => () => this.setState(patch);
+    return Object.assign({
+      aria: "3D view of Taylor's University Lakeside campus with " + (plan ? 'patrol posts and hotspot columns' : 'camera pins'),
+      cursor: compact ? 'default' : (s.drag ? 'grabbing' : 'grab'),
+      campus: poly(D.campus, 0), water: D.water.map((w) => poly(w, 0)).join(''), pitch: D.pitch.map((w) => poly(w, 0.2)).join(''), route: route,
+      pins: pins, posts: posts, labels: labels, guards: guards, jumps: jumps, card: card,
+      full: !compact, compact: compact, compactLabel: 'WHERE · GRAND HALL, BLOCK B LEVEL 2 · GUARD B ~40 M AWAY',
+      closeCard: set({ sel: null, post: null }),
+      north: s.th + 'deg',
+      camsPressed: plan ? 'false' : 'true', planPressed: plan ? 'true' : 'false',
+      camsBg: plan ? '#FFFFFF' : '#0B0D10', camsFg: plan ? '#0B0D10' : '#FFFFFF', planBg: plan ? '#0B0D10' : '#FFFFFF', planFg: plan ? '#FFFFFF' : '#0B0D10',
+      setCams: set({ mode: 'cameras', post: null }), setPlan: set({ mode: 'plan', sel: null }),
+      rotL: set({ th: s.th - 20 }), rotR: set({ th: s.th + 20 }),
+      tiltUp: set({ pitch: Math.min(88, s.pitch + 12) }), tiltDown: set({ pitch: Math.max(28, s.pitch - 12) }),
+      zoomIn: set({ zoom: Math.min(3.2, s.zoom * 1.25) }), zoomOut: set({ zoom: Math.max(0.6, s.zoom / 1.25) }),
+      reset: set({ th: 90, pitch: 52, zoom: 1.2, fx: 0, fy: -12 }),
+      down: (e) => { if (compact) return; if (e && e.target && e.target.closest && e.target.closest('button,a')) return; this.setState({ drag: { x: e.clientX, y: e.clientY, th: s.th, pitch: s.pitch } }); },
+      move: (e) => { const d = this.state.drag; if (!d) return; this.setState({ th: d.th + (e.clientX - d.x) * 0.4, pitch: Math.max(28, Math.min(88, d.pitch - (e.clientY - d.y) * 0.25)) }); },
+      up: () => { if (this.state.drag) this.setState({ drag: null }); }
+    }, slots);
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>AI Monday briefing draft</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Mono:wght@400;500;700&amp;family=Atkinson+Hyperlegible+Next:wght@400;500;700;800&amp;family=Saira+Condensed:wght@600;700;800&amp;display=swap">
+<style>
+body{margin:0;background:#F1F2F4}
+a{color:#2742D9}a:hover{color:#1F35B3}
+button{font-family:inherit}
+</style>
+</helmet>
+<div style="font-family: 'Atkinson Hyperlegible Next', system-ui, sans-serif; color: #0B0D10; background: #F1F2F4; box-sizing: border-box; padding: 40px 24px 48px">
+<div style="max-width: 1360px; margin: 0 auto; display: flex; flex-direction: column; gap: 22px">
+
+<header style="display: flex; flex-direction: column; gap: 8px; max-width: 980px">
+<span style="display: inline-flex; align-self: flex-start; padding: 3px 10px; border: 2px dashed #0B0D10; border-radius: 2px; font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; font-weight: 700; letter-spacing: 0.08em">DRAFT FOR KAYLA'S REVIEW · NOT IN THE BUILD YET</span>
+<h1 style="margin: 0; font-family: 'Saira Condensed', sans-serif; font-size: 56px; font-weight: 800; text-transform: uppercase; line-height: 0.95">Monday briefing, written by AI</h1>
+<p style="margin: 0; font-size: 19px; line-height: 1.5; color: #3A414B">One short paragraph at the top of the Plan page, every Monday. Claude turns numbers EarlyEye has already counted into three plain sentences for the security supervisor. It never sees video, never sees students, and never decides anything.</p>
+</header>
+
+<section aria-label="How it looks on the Plan page" style="display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px">
+<h2 style="margin: 0; font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; color: #5D6672">1 · HOW IT LOOKS ON THE PLAN PAGE</h2>
+<div role="group" aria-label="Which version" style="display: inline-flex; border: 1px solid #B4BAC3; border-radius: 2px; overflow: hidden">
+<button type="button" onClick="{{showAi}}" aria-pressed="{{aiPressed}}" style="min-height: 36px; padding: 0 12px; border: none; background: {{aiBg}}; color: {{aiFg}}; font-size: 13px; font-weight: 700; cursor: pointer">Written by AI</button>
+<button type="button" onClick="{{showFallback}}" aria-pressed="{{fbPressed}}" style="min-height: 36px; padding: 0 12px; border: none; border-left: 1px solid #B4BAC3; background: {{fbBg}}; color: {{fbFg}}; font-size: 13px; font-weight: 700; cursor: pointer">If the AI is unavailable</button>
+</div>
+</div>
+<article style="background: #FFFFFF; border: 2px solid #0B0D10; border-radius: 2px; padding: 18px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px">
+<span style="font-family: 'Saira Condensed', sans-serif; font-size: 28px; font-weight: 800; text-transform: uppercase; line-height: 1">This week in brief</span>
+<span style="font-size: 13px; font-weight: 700; padding: 2px 8px; border-radius: 1px; background: #E7EBFD; color: #1F35B3">{{badge}}</span>
+<span style="margin-left: auto; font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; color: #5D6672">MON 12 OCT · 06:00</span>
+</div>
+<p style="margin: 0; font-size: 20px; line-height: 1.5; max-width: 980px">{{text}}</p>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; color: #5D6672">THE NUMBERS IT USED · CHECK THEM HERE</span>
+<span style="display: flex; flex-wrap: wrap; gap: 6px">
+<sc-for list="{{chips}}" as="c" hint-placeholder-count="5">
+<span style="display: inline-flex; align-items: center; min-height: 30px; padding: 0 10px; border: 1px solid #DCDFE4; border-radius: 2px; background: #F7F8FA; font-size: 13px; font-weight: 700">{{c}}</span>
+</sc-for>
+</span>
+</div>
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px; border-top: 1px solid #F1F2F4; padding-top: 10px">
+<button type="button" style="min-height: 40px; padding: 0 14px; border-radius: 2px; border: none; background: #0B0D10; color: #FFFFFF; font-size: 14px; font-weight: 800; cursor: pointer">Add to the roster</button>
+<button type="button" style="min-height: 40px; padding: 0 14px; border-radius: 2px; border: 1px solid #B4BAC3; background: #FFFFFF; color: #0B0D10; font-size: 14px; font-weight: 700; cursor: pointer">Hide</button>
+<a href="L3Plan.dc.html" style="font-size: 14px; font-weight: 800">Something wrong? Tell us</a>
+</div>
+</article>
+</section>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); gap: 14px; align-items: start">
+
+<section aria-label="What Claude receives" style="background: #FFFFFF; border: 1px solid #DCDFE4; border-radius: 2px; padding: 16px; display: flex; flex-direction: column; gap: 8px">
+<h2 style="margin: 0; font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; color: #5D6672">2 · WHAT CLAUDE RECEIVES</h2>
+<p style="margin: 0; font-size: 15px; line-height: 1.5; color: #3A414B">Only numbers the database already counted, for the plan page. No video, no pictures, no student information. Staff appear only by call sign.</p>
+<pre style="margin: 0; background: #0E1217; color: #ECEFF3; border-radius: 2px; padding: 12px 14px; font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; line-height: 1.5; white-space: pre-wrap; overflow-x: auto">{{inputJson}}</pre>
+</section>
+
+<section aria-label="The instruction" style="background: #FFFFFF; border: 1px solid #DCDFE4; border-radius: 2px; padding: 16px; display: flex; flex-direction: column; gap: 8px">
+<h2 style="margin: 0; font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; color: #5D6672">3 · THE INSTRUCTION WE GIVE CLAUDE</h2>
+<pre style="margin: 0; background: #F7F8FA; border: 1px solid #DCDFE4; color: #0B0D10; border-radius: 2px; padding: 12px 14px; font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12.5px; line-height: 1.55; white-space: pre-wrap">{{systemPrompt}}</pre>
+</section>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); gap: 14px; align-items: start">
+<section aria-label="Safety checks" style="background: #FFFFFF; border: 1px solid #DCDFE4; border-radius: 2px; padding: 16px; display: flex; flex-direction: column; gap: 8px">
+<h2 style="margin: 0; font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; color: #5D6672">4 · SAFETY CHECKS BEFORE ANYONE SEES IT</h2>
+<sc-for list="{{checks}}" as="k" hint-placeholder-count="5">
+<div style="display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 8px; font-size: 15px; line-height: 1.5"><span style="font-weight: 800">{{k.n}}</span><span><span style="font-weight: 800">{{k.t}}</span> {{k.d}}</span></div>
+</sc-for>
+</section>
+<section aria-label="Where AI is used" style="background: #FFFFFF; border: 1px solid #DCDFE4; border-radius: 2px; padding: 16px; display: flex; flex-direction: column; gap: 8px">
+<h2 style="margin: 0; font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; color: #5D6672">5 · WHERE AI IS USED, AND WHERE IT IS NOT</h2>
+<sc-for list="{{where}}" as="w" hint-placeholder-count="6">
+<div style="display: grid; grid-template-columns: 110px 90px minmax(0, 1fr); gap: 8px; align-items: baseline; padding: 6px 0; border-bottom: 1px solid #F1F2F4; font-size: 15px; line-height: 1.45"><span style="font-weight: 800">{{w.page}}</span><span style="font-weight: 800; color: {{w.color}}">{{w.use}}</span><span style="color: #3A414B">{{w.why}}</span></div>
+</sc-for>
+</section>
+</div>
+
+<section aria-label="Decisions" style="background: #0B0D10; color: #FFFFFF; border-radius: 2px; padding: 16px; display: flex; flex-direction: column; gap: 8px">
+<h2 style="margin: 0; font-family: 'Saira Condensed', sans-serif; font-size: 28px; font-weight: 800; text-transform: uppercase">Your decisions before we build it</h2>
+<sc-for list="{{decisions}}" as="d" hint-placeholder-count="4">
+<p style="margin: 0; font-size: 16px; line-height: 1.5">{{d}}</p>
+</sc-for>
+</section>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1900}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { mode: 'ai' };
+  }
+  renderVals() {
+    const ai = this.state.mode === 'ai';
+    const input = {
+      week_of: 'Mon 12 Oct',
+      last_week: {
+        posts: [
+          { place: 'Block C stairwell', days: 'Mon–Thu', hours: '13:00–14:00', guard: 'Guard B', covered_days: 4, planned_days: 4, incidents_during_post: 1, guard_already_there: true, over_within_seconds: 60 },
+          { place: 'U Residence, corridor L3', days: 'Sun–Thu', hours: '22:00–23:00', guard: 'Guard C', covered_days: 3, planned_days: 5, incidents_during_post: 0, incidents_on_uncovered_nights: 1, uncovered_incident: { type: 'fight', day: 'Thu 8 Oct', time: '22:25' } },
+          { place: 'Syopz Mall food court', days: 'Fri', hours: '12:00–13:00', guard: 'Guard A', covered_days: 1, planned_days: 1, incidents_during_post: 1, guard_already_there: true, over_within_seconds: 60 }
+        ]
+      },
+      this_week: {
+        posts: [
+          { rank: 1, place: 'Block C stairwell', days: 'Mon–Thu', hours: '13:00–14:00', incidents_4_weeks: 5, assigned_to: 'Guard B' },
+          { rank: 2, place: 'U Residence, corridor L3', days: 'Sun–Thu', hours: '22:00–23:00', incidents_4_weeks: 4, assigned_to: null },
+          { rank: 3, place: 'Syopz Mall food court', days: 'Fri', hours: '12:00–13:00', incidents_4_weeks: 3, assigned_to: null }
+        ]
+      },
+      cameras_off: [{ place: 'U Residence, corridor L5', days_off: 3 }]
+    };
+    const AI_TEXT = 'Last week a guard was already at the post for both incidents during post hours, at the Block C stairwell and the food court, and each was over within a minute. The only fight came on Thu 8 Oct at 22:25 in U Residence, on a night with nobody posted, so cover all five nights this week. Posts 2 and 3 still need someone.';
+    const FALLBACK = 'Last week: 2 incidents during post hours, both with a guard already there. 1 fight on a night with no post (Thu 8 Oct, 22:25, U Residence). This week: 3 posts, 2 still need someone.';
+    const prompt = [
+      'You write the Monday briefing for a campus security supervisor.',
+      'You get a JSON object with numbers EarlyEye has already counted.',
+      '',
+      'Write at most 3 sentences and under 70 words, in plain English a guard would use.',
+      '1. First, what happened at last week\'s posts.',
+      '2. Then the one change that matters most this week.',
+      '3. If a post has nobody assigned, say so.',
+      '',
+      'Rules:',
+      '- Use only facts and numbers from the input. Never estimate, add, average or round.',
+      '- Name staff only by the call signs in the input.',
+      '- Never describe students or guess who was involved.',
+      '- Never claim EarlyEye prevented anything. Say what happened when a guard was there, or was not.',
+      '- No headings, lists, emojis or technical words such as model, score or confidence.'
+    ].join('\n');
+    const checks = [
+      { n: '1', t: 'Numbers check.', d: 'The server compares every number and date in Claude\'s text with the input. One mismatch and the page shows the template version instead.' },
+      { n: '2', t: 'Numbers shown beside it.', d: 'The chips under the text are the same numbers, so a reader can check any sentence in a second.' },
+      { n: '3', t: 'Labelled as AI.', d: '"Written by AI from the numbers below", with the time it was written.' },
+      { n: '4', t: 'Once a week.', d: 'One call on Monday at 06:00, saved for the week. Rebuilt only if the plan changes. Model claude-sonnet-5-5, key only in Render.' },
+      { n: '5', t: 'Works without AI.', d: 'If the call fails or is too slow, the template version appears. The Plan page never waits on it.' }
+    ];
+    const where = [
+      { page: 'Plan', use: 'Yes', color: '#1F35B3', why: 'The Monday briefing on this board. It is also the weekly report already planned as a SHOULD.' },
+      { page: 'Incidents', use: 'Later', color: '#3A414B', why: 'A formal report from the note and timeline. The summary template already covers most of it.' },
+      { page: 'Live', use: 'Never', color: '#5D6672', why: 'Alerts must be instant and predictable. Claude never touches detection.' },
+      { page: 'Phone', use: 'Never', color: '#5D6672', why: 'A guard running to a fight needs one big button, not text.' },
+      { page: 'Cameras', use: 'No', color: '#5D6672', why: 'Camera health is a fact. There is nothing to write.' },
+      { page: 'Track record', use: 'No', color: '#5D6672', why: 'Written plainly once. Live AI text about accuracy could overstate it.' }
+    ];
+    const decisions = [
+      'Is the tone right for your security supervisor: short, factual, one action?',
+      'Should the briefing also go at the top of the shared roster, or stay on the page only?',
+      'Should the supervisor be able to edit the text before sharing it?',
+      'Build it after the Sorted button and the Track record rewrite, or skip it if time runs short? It is a SHOULD, not a MUST.'
+    ];
+    const set = (m) => () => this.setState({ mode: m });
+    return {
+      text: ai ? AI_TEXT : FALLBACK,
+      badge: ai ? 'Written by AI from the numbers below' : 'Written from a template · AI unavailable',
+      chips: ['2 incidents during post hours', 'guard already there for both', 'over within a minute', 'Thu 8 Oct, 22:25: fight, U Residence, no post', 'posts 2 and 3: nobody yet'],
+      inputJson: JSON.stringify(input, null, 2), systemPrompt: prompt, checks: checks, where: where, decisions: decisions,
+      showAi: set('ai'), showFallback: set('fallback'),
+      aiPressed: ai ? 'true' : 'false', fbPressed: ai ? 'false' : 'true',
+      aiBg: ai ? '#0B0D10' : '#FFFFFF', aiFg: ai ? '#FFFFFF' : '#0B0D10', fbBg: ai ? '#FFFFFF' : '#0B0D10', fbFg: ai ? '#0B0D10' : '#FFFFFF'
+    };
+  }
+}
+</script>
+</body>
+</html>

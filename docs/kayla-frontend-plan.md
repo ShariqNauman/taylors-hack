@@ -4,6 +4,8 @@ You own everything the judges see on screen, the deployed link, the slides and t
 
 The dashboard is **site-agnostic**: a campus, a mall, a factory, a school hostel. Nothing in the UI says "school" except the demo site's zone names. Copy uses *site*, *zone*, *operator*, *person on duty*.
 
+**Visual and screen spec: v3 Light Console, in `docs/frontend-build-brief.md`.** Where it differs from the screen notes below, the brief wins. It adds a 3D model of the real Taylor's Lakeside campus (Cameras, Plan and the Live card), a Cameras page, 1 live webcam plus labelled recordings, live and replay evidence on Live, the alarm pulse, and the shift handover. Design source files: `design/canvas/L3*.dc.html`.
+
 ## Stack
 
 | | Choice | Notes |
@@ -22,6 +24,7 @@ The dashboard is **site-agnostic**: a campus, a mall, a factory, a school hostel
 web/
   src/app/
     page.tsx                  live: alert queue + current alert card + camera tiles (with health)
+    cameras/page.tsx          all cameras: 3D campus + grid + detail panel (v3)
     plan/page.tsx             heatmap + hotspots + PATROL PLAN (the weekly decision screen)
     incidents/page.tsx        table of the history (fake + live), confirm/dismiss labels
     proof/page.tsx            lead time, FA/hour, CCTV-domain row, dataset vs live, IR frame, model card, disclosure
@@ -42,9 +45,14 @@ type IncidentType = "fight" | "cornering" | "crowd" | "play";
 type Level = "calm" | "tense" | "fight_likely" | "fight";
 type Status = "new" | "pushed" | "confirmed" | "dismissed" | "resolved";
 
-interface Site { site_id: string; name: string; site_type: SiteType; zones: { zone_type: string; label: string; risk: number }[]; staff: { name: string; zone_type: string; on_duty: boolean }[]; }
+// v3 optional additions (10 Oct, design handoff). Every screen must render without them.
+type Keypoint = [x: number, y: number, conf: number];          // x, y normalised 0–1 in the camera frame
+interface PoseFrame { t: string; people: { id: number; kp: Keypoint[] }[] }   // kp = 12 body keypoints, order: l_shoulder, r_shoulder, l_elbow, r_elbow, l_wrist, r_wrist, l_hip, r_hip, l_knee, r_knee, l_ankle, r_ankle (COCO 5–16, no face points)
+interface GeoPoint { lat: number; lng: number; alt_m?: number }  // WGS84, placed on the OpenStreetMap footprints of the campus
 
-interface Camera { camera_id: string; location: string; zone_type: string; online: boolean; last_frame_at: string; black_since?: string; }
+interface Site { site_id: string; name: string; site_type: SiteType; zones: { zone_type: string; label: string; risk: number }[]; staff: { name: string; zone_type: string; on_duty: boolean; post?: GeoPoint; role?: string; shift?: { label: string; days: number[]; from: number; to: number }; display_name?: string; photo_url?: string }[];   // name stays the call sign (Guard B); display_name is the person (Aiman Hakimi) campus?: { center: GeoPoint; buildings: string }; }   // buildings = URL of the campus GeoJSON
+
+interface Camera { camera_id: string; location: string; zone_type: string; online: boolean; last_frame_at: string; black_since?: string; people_count?: number; geo?: GeoPoint & { building?: string; floor?: string }; source?: "live" | "recorded"; recorded_at?: string; edge_url?: string; }   // source: the one live webcam or one of our labelled recordings; edge_url: that camera's edge process (stream, clips, health), on-site view only
 
 interface Event {
   incident_id: string; camera_id: string; location: string; zone_type: string;
@@ -55,13 +63,17 @@ interface Event {
   action: string; nearest_staff: string | null;
   pushed_to?: string; pushed_at?: string;                // two-tier: only fight_likely+ gets pushed; API sets these
   acked_at?: string;                                     // phone tap; response time = acked_at − pushed_at
+  arrived_at?: string; outcome?: 'sorted' | 'hurt' | 'backup' | 'nothing'; outcome_at?: string;   // v3 guard phone: I'm here, What did you find?
   status: Status; staff_note: string | null;             // operator sets on Live; edge never overwrites
+  snapshot?: PoseFrame;                                  // v3: latest keypoints, refreshed on each 0.5 s post; remote live skeletons
+  peak_snapshot?: PoseFrame;                             // v3: keypoints at peak_score; Incidents thumbnail and push card
+  top_features?: { name: string; value: number }[];      // v3: model features behind this window; "what the model saw"
 }
 
 interface Hotspot { location: string; zone_type: string; weekday: number; hour: number; count: number; last_seen: string; }
 
-interface PatrolSlot { location: string; days: string; hours: string; incidents_4w: number; expected_avoided_per_week: number; avoided_per_patrol_hour: number; rationale: string; }
-interface PatrolPlan { generated_at: string; slots: PatrolSlot[]; assumption: string; }   // top-3 ranked by expected_avoided_per_week; Block C = 5 × 0.6 / 4 = 0.75/week ("~3 a month"); assumption = "60% of hotspot incidents avoided when a person is present (stated, not measured)"
+interface PatrolSlot { location: string; days: string; hours: string; incidents_4w: number; expected_avoided_per_week: number; avoided_per_patrol_hour: number; rationale: string; assigned_to?: string | null; tip?: string; seen_at?: string | null; checkins?: { staff: string; at: string }[]; id?: string; status?: 'active' | 'suggested' | 'ended'; since?: string; }   // standing posts: checked daily at 06:00 over 28 days; changes are suggestions until the supervisor accepts   // v3: assigned_to = staff name; days index 0 = Mon in staff.shift.days; from/to are hours, to may exceed 24 for night shifts
+interface PatrolPlan { generated_at: string; slots: PatrolSlot[]; assumption: string; review?: { location: string; assigned_to: string | null; covered_days: number; planned_days: number; incidents_during_post: number; baseline_per_week: number; verdict: string }[]; }   // top-3 ranked by expected_avoided_per_week; Block C = 5 × 0.6 / 4 = 0.75/week ("~3 a month"); assumption = "60% of hotspot incidents avoided when a person is present (stated, not measured)"
 
 interface Proof {
   datasets: string[]; n_clips: number;
@@ -80,7 +92,7 @@ interface Proof {
 }
 ```
 
-Endpoints: `GET /site` · `GET /cameras` · `GET /events?since=<iso>` · `PATCH /events/:id {status?, staff_note?, acked_at?}` · `GET /hotspots` · `GET /plan` · `GET /proof`. (`POST /events`, `POST /cameras/heartbeat` are edge → API; the dashboard never calls them.)
+Endpoints: `GET /site` · `GET /cameras` · `GET /events?since=<iso>` · `PATCH /events/:id {status?, staff_note?, acked_at?, arrived_at?, outcome?, outcome_at?}` · v3 (Web A, optional): `PATCH /plan/slots/:rank {assigned_to? , seen_at?}` · `POST /plan/slots/:rank/checkins {staff}` · `GET /hotspots` · `GET /plan` · `GET /proof`. (`POST /events`, `POST /cameras/heartbeat` are edge → API; the dashboard never calls them.)
 
 Shift handover brief: `POST /handover` takes `HandoverFacts` (counts, names, times and the patrol slot, all computed on the dashboard; never raw events) and returns `HandoverBrief { text, model, generated_at }`. The drawer shows the facts first and swaps in the brief only when it arrives; mock: `/api/mock/handover` assembles the text without a model.
 
@@ -139,7 +151,7 @@ Write `public/mock/*.json` yourself in the first hour. Demo site = **Taylor's La
 | 08:30–10:00 | Rehearse 3× timed with the live camera. Test alarm audio in the pitch room. Q&A drill. |
 
 ## Rules for yourself
-- Light theme only; no animations beyond a 300 ms colour transition on the level pill.
+- Light theme only. Motion: a 300 ms colour transition on the level pill, plus the alarm pulse (1 Hz red pulse on the banner, screen edge, alert card and that camera's tile, only while the alarm sounds; static red under `prefers-reduced-motion`). Nothing else moves.
 - Every screen renders from mock with the API down. Test it once by stopping the API.
 - Live is the product, Plan is the decision, Proof is the evidence. Time split 50 / 20 / 20 / 10 (incidents + push).
 - No school-specific words in the UI chrome. Zone names come from `site.json`.
@@ -149,4 +161,4 @@ Write `public/mock/*.json` yourself in the first hour. Demo site = **Taylor's La
 ## Demo moments you own (rehearse until boring)
 1. Negatives: hug → high-five → chat close, pill stays green. Say nothing; let it sit.
 2. Escalation: amber + "fight likely in ~6 s" **before** the shove, then red + alarm + "Pushed to Guard B" on the phone in your hand. Pause 2 s on amber.
-3. Plan: "Block C stairwell, Mon–Thu lunch, ~3 avoided a week. That's this building." → Proof: lead time in big type, the CCTV-domain row, the IR frame.
+3. Plan: "Block C stairwell, Mon–Thu lunch, ~3 avoided a month. That's this building." → Proof: lead time in big type, the CCTV-domain row, the IR frame.

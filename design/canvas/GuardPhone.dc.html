@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>EarlyEye guard app</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Mono:wght@400;500;700&amp;family=Atkinson+Hyperlegible+Next:wght@400;500;700;800&amp;family=Saira+Condensed:wght@600;700;800&amp;display=swap">
+<style>
+body{margin:0;background:#F1F2F4}
+button{font-family:inherit}
+@keyframes gp-pulse{0%,100%{opacity:1}50%{opacity:.85}}
+.gp-alarm{animation:gp-pulse 1s ease-in-out infinite}
+@media (prefers-reduced-motion: reduce){.gp-alarm{animation:none}}
+</style>
+</helmet>
+<div style="font-family: 'Atkinson Hyperlegible Next', system-ui, sans-serif; color: #0B0D10; width: 390px; height: 844px; box-sizing: border-box; background: {{bg}}; display: flex; flex-direction: column; overflow: hidden; border-radius: 28px; border: 8px solid #0B0D10" class="{{frameClass}}">
+
+<div style="flex: none; display: flex; justify-content: space-between; align-items: center; padding: 10px 20px 6px; font-size: 13px; font-weight: 700; color: {{barFg}}"><span>{{clock}}</span><span>EarlyEye</span></div>
+
+<sc-if value="{{showHeader}}" hint-placeholder-val="{{ true }}">
+<div style="flex: none; display: flex; align-items: center; gap: 10px; padding: 6px 16px 12px; border-bottom: 1px solid #DCDFE4; background: #FFFFFF">
+<span style="flex: none; width: 40px; height: 40px; border-radius: 50%; overflow: hidden; background: {{me.bg}}"><svg width="40" height="40" viewBox="0 0 64 64" aria-hidden="true" style="display: block"><path d="{{me.back}}" fill="{{me.hair}}"></path><path d="M8 70 C10 52 21 45 32 45 C43 45 54 52 56 70 Z" fill="{{me.body}}"></path><ellipse cx="32" cy="{{me.cy}}" rx="{{me.rx}}" ry="{{me.ry}}" fill="{{me.skin}}"></ellipse><path d="{{me.front}}" fill="{{me.hair}}"></path></svg></span>
+<span style="display: flex; flex-direction: column; gap: 1px; flex: 1"><span style="font-size: 17px; font-weight: 800">Aiman Hakimi</span><span style="font-size: 13px; color: #1F35B3; font-weight: 700">● On duty · until 18:00</span></span>
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; color: #5D6672">GUARD B</span>
+</div>
+</sc-if>
+
+<div style="flex: 1; min-height: 0; overflow: auto; display: flex; flex-direction: column">
+
+<sc-if value="{{isSetup}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 12px; padding: 18px 18px">
+<span style="font-family: 'Saira Condensed', sans-serif; font-size: 22px; font-weight: 800; letter-spacing: 0.04em">EARLYEYE</span>
+<span style="font-family: 'Saira Condensed', sans-serif; font-size: 40px; font-weight: 800; text-transform: uppercase; line-height: 0.95">Who is using this phone?</span>
+<span style="font-size: 15px; color: #3A414B">Taylor's Lakeside security team</span>
+<sc-for list="{{people}}" as="p" hint-placeholder-count="4">
+<button type="button" onClick="{{p.pick}}" style="display: flex; align-items: center; gap: 12px; min-height: 72px; padding: 8px 14px 8px 10px; border-radius: 4px; border: {{p.border}}; background: #FFFFFF; color: #0B0D10; text-align: left; cursor: pointer">
+<span style="flex: none; width: 52px; height: 52px; border-radius: 50%; overflow: hidden; background: {{p.av.bg}}"><svg width="52" height="52" viewBox="0 0 64 64" aria-hidden="true" style="display: block"><path d="{{p.av.back}}" fill="{{p.av.hair}}"></path><path d="M8 70 C10 52 21 45 32 45 C43 45 54 52 56 70 Z" fill="{{p.av.body}}"></path><ellipse cx="32" cy="{{p.av.cy}}" rx="{{p.av.rx}}" ry="{{p.av.ry}}" fill="{{p.av.skin}}"></ellipse><path d="{{p.av.front}}" fill="{{p.av.hair}}"></path></svg></span>
+<span style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 18px; font-weight: 800">{{p.name}}</span><span style="font-size: 13px; color: #5D6672">{{p.sub}}</span></span>
+</button>
+</sc-for>
+<span style="font-size: 13px; color: #5D6672">Name missing? Ask your supervisor to add you.</span>
+</div>
+</sc-if>
+
+<sc-if value="{{isStart}}" hint-placeholder-val="{{ false }}">
+<div style="flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 16px; padding: 24px">
+<span style="width: 112px; height: 112px; border-radius: 50%; overflow: hidden; background: {{me.bg}}"><svg width="112" height="112" viewBox="0 0 64 64" aria-hidden="true" style="display: block"><path d="{{me.back}}" fill="{{me.hair}}"></path><path d="M8 70 C10 52 21 45 32 45 C43 45 54 52 56 70 Z" fill="{{me.body}}"></path><ellipse cx="32" cy="{{me.cy}}" rx="{{me.rx}}" ry="{{me.ry}}" fill="{{me.skin}}"></ellipse><path d="{{me.front}}" fill="{{me.hair}}"></path></svg></span>
+<span style="font-family: 'Saira Condensed', sans-serif; font-size: 44px; font-weight: 800; text-transform: uppercase; line-height: 0.95">Hi, Aiman</span>
+<span style="font-size: 18px; color: #3A414B">Guard B · Day shift 10:00–18:00 · Taylor's Lakeside</span>
+<button type="button" onClick="{{goToday}}" style="min-height: 72px; border-radius: 4px; border: none; background: #0B0D10; color: #FFFFFF; font-size: 22px; font-weight: 800; cursor: pointer">Start my shift</button>
+<span style="font-size: 15px; line-height: 1.5; color: #3A414B">This turns on alert sounds and keeps the screen awake. Keep EarlyEye open during your shift.</span>
+</div>
+</sc-if>
+
+<sc-if value="{{isToday}}" hint-placeholder-val="{{ true }}">
+<div style="display: flex; flex-direction: column; gap: 12px; padding: 14px 16px">
+<sc-if value="{{showNewPost}}" hint-placeholder-val="{{ true }}">
+<div style="background: #E7EBFD; border: 2px solid #2742D9; border-radius: 4px; padding: 14px; display: flex; flex-direction: column; gap: 8px">
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; font-weight: 700; letter-spacing: 0.06em; color: #1F35B3">NEW FROM YOUR SUPERVISOR · SAT 10 OCT</span>
+<span style="font-size: 18px; font-weight: 800; line-height: 1.3">You have a standing post: Block C stairwell, Mon–Thu, 13:00–14:00.</span>
+<span style="font-size: 14px; color: #3A414B">It stays in your schedule until your supervisor ends it.</span>
+<button type="button" onClick="{{gotIt}}" style="min-height: 52px; border-radius: 4px; border: none; background: #2742D9; color: #FFFFFF; font-size: 18px; font-weight: 800; cursor: pointer">Got it</button>
+</div>
+</sc-if>
+<sc-if value="{{notChecked}}" hint-placeholder-val="{{ true }}">
+<div style="background: #FFFFFF; border: 2px solid #0B0D10; border-radius: 4px; padding: 14px; display: flex; flex-direction: column; gap: 6px">
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; font-weight: 700; letter-spacing: 0.06em; color: #5D6672">NEXT · IN 25 MIN</span>
+<span style="font-family: 'Saira Condensed', sans-serif; font-size: 34px; font-weight: 800; text-transform: uppercase; line-height: 1">13:00 · Block C stairwell</span>
+<span style="font-size: 15px; line-height: 1.45; color: #3A414B">Stand on the level 1 landing. You can see both flights of stairs from there.</span>
+<button type="button" onClick="{{checkIn}}" style="margin-top: 4px; min-height: 52px; border-radius: 4px; border: none; background: #0B0D10; color: #FFFFFF; font-size: 18px; font-weight: 800; cursor: pointer">I'm at my post</button>
+</div>
+</sc-if>
+<sc-if value="{{checked}}" hint-placeholder-val="{{ false }}">
+<div style="background: #FFFFFF; border: 2px solid #2742D9; border-radius: 4px; padding: 14px; display: flex; flex-direction: column; gap: 6px">
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; font-weight: 700; letter-spacing: 0.06em; color: #1F35B3">AT YOUR POST · ✓ CHECKED IN 13:02</span>
+<span style="font-family: 'Saira Condensed', sans-serif; font-size: 34px; font-weight: 800; text-transform: uppercase; line-height: 1">Block C stairwell</span>
+<span style="font-size: 18px; font-weight: 800">Until 14:00 · 58 min left</span>
+<span style="font-size: 14px; line-height: 1.45; color: #3A414B">The desk can see you're here. If anything starts nearby, you get the alert first.</span>
+<button type="button" onClick="{{goAlert}}" style="margin-top: 4px; min-height: 40px; border-radius: 4px; border: 1px dashed #B4BAC3; background: transparent; color: #5D6672; font-size: 13px; font-weight: 700; cursor: pointer">Prototype only: play an alert</button>
+</div>
+</sc-if>
+<div style="background: #FFFFFF; border: 1px solid #DCDFE4; border-radius: 4px; padding: 12px 14px; display: flex; flex-direction: column">
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; font-weight: 700; letter-spacing: 0.06em; color: #5D6672; padding-bottom: 6px">TODAY · WED 14 OCT</span>
+<sc-for list="{{todayList}}" as="t" hint-placeholder-count="3">
+<div style="display: grid; grid-template-columns: 58px minmax(0, 1fr); gap: 10px; padding: 9px 0; border-top: 1px solid #F1F2F4; font-size: 16px"><span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-weight: 700">{{t.time}}</span><span style="font-weight: {{t.weight}}; color: {{t.color}}">{{t.text}}</span></div>
+</sc-for>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{isSchedule}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 10px; padding: 14px 16px">
+<span style="font-family: 'Saira Condensed', sans-serif; font-size: 32px; font-weight: 800; text-transform: uppercase; line-height: 1">Next 7 days</span>
+<sc-for list="{{week}}" as="w" hint-placeholder-count="7">
+<div style="background: #FFFFFF; border: {{w.border}}; border-radius: 4px; padding: 10px 12px; display: grid; grid-template-columns: 58px minmax(0, 1fr); gap: 10px; align-items: start">
+<span style="display: flex; flex-direction: column; align-items: center; padding: 2px 0; border-radius: 4px; background: {{w.dayBg}}; color: {{w.dayFg}}"><span style="font-size: 12px; font-weight: 800">{{w.dow}}</span><span style="font-family: 'Saira Condensed', sans-serif; font-size: 24px; font-weight: 800; line-height: 1">{{w.date}}</span></span>
+<span style="display: flex; flex-direction: column; gap: 4px"><span style="font-size: 15px; color: #3A414B">{{w.shift}}</span><span style="display: {{w.postDisplay}}; font-size: 16px; font-weight: 800; color: #1F35B3">{{w.post}}</span></span>
+</div>
+</sc-for>
+<span style="font-size: 13px; line-height: 1.5; color: #5D6672">Block C is a standing post. It stays until your supervisor ends it. Any change shows up here and on Today.</span>
+</div>
+</sc-if>
+
+<sc-if value="{{isAlerts}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 10px; padding: 14px 16px">
+<span style="font-family: 'Saira Condensed', sans-serif; font-size: 32px; font-weight: 800; text-transform: uppercase; line-height: 1">Your alerts</span>
+<span style="font-size: 15px; color: #3A414B">4 this month · you reply in about 5 seconds</span>
+<sc-for list="{{history}}" as="h" hint-placeholder-count="4">
+<div style="background: #FFFFFF; border: 1px solid #DCDFE4; border-radius: 4px; padding: 12px; display: flex; flex-direction: column; gap: 6px">
+<span style="display: flex; align-items: center; gap: 8px"><span style="display: inline-flex; align-items: center; gap: 5px; padding: 2px 8px 2px 6px; border-radius: 2px; background: {{h.lvBg}}; color: {{h.lvFg}}; font-size: 12px; font-weight: 800; text-transform: uppercase"><svg width="10" height="10" viewBox="0 0 24 24" aria-hidden="true"><path d="{{h.glyph}}" fill="{{h.lvFg}}"></path></svg>{{h.level}}</span><span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; color: #5D6672">{{h.when}}</span></span>
+<span style="font-size: 17px; font-weight: 800">{{h.place}}</span>
+<span style="font-size: 14px; color: #3A414B">You: {{h.outcome}} · on the way in {{h.reply}}</span>
+</div>
+</sc-for>
+</div>
+</sc-if>
+
+<sc-if value="{{isMe}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 12px; padding: 18px 16px">
+<span style="align-self: center; width: 104px; height: 104px; border-radius: 50%; overflow: hidden; background: {{me.bg}}"><svg width="104" height="104" viewBox="0 0 64 64" aria-hidden="true" style="display: block"><path d="{{me.back}}" fill="{{me.hair}}"></path><path d="M8 70 C10 52 21 45 32 45 C43 45 54 52 56 70 Z" fill="{{me.body}}"></path><ellipse cx="32" cy="{{me.cy}}" rx="{{me.rx}}" ry="{{me.ry}}" fill="{{me.skin}}"></ellipse><path d="{{me.front}}" fill="{{me.hair}}"></path></svg></span>
+<span style="align-self: center; font-size: 24px; font-weight: 800">Aiman Hakimi</span>
+<span style="align-self: center; font-size: 15px; color: #3A414B">Guard B · Security guard · Taylor's Lakeside</span>
+<div style="background: #FFFFFF; border: 1px solid #DCDFE4; border-radius: 4px">
+<sc-for list="{{settings}}" as="st" hint-placeholder-count="4">
+<div style="display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 12px 14px; border-bottom: 1px solid #F1F2F4; font-size: 16px"><span>{{st.k}}</span><span style="font-weight: 800; color: #1F35B3">{{st.v}}</span></div>
+</sc-for>
+</div>
+<button type="button" onClick="{{goAlert}}" style="min-height: 52px; border-radius: 4px; border: 2px solid #0B0D10; background: #FFFFFF; color: #0B0D10; font-size: 17px; font-weight: 800; cursor: pointer">Test the alarm</button>
+<button type="button" onClick="{{goStart}}" style="min-height: 52px; border-radius: 4px; border: none; background: #0B0D10; color: #FFFFFF; font-size: 17px; font-weight: 800; cursor: pointer">End my shift</button>
+<button type="button" onClick="{{goSetup}}" style="min-height: 40px; border: none; background: none; color: #2742D9; font-size: 14px; font-weight: 800; cursor: pointer">Not Aiman? Switch person</button>
+</div>
+</sc-if>
+
+<sc-if value="{{isAlert}}" hint-placeholder-val="{{ false }}">
+<div style="flex: 1; display: flex; flex-direction: column; gap: 14px; padding: 16px 18px 22px; color: #FFFFFF">
+<span style="font-size: 15px; font-weight: 800">Aiman, you're the nearest guard</span>
+<span style="display: inline-flex; align-self: flex-start; align-items: center; gap: 8px; padding: 4px 12px 4px 8px; background: #FFFFFF; color: #C8241B; border-radius: 2px; font-size: 16px; font-weight: 800; text-transform: uppercase"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 22 12 12 22 2 12z" fill="#C8241B"></path></svg>Fight likely</span>
+<span style="font-family: 'Saira Condensed', sans-serif; font-size: 52px; font-weight: 800; text-transform: uppercase; line-height: 0.92">Block C stairwell</span>
+<span style="font-size: 20px; font-weight: 800">Level 1 landing · about 10 m from you</span>
+<span style="font-size: 18px; line-height: 1.45">One person is being pushed against the wall by three others.</span>
+<span style="font-size: 15px; opacity: 0.9">The desk sees it too. Alarm sounding.</span>
+<button type="button" onClick="{{goEnroute}}" style="margin-top: auto; min-height: 96px; border-radius: 4px; border: none; background: #FFFFFF; color: #0B0D10; font-size: 28px; font-weight: 800; cursor: pointer">On my way</button>
+</div>
+</sc-if>
+
+<sc-if value="{{isEnroute}}" hint-placeholder-val="{{ false }}">
+<div style="flex: 1; display: flex; flex-direction: column; gap: 12px; padding: 16px 16px 22px">
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; font-weight: 700; letter-spacing: 0.06em; color: #5D6672">ON THE WAY</span>
+<span style="font-family: 'Saira Condensed', sans-serif; font-size: 40px; font-weight: 800; text-transform: uppercase; line-height: 0.95">Block C stairwell</span>
+<span style="font-size: 18px; font-weight: 700">Level 1 landing</span>
+<div style="display: flex; align-items: center; gap: 10px; background: #FFFFFF; border: 1px solid #DCDFE4; border-radius: 4px; padding: 12px 14px">
+<span style="font-size: 15px; font-weight: 700">Camera now:</span>
+<span style="display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px 3px 7px; background: #F5B323; color: #1A1200; border-radius: 2px; font-size: 14px; font-weight: 800; text-transform: uppercase"><svg width="12" height="12" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z" fill="#1A1200"></path></svg>Still tense</span>
+</div>
+<svg viewBox="0 0 340 170" role="img" aria-label="Map: you are 10 metres from the landing" style="width: 100%; height: auto; background: #FFFFFF; border: 1px solid #DCDFE4; border-radius: 4px">
+<rect x="30" y="30" width="180" height="110" fill="#E6E9EE" stroke="#B4BAC3"></rect>
+<text x="40" y="52" font-size="13" font-weight="700" fill="#3A414B" font-family="sans-serif">BLOCK C</text>
+<path d="M260 120 L200 100 L150 90" fill="none" stroke="#2742D9" stroke-width="4" stroke-dasharray="8 6"></path>
+<circle cx="268" cy="122" r="10" fill="#2742D9" stroke="#FFFFFF" stroke-width="3"></circle>
+<text x="250" y="152" font-size="13" font-weight="700" fill="#1F35B3" font-family="sans-serif">You</text>
+<circle cx="146" cy="88" r="11" fill="#C8241B" stroke="#FFFFFF" stroke-width="3"></circle>
+<text x="100" y="72" font-size="13" font-weight="700" fill="#0B0D10" font-family="sans-serif">Landing</text>
+</svg>
+<button type="button" onClick="{{goFound}}" style="margin-top: auto; min-height: 84px; border-radius: 4px; border: none; background: #0B0D10; color: #FFFFFF; font-size: 26px; font-weight: 800; cursor: pointer">I'm here</button>
+</div>
+</sc-if>
+
+<sc-if value="{{isFound}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 10px; padding: 16px 16px 22px">
+<span style="font-family: 'Saira Condensed', sans-serif; font-size: 40px; font-weight: 800; text-transform: uppercase; line-height: 0.95">What did you find?</span>
+<span style="font-size: 15px; color: #3A414B">One tap. The desk sees it straight away.</span>
+<sc-for list="{{outcomes}}" as="o" hint-placeholder-count="4">
+<button type="button" onClick="{{o.pick}}" style="min-height: 68px; border-radius: 4px; border: {{o.border}}; background: {{o.bg}}; color: {{o.fg}}; font-size: 20px; font-weight: 800; text-align: left; padding: 0 18px; cursor: pointer">{{o.label}}</button>
+</sc-for>
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; font-weight: 700; letter-spacing: 0.06em; color: #5D6672; margin-top: 6px">ADD A QUICK NOTE (OPTIONAL)</span>
+<span style="display: flex; flex-wrap: wrap; gap: 6px">
+<sc-for list="{{notes}}" as="n" hint-placeholder-count="3">
+<span style="display: inline-flex; align-items: center; min-height: 40px; padding: 0 12px; border: 1px solid #B4BAC3; border-radius: 999px; background: #FFFFFF; font-size: 15px; font-weight: 700">{{n}}</span>
+</sc-for>
+</span>
+</div>
+</sc-if>
+
+<sc-if value="{{isDone}}" hint-placeholder-val="{{ false }}">
+<div style="flex: 1; display: flex; flex-direction: column; gap: 14px; padding: 22px 16px 22px">
+<span style="width: 64px; height: 64px; border-radius: 50%; background: #0B0D10; color: #FFFFFF; display: inline-flex; align-items: center; justify-content: center; font-size: 34px; font-weight: 800">✓</span>
+<span style="font-family: 'Saira Condensed', sans-serif; font-size: 44px; font-weight: 800; text-transform: uppercase; line-height: 0.95">{{doneTitle}}</span>
+<div style="background: #FFFFFF; border: 1px solid #DCDFE4; border-radius: 4px; padding: 12px 14px; display: flex; flex-direction: column; gap: 6px; font-size: 16px; line-height: 1.45">
+<span><span style="font-weight: 800">You reported:</span> {{outcomeText}} · 13:33</span>
+<span><span style="font-weight: 800">Camera:</span> {{cameraText}}</span>
+<span style="color: #3A414B">On my way in 4 s · there in 40 s</span>
+</div>
+<button type="button" onClick="{{backToPost}}" style="margin-top: auto; min-height: 64px; border-radius: 4px; border: none; background: #0B0D10; color: #FFFFFF; font-size: 20px; font-weight: 800; cursor: pointer">Back to my post · until 14:00</button>
+</div>
+</sc-if>
+</div>
+
+<sc-if value="{{showTabs}}" hint-placeholder-val="{{ true }}">
+<nav aria-label="App" style="flex: none; display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid #DCDFE4; background: #FFFFFF; padding: 6px 4px 12px">
+<sc-for list="{{tabs}}" as="tb" hint-placeholder-count="4">
+<button type="button" onClick="{{tb.go}}" aria-current="{{tb.current}}" style="display: flex; flex-direction: column; align-items: center; gap: 3px; min-height: 52px; border: none; background: none; color: {{tb.color}}; font-size: 12px; font-weight: 800; cursor: pointer"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path d="{{tb.icon}}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>{{tb.label}}</button>
+</sc-for>
+</nav>
+</sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"screen":{"editor":"enum","options":["setup","start","today","post","schedule","alerts","me","alert","enroute","found","done"],"default":"today"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    const sc = (props && props.screen) || 'today';
+    this.state = { screen: sc === 'post' ? 'today' : sc, checked: sc === 'post', seen: sc === 'post', outcome: 'sorted' };
+  }
+  componentDidUpdate(prev) { if (prev.screen !== this.props.screen) { const sc = this.props.screen || 'today'; this.setState({ screen: sc === 'post' ? 'today' : sc, checked: sc === 'post' }); } }
+  renderVals() {
+    const s = this.state; const sc = s.screen;
+    const AV = {
+      'Guard A': { bg: '#E9EEF3', skin: '#F2CDA9', hair: '#1E1E1E', body: '#1F2A44', cy: 28, rx: 11, ry: 12, back: '', front: 'M21 27 C20 15 44 14 43 27 C40 20 26 20 21 27 Z' },
+      'Guard B': { bg: '#E7EBFD', skin: '#C38B62', hair: '#151515', body: '#1F2A44', cy: 28, rx: 11, ry: 12, back: '', front: 'M21 26 C21 15 43 15 43 26 C39 21 25 21 21 26 Z' },
+      'Guard C': { bg: '#EDE7F6', skin: '#A6704C', hair: '#121212', body: '#1F2A44', cy: 28, rx: 11, ry: 12, back: 'M19 30 C17 12 47 12 45 30 L46 47 C42 42 22 42 18 47 Z', front: 'M21 25 C22 14 42 14 43 25 C38 19 26 19 21 25 Z' },
+      'Warden D': { bg: '#F3EEE6', skin: '#D7A27A', hair: '#5B6B82', body: '#7A6352', cy: 30, rx: 9, ry: 10, back: 'M16 33 C16 10 48 10 48 33 L49 52 C42 56 22 56 15 52 Z', front: '' }
+    };
+    const CLOCK = { setup: '09:55', start: '09:58', today: s.checked ? '13:02' : '12:35', schedule: '12:36', alerts: '12:37', me: '12:38', alert: '13:31', enroute: '13:31', found: '13:32', done: '13:33' };
+    const OUT = { sorted: 'Sorted, nobody hurt', hurt: 'Sorted, someone hurt', backup: 'Need backup', nothing: 'Nothing there' };
+    const go = (x) => () => this.setState({ screen: x });
+    const TABS = [
+      ['today', 'Today', 'M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z'],
+      ['schedule', 'Schedule', 'M4 5h16v16H4zM4 9h16M9 3v4M15 3v4'],
+      ['alerts', 'Alerts', 'M6 16V11a6 6 0 0 1 12 0v5l2 2H4zM10 21h4'],
+      ['me', 'Me', 'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21a8 8 0 0 1 16 0']
+    ];
+    const tabScreens = ['today', 'schedule', 'alerts', 'me'];
+    const GLYPH = { tense: 'M12 3 22 20H2z', fight_likely: 'M12 2 22 12 12 22 2 12z', fight: 'M8 2h8l6 6v8l-6 6H8l-6-6V8z' };
+    const LV = { fight: ['Fight', '#7F1310', '#FFFFFF'], fight_likely: ['Fight likely', '#C8241B', '#FFFFFF'], tense: ['Tense', '#F5B323', '#1A1200'] };
+    const hist = [
+      ['fight', 'SAT 10 OCT · 14:31', 'Grand Hall', 'Sorted, nobody hurt', '4 s'],
+      ['fight_likely', 'SAT 10 OCT · 14:29', 'Sports pitch', 'Nothing there', '6 s'],
+      ['fight_likely', 'WED 7 OCT · 13:47', 'Block C stairwell', 'Sorted, nobody hurt', '5 s'],
+      ['fight_likely', 'MON 28 SEP · 13:15', 'Block C stairwell', 'Sorted, nobody hurt', '6 s']
+    ];
+    const WEEK = [
+      ['WED', '14', 'Today · shift 10:00–18:00', 'Post 13:00–14:00 · Block C stairwell', true],
+      ['THU', '15', 'Shift 10:00–18:00', 'Post 13:00–14:00 · Block C stairwell', false],
+      ['FRI', '16', 'Shift 10:00–18:00', '', false],
+      ['SAT', '17', 'Shift 10:00–18:00', '', false],
+      ['SUN', '18', 'Day off', '', false],
+      ['MON', '19', 'Shift 10:00–18:00', 'Post 13:00–14:00 · Block C stairwell', false],
+      ['TUE', '20', 'Shift 10:00–18:00', 'Post 13:00–14:00 · Block C stairwell', false]
+    ];
+    return {
+      me: AV['Guard B'], clock: CLOCK[sc],
+      bg: sc === 'alert' ? '#C8241B' : '#F1F2F4', barFg: sc === 'alert' ? '#FFFFFF' : '#3A414B', frameClass: sc === 'alert' ? 'gp-alarm' : '',
+      showHeader: tabScreens.indexOf(sc) >= 0 || sc === 'enroute' || sc === 'found' || sc === 'done',
+      showTabs: tabScreens.indexOf(sc) >= 0,
+      isSetup: sc === 'setup', isStart: sc === 'start', isToday: sc === 'today', isSchedule: sc === 'schedule', isAlerts: sc === 'alerts', isMe: sc === 'me',
+      isAlert: sc === 'alert', isEnroute: sc === 'enroute', isFound: sc === 'found', isDone: sc === 'done',
+      people: [['Guard A', 'Tan Wei Jie', 'Guard A · Day shift 07:00–15:00'], ['Guard B', 'Aiman Hakimi', 'Guard B · Day shift 10:00–18:00'], ['Guard C', 'Priya Nair', 'Guard C · Evening 14:00–23:00'], ['Warden D', 'Rosnah Ahmad', 'Warden D · Hostel nights']].map((p) => ({ av: AV[p[0]], name: p[1], sub: p[2], border: p[0] === 'Guard B' ? '2px solid #0B0D10' : '1px solid #DCDFE4', pick: go('start') })),
+      showNewPost: !s.seen, gotIt: () => this.setState({ seen: true }),
+      notChecked: !s.checked, checked: s.checked, checkIn: () => this.setState({ checked: true, seen: true }),
+      todayList: [
+        { time: '10:00', text: 'Shift started', weight: 500, color: '#5D6672' },
+        { time: '13:00', text: 'Post: Block C stairwell, until 14:00', weight: 800, color: '#0B0D10' },
+        { time: '18:00', text: 'Shift ends', weight: 500, color: '#3A414B' }
+      ],
+      week: WEEK.map((w) => ({ dow: w[0], date: w[1], shift: w[2], post: w[3], postDisplay: w[3] ? 'block' : 'none', border: w[4] ? '2px solid #0B0D10' : '1px solid #DCDFE4', dayBg: w[4] ? '#0B0D10' : '#F1F2F4', dayFg: w[4] ? '#FFFFFF' : '#0B0D10' })),
+      history: hist.map((h) => ({ level: LV[h[0]][0], lvBg: LV[h[0]][1], lvFg: LV[h[0]][2], glyph: GLYPH[h[0]], when: h[1], place: h[2], outcome: h[3], reply: h[4] })),
+      settings: [{ k: 'Shift', v: 'Mon–Sat 10:00–18:00' }, { k: 'Alert sound', v: 'On' }, { k: 'Vibrate', v: 'On' }, { k: 'Screen stays awake on shift', v: 'On' }, { k: 'Installed on this phone', v: '✓' }],
+      tabs: TABS.map((t) => ({ label: t[1], icon: t[2], go: go(t[0]), current: sc === t[0] ? 'page' : 'false', color: sc === t[0] ? '#0B0D10' : '#8B939E' })),
+      outcomes: [
+        { label: 'Sorted, nobody hurt', bg: '#0B0D10', fg: '#FFFFFF', border: 'none', pick: () => this.setState({ outcome: 'sorted', screen: 'done' }) },
+        { label: 'Sorted, someone hurt', bg: '#FFFFFF', fg: '#0B0D10', border: '2px solid #0B0D10', pick: () => this.setState({ outcome: 'hurt', screen: 'done' }) },
+        { label: 'Need backup', bg: '#FFFFFF', fg: '#0B0D10', border: '2px solid #0B0D10', pick: () => this.setState({ outcome: 'backup', screen: 'done' }) },
+        { label: 'Nothing there', bg: '#FFFFFF', fg: '#3A414B', border: '1px solid #B4BAC3', pick: () => this.setState({ outcome: 'nothing', screen: 'done' }) }
+      ],
+      notes: ['Separated them', 'Sent to Student Affairs', 'Called the clinic'],
+      outcomeText: OUT[s.outcome],
+      doneTitle: s.outcome === 'backup' ? 'Backup is coming.' : 'Thanks. The desk has it.',
+      cameraText: s.outcome === 'backup' ? 'still tense. Wei Jie is on the way, about 2 min.' : (s.outcome === 'nothing' ? 'calm. The desk will decide if it was a false alarm.' : 'calm for 30 seconds'),
+      goToday: go('today'), goStart: go('start'), goSetup: go('setup'), goAlert: go('alert'), goEnroute: go('enroute'), goFound: go('found'),
+      backToPost: () => this.setState({ screen: 'today', checked: true, seen: true })
+    };
+  }
+}
+</script>
+</body>
+</html>

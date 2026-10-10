@@ -1,0 +1,401 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>EarlyEye Guard Posts</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Mono:wght@400;500;700&amp;family=Atkinson+Hyperlegible+Next:wght@400;500;700;800&amp;family=Saira+Condensed:wght@600;700;800&amp;display=swap">
+<style>
+body{margin:0;background:#F1F2F4}
+a{color:#2742D9}a:hover{color:#1F35B3}
+button{font-family:inherit}
+</style>
+</helmet>
+<div style="font-family: 'Atkinson Hyperlegible Next', system-ui, sans-serif; color: #0B0D10; background: #F1F2F4; min-height: 100vh; box-sizing: border-box">
+
+<header style="background: #FFFFFF; border-bottom: 1px solid #DCDFE4">
+<div style="max-width: 1680px; margin: 0 auto; padding: 10px 24px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 22px">
+<a href="L3Live.dc.html" style="display: flex; align-items: center; gap: 10px; text-decoration: none; color: #0B0D10">
+<svg width="28" height="28" viewBox="0 0 32 32" aria-hidden="true"><path d="M3 16c3.5-6 8-9 13-9s9.5 3 13 9c-3.5 6-8 9-13 9s-9.5-3-13-9z" fill="none" stroke="#0B0D10" stroke-width="2.5" stroke-linejoin="round"></path><circle cx="16" cy="16" r="4.5" fill="#0B0D10"></circle></svg>
+<span style="font-family: 'Saira Condensed', sans-serif; font-size: 26px; font-weight: 800; letter-spacing: 0.04em">EARLYEYE</span>
+</a>
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 13px; color: #5D6672">TAYLOR'S LAKESIDE · 6 CAMERAS</span>
+<nav aria-label="Main" style="display: flex; gap: 2px; flex-wrap: wrap">
+<a href="L3Live.dc.html" style="font-size: 15px; font-weight: 700; padding: 10px 14px; color: #3A414B; text-decoration: none">Live</a>
+<a href="L3Cameras.dc.html" style="font-size: 15px; font-weight: 700; padding: 10px 14px; color: #3A414B; text-decoration: none">Cameras</a>
+<a href="L3Plan.dc.html" aria-current="page" style="font-size: 15px; font-weight: 700; padding: 10px 14px; border-radius: 2px; background: #0B0D10; color: #FFFFFF; text-decoration: none">Plan</a>
+<a href="L3Incidents.dc.html" style="font-size: 15px; font-weight: 700; padding: 10px 14px; color: #3A414B; text-decoration: none">Incidents</a>
+<a href="L3Proof.dc.html" style="font-size: 15px; font-weight: 700; padding: 10px 14px; color: #3A414B; text-decoration: none">Proof</a>
+</nav>
+<span style="margin-left: auto; display: inline-flex; align-items: center; min-height: 36px; padding: 0 10px; border: 1px dashed #B4BAC3; border-radius: 2px; background: #FFFFFF; font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; color: #3A414B">SYNTHETIC HISTORY · 8 WEEKS</span>
+</div>
+</header>
+<main style="max-width: 1680px; margin: 0 auto; padding: 22px 24px 48px; display: flex; flex-direction: column; gap: 20px">
+
+<div style="display: flex; flex-direction: column; gap: 8px; max-width: 1000px">
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; color: #5D6672; letter-spacing: 0.08em">PATROL PLAN · CHECKED TODAY, SAT 10 OCT, 06:00</span>
+<h1 style="margin: 0; font-family: 'Saira Condensed', sans-serif; font-size: 58px; font-weight: 800; text-transform: uppercase; line-height: 0.95">Guard posts</h1>
+<p style="margin: 0; font-size: 19px; line-height: 1.5; color: #3A414B">When a place keeps having trouble at the same hour, it gets a standing guard post. EarlyEye rechecks the last 28 days every morning and suggests changes. Nothing changes until you accept it.</p>
+<span style="font-size: 14px; color: #5D6672">Based on incidents from 13 Sep to 10 Oct · next check tomorrow at 06:00</span>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 10px">
+<sc-for list="{{tiles}}" as="t" hint-placeholder-count="4">
+<div style="background: #FFFFFF; border: 1px solid #DCDFE4; border-radius: 2px; padding: 14px 16px; display: flex; align-items: center; gap: 14px">
+<span style="flex: none; width: 48px; height: 48px; border-radius: 50%; background: #E7EBFD; display: inline-flex; align-items: center; justify-content: center"><svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true"><path d="{{t.icon}}" fill="none" stroke="#1F35B3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg></span>
+<span style="display: flex; flex-direction: column; gap: 2px"><span style="font-family: 'Saira Condensed', sans-serif; font-size: 32px; font-weight: 800; line-height: 1">{{t.v}}</span><span style="font-size: 15px; font-weight: 700">{{t.k}}</span><span style="font-size: 13px; color: #5D6672">{{t.sub}}</span></span>
+</div>
+</sc-for>
+</div>
+
+<sc-if value="{{showSuggest}}" hint-placeholder-val="{{ true }}">
+<section aria-label="Suggestion" style="background: #E7EBFD; border: 2px solid #2742D9; border-radius: 2px; padding: 14px 16px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px">
+<span style="display: flex; flex-direction: column; gap: 4px; flex: 1 1 520px">
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; color: #1F35B3">EARLYEYE SUGGESTS · TODAY 06:00</span>
+<span style="font-size: 20px; font-weight: 800">Add a post at the sports pitch, Tue and Thu, 17:00–18:00</span>
+<span style="font-size: 15px; color: #3A414B">3 incidents there at that hour in the last 28 days: Tue 15 Sep, Thu 24 Sep and Thu 8 Oct. It's the dashed circle on the map.</span>
+</span>
+<span style="display: flex; flex-wrap: wrap; gap: 8px">
+<button type="button" onClick="{{acceptSuggest}}" style="min-height: 46px; padding: 0 18px; border-radius: 2px; border: none; background: #2742D9; color: #FFFFFF; font-size: 16px; font-weight: 800; cursor: pointer">Add this post</button>
+<button type="button" onClick="{{skipSuggest}}" style="min-height: 46px; padding: 0 16px; border-radius: 2px; border: 1px solid #2742D9; background: #FFFFFF; color: #1F35B3; font-size: 15px; font-weight: 800; cursor: pointer">Not now</button>
+</span>
+</section>
+</sc-if>
+<sc-if value="{{showNote}}" hint-placeholder-val="{{ false }}">
+<div style="background: #FFFFFF; border: 1px solid #DCDFE4; border-radius: 2px; padding: 10px 14px; font-size: 15px; font-weight: 700">{{noteText}}</div>
+</sc-if>
+
+<div style="display: flex; flex-wrap: wrap; gap: 16px; align-items: stretch">
+<section aria-label="Where" style="flex: 1 1 500px; min-width: 0; background: #FFFFFF; border: 1px solid #DCDFE4; border-radius: 2px; padding: 16px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px">
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px"><span style="flex: none; width: 34px; height: 34px; border-radius: 50%; background: #0B0D10; color: #FFFFFF; display: inline-flex; align-items: center; justify-content: center; font-weight: 800; font-size: 17px">1</span><h2 style="margin: 0; font-family: 'Saira Condensed', sans-serif; font-size: 30px; font-weight: 800; text-transform: uppercase; line-height: 1">Where are the posts?</h2></div>
+<div role="group" aria-label="Map type" style="display: inline-flex; border: 1px solid #B4BAC3; border-radius: 2px; overflow: hidden">
+<button type="button" onClick="{{show2d}}" aria-pressed="{{p2d}}" style="min-height: 36px; padding: 0 14px; border: none; background: {{bg2d}}; color: {{fg2d}}; font-size: 14px; font-weight: 700; cursor: pointer">Map</button>
+<button type="button" onClick="{{show3d}}" aria-pressed="{{p3d}}" style="min-height: 36px; padding: 0 14px; border: none; border-left: 1px solid #B4BAC3; background: {{bg3d}}; color: {{fg3d}}; font-size: 14px; font-weight: 700; cursor: pointer">3D</button>
+</div>
+</div>
+<sc-if value="{{is2d}}" hint-placeholder-val="{{ true }}">
+<svg viewBox="0 0 520 712" role="img" aria-label="Campus map, north up, with the guard posts numbered" style="display: block; width: 100%; height: auto; background: #EEF1F4; border-radius: 2px">
+<path d="M105.6 11.2L344.0 19.2L388.8 20.8L412.8 24.0L473.6 27.2L481.6 27.2L499.2 44.8L502.4 73.6L504.0 94.4L505.6 104.0L512.0 126.4L512.0 142.4L512.0 171.2L508.8 192.0L502.4 206.4L496.0 224.0L492.8 236.8L481.6 350.4L480.0 398.4L475.2 492.8L459.2 635.2L454.4 678.4L443.2 732.8L387.2 729.6L379.2 748.8L371.2 758.4L364.8 763.2L358.4 766.4L352.0 766.4L347.2 764.8L336.0 756.8L312.0 731.2L227.2 635.2L211.2 617.6L200.0 627.2L164.8 659.2L131.2 688.0L112.0 697.6L100.8 702.4L89.6 702.4L81.6 700.8L75.2 694.4L62.4 676.8L46.4 640.0L44.8 632.0L43.2 622.4L44.8 611.2L52.8 588.8L57.6 571.2L60.8 555.2L60.8 539.2L57.6 424.0L57.6 400.0L57.6 358.4L14.4 353.6L14.4 172.8L19.2 145.6L25.6 123.2L57.6 59.2L75.2 27.2L91.2 27.2L89.6 20.8L91.2 11.2Z" fill="#FFFFFF" stroke="#B4BAC3" stroke-width="1.5" stroke-dasharray="6 4"></path>
+<path d="M163.2 377.6L160.0 529.6L166.4 558.4L177.6 577.6L195.2 595.2L217.6 598.4L243.2 595.2L267.2 584.0L278.4 568.0L280.0 496.0L278.4 380.8L268.8 379.2L267.2 276.8L251.2 278.4L251.2 249.6L163.2 249.6Z" fill="#CFE0F2" stroke="#9DBBDA" stroke-width="1"></path><path d="M376.0 705.6L360.0 744.0L356.8 747.2L350.4 747.2L342.4 745.6L328.0 737.6L324.8 731.2L328.0 720.0L336.0 700.8L340.8 694.4L344.0 691.2L363.2 691.2L369.6 692.8L374.4 696.0L376.0 699.2Z" fill="#CFE0F2" stroke="#9DBBDA" stroke-width="1"></path><path d="M267.2 604.8L267.2 641.6L283.2 641.6L283.2 604.8Z" fill="#E3EEE4" stroke="#A9C3AE" stroke-width="1"></path><path d="M292.8 617.6L292.8 678.4L323.2 678.4L323.2 617.6Z" fill="#E3EEE4" stroke="#A9C3AE" stroke-width="1"></path>
+<text x="187" y="441" font-family="Atkinson Hyperlegible Next, sans-serif" font-size="14" font-weight="700" fill="#5A7FA6">LAKE</text>
+<text x="278.0" y="694.0" font-family="Atkinson Hyperlegible Next, sans-serif" font-size="11" font-weight="700" fill="#5E8A66">PITCHES</text>
+<path d="M153.6 73.6L153.6 131.2L153.6 144.0L153.6 147.2L316.8 147.2L316.8 179.2L369.6 179.2L369.6 147.2L377.6 147.2L377.6 120.0L379.2 107.2L382.4 100.8L382.4 94.4L380.8 88.0L377.6 80.0L374.4 73.6L228.8 73.6L230.4 70.4L217.6 70.4L217.6 60.8L193.6 60.8L193.6 73.6Z" fill="#DDE2E8" stroke="#6B7480" stroke-width="1.5"></path><path d="M316.8 179.2L369.6 179.2L390.4 179.2L390.4 192.0L408.0 192.0L408.0 227.2L374.4 227.2L374.4 248.0L340.8 248.0L340.8 227.2L289.6 225.6L278.4 225.6L278.4 179.2Z" fill="#DDE2E8" stroke="#6B7480" stroke-width="1.5"></path><path d="M435.2 248.0L435.2 284.8L374.4 284.8L374.4 308.8L342.4 308.8L342.4 284.8L281.6 284.8L283.2 276.8L281.6 248.0L289.6 248.0L340.8 248.0L374.4 248.0Z" fill="#DDE2E8" stroke="#6B7480" stroke-width="1.5"></path><path d="M433.6 308.8L435.2 344.0L392.0 344.0L393.6 368.0L307.2 368.0L305.6 342.4L284.8 340.8L284.8 307.2L342.4 308.8L374.4 308.8Z" fill="#DDE2E8" stroke="#6B7480" stroke-width="1.5"></path><path d="M65.6 176.0L65.6 360.0L102.4 361.6L102.4 380.8L126.4 380.8L126.4 361.6L161.6 361.6L161.6 179.2L140.8 179.2Z" fill="#DDE2E8" stroke="#6B7480" stroke-width="1.5"></path><path d="M398.4 604.8L400.0 680.0L326.4 681.6L324.8 603.2Z" fill="#DDE2E8" stroke="#6B7480" stroke-width="1.5"></path><text x="286.4" y="99.7" text-anchor="middle" font-family="Atkinson Hyperlegible Next, sans-serif" font-size="13" font-weight="800" fill="#3A414B">BLOCK A &amp; B</text><text x="286.4" y="114.7" text-anchor="middle" font-family="Atkinson Hyperlegible Next, sans-serif" font-size="11" fill="#5D6672">Grand Hall</text><text x="368.8" y="194.0" text-anchor="middle" font-family="Atkinson Hyperlegible Next, sans-serif" font-size="13" font-weight="800" fill="#3A414B">BLOCK C</text><text x="370.3" y="272.8" text-anchor="middle" font-family="Atkinson Hyperlegible Next, sans-serif" font-size="13" font-weight="800" fill="#3A414B">BLOCK D</text><text x="377.4" y="344.1" text-anchor="middle" font-family="Atkinson Hyperlegible Next, sans-serif" font-size="13" font-weight="800" fill="#3A414B">BLOCK E</text><text x="113.0" y="264.5" text-anchor="middle" font-family="Atkinson Hyperlegible Next, sans-serif" font-size="13" font-weight="800" fill="#3A414B">SYOPZ MALL</text><text x="113.0" y="279.5" text-anchor="middle" font-family="Atkinson Hyperlegible Next, sans-serif" font-size="11" fill="#5D6672">U Residence above</text><text x="368.4" y="612.4" text-anchor="middle" font-family="Atkinson Hyperlegible Next, sans-serif" font-size="13" font-weight="800" fill="#3A414B">SPORTS CENTRE</text>
+<g opacity="{{s1.op}}"><circle cx="{{s1.x}}" cy="{{s1.y}}" r="{{s1.r}}" fill="#2742D9" fill-opacity="0.16" stroke="#2742D9" stroke-width="2" stroke-dasharray="{{s1.dash}}"></circle>
+<circle cx="{{s1.x}}" cy="{{s1.y}}" r="15" fill="{{s1.dot}}" stroke="#FFFFFF" stroke-width="3"></circle>
+<text x="{{s1.x}}" y="{{s1.ty}}" text-anchor="middle" font-family="Saira Condensed, sans-serif" font-size="20" font-weight="800" fill="{{s1.numFg}}">{{s1.n}}</text>
+<rect x="{{s1.cx}}" y="{{s1.cy}}" width="{{s1.cw}}" height="26" rx="13" fill="#FFFFFF" stroke="#2742D9" stroke-width="1.5" stroke-dasharray="{{s1.cdash}}"></rect>
+<text x="{{s1.ctx}}" y="{{s1.cty}}" font-family="Atkinson Hyperlegible Next, sans-serif" font-size="13" font-weight="800" fill="#1F35B3">{{s1.chip}}</text></g><g opacity="{{s2.op}}"><circle cx="{{s2.x}}" cy="{{s2.y}}" r="{{s2.r}}" fill="#2742D9" fill-opacity="0.16" stroke="#2742D9" stroke-width="2" stroke-dasharray="{{s2.dash}}"></circle>
+<circle cx="{{s2.x}}" cy="{{s2.y}}" r="15" fill="{{s2.dot}}" stroke="#FFFFFF" stroke-width="3"></circle>
+<text x="{{s2.x}}" y="{{s2.ty}}" text-anchor="middle" font-family="Saira Condensed, sans-serif" font-size="20" font-weight="800" fill="{{s2.numFg}}">{{s2.n}}</text>
+<rect x="{{s2.cx}}" y="{{s2.cy}}" width="{{s2.cw}}" height="26" rx="13" fill="#FFFFFF" stroke="#2742D9" stroke-width="1.5" stroke-dasharray="{{s2.cdash}}"></rect>
+<text x="{{s2.ctx}}" y="{{s2.cty}}" font-family="Atkinson Hyperlegible Next, sans-serif" font-size="13" font-weight="800" fill="#1F35B3">{{s2.chip}}</text></g><g opacity="{{s3.op}}"><circle cx="{{s3.x}}" cy="{{s3.y}}" r="{{s3.r}}" fill="#2742D9" fill-opacity="0.16" stroke="#2742D9" stroke-width="2" stroke-dasharray="{{s3.dash}}"></circle>
+<circle cx="{{s3.x}}" cy="{{s3.y}}" r="15" fill="{{s3.dot}}" stroke="#FFFFFF" stroke-width="3"></circle>
+<text x="{{s3.x}}" y="{{s3.ty}}" text-anchor="middle" font-family="Saira Condensed, sans-serif" font-size="20" font-weight="800" fill="{{s3.numFg}}">{{s3.n}}</text>
+<rect x="{{s3.cx}}" y="{{s3.cy}}" width="{{s3.cw}}" height="26" rx="13" fill="#FFFFFF" stroke="#2742D9" stroke-width="1.5" stroke-dasharray="{{s3.cdash}}"></rect>
+<text x="{{s3.ctx}}" y="{{s3.cty}}" font-family="Atkinson Hyperlegible Next, sans-serif" font-size="13" font-weight="800" fill="#1F35B3">{{s3.chip}}</text></g><g opacity="{{s4.op}}"><circle cx="{{s4.x}}" cy="{{s4.y}}" r="{{s4.r}}" fill="#2742D9" fill-opacity="0.16" stroke="#2742D9" stroke-width="2" stroke-dasharray="{{s4.dash}}"></circle>
+<circle cx="{{s4.x}}" cy="{{s4.y}}" r="15" fill="{{s4.dot}}" stroke="#FFFFFF" stroke-width="3"></circle>
+<text x="{{s4.x}}" y="{{s4.ty}}" text-anchor="middle" font-family="Saira Condensed, sans-serif" font-size="20" font-weight="800" fill="{{s4.numFg}}">{{s4.n}}</text>
+<rect x="{{s4.cx}}" y="{{s4.cy}}" width="{{s4.cw}}" height="26" rx="13" fill="#FFFFFF" stroke="#2742D9" stroke-width="1.5" stroke-dasharray="{{s4.cdash}}"></rect>
+<text x="{{s4.ctx}}" y="{{s4.cty}}" font-family="Atkinson Hyperlegible Next, sans-serif" font-size="13" font-weight="800" fill="#1F35B3">{{s4.chip}}</text></g>
+<g transform="translate(480 40)"><path d="M0 -22 L9 6 L0 0 L-9 6 Z" fill="#0B0D10"></path><text x="0" y="22" text-anchor="middle" font-family="Atkinson Hyperlegible Next, sans-serif" font-size="14" font-weight="800" fill="#0B0D10">N</text></g>
+<g transform="translate(20 690)"><rect x="0" y="0" width="80.0" height="6" fill="#0B0D10"></rect><text x="0" y="-6" font-family="Atkinson Hyperlegible Next, sans-serif" font-size="12" font-weight="700" fill="#0B0D10">50 m</text></g>
+</svg>
+</sc-if>
+<sc-if value="{{is3d}}" hint-placeholder-val="{{ false }}">
+<dc-import name="Campus3D" mode="plan" hint-size="100%,620px"></dc-import>
+</sc-if>
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px 18px; font-size: 14px; color: #3A414B">
+<span style="display: inline-flex; align-items: center; gap: 6px"><span style="width: 22px; height: 22px; border-radius: 50%; background: #2742D9; color: #FFFFFF; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800">1</span>Guard post</span>
+<span style="display: inline-flex; align-items: center; gap: 6px"><span style="width: 26px; height: 26px; border-radius: 50%; background: rgba(39, 66, 217, 0.16); border: 2px solid #2742D9"></span>Bigger = more incidents in 28 days</span>
+<span style="display: inline-flex; align-items: center; gap: 6px"><span style="width: 26px; height: 16px; border-radius: 8px; border: 1.5px dashed #2742D9"></span>Dashed = nobody yet, or suggested</span>
+</div>
+</section>
+
+<section aria-label="Who" style="flex: 1 1 560px; min-width: 0; background: #FFFFFF; border: 1px solid #DCDFE4; border-radius: 2px; padding: 16px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px"><span style="flex: none; width: 34px; height: 34px; border-radius: 50%; background: #0B0D10; color: #FFFFFF; display: inline-flex; align-items: center; justify-content: center; font-weight: 800; font-size: 17px">2</span><h2 style="margin: 0; font-family: 'Saira Condensed', sans-serif; font-size: 30px; font-weight: 800; text-transform: uppercase; line-height: 1">Who is going?</h2></div>
+<div style="display: flex; flex-wrap: wrap; gap: 8px">
+<sc-for list="{{team}}" as="g" hint-placeholder-count="4">
+<div style="display: flex; align-items: center; gap: 8px; padding: 6px 12px 6px 6px; border: 1px solid #DCDFE4; border-radius: 999px; background: #FFFFFF">
+<span style="flex: none; width: 36px; height: 36px; border-radius: 50%; overflow: hidden; display: inline-block; background: {{g.av.bg}}"><svg width="36" height="36" viewBox="0 0 64 64" aria-hidden="true" style="display: block"><path d="{{g.av.back}}" fill="{{g.av.hair}}"></path><path d="M8 70 C10 52 21 45 32 45 C43 45 54 52 56 70 Z" fill="{{g.av.body}}"></path><ellipse cx="32" cy="{{g.av.cy}}" rx="{{g.av.rx}}" ry="{{g.av.ry}}" fill="{{g.av.skin}}"></ellipse><path d="{{g.av.front}}" fill="{{g.av.hair}}"></path></svg></span>
+<span style="display: flex; flex-direction: column"><span style="font-size: 14px; font-weight: 800">{{g.name}}</span><span style="font-size: 12px; color: {{g.nowFg}}; font-weight: 700">{{g.now}}</span></span>
+</div>
+</sc-for>
+</div>
+<p style="margin: 0; font-size: 15px; color: #3A414B">Pick a guard and the post goes straight to the EarlyEye app on their phone. You'll see when they've read it.</p>
+<sc-for list="{{posts}}" as="p" hint-placeholder-count="3">
+<article style="border: {{p.border}}; border-radius: 2px; padding: 14px; display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; align-items: flex-start; gap: 12px">
+<span style="flex: none; width: 38px; height: 38px; border-radius: 50%; background: #2742D9; color: #FFFFFF; display: inline-flex; align-items: center; justify-content: center; font-family: 'Saira Condensed', sans-serif; font-size: 22px; font-weight: 800">{{p.rank}}</span>
+<span style="display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1 1 auto">
+<span style="font-size: 20px; font-weight: 800; line-height: 1.2">{{p.place}}</span>
+<span style="font-size: 16px; color: #3A414B"><span style="font-weight: 800; color: #0B0D10">{{p.days}}</span> · {{p.hours}} · {{p.since}}</span>
+</span>
+</div>
+<div style="display: {{p.assignedDisplay}}; flex-wrap: wrap; align-items: center; gap: 10px">
+<span style="display: inline-flex; align-items: center; gap: 10px"><span style="flex: none; width: 44px; height: 44px; border-radius: 50%; overflow: hidden; display: inline-block; background: {{p.av.bg}}"><svg width="44" height="44" viewBox="0 0 64 64" aria-hidden="true" style="display: block"><path d="{{p.av.back}}" fill="{{p.av.hair}}"></path><path d="M8 70 C10 52 21 45 32 45 C43 45 54 52 56 70 Z" fill="{{p.av.body}}"></path><ellipse cx="32" cy="{{p.av.cy}}" rx="{{p.av.rx}}" ry="{{p.av.ry}}" fill="{{p.av.skin}}"></ellipse><path d="{{p.av.front}}" fill="{{p.av.hair}}"></path></svg></span><span style="display: flex; flex-direction: column"><span style="font-size: 16px; font-weight: 800">{{p.assigned}}</span><span style="font-size: 13px; color: #5D6672">{{p.assignedSub}}</span></span></span>
+<span style="display: inline-flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 700; color: {{p.phoneColor}}; flex: 1 1 170px"><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 2h10a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1zM11 18h2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path></svg>{{p.phoneText}}</span>
+<button type="button" onClick="{{p.change}}" style="min-height: 40px; padding: 0 12px; border-radius: 2px; border: 1px solid #B4BAC3; background: #FFFFFF; color: #0B0D10; font-size: 14px; font-weight: 700; cursor: pointer">{{p.changeLabel}}</button>
+</div>
+<div style="display: {{p.unassignedDisplay}}; flex-wrap: wrap; align-items: center; gap: 10px">
+<span style="display: inline-flex; align-items: center; min-height: 42px; padding: 0 14px; border-radius: 999px; border: 2px dashed #0B0D10; font-size: 15px; font-weight: 800">Nobody yet</span>
+<button type="button" onClick="{{p.useSuggestion}}" style="min-height: 44px; padding: 0 16px; border-radius: 2px; border: none; background: #0B0D10; color: #FFFFFF; font-size: 15px; font-weight: 800; cursor: pointer">{{p.suggestLabel}}</button>
+<button type="button" onClick="{{p.change}}" style="min-height: 40px; padding: 0 12px; border-radius: 2px; border: 1px solid #B4BAC3; background: #FFFFFF; color: #0B0D10; font-size: 14px; font-weight: 700; cursor: pointer">{{p.changeLabel}}</button>
+<span style="flex-basis: 100%; font-size: 13px; color: #5D6672">{{p.suggestWhy}}</span>
+</div>
+<div style="display: {{p.chooserDisplay}}; flex-direction: column; gap: 6px">
+<sc-for list="{{p.options}}" as="o" hint-placeholder-count="5">
+<button type="button" onClick="{{o.pick}}" aria-disabled="{{o.disabled}}" style="text-align: left; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; min-height: 48px; padding: 6px 12px 6px 6px; border-radius: 2px; border: 1px solid {{o.border}}; background: {{o.bg}}; color: {{o.fg}}; cursor: {{o.cursor}}; font-size: 15px; opacity: {{o.op}}"><span style="flex: none; width: 34px; height: 34px; border-radius: 50%; overflow: hidden; display: inline-block; background: {{o.av.bg}}"><svg width="34" height="34" viewBox="0 0 64 64" aria-hidden="true" style="display: block"><path d="{{o.av.back}}" fill="{{o.av.hair}}"></path><path d="M8 70 C10 52 21 45 32 45 C43 45 54 52 56 70 Z" fill="{{o.av.body}}"></path><ellipse cx="32" cy="{{o.av.cy}}" rx="{{o.av.rx}}" ry="{{o.av.ry}}" fill="{{o.av.skin}}"></ellipse><path d="{{o.av.front}}" fill="{{o.av.hair}}"></path></svg></span><span style="font-weight: 800; min-width: 120px">{{o.name}}</span><span style="font-size: 13px">{{o.note}}</span></button>
+</sc-for>
+</div>
+</article>
+</sc-for>
+<div style="margin-top: auto; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; background: #0B0D10; color: #FFFFFF; border-radius: 2px; padding: 10px 14px">
+<span style="font-size: 14px; line-height: 1.45; flex: 1 1 260px">The camera on U Residence level 5 has been off for 3 days, so the guard at post 2 is the only eye on that block.</span>
+<a href="L3Cameras.dc.html" style="color: #FFFFFF; font-size: 14px; font-weight: 800">Report the repair</a>
+</div>
+</section>
+</div>
+
+<section aria-label="When" style="background: #FFFFFF; border: 1px solid #DCDFE4; border-radius: 2px; padding: 16px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px"><span style="flex: none; width: 34px; height: 34px; border-radius: 50%; background: #0B0D10; color: #FFFFFF; display: inline-flex; align-items: center; justify-content: center; font-weight: 800; font-size: 17px">3</span><h2 style="margin: 0; font-family: 'Saira Condensed', sans-serif; font-size: 30px; font-weight: 800; text-transform: uppercase; line-height: 1">When: the next 7 days</h2><span style="font-size: 15px; color: #3A414B">Always today plus the next six days, so it never runs out</span></div>
+<div style="overflow-x: auto">
+<div style="min-width: 900px; display: grid; grid-template-columns: 230px repeat(7, minmax(0, 1fr)); gap: 6px">
+<span></span>
+<sc-for list="{{dayHead}}" as="d" hint-placeholder-count="7">
+<span style="display: flex; flex-direction: column; padding: 4px 6px; border-bottom: 2px solid #0B0D10; background: {{d.bg}}; color: {{d.fg}}"><span style="font-size: 15px; font-weight: 800">{{d.day}}</span><span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px">{{d.date}}</span></span>
+</sc-for>
+<sc-for list="{{timetable}}" as="row" hint-placeholder-count="3">
+<div style="display: contents">
+<span style="display: flex; align-items: center; gap: 10px; padding: 6px 0"><span style="flex: none; width: 30px; height: 30px; border-radius: 50%; background: #2742D9; color: #FFFFFF; display: inline-flex; align-items: center; justify-content: center; font-weight: 800">{{row.rank}}</span><span style="font-size: 15px; font-weight: 800; line-height: 1.25">{{row.place}}</span></span>
+<sc-for list="{{row.cells}}" as="c" hint-placeholder-count="7">
+<span style="display: flex; flex-direction: column; justify-content: center; gap: 2px; min-height: 58px; padding: 6px 8px; border-radius: 2px; background: {{c.bg}}; color: {{c.fg}}; border: {{c.border}}"><span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 13px; font-weight: 700">{{c.time}}</span><span style="font-size: 14px; font-weight: 800">{{c.who}}</span></span>
+</sc-for>
+</div>
+</sc-for>
+</div>
+</div>
+</section>
+
+<section aria-label="Numbers behind this plan" style="background: #F7F8FA; border: 1px solid #DCDFE4; border-radius: 2px; padding: 14px 16px; display: flex; flex-direction: column; gap: 12px">
+<button type="button" onClick="{{toggleStats}}" aria-expanded="{{statsExpanded}}" style="display: flex; align-items: center; justify-content: space-between; gap: 10px; border: none; background: none; padding: 0; text-align: left; cursor: pointer; color: #0B0D10">
+<span style="display: flex; flex-direction: column; gap: 2px"><span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; color: #5D6672">STATISTICS · OPTIONAL</span><span style="font-size: 20px; font-weight: 800">The numbers behind this plan</span><span style="font-size: 14px; color: #3A414B">{{statsSummary}}</span></span>
+<span style="font-size: 15px; font-weight: 800; color: #2742D9">{{statsLabel}}</span>
+</button>
+<sc-if value="{{showStats}}" hint-placeholder-val="{{ false }}">
+<div role="group" aria-label="Which numbers" style="display: inline-flex; align-self: flex-start; border: 1px solid #B4BAC3; border-radius: 2px; overflow: hidden">
+<button type="button" onClick="{{tabWhy}}" aria-pressed="{{whyPressed}}" style="min-height: 38px; padding: 0 14px; border: none; background: {{whyBg}}; color: {{whyFg}}; font-size: 14px; font-weight: 700; cursor: pointer">Why these times</button>
+<button type="button" onClick="{{tabWork}}" aria-pressed="{{workPressed}}" style="min-height: 38px; padding: 0 14px; border: none; border-left: 1px solid #B4BAC3; background: {{workBg}}; color: {{workFg}}; font-size: 14px; font-weight: 700; cursor: pointer">Did the posts work?</button>
+</div>
+<sc-if value="{{isWhy}}" hint-placeholder-val="{{ true }}">
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 12px">
+<sc-for list="{{why}}" as="w" hint-placeholder-count="3">
+<div style="background: #FFFFFF; border: 1px solid #DCDFE4; border-radius: 2px; padding: 14px; display: flex; flex-direction: column; gap: 10px">
+<span style="display: flex; align-items: center; gap: 10px"><span style="flex: none; width: 28px; height: 28px; border-radius: 50%; background: #2742D9; color: #FFFFFF; display: inline-flex; align-items: center; justify-content: center; font-weight: 800">{{w.rank}}</span><span style="font-size: 16px; font-weight: 800">{{w.place}}</span></span>
+<span style="font-size: 17px; font-weight: 800; line-height: 1.3">{{w.headline}}</span>
+<div style="display: flex; align-items: flex-end; gap: 3px; height: 100px; border-bottom: 2px solid #0B0D10; padding-top: 18px">
+<sc-for list="{{w.bars}}" as="b" hint-placeholder-count="17">
+<span title="{{b.title}}" style="flex: 1 1 0; position: relative; height: {{b.h}}; min-height: 2px; background: {{b.bg}}; border-radius: 1px 1px 0 0"><span style="position: absolute; top: -18px; left: 0; right: 0; text-align: center; font-size: 12px; font-weight: 800">{{b.n}}</span></span>
+</sc-for>
+</div>
+<div style="display: flex; gap: 3px; margin-top: -6px">
+<sc-for list="{{w.ticks}}" as="tk" hint-placeholder-count="17">
+<span style="flex: 1 1 0; text-align: center; font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 10px; color: {{tk.color}}; font-weight: {{tk.weight}}">{{tk.t}}</span>
+</sc-for>
+</div>
+<span style="font-size: 13px; color: #5D6672; line-height: 1.45">{{w.dates}}</span>
+</div>
+</sc-for>
+</div>
+</sc-if>
+<sc-if value="{{isWork}}" hint-placeholder-val="{{ false }}">
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 12px">
+<sc-for list="{{results}}" as="r" hint-placeholder-count="3">
+<div style="background: #FFFFFF; border: 1px solid #DCDFE4; border-radius: 2px; padding: 14px; display: flex; flex-direction: column; gap: 10px">
+<span style="display: flex; align-items: center; gap: 10px"><span style="flex: none; width: 28px; height: 28px; border-radius: 50%; background: #2742D9; color: #FFFFFF; display: inline-flex; align-items: center; justify-content: center; font-weight: 800">{{r.rank}}</span><span style="font-size: 16px; font-weight: 800">{{r.place}}</span></span>
+<div style="display: flex; align-items: flex-end; gap: 10px; height: 100px; border-bottom: 2px solid #0B0D10; padding-top: 22px">
+<sc-for list="{{r.bars}}" as="b" hint-placeholder-count="4">
+<span style="flex: 1 1 0; position: relative; height: {{b.h}}; min-height: 3px; background: {{b.bg}}; border-radius: 1px 1px 0 0"><span style="position: absolute; top: -20px; left: 0; right: 0; text-align: center; font-family: 'Saira Condensed', sans-serif; font-size: 18px; font-weight: 800">{{b.n}}</span></span>
+</sc-for>
+</div>
+<div style="display: flex; gap: 10px; margin-top: -6px">
+<sc-for list="{{r.bars}}" as="b" hint-placeholder-count="4">
+<span style="flex: 1 1 0; text-align: center; font-size: 12px; font-weight: {{b.weight}}; color: {{b.labelColor}}">{{b.label}}</span>
+</sc-for>
+</div>
+<span style="font-size: 14px; line-height: 1.45">{{r.text}}</span>
+<span style="font-size: 14px; font-weight: 800; color: #1F35B3">{{r.verdict}}</span>
+</div>
+</sc-for>
+</div>
+</sc-if>
+</sc-if>
+</section>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2300}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { view: '2d', sugg: 'pending', ended: {}, stats: false, tab: 'why', choosing: null,
+      assign: { P1: { who: 'Guard B', phone: 'seen', at: 'Sun 4 Oct, 18:02' }, P2: { who: 'Guard C', phone: 'sent' } } };
+  }
+  renderVals() {
+    const s = this.state;
+    const DAYN = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    const DAYPL = ['Mondays', 'Tuesdays', 'Wednesdays', 'Thursdays', 'Fridays', 'Saturdays', 'Sundays'];
+    const hh = (h) => String(h % 24).padStart(2, '0') + ':00';
+    // today is Sat 10 Oct, 14:40; the view always runs today plus 6 days
+    const ROLL = [[5, 10], [6, 11], [0, 12], [1, 13], [2, 14], [3, 15], [4, 16]];
+    const NOW_HOUR = 14;
+    const AV = {
+      'Guard A': { bg: '#E9EEF3', skin: '#F2CDA9', hair: '#1E1E1E', body: '#1F2A44', cy: 28, rx: 11, ry: 12, back: '', front: 'M21 27 C20 15 44 14 43 27 C40 20 26 20 21 27 Z' },
+      'Guard B': { bg: '#E7EBFD', skin: '#C38B62', hair: '#151515', body: '#1F2A44', cy: 28, rx: 11, ry: 12, back: '', front: 'M21 26 C21 15 43 15 43 26 C39 21 25 21 21 26 Z' },
+      'Guard C': { bg: '#EDE7F6', skin: '#A6704C', hair: '#121212', body: '#1F2A44', cy: 28, rx: 11, ry: 12, back: 'M19 30 C17 12 47 12 45 30 L46 47 C42 42 22 42 18 47 Z', front: 'M21 25 C22 14 42 14 43 25 C38 19 26 19 21 25 Z' },
+      'Warden D': { bg: '#F3EEE6', skin: '#D7A27A', hair: '#5B6B82', body: '#7A6352', cy: 30, rx: 9, ry: 10, back: 'M16 33 C16 10 48 10 48 33 L49 52 C42 56 22 56 15 52 Z', front: '' },
+      none: { bg: '#F1F2F4', skin: '#F1F2F4', hair: '#F1F2F4', body: '#DCDFE4', cy: 28, rx: 0, ry: 0, back: '', front: '' }
+    };
+    const TEAM = [
+      { id: 'Guard A', name: 'Tan Wei Jie', first: 'Wei Jie', role: 'Security guard', shift: 'Mon–Sat 07:00–15:00', days: [0, 1, 2, 3, 4, 5], from: 7, to: 15, base: 'canteen' },
+      { id: 'Guard B', name: 'Aiman Hakimi', first: 'Aiman', role: 'Security guard', shift: 'Mon–Sat 10:00–18:00', days: [0, 1, 2, 3, 4, 5], from: 10, to: 18, base: 'stairwell' },
+      { id: 'Guard C', name: 'Priya Nair', first: 'Priya', role: 'Security guard', shift: 'Every day 14:00–23:00', days: [0, 1, 2, 3, 4, 5, 6], from: 14, to: 23, base: 'hostel' },
+      { id: 'Warden D', name: 'Rosnah Ahmad', first: 'Rosnah', role: 'Hostel warden', shift: 'Fri–Sat 21:00–02:00', days: [4, 5], from: 21, to: 26, base: 'hostel' }
+    ];
+    const person = (id) => TEAM.find((t) => t.id === id);
+    const onNow = (t) => t.days.indexOf(5) >= 0 && NOW_HOUR >= t.from && NOW_HOUR < t.to;
+    const INC = [
+      ['14 Sep', 0, 16, 'stairwell'], ['16 Sep', 2, 10, 'stairwell'], ['22 Sep', 1, 13, 'stairwell'], ['28 Sep', 0, 13, 'stairwell'], ['30 Sep', 2, 13, 'stairwell'], ['1 Oct', 3, 13, 'stairwell'], ['7 Oct', 2, 13, 'stairwell'],
+      ['18 Sep', 4, 20, 'hostel'], ['21 Sep', 0, 22, 'hostel'], ['23 Sep', 2, 18, 'hostel'], ['27 Sep', 6, 22, 'hostel'], ['29 Sep', 1, 22, 'hostel'], ['3 Oct', 5, 23, 'hostel'], ['8 Oct', 3, 22, 'hostel'],
+      ['14 Sep', 0, 12, 'canteen'], ['18 Sep', 4, 12, 'canteen'], ['24 Sep', 3, 19, 'canteen'], ['25 Sep', 4, 12, 'canteen'], ['30 Sep', 2, 12, 'canteen'], ['9 Oct', 4, 12, 'canteen'],
+      ['15 Sep', 1, 17, 'sports'], ['24 Sep', 3, 17, 'sports'], ['5 Oct', 0, 10, 'sports'], ['8 Oct', 3, 17, 'sports'],
+      ['10 Oct', 5, 14, 'hall']
+    ].map((r) => ({ date: r[0], d: r[1], hour: r[2], zone: r[3], dn: Number(r[0].split(' ')[0]) + (r[0].indexOf('Oct') > 0 ? 30 : 0) }));
+    INC.sort((a, b) => a.dn - b.dn || a.hour - b.hour);
+    const ALL = [
+      { id: 'P1', rank: '1', zone: 'stairwell', place: 'Block C stairwell', days: [0, 1, 2, 3], hour: 13, daysLabel: 'Mon–Thu', since: 'standing post since Mon 5 Oct', map: [328, 248], side: 'left',
+        result: 'Down to 1 last week, and Aiman was already there. It was over within a minute.', verdict: 'Working. Keep it.' },
+      { id: 'P2', rank: '2', zone: 'hostel', place: 'U Residence, corridor L3', days: [6, 0, 1, 2, 3], hour: 22, daysLabel: 'Sun–Thu', since: 'standing post since Sun 4 Oct', map: [104, 219.2], side: 'right',
+        result: 'One fight last week, on Thu 8 Oct, a night with no guard there. None on the nights a guard was there.', verdict: 'Cover every night.' },
+      { id: 'P3', rank: '3', zone: 'canteen', place: 'Syopz Mall food court', days: [4], hour: 12, daysLabel: 'Fri', since: 'standing post since Fri 9 Oct', map: [144, 336], side: 'right',
+        result: 'One crowd last week. Wei Jie was there and it cleared within a minute.', verdict: 'Working. Keep it.' },
+      { id: 'P4', rank: '4', zone: 'sports', place: 'Sports pitch', days: [1, 3], hour: 17, daysLabel: 'Tue & Thu', since: 'new today', map: [296, 641.6], side: 'left',
+        result: 'New post. Results start next week.', verdict: '' }
+    ];
+    ALL.forEach((o) => { o.all = INC.filter((x) => x.zone === o.zone); o.win = o.all.filter((x) => x.hour === o.hour); o.hits = o.win.filter((x) => o.days.indexOf(x.d) >= 0); o.hours = hh(o.hour) + '–' + hh(o.hour + 1); });
+    const SLOTS = ALL.filter((o) => (o.id !== 'P4' || s.sugg === 'accepted') && !s.ended[o.id]);
+    const A = s.assign;
+    const fit = (g, slot) => {
+      const missing = slot.days.filter((d) => g.days.indexOf(d) < 0);
+      if (missing.length) return { ok: false, note: 'Not working on ' + missing.map((d) => DAYN[d]).join(', ') };
+      if (slot.hour < g.from) return { ok: false, note: 'Shift starts at ' + hh(g.from) };
+      if (slot.hour + 1 > g.to) return { ok: false, note: 'Shift ends at ' + hh(g.to) };
+      const clash = SLOTS.find((o) => o.id !== slot.id && A[o.id] && A[o.id].who === g.id && o.hour === slot.hour && o.days.some((d) => slot.days.indexOf(d) >= 0));
+      if (clash) return { ok: false, note: 'Already at post ' + clash.rank + ' then' };
+      return { ok: true, note: 'On shift then · ' + g.shift };
+    };
+    const load = (id) => SLOTS.filter((o) => A[o.id] && A[o.id].who === id).length;
+    const suggest = (slot) => { const ok = TEAM.filter((g) => fit(g, slot).ok); ok.sort((a, b) => (a.base === slot.zone ? -1 : 0) - (b.base === slot.zone ? -1 : 0) || load(a.id) - load(b.id)); return ok[0] || null; };
+    const setWho = (id, who) => { const a = Object.assign({}, A); if (who) a[id] = { who: who, phone: 'sent' }; else delete a[id]; this.setState({ assign: a, choosing: null }); };
+    const endPost = (id) => { const e = Object.assign({}, s.ended); e[id] = true; const a = Object.assign({}, A); delete a[id]; this.setState({ ended: e, assign: a, choosing: null }); };
+    const covered = SLOTS.filter((o) => A[o.id]).length;
+
+    const posts = SLOTS.map((slot) => {
+      const asg = A[slot.id]; const g = asg ? person(asg.who) : null; const sug = suggest(slot); const choosing = s.choosing === slot.id;
+      const opts = TEAM.map((t) => {
+        const f = g && t.id === g.id ? { ok: true, note: 'Going now' } : fit(t, slot);
+        return { av: AV[t.id], name: t.name, note: f.note, disabled: f.ok ? 'false' : 'true', bg: '#FFFFFF', fg: f.ok ? '#0B0D10' : '#5D6672', border: f.ok ? '#0B0D10' : '#DCDFE4', cursor: f.ok ? 'pointer' : 'not-allowed', op: f.ok ? 1 : 0.6, pick: () => { if (f.ok) setWho(slot.id, t.id); } };
+      });
+      if (g) opts.push({ av: AV.none, name: 'Nobody', note: 'Take this post off their phone', disabled: 'false', bg: '#FFFFFF', fg: '#0B0D10', border: '#B4BAC3', cursor: 'pointer', op: 1, pick: () => setWho(slot.id, null) });
+      opts.push({ av: AV.none, name: 'End this post', note: 'It stops for everyone. EarlyEye will suggest it again if trouble comes back.', disabled: 'false', bg: '#FFFFFF', fg: '#0B0D10', border: '#B4BAC3', cursor: 'pointer', op: 1, pick: () => endPost(slot.id) });
+      return {
+        rank: slot.rank, place: slot.place, days: slot.daysLabel, hours: slot.hours, since: slot.since,
+        border: g ? '1px solid #DCDFE4' : '2px dashed #0B0D10',
+        assignedDisplay: g && !choosing ? 'flex' : 'none', unassignedDisplay: !g && !choosing ? 'flex' : 'none', chooserDisplay: choosing ? 'flex' : 'none',
+        av: g ? AV[g.id] : AV.none, assigned: g ? g.name : '', assignedSub: g ? g.id + ' · ' + g.shift : '',
+        phoneText: !asg ? '' : (asg.phone === 'seen' ? 'Seen in the app · ' + asg.at : 'Sent to the app, not seen yet'),
+        phoneColor: asg && asg.phone === 'seen' ? '#0B0D10' : '#5D6672',
+        suggestLabel: sug ? 'Send ' + sug.first : 'Nobody is free',
+        suggestWhy: sug ? sug.name + ' is on shift then' + (sug.base === slot.zone ? ' and already works nearby.' : '.') : 'Nobody on the team works at that time.',
+        useSuggestion: () => { if (sug) setWho(slot.id, sug.id); },
+        changeLabel: choosing ? 'Cancel' : (g ? 'Change' : 'Someone else'),
+        change: () => this.setState({ choosing: choosing ? null : slot.id }),
+        options: opts
+      };
+    });
+
+    const spot = (slot, mode) => {
+      const asg = A[slot.id]; const g = asg ? person(asg.who) : null;
+      const r = 14 + Math.max(slot.hits.length, 2) * 4;
+      const chip = mode === 'pending' ? 'Suggested' : (g ? g.first : 'Nobody yet');
+      const cw = Math.round(chip.length * 7.6 + 22);
+      const x = slot.map[0], y = slot.map[1];
+      const cx = slot.side === 'left' ? Math.round(x - r - 6 - cw) : Math.round(x + r + 6);
+      return { op: mode === 'hidden' ? 0 : 1, x: x, y: y, r: r, n: mode === 'pending' ? '+' : slot.rank, ty: y + 7,
+        dot: mode === 'pending' ? '#FFFFFF' : '#2742D9', numFg: mode === 'pending' ? '#2742D9' : '#FFFFFF',
+        dash: mode === 'pending' || !g ? '6 4' : '0', chip: chip, cw: cw, cx: cx, cy: Math.round(y - 13), ctx: cx + 11, cty: Math.round(y + 5), cdash: g && mode !== 'pending' ? '0' : '4 3' };
+    };
+    const modeOf = (o) => (s.ended[o.id] ? 'hidden' : (o.id === 'P4' ? (s.sugg === 'accepted' ? 'active' : (s.sugg === 'pending' ? 'pending' : 'hidden')) : 'active'));
+
+    const dayHead = ROLL.map((r, i) => ({ day: i === 0 ? 'Today' : DAYN[r[0]], date: (i === 0 ? DAYN[r[0]] + ' ' : '') + r[1] + ' Oct', bg: i === 0 ? '#0B0D10' : 'transparent', fg: i === 0 ? '#FFFFFF' : '#0B0D10' }));
+    const timetable = SLOTS.map((slot) => {
+      const g = A[slot.id] ? person(A[slot.id].who) : null;
+      return { rank: slot.rank, place: slot.place, cells: ROLL.map((r, i) => {
+        if (slot.days.indexOf(r[0]) < 0) return { time: '', who: '', bg: '#F7F8FA', fg: '#5D6672', border: '1px solid #F1F2F4' };
+        const past = i === 0 && slot.hour < NOW_HOUR;
+        return { time: slot.hours, who: g ? g.first : 'Nobody yet', bg: g ? (past ? '#93A6EE' : '#2742D9') : '#FFFFFF', fg: g ? '#FFFFFF' : '#0B0D10', border: g ? '1px solid #2742D9' : '2px dashed #0B0D10' };
+      }) };
+    });
+
+    // next post from now
+    let next = null;
+    ROLL.forEach((r, i) => { if (next) return; const today = SLOTS.filter((o) => o.days.indexOf(r[0]) >= 0 && (i > 0 || o.hour > NOW_HOUR)).sort((a, b) => a.hour - b.hour); if (today.length) next = { slot: today[0], day: i === 0 ? 'Today' : DAYN[r[0]] }; });
+    const nextWho = next && A[next.slot.id] ? person(A[next.slot.id].who).name : 'nobody yet';
+    const pending = s.sugg === 'pending';
+    const tiles = [
+      { icon: 'M12 21s-6-5.33-6-11a6 6 0 0 1 12 0c0 5.67-6 11-6 11zM12 12.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z', v: SLOTS.length + ' posts', k: 'running now', sub: 'Each one stays until you end it' },
+      { icon: 'M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20zM12 6v6l4 2', v: next ? next.day + ' ' + hh(next.slot.hour) : 'None', k: 'next post starts', sub: next ? next.slot.place + ' · ' + nextWho : '' },
+      { icon: 'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21a8 8 0 0 1 16 0', v: covered + ' of ' + SLOTS.length, k: 'posts have a guard', sub: covered < SLOTS.length ? (SLOTS.length - covered) + ' still need' + (SLOTS.length - covered === 1 ? 's' : '') + ' someone' : 'Every post is covered' },
+      { icon: 'M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.8.8 1 1.5 1 2.5h6c0-1 .2-1.7 1-2.5A6 6 0 0 0 12 3z', v: (pending ? 1 : 0) + ' suggestion' + (pending ? '' : 's'), k: 'to review', sub: pending ? 'A new post at the sports pitch' : 'EarlyEye tells you when something changes' }
+    ];
+
+    const why = SLOTS.map((slot) => {
+      const counts = []; for (let h = 7; h < 24; h++) counts.push(slot.all.filter((x) => x.hour === h).length);
+      const max = Math.max.apply(null, counts) || 1;
+      const extra = slot.hits.length < slot.win.length ? ', ' + slot.hits.length + ' of them on the post days' : '';
+      return { rank: slot.rank, place: slot.place,
+        headline: slot.win.length + ' of ' + slot.all.length + ' incidents here happened between ' + hh(slot.hour) + ' and ' + hh(slot.hour + 1) + extra + '.',
+        bars: counts.map((n, i) => { const h = i + 7; return { h: Math.round(n / max * 100) + '%', n: n ? String(n) : '', bg: h === slot.hour ? '#2742D9' : '#C9CED6', title: hh(h) + ': ' + n }; }),
+        ticks: counts.map((n, i) => { const h = i + 7; const show = h === slot.hour || h % 3 === 1; return { t: show ? String(h).padStart(2, '0') : '', color: h === slot.hour ? '#1F35B3' : '#5D6672', weight: h === slot.hour ? 800 : 500 }; }),
+        dates: 'Dates: ' + slot.hits.map((x) => DAYN[x.d] + ' ' + x.date).join(', ') + '.' };
+    });
+    const WEEKS = [[14, 20, '14 Sep'], [21, 27, '21 Sep'], [28, 34, '28 Sep'], [35, 41, 'Last week']];
+    const results = SLOTS.map((slot) => {
+      const ns = WEEKS.map((w) => slot.hits.filter((x) => x.dn >= w[0] && x.dn <= w[1]).length);
+      return { rank: slot.rank, place: slot.place, text: slot.result, verdict: slot.verdict,
+        bars: ns.map((n, i) => { const last = i === 3 && slot.id !== 'P4'; return { n: String(n), h: Math.round(n / 3 * 100) + '%', bg: last ? '#2742D9' : '#C9CED6', label: WEEKS[i][2], weight: last ? 800 : 500, labelColor: last ? '#1F35B3' : '#5D6672' }; }) };
+    });
+    const team = TEAM.map((t) => ({ av: AV[t.id], name: t.name, now: (onNow(t) ? 'On duty now' : 'Off duty') + ' · ' + t.id, nowFg: onNow(t) ? '#1F35B3' : '#5D6672' }));
+    const v2 = s.view === '2d'; const why1 = s.tab === 'why';
+    const P = (id) => ALL.find((o) => o.id === id);
+    return {
+      tiles: tiles, posts: posts, team: team, dayHead: dayHead, timetable: timetable, why: why, results: results,
+      s1: spot(P('P1'), modeOf(P('P1'))), s2: spot(P('P2'), modeOf(P('P2'))), s3: spot(P('P3'), modeOf(P('P3'))), s4: spot(P('P4'), modeOf(P('P4'))),
+      showSuggest: pending, acceptSuggest: () => this.setState({ sugg: 'accepted' }), skipSuggest: () => this.setState({ sugg: 'skipped' }),
+      showNote: !pending, noteText: s.sugg === 'accepted' ? 'Post 4 added: sports pitch, Tue and Thu 17:00–18:00. Pick who goes below.' : 'Not now. EarlyEye will only suggest it again if trouble keeps happening there.',
+      is2d: v2, is3d: !v2, show2d: () => this.setState({ view: '2d' }), show3d: () => this.setState({ view: '3d' }),
+      p2d: v2 ? 'true' : 'false', p3d: v2 ? 'false' : 'true', bg2d: v2 ? '#0B0D10' : '#FFFFFF', fg2d: v2 ? '#FFFFFF' : '#0B0D10', bg3d: v2 ? '#FFFFFF' : '#0B0D10', fg3d: v2 ? '#0B0D10' : '#FFFFFF',
+      showStats: s.stats, statsExpanded: s.stats ? 'true' : 'false', statsLabel: s.stats ? 'Hide' : 'Show the numbers', toggleStats: () => this.setState({ stats: !s.stats }),
+      statsSummary: '5 of 7 incidents at the Block C stairwell happened at lunchtime. Last week the posts were covered on 8 of 10 days.',
+      isWhy: why1, isWork: !why1, tabWhy: () => this.setState({ tab: 'why' }), tabWork: () => this.setState({ tab: 'work' }),
+      whyPressed: why1 ? 'true' : 'false', workPressed: why1 ? 'false' : 'true', whyBg: why1 ? '#0B0D10' : '#FFFFFF', whyFg: why1 ? '#FFFFFF' : '#0B0D10', workBg: why1 ? '#FFFFFF' : '#0B0D10', workFg: why1 ? '#0B0D10' : '#FFFFFF'
+    };
+  }
+}
+</script>
+</body>
+</html>

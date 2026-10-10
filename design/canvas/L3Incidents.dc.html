@@ -1,0 +1,496 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>EarlyEye Incidents</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Mono:wght@400;500;700&amp;family=Atkinson+Hyperlegible+Next:wght@400;500;700;800&amp;family=Saira+Condensed:wght@600;700;800&amp;display=swap">
+<style>
+body{margin:0;background:#F1F2F4}
+a{color:#2742D9}a:hover{color:#1F35B3}
+button,textarea{font-family:inherit}
+</style>
+</helmet>
+<div style="font-family: 'Atkinson Hyperlegible Next', system-ui, sans-serif; color: #0B0D10; background: #F1F2F4; min-height: 100vh; box-sizing: border-box">
+
+<header style="background: #FFFFFF; border-bottom: 1px solid #DCDFE4">
+<div style="max-width: 1680px; margin: 0 auto; padding: 10px 24px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 22px">
+<a href="L3Live.dc.html" style="display: flex; align-items: center; gap: 10px; text-decoration: none; color: #0B0D10">
+<svg width="28" height="28" viewBox="0 0 32 32" aria-hidden="true"><path d="M3 16c3.5-6 8-9 13-9s9.5 3 13 9c-3.5 6-8 9-13 9s-9.5-3-13-9z" fill="none" stroke="#0B0D10" stroke-width="2.5" stroke-linejoin="round"></path><circle cx="16" cy="16" r="4.5" fill="#0B0D10"></circle></svg>
+<span style="font-family: 'Saira Condensed', sans-serif; font-size: 26px; font-weight: 800; letter-spacing: 0.04em">EARLYEYE</span>
+</a>
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 13px; color: #5D6672">TAYLOR'S LAKESIDE · 6 CAMERAS</span>
+<nav aria-label="Main" style="display: flex; gap: 2px; flex-wrap: wrap">
+<a href="L3Live.dc.html" style="font-size: 15px; font-weight: 700; padding: 10px 14px; color: #3A414B; text-decoration: none">Live</a>
+<a href="L3Cameras.dc.html" style="font-size: 15px; font-weight: 700; padding: 10px 14px; color: #3A414B; text-decoration: none">Cameras</a>
+<a href="L3Plan.dc.html" style="font-size: 15px; font-weight: 700; padding: 10px 14px; color: #3A414B; text-decoration: none">Plan</a>
+<a href="L3Incidents.dc.html" aria-current="page" style="font-size: 15px; font-weight: 700; padding: 10px 14px; border-radius: 2px; background: #0B0D10; color: #FFFFFF; text-decoration: none">Incidents</a>
+<a href="L3Proof.dc.html" style="font-size: 15px; font-weight: 700; padding: 10px 14px; color: #3A414B; text-decoration: none">Proof</a>
+</nav>
+<div style="margin-left: auto; display: flex; flex-wrap: wrap; align-items: center; gap: 10px">
+<div role="group" aria-label="Where this screen is open" style="display: inline-flex; border: 1px solid #B4BAC3; border-radius: 2px; overflow: hidden">
+<button type="button" onClick="{{setOnsite}}" aria-pressed="{{onsitePressed}}" style="min-height: 40px; padding: 0 12px; border: none; background: {{onsiteBg}}; color: {{onsiteFg}}; font-size: 13px; font-weight: 700; cursor: pointer">On-site desk</button>
+<button type="button" onClick="{{setRemote}}" aria-pressed="{{remotePressed}}" style="min-height: 40px; padding: 0 12px; border: none; border-left: 1px solid #B4BAC3; background: {{remoteBg}}; color: {{remoteFg}}; font-size: 13px; font-weight: 700; cursor: pointer">Remote link</button>
+</div>
+<span style="display: inline-flex; align-items: center; min-height: 36px; padding: 0 10px; border: 1px dashed #B4BAC3; border-radius: 2px; background: #FFFFFF; font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; color: #3A414B">SYNTHETIC HISTORY · 8 WEEKS</span>
+</div>
+</div>
+</header>
+
+<main style="max-width: 1680px; margin: 0 auto; padding: 20px 24px 40px; display: flex; flex-direction: column; gap: 18px">
+
+<div style="display: flex; flex-direction: column; gap: 6px; max-width: 900px">
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; color: #5D6672; letter-spacing: 0.08em">EVERY ALERT, SAVED AS A CASE</span>
+<h1 style="margin: 0; font-family: 'Saira Condensed', sans-serif; font-size: 52px; font-weight: 800; text-transform: uppercase; line-height: 0.95">Incidents</h1>
+<p style="margin: 0; font-size: 18px; line-height: 1.45; color: #3A414B">Every alert EarlyEye raises lands here. Decide if it was real, write down what happened, and follow up.</p>
+</div>
+
+<section aria-label="Needs you now" style="display: flex; flex-direction: column; gap: 8px">
+<h2 style="margin: 0; font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; color: #5D6672">NEEDS YOU NOW</h2>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 10px">
+<sc-for list="{{todo}}" as="k" hint-placeholder-count="3">
+<div style="background: #FFFFFF; border: {{k.border}}; border-radius: 2px; padding: 14px 16px; display: flex; flex-direction: column; gap: 8px">
+<span style="display: flex; align-items: baseline; gap: 10px"><span style="font-family: 'Saira Condensed', sans-serif; font-size: 40px; font-weight: 800; line-height: 0.9; color: {{k.numColor}}">{{k.num}}</span><span style="font-size: 18px; font-weight: 800; line-height: 1.2">{{k.title}}</span></span>
+<span style="font-size: 15px; line-height: 1.45; color: #3A414B">{{k.body}}</span>
+<button type="button" onClick="{{k.go}}" style="display: {{k.btnDisplay}}; align-items: center; align-self: flex-start; min-height: 40px; padding: 0 14px; border-radius: 2px; border: {{k.btnBorder}}; background: {{k.btnBg}}; color: {{k.btnFg}}; font-size: 14px; font-weight: 800; cursor: pointer">{{k.btn}}</button>
+<a href="L3Plan.dc.html" style="display: {{k.linkDisplay}}; align-self: flex-start; font-size: 14px; font-weight: 800">{{k.link}}</a>
+</div>
+</sc-for>
+</div>
+</section>
+
+<section aria-label="Last 4 weeks" style="display: flex; flex-direction: column; gap: 8px">
+<h2 style="margin: 0; font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; color: #5D6672">LAST 4 WEEKS</h2>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px">
+<sc-for list="{{stats}}" as="t" hint-placeholder-count="4">
+<div style="background: #FFFFFF; border: 1px solid #DCDFE4; border-radius: 2px; padding: 12px 14px; display: flex; flex-direction: column; gap: 4px">
+<span style="font-family: 'Saira Condensed', sans-serif; font-size: 32px; font-weight: 800; line-height: 1">{{t.v}}</span>
+<span style="font-size: 15px; font-weight: 700">{{t.k}}</span>
+<span style="font-size: 13px; color: #5D6672; line-height: 1.4">{{t.sub}}</span>
+</div>
+</sc-for>
+</div>
+</section>
+
+<div style="display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-start">
+
+<section aria-label="All incidents" style="flex: 1 1 400px; min-width: 0; background: #FFFFFF; border: 1px solid #DCDFE4; border-radius: 2px; padding: 12px; display: flex; flex-direction: column; gap: 10px">
+<div role="group" aria-label="Show" style="display: flex; flex-wrap: wrap; gap: 6px">
+<sc-for list="{{filters}}" as="f" hint-placeholder-count="4">
+<button type="button" onClick="{{f.pick}}" aria-pressed="{{f.pressed}}" style="min-height: 40px; padding: 0 12px; border-radius: 2px; border: 1px solid {{f.border}}; background: {{f.bg}}; color: {{f.fg}}; font-size: 14px; font-weight: 700; cursor: pointer">{{f.label}} <span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-weight: 700; margin-left: 4px">{{f.n}}</span></button>
+</sc-for>
+</div>
+<span style="display: {{emptyDisplay}}; padding: 18px 8px; font-size: 15px; color: #3A414B">Nothing here. Every alert in this list has a decision.</span>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<sc-for list="{{rows}}" as="r" hint-placeholder-count="8">
+<div style="display: flex; flex-direction: column; gap: 6px">
+<span style="display: {{r.headDisplay}}; padding: 8px 2px 2px; font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; font-weight: 700; letter-spacing: 0.06em; color: #5D6672">{{r.head}}</span>
+<button type="button" onClick="{{r.open}}" aria-pressed="{{r.selected}}" style="text-align: left; width: 100%; box-sizing: border-box; display: grid; grid-template-columns: 56px minmax(0, 1fr); gap: 12px; align-items: start; padding: 10px; border-radius: 2px; border: {{r.border}}; background: {{r.bg}}; color: #0B0D10; cursor: pointer">
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 17px; font-weight: 700; padding-top: 1px">{{r.hm}}</span>
+<span style="display: flex; flex-direction: column; gap: 5px; min-width: 0">
+<span style="font-size: 16px; font-weight: 800; line-height: 1.25">{{r.title}}</span>
+<span style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap">
+<span style="display: inline-flex; align-items: center; gap: 4px; padding: 1px 7px 1px 5px; border-radius: 1px; background: {{r.pillBg}}; color: {{r.pillFg}}; border: 1px solid {{r.pillBorder}}; font-size: 11px; font-weight: 800; text-transform: uppercase"><svg width="10" height="10" viewBox="0 0 24 24" aria-hidden="true"><path d="{{r.glyph}}" fill="{{r.pillFg}}"></path></svg>{{r.levelLabel}}</span>
+<span style="font-size: 12px; font-weight: 700; padding: 1px 7px; border-radius: 1px; background: {{r.stBg}}; color: {{r.stFg}}; border: 1px solid {{r.stBorder}}">{{r.statusLabel}}</span>
+<span style="font-size: 13px; color: #5D6672">{{r.who}}</span>
+</span>
+</span>
+</button>
+</div>
+</sc-for>
+</div>
+</section>
+
+<section aria-label="The incident" style="flex: 2 1 640px; min-width: 0; background: #FFFFFF; border: 1px solid #DCDFE4; border-radius: 2px; padding: 18px; display: flex; flex-direction: column; gap: 18px">
+
+<div style="display: flex; flex-direction: column; gap: 6px">
+<span style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px">
+<span style="display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px 3px 7px; border-radius: 2px; background: {{c.pillBg}}; color: {{c.pillFg}}; border: 1px solid {{c.pillBorder}}; font-size: 13px; font-weight: 800; text-transform: uppercase"><svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{c.glyph}}" fill="{{c.pillFg}}"></path></svg>{{c.levelLabel}}</span>
+<span style="font-size: 14px; color: #3A414B">{{c.levelNote}}</span>
+</span>
+<h2 style="margin: 0; font-family: 'Saira Condensed', sans-serif; font-size: 40px; font-weight: 800; text-transform: uppercase; line-height: 1">{{c.title}}</h2>
+<span style="font-size: 16px; color: #3A414B">{{c.when}} · {{c.where}}</span>
+</div>
+
+<sc-if value="{{c.isOpen}}" hint-placeholder-val="{{ true }}">
+<div style="border: 2px solid #0B0D10; border-radius: 2px; padding: 14px 16px; display: flex; flex-direction: column; gap: 10px">
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; color: #5D6672">NEEDS YOUR DECISION</span>
+<span style="font-size: 22px; font-weight: 800">Was this a real incident?</span>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 8px">
+<button type="button" onClick="{{c.onReal}}" style="min-height: 56px; border-radius: 2px; border: none; background: #0B0D10; color: #FFFFFF; font-size: 17px; font-weight: 800; cursor: pointer">Yes, it was real</button>
+<button type="button" onClick="{{c.onFalse}}" style="min-height: 56px; border-radius: 2px; border: 2px solid #0B0D10; background: #FFFFFF; color: #0B0D10; font-size: 17px; font-weight: 800; cursor: pointer">No, false alarm</button>
+</div>
+<span style="font-size: 14px; color: #3A414B">{{c.unsure}}</span>
+</div>
+</sc-if>
+
+<sc-if value="{{c.isReal}}" hint-placeholder-val="{{ false }}">
+<div style="background: #0B0D10; color: #FFFFFF; border-radius: 2px; padding: 14px 16px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px">
+<span style="display: flex; flex-direction: column; gap: 2px; flex: 1 1 260px"><span style="font-size: 20px; font-weight: 800">Real incident. Follow-up is open.</span><span style="font-size: 14px; color: #C9CED6">{{c.decidedText}}</span></span>
+<button type="button" onClick="{{c.onClose}}" style="min-height: 44px; padding: 0 16px; border-radius: 2px; border: none; background: #FFFFFF; color: #0B0D10; font-size: 15px; font-weight: 800; cursor: pointer">Mark as closed</button>
+<button type="button" onClick="{{c.onUndo}}" style="min-height: 44px; padding: 0 12px; border-radius: 2px; border: 1px solid #5D6672; background: transparent; color: #FFFFFF; font-size: 14px; font-weight: 700; cursor: pointer">Undo</button>
+</div>
+</sc-if>
+
+<sc-if value="{{c.isClosed}}" hint-placeholder-val="{{ false }}">
+<div style="border: 1px solid #B4BAC3; border-radius: 2px; padding: 14px 16px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px">
+<span style="display: flex; flex-direction: column; gap: 2px; flex: 1 1 260px"><span style="font-size: 20px; font-weight: 800">Real incident. Closed.</span><span style="font-size: 14px; color: #3A414B">Follow-up is done.</span></span>
+<button type="button" onClick="{{c.onReopen}}" style="min-height: 44px; padding: 0 14px; border-radius: 2px; border: 1px solid #B4BAC3; background: #FFFFFF; color: #0B0D10; font-size: 14px; font-weight: 700; cursor: pointer">Reopen</button>
+</div>
+</sc-if>
+
+<sc-if value="{{c.isFalse}}" hint-placeholder-val="{{ false }}">
+<div style="background: #F1F2F4; border: 1px solid #DCDFE4; border-radius: 2px; padding: 14px 16px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px">
+<span style="display: flex; flex-direction: column; gap: 2px; flex: 1 1 260px"><span style="font-size: 20px; font-weight: 800">False alarm. Nothing more to do.</span><span style="font-size: 14px; color: #3A414B">{{c.falseText}}</span></span>
+<button type="button" onClick="{{c.onUndo}}" style="min-height: 44px; padding: 0 14px; border-radius: 2px; border: 1px solid #B4BAC3; background: #FFFFFF; color: #0B0D10; font-size: 14px; font-weight: 700; cursor: pointer">Undo</button>
+</div>
+</sc-if>
+
+<div style="display: flex; flex-wrap: wrap; gap: 18px; align-items: flex-start">
+
+<div style="flex: 3 1 400px; min-width: 0; display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; flex-direction: column; gap: 6px">
+<h3 style="margin: 0; font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; color: #5D6672">WHAT EARLYEYE SAW</h3>
+<p style="margin: 0; font-size: 20px; line-height: 1.4; font-weight: 500">{{c.reason}}</p>
+</div>
+<figure style="margin: 0; display: flex; flex-direction: column; gap: 8px">
+<svg viewBox="0 0 640 360" role="img" aria-label="{{c.aria}}" style="display: block; width: 100%; height: auto; border-radius: 2px">
+<rect x="0" y="0" width="640" height="360" fill="{{bgFill}}"></rect>
+<path d="{{bgLines}}" stroke="{{bgStroke}}" stroke-width="{{bgWidth}}" fill="none"></path>
+<rect x="{{c.boxX}}" y="{{c.boxY}}" width="{{c.boxW}}" height="{{c.boxH}}" fill="none" stroke="{{c.boxColor}}" stroke-width="2.5"></rect>
+<rect x="{{c.boxX}}" y="{{c.labelY}}" width="{{c.labelW}}" height="24" fill="{{c.boxColor}}"></rect>
+<text x="{{c.labelX}}" y="{{c.labelTY}}" font-family="'Atkinson Hyperlegible Next', sans-serif" font-size="14" font-weight="800" fill="{{c.boxFg}}">{{c.boxLabel}}</text>
+<path d="{{c.grey}}" stroke="#C9CED6" stroke-width="4" stroke-linecap="round" fill="none"></path>
+<path d="{{c.cyan}}" stroke="#7FE0FF" stroke-width="4" stroke-linecap="round" fill="none"></path>
+<path d="{{c.violet}}" stroke="#C9A7FF" stroke-width="4" stroke-linecap="round" fill="none"></path>
+<path d="{{c.ball}}" fill="none" stroke="#ECEFF3" stroke-width="2.5"></path>
+<text x="18" y="34" font-family="'Atkinson Hyperlegible Next', sans-serif" font-size="15" font-weight="700" fill="#ECEFF3">{{c.peakText}}</text>
+</svg>
+<figcaption style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px">
+<sc-if value="{{onsite}}" hint-placeholder-val="{{ true }}">
+<button type="button" onClick="{{toggleClip}}" style="min-height: 44px; padding: 0 16px; border-radius: 2px; border: none; background: #2742D9; color: #FFFFFF; font-size: 15px; font-weight: 800; cursor: pointer">{{clipLabel}}</button>
+<span style="font-size: 14px; color: #3A414B">The clip stays on this computer.</span>
+</sc-if>
+<sc-if value="{{remote}}" hint-placeholder-val="{{ false }}">
+<span style="font-size: 14px; color: #3A414B">People appear as stick figures. The video never leaves campus; the desk on site can watch the clip.</span>
+</sc-if>
+</figcaption>
+<sc-if value="{{clipOpen}}" hint-placeholder-val="{{ false }}">
+<div style="border: 1px dashed #B4BAC3; border-radius: 2px; padding: 10px 12px; font-size: 14px; color: #3A414B; line-height: 1.45">On the real desk, the 10-second clip plays here, straight from the camera laptop.</div>
+</sc-if>
+</figure>
+</div>
+
+<div style="flex: 2 1 280px; min-width: 0; display: flex; flex-direction: column; gap: 8px">
+<h3 style="margin: 0; font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; color: #5D6672">HOW IT UNFOLDED</h3>
+<ol style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column">
+<sc-for list="{{c.trail}}" as="a" hint-placeholder-count="5">
+<li style="display: grid; grid-template-columns: 74px 14px minmax(0, 1fr); gap: 10px; align-items: start; padding: 8px 0; border-bottom: 1px solid #F1F2F4">
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 14px; color: #3A414B">{{a.t}}</span>
+<span style="width: 10px; height: 10px; margin-top: 5px; border-radius: 50%; background: {{a.dot}}; border: 1px solid #0B0D10"></span>
+<span style="font-size: 15px; line-height: 1.45">{{a.text}}</span>
+</li>
+</sc-for>
+</ol>
+</div>
+</div>
+
+<div style="display: flex; flex-wrap: wrap; gap: 18px; align-items: flex-start">
+
+<div style="flex: 1 1 320px; min-width: 0; display: flex; flex-direction: column; gap: 10px">
+<h3 style="margin: 0; font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; color: #5D6672">{{c.nextHead}}</h3>
+<ul style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 6px">
+<sc-for list="{{c.steps}}" as="p" hint-placeholder-count="3">
+<li style="display: grid; grid-template-columns: 18px minmax(0, 1fr); gap: 8px; align-items: start; font-size: 15px; line-height: 1.45"><span style="width: 12px; height: 12px; margin-top: 5px; border: 2px solid #0B0D10; border-radius: 1px; box-sizing: border-box; background: {{p.fill}}"></span><span>{{p.text}}</span></li>
+</sc-for>
+</ul>
+<sc-if value="{{c.canSummary}}" hint-placeholder-val="{{ true }}">
+<button type="button" onClick="{{toggleSummary}}" style="align-self: flex-start; min-height: 44px; padding: 0 16px; border-radius: 2px; border: 2px solid #0B0D10; background: #FFFFFF; color: #0B0D10; font-size: 15px; font-weight: 800; cursor: pointer">{{summaryLabel}}</button>
+</sc-if>
+<sc-if value="{{summaryOpen}}" hint-placeholder-val="{{ false }}">
+<div style="background: #F7F8FA; border: 1px solid #DCDFE4; border-radius: 2px; padding: 12px 14px; display: flex; flex-direction: column; gap: 10px">
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; color: #5D6672">SUMMARY FOR YOUR REPORT</span>
+<p style="margin: 0; font-size: 15px; line-height: 1.55">{{c.summary}}</p>
+<span style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px">
+<button type="button" onClick="{{copySummary}}" style="min-height: 40px; padding: 0 14px; border-radius: 2px; border: none; background: #2742D9; color: #FFFFFF; font-size: 14px; font-weight: 800; cursor: pointer">Copy summary</button>
+<span style="font-size: 14px; font-weight: 700; color: #1F35B3">{{copiedText}}</span>
+</span>
+</div>
+</sc-if>
+</div>
+
+<div style="flex: 1 1 320px; min-width: 0; display: flex; flex-direction: column; gap: 10px">
+<label style="display: flex; flex-direction: column; gap: 6px; font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; color: #5D6672">WHAT HAPPENED, IN YOUR WORDS
+<textarea value="{{c.note}}" onChange="{{c.onNote}}" rows="3" placeholder="For example: two students separated and sent to Student Affairs" style="background: #FFFFFF; border: 1px solid #B4BAC3; border-radius: 2px; padding: 10px 12px; font-family: 'Atkinson Hyperlegible Next', system-ui, sans-serif; font-size: 16px; line-height: 1.45; color: #0B0D10; resize: vertical; letter-spacing: normal"></textarea>
+</label>
+<span style="font-size: 13px; color: #5D6672">Saved with the case. EarlyEye never knows who people are, so names go in your own records, not here.</span>
+</div>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 8px; border-top: 1px solid #DCDFE4; padding-top: 14px">
+<h3 style="margin: 0; font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; color: #5D6672">EARLIER AT THIS PLACE</h3>
+<sc-if value="{{c.hasPattern}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; background: #E7EBFD; border: 1px solid #A9B6F2; border-radius: 2px; padding: 10px 12px">
+<span style="font-size: 15px; font-weight: 700; color: #1F35B3; flex: 1 1 260px">{{c.patternText}}</span>
+<a href="L3Plan.dc.html" style="font-size: 14px; font-weight: 800">See the patrol plan</a>
+</div>
+</sc-if>
+<span style="display: {{c.noEarlierDisplay}}; font-size: 15px; color: #3A414B">Nothing else here in the last 4 weeks.</span>
+<div style="display: flex; flex-direction: column; gap: 4px">
+<sc-for list="{{c.earlier}}" as="x" hint-placeholder-count="3">
+<button type="button" onClick="{{x.open}}" style="text-align: left; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; min-height: 40px; padding: 6px 10px; border-radius: 2px; border: 1px solid #DCDFE4; background: #FFFFFF; color: #0B0D10; font-size: 14px; cursor: pointer"><span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; color: #3A414B">{{x.when}}</span><span style="font-weight: 700">{{x.what}}</span><span style="color: #5D6672">{{x.status}}</span></button>
+</sc-for>
+</div>
+</div>
+
+<div style="display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 13px; color: #5D6672; border-top: 1px solid #DCDFE4; padding-top: 12px">
+<span>Reference {{c.id}}</span>
+<span>{{c.camName}}</span>
+<a href="L3Cameras.dc.html" style="font-weight: 700">See it on the campus map</a>
+<a href="L3Proof.dc.html" style="font-weight: 700">How EarlyEye decides</a>
+</div>
+</section>
+</div>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"view":{"editor":"enum","options":["onsite","remote"],"default":"onsite"},"$preview":{"width":1440,"height":1900}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { open: 'INC-2026-00140', filter: 'all', patch: {}, notes: {}, view: (props && props.view) || 'onsite', clip: false, summary: false, copied: false };
+  }
+  componentDidUpdate(prev) { if (prev.view !== this.props.view) this.setState({ view: this.props.view || 'onsite' }); }
+  fig(p, T, G) {
+    const rad = (d) => d * Math.PI / 180;
+    const legL = 0.58 * T;
+    const hip = [p.x, G - 2 * legL * 0.97];
+    const L = rad(p.lean || 0);
+    const neck = [hip[0] + p.dir * T * Math.sin(L), hip[1] - T * Math.cos(L)];
+    const head = [neck[0] + p.dir * 0.34 * T * Math.sin(L), neck[1] - 0.34 * T * Math.cos(L)];
+    const arm = (a, e) => { const A = rad(a), E = rad(a + e); const el = [neck[0] + p.dir * 0.5 * T * Math.sin(A), neck[1] + 0.5 * T * Math.cos(A)]; return [el, [el[0] + p.dir * 0.46 * T * Math.sin(E), el[1] + 0.46 * T * Math.cos(E)]]; };
+    const leg = (s) => { const S = rad(s), S2 = rad(s * 0.4); const k = [hip[0] + p.dir * legL * Math.sin(S), hip[1] + legL * Math.cos(S)]; return [k, [k[0] + p.dir * legL * Math.sin(S2), k[1] + legL * Math.cos(S2)]]; };
+    const r = arm(p.ra[0], p.ra[1]), l = arm(p.la[0], p.la[1]);
+    const st = p.stride == null ? 8 : p.stride;
+    const rl = leg(st), ll = leg(-st);
+    const f = (n) => Math.round(n * 10) / 10;
+    const seg = (a, b) => 'M' + f(a[0]) + ' ' + f(a[1]) + 'L' + f(b[0]) + ' ' + f(b[1]);
+    const hr = 0.2 * T;
+    const circ = (c, rr) => 'M' + f(c[0] - rr) + ' ' + f(c[1]) + 'a' + f(rr) + ' ' + f(rr) + ' 0 1 0 ' + f(2 * rr) + ' 0a' + f(rr) + ' ' + f(rr) + ' 0 1 0 ' + f(-2 * rr) + ' 0';
+    return {
+      bones: [seg(hip, neck), seg(neck, r[0]), seg(r[0], r[1]), seg(neck, l[0]), seg(l[0], l[1]), seg(hip, rl[0]), seg(rl[0], rl[1]), seg(hip, ll[0]), seg(ll[0], ll[1])].join('') + circ(head, hr),
+      joints: [neck, r[0], r[1], l[0], l[1], hip, rl[0], rl[1], ll[0], ll[1]].map((q) => circ(q, 2.8)).join(''),
+      top: head[1] - hr
+    };
+  }
+  scene(kind) {
+    const T = 56, G = 318;
+    const S = {
+      fightPeak: [[311, 1, 14, 155, 5, 60, 50, 16], [338, -1, -14, 70, 80, 40, 40, 14]],
+      fightShove: [[327, 1, 28, 95, 0, 90, 0, 22], [372, -1, -24, 60, 40, 150, 20, 18]],
+      fightTense: [[305, 1, 8, 80, 60, 25, 20, 14], [334, -1, 2, 30, 30, 20, 20, 10]],
+      cornering: [[200, 1, -6, 20, 30, 15, 30, 6], [262, -1, 8, 40, 30, 20, 20, 12], [300, -1, 6, 30, 20, 10, 10, 10], [282, -1, 4, 60, 40, 20, 20, 14]],
+      crowd: [[232, 1, 4, 10, 5, -5, 5, 8], [282, 1, 6, 15, 10, -5, 5, 10], [330, 1, 2, 20, 30, 10, 10, 6], [392, -1, 6, 12, 8, -6, 6, 10], [444, -1, 4, 10, 6, -4, 5, 8]],
+      play: [[250, 1, -6, 170, 0, 150, 10, 22], [420, -1, -4, 150, 10, 20, 10, 20]]
+    }[kind];
+    const built = S.map((v) => this.fig({ x: v[0], dir: v[1], lean: v[2], ra: [v[3], v[4]], la: [v[5], v[6]], stride: v[7] }, T, G));
+    const xs = S.map((v) => v[0]);
+    const top = Math.min.apply(null, built.map((b) => b.top)) - 10;
+    return {
+      cyan: built[0].bones, violet: built[1].bones, grey: built.slice(2).map((b) => b.bones).join(''), joints: built.map((b) => b.joints).join(''),
+      ball: kind === 'play' ? 'M321 112a14 14 0 1 0 28 0a14 14 0 1 0 -28 0' : '',
+      box: { x: Math.round(Math.min.apply(null, xs) - 0.85 * T), y: Math.round(top), w: Math.round(Math.max.apply(null, xs) - Math.min.apply(null, xs) + 1.7 * T), h: Math.round(G + 4 - top) }
+    };
+  }
+  renderVals() {
+    const s = this.state;
+    const onsite = s.view !== 'remote';
+    const TODAY = 'Sat 10 Oct', YESTERDAY = 'Fri 9 Oct';
+    const GLYPH = { tense: 'M12 3 22 20H2z', fight_likely: 'M12 2 22 12 12 22 2 12z', fight: 'M8 2h8l6 6v8l-6 6H8l-6-6V8z' };
+    const LV = {
+      tense: { label: 'Tense', note: 'Highest level reached. Shown on the desk only, no alarm.', bg: '#F5B323', fg: '#1A1200', border: '#E5A41C', box: '#F5B323', boxFg: '#1A1200', tint: '#FFF8E6' },
+      fight_likely: { label: 'Fight likely', note: 'Highest level reached. The alarm sounded.', bg: '#C8241B', fg: '#FFFFFF', border: '#C8241B', box: '#FF5A4F', boxFg: '#1A0503', tint: '#FDEDEB' },
+      fight: { label: 'Fight', note: 'Highest level reached. The alarm sounded.', bg: '#7F1310', fg: '#FFFFFF', border: '#7F1310', box: '#FF8A80', boxFg: '#1A0503', tint: '#FBE3E0' }
+    };
+    const TYPE = { fight: 'Fight', cornering: 'Someone cornered', crowd: 'Crowd gathering', play: 'Rough play' };
+    const LOC = {
+      au: { name: 'Grand Hall', at: 'at the Grand Hall', where: 'Block B, level 2', cam: 'Grand Hall webcam' },
+      bc: { name: 'Block C stairwell', at: 'on the Block C stairwell', where: 'Block C, level 1 landing', cam: 'Block C stairwell camera' },
+      ct: { name: 'Syopz Mall food court', at: 'at the Syopz Mall food court', where: 'Syopz Mall, east entrance', cam: 'Food court camera' },
+      sc: { name: 'Sports pitch', at: 'on the sports pitch', where: 'Football pitch by the sports centre', cam: 'Sports pitch camera' },
+      hc: { name: 'U Residence, corridor L3', at: 'in U Residence, corridor L3', where: 'U Residence hostel, above Syopz Mall', cam: 'U Residence L3 camera' }
+    };
+    const DAYS = { Mon: 'Monday', Tue: 'Tuesday', Wed: 'Wednesday', Thu: 'Thursday', Fri: 'Friday', Sat: 'Saturday', Sun: 'Sunday' };
+    const MONTHS = { Sep: 'September', Oct: 'October' };
+    const fullDay = (d) => { const p = d.split(' '); return DAYS[p[0]] + ' ' + p[1] + ' ' + MONTHS[p[2]]; };
+    // id, day, time, place, type, highest level, status, guard, reply seconds, picture, what EarlyEye saw, staff note
+    const RAW = [
+      ['INC-2026-00142', 'Sat 10 Oct', '14:31:00', 'au', 'fight', 'fight', 'confirmed', 'Guard B', 4, 'fightShove', 'One person shoved another hard near the stage, and the other person was pushed back.', 'Two people separated near the stage.'],
+      ['INC-2026-00140', 'Sat 10 Oct', '14:29:12', 'sc', 'fight', 'fight_likely', 'pushed', 'Guard B', 6, 'fightPeak', "One person swung their arms at another person's head, up close, again and again.", ''],
+      ['INC-2026-00139', 'Sat 10 Oct', '14:28:40', 'ct', 'crowd', 'tense', 'new', null, null, 'crowd', 'Six people stopped and all faced the same spot for 8 seconds.', ''],
+      ['INC-2026-00116', 'Fri 9 Oct', '12:44:05', 'ct', 'crowd', 'tense', 'resolved', null, null, 'crowd', 'Eight people formed a ring within 4 seconds, with two people in the middle.', 'The crowd cleared by itself after a minute.'],
+      ['INC-2026-00127', 'Thu 8 Oct', '14:16:31', 'sc', 'fight', 'tense', 'dismissed', null, null, 'fightTense', 'One person raised an arm toward another, and their movement was speeding up.', 'Football practice.'],
+      ['INC-2026-00104', 'Wed 7 Oct', '13:47:02', 'bc', 'cornering', 'fight_likely', 'resolved', 'Guard B', 5, 'cornering', 'One person was backed against the wall by three others for 7 seconds.', 'The group moved on when Guard B arrived.'],
+      ['INC-2026-00123', 'Mon 5 Oct', '07:47:20', 'bc', 'play', 'tense', 'dismissed', null, null, 'play', 'Fast arm movements, but nobody moved in on anyone.', 'Friends play-fighting.'],
+      ['INC-2026-00120', 'Thu 1 Oct', '12:06:44', 'hc', 'fight', 'fight_likely', 'dismissed', 'Guard C', 9, 'fightTense', 'An arm was raised above the shoulder, up close, for about a second.', 'Two residents carrying a mattress.'],
+      ['INC-2026-00101', 'Wed 30 Sep', '13:24:10', 'bc', 'cornering', 'fight', 'resolved', 'Guard C', 3, 'cornering', 'Three people closed in on one person, who had no way out for 6 seconds.', 'Student referred to the counselling service.'],
+      ['INC-2026-00096', 'Mon 28 Sep', '13:15:40', 'bc', 'cornering', 'fight_likely', 'resolved', 'Guard B', 6, 'cornering', 'One person was blocked on the landing by three others for 5 seconds.', 'Groups separated. Nobody hurt.'],
+      ['INC-2026-00111', 'Mon 21 Sep', '22:08:15', 'hc', 'fight', 'fight', 'confirmed', 'Guard C', 7, 'fightPeak', 'Repeated fast punches toward the head.', '']
+    ];
+    const all = RAW.map((r) => ({
+      id: r[0], day: r[1], time: r[2], locKey: r[3], loc: LOC[r[3]], type: r[4], level: r[5],
+      orig: r[6], status: s.patch[r[0]] || r[6], staff: r[7], ack: r[8], scene: r[9], reason: r[10],
+      note: s.notes[r[0]] != null ? s.notes[r[0]] : r[11]
+    }));
+    const isOpen = (st) => st === 'new' || st === 'pushed';
+    const isReal = (st) => st === 'confirmed' || st === 'resolved';
+    const titleOf = (e) => TYPE[e.type] + ' ' + e.loc.at;
+    const STATUS = (st) => isOpen(st) ? { label: 'Needs a decision', bg: '#FFFFFF', fg: '#0B0D10', border: '#0B0D10' }
+      : st === 'confirmed' ? { label: 'Real · open', bg: '#0B0D10', fg: '#FFFFFF', border: '#0B0D10' }
+      : st === 'resolved' ? { label: 'Real · closed', bg: '#FFFFFF', fg: '#3A414B', border: '#B4BAC3' }
+      : { label: 'False alarm', bg: '#F1F2F4', fg: '#3A414B', border: '#DCDFE4' };
+    const counts = { decide: 0, real: 0, false: 0, all: all.length };
+    all.forEach((e) => { if (isOpen(e.status)) counts.decide++; else if (isReal(e.status)) counts.real++; else counts.false++; });
+    const realOpen = all.filter((e) => e.status === 'confirmed');
+    const match = (e) => s.filter === 'all' || (s.filter === 'decide' ? isOpen(e.status) : s.filter === 'real' ? isReal(e.status) : e.status === 'dismissed');
+    const shown = all.filter(match);
+    let lastDay = '';
+    const rows = shown.map((e) => {
+      const l = LV[e.level]; const st = STATUS(e.status); const on = e.id === s.open;
+      const head = e.day !== lastDay ? (e.day === TODAY ? 'TODAY · ' + e.day.toUpperCase() : e.day === YESTERDAY ? 'YESTERDAY · ' + e.day.toUpperCase() : e.day.toUpperCase()) : '';
+      lastDay = e.day;
+      return {
+        head: head, headDisplay: head ? 'block' : 'none', hm: e.time.slice(0, 5), title: titleOf(e),
+        levelLabel: l.label, pillBg: l.bg, pillFg: l.fg, pillBorder: l.border, glyph: GLYPH[e.level],
+        statusLabel: st.label, stBg: st.bg, stFg: st.fg, stBorder: st.border,
+        who: e.staff && e.ack != null ? e.staff + ' replied in ' + e.ack + ' s' : 'Desk screen only, no alarm',
+        selected: on ? 'true' : 'false', bg: on ? '#F7F8FA' : '#FFFFFF', border: on ? '2px solid #0B0D10' : '1px solid #DCDFE4',
+        open: () => this.setState({ open: e.id, clip: false, summary: false, copied: false })
+      };
+    });
+    const filters = [['decide', 'Needs a decision'], ['real', 'Real'], ['false', 'False alarms'], ['all', 'All']].map((p) => {
+      const on = s.filter === p[0];
+      return { label: p[1], n: counts[p[0]], pressed: on ? 'true' : 'false', bg: on ? '#0B0D10' : '#FFFFFF', fg: on ? '#FFFFFF' : '#0B0D10', border: on ? '#0B0D10' : '#B4BAC3', pick: () => this.setState({ filter: p[0] }) };
+    });
+
+    // places with 3 or more real incidents in the last 4 weeks, and their hours
+    const pattern = (key) => {
+      const real = all.filter((x) => x.locKey === key && isReal(x.status));
+      if (real.length < 3) return null;
+      const hrs = real.map((x) => Number(x.time.slice(0, 2)));
+      const lo = Math.min.apply(null, hrs), hi = Math.max.apply(null, hrs) + 1;
+      return { n: real.length, hours: String(lo).padStart(2, '0') + ':00 and ' + String(hi).padStart(2, '0') + ':00' };
+    };
+    const hot = Object.keys(LOC).map((k) => ({ k: k, p: pattern(k) })).filter((x) => x.p).sort((a, b) => b.p.n - a.p.n)[0];
+    const firstDecide = all.find((e) => isOpen(e.status));
+    const plural = (n, one, many) => n === 1 ? one : many;
+    const todo = [
+      counts.decide
+        ? { num: String(counts.decide), numColor: '#0B0D10', title: plural(counts.decide, 'alert needs a decision', 'alerts need a decision'), body: 'Was it real or a false alarm? One tap each.', btn: 'Review them', btnDisplay: 'inline-flex', btnBorder: 'none', btnBg: '#0B0D10', btnFg: '#FFFFFF', go: () => this.setState({ filter: 'decide', open: firstDecide.id, clip: false, summary: false, copied: false }), linkDisplay: 'none', link: '', border: '2px solid #0B0D10' }
+        : { num: '0', numColor: '#5D6672', title: 'alerts waiting', body: 'Every alert has a decision.', btn: '', btnDisplay: 'none', btnBorder: 'none', btnBg: '#FFFFFF', btnFg: '#0B0D10', go: () => {}, linkDisplay: 'none', link: '', border: '1px solid #DCDFE4' },
+      realOpen.length
+        ? { num: String(realOpen.length), numColor: '#0B0D10', title: plural(realOpen.length, 'real incident is still open', 'real incidents are still open'), body: 'Write what happened, then close each one when the follow-up is done.', btn: 'Open them', btnDisplay: 'inline-flex', btnBorder: '2px solid #0B0D10', btnBg: '#FFFFFF', btnFg: '#0B0D10', go: () => this.setState({ filter: 'real', open: realOpen[0].id, clip: false, summary: false, copied: false }), linkDisplay: 'none', link: '', border: '1px solid #DCDFE4' }
+        : { num: '0', numColor: '#5D6672', title: 'open incidents', body: 'Every real incident is closed.', btn: '', btnDisplay: 'none', btnBorder: 'none', btnBg: '#FFFFFF', btnFg: '#0B0D10', go: () => {}, linkDisplay: 'none', link: '', border: '1px solid #DCDFE4' },
+      hot
+        ? { num: String(hot.p.n), numColor: '#1F35B3', title: 'real incidents at the ' + LOC[hot.k].name, body: 'All in the last 4 weeks, between ' + hot.p.hours + '. One person there at that hour would likely stop most of them.', btn: '', btnDisplay: 'none', btnBorder: 'none', btnBg: '#FFFFFF', btnFg: '#0B0D10', go: () => {}, linkDisplay: 'inline', link: 'See the patrol plan', border: '1px solid #A9B6F2' }
+        : { num: '0', numColor: '#5D6672', title: 'repeat places', body: 'No place has 3 real incidents in 4 weeks.', btn: '', btnDisplay: 'none', btnBorder: 'none', btnBg: '#FFFFFF', btnFg: '#0B0D10', go: () => {}, linkDisplay: 'none', link: '', border: '1px solid #DCDFE4' }
+    ];
+
+    const acks = all.filter((x) => x.ack != null).map((x) => x.ack).sort((a, b) => a - b);
+    const median = acks.length ? acks[Math.floor(acks.length / 2)] : 0;
+    const byPlace = {};
+    all.filter((x) => isReal(x.status)).forEach((x) => { byPlace[x.locKey] = (byPlace[x.locKey] || 0) + 1; });
+    const busiest = Object.keys(byPlace).sort((a, b) => byPlace[b] - byPlace[a])[0];
+    const stats = [
+      { v: String(counts.real), k: 'real incidents', sub: 'Confirmed by the desk' },
+      { v: String(counts.false), k: 'false alarms', sub: 'Each one you mark teaches EarlyEye that spot' },
+      { v: median + ' s', k: 'for a guard to reply', sub: 'Typical time from the alarm to "On my way"' },
+      { v: LOC[busiest].name, k: 'busiest place', sub: byPlace[busiest] + ' real incidents' }
+    ];
+
+    // the open case
+    const e = all.find((x) => x.id === s.open) || all[0];
+    const sc = this.scene(e.scene); const l = LV[e.level];
+    const addS = (hms, d) => { const p = hms.split(':').map(Number); let tot = p[0] * 3600 + p[1] * 60 + p[2] + d; const h = Math.floor(tot / 3600) % 24; tot %= 3600; return String(h).padStart(2, '0') + ':' + String(Math.floor(tot / 60)).padStart(2, '0') + ':' + String(tot % 60).padStart(2, '0'); };
+    const hm = (t) => t.slice(0, 5);
+    const peakOffset = e.level === 'fight' ? 9 : (e.level === 'fight_likely' ? 6 : 2);
+    const trail = [{ t: e.time, text: e.level === 'tense' ? 'EarlyEye noticed tension and showed it on the desk screen. No alarm, because it never went past Tense.' : 'EarlyEye noticed tension and showed it on the desk screen.', dot: '#F5B323' }];
+    if (e.level !== 'tense') trail.push({ t: addS(e.time, 6), text: 'It looked likely to turn into a fight. The alarm sounded and ' + (e.staff || 'the guard on duty') + ' got an alert on their phone.', dot: '#C8241B' });
+    if (e.staff && e.ack != null) trail.push({ t: addS(e.time, 6 + e.ack), text: e.staff + ' replied "On my way" ' + e.ack + ' seconds later.', dot: '#2742D9' });
+    if (e.level === 'fight') trail.push({ t: addS(e.time, 9), text: 'It became a fight. The alarm stayed on.', dot: '#7F1310' });
+    trail.sort((a, b) => (a.t < b.t ? -1 : 1));
+    if (isReal(e.status)) trail.push({ t: addS(e.time, 40), text: 'The desk marked it as a real incident.', dot: '#0B0D10' });
+    if (e.status === 'dismissed') trail.push({ t: addS(e.time, 40), text: 'The desk marked it as a false alarm.', dot: '#DCDFE4' });
+    if (e.status === 'resolved') trail.push({ t: addS(e.time, 1800), text: 'Follow-up done. Case closed.', dot: '#FFFFFF' });
+    if (isOpen(e.status)) trail.push({ t: 'Now', text: 'Waiting for the desk to decide.', dot: '#FFFFFF' });
+
+    const STEPS = {
+      fight: ['Make sure everyone involved is safe, and get first aid if anyone is hurt.', 'Write down who was involved in your own records.', 'If students were involved, send the summary to Student Affairs.'],
+      cornering: ['Check on the person who was cornered.', 'Write down who was involved in your own records.', 'If students were involved, send the summary to Student Affairs.'],
+      crowd: ['Check that the crowd has cleared.', 'If it keeps happening at the same time, add a patrol on the Plan page.'],
+      play: ['No follow-up needed.']
+    };
+    const real = isReal(e.status);
+    const steps = isOpen(e.status) ? ['Decide first: was it real or a false alarm?']
+      : e.status === 'dismissed' ? ['Nothing to follow up.']
+      : STEPS[e.type];
+    const nextHead = e.status === 'resolved' ? 'WHAT WAS DONE' : 'WHAT TO DO NEXT';
+    const decisionWord = isOpen(e.status) ? 'Not decided yet' : real ? (e.status === 'resolved' ? 'Real incident, closed' : 'Real incident, follow-up open') : 'False alarm';
+    const summary = TYPE[e.type] + ' ' + e.loc.at + ' (' + e.loc.where + '), ' + fullDay(e.day) + ' 2026 at ' + hm(e.time) + '. '
+      + 'What EarlyEye saw: ' + e.reason + ' '
+      + (e.staff && e.ack != null ? 'The alarm sounded and ' + e.staff + ' replied in ' + e.ack + ' seconds. ' : 'It stayed at Tense, so no guard was alerted. ')
+      + 'Decision: ' + decisionWord + '. '
+      + 'Note: ' + (e.note ? (/[.!?]$/.test(e.note.trim()) ? e.note.trim() : e.note.trim() + '.') : 'none yet.') + ' '
+      + 'Reference ' + e.id + '.';
+
+    const others = all.filter((x) => x.locKey === e.locKey && x.id !== e.id);
+    const pat = pattern(e.locKey);
+    const setStatus = (st) => () => { const p = Object.assign({}, s.patch); p[e.id] = st; this.setState({ patch: p }); };
+    const undo = () => { const p = Object.assign({}, s.patch); if (e.status === 'resolved' || e.status === 'confirmed' || e.status === 'dismissed') { p[e.id] = isOpen(e.orig) ? e.orig : 'new'; if (p[e.id] === e.orig) delete p[e.id]; } this.setState({ patch: p }); };
+    const box = l.label.toUpperCase();
+    const scenePath = 'M0 318L640 318M0 318L120 230L520 230L640 318M120 230L120 0M520 230L520 0M520 230L560 230L560 205L590 205L590 180L620 180L620 155L640 155M150 60L230 60L230 130L150 130Z';
+    let fine = '';
+    for (let x = 0; x <= 640; x += 40) fine += 'M' + x + ' 0L' + x + ' 360';
+    for (let y = 0; y <= 360; y += 40) fine += 'M0 ' + y + 'L640 ' + y;
+    const set = (patch) => () => this.setState(patch);
+    return {
+      onsite: onsite, remote: !onsite,
+      onsitePressed: onsite ? 'true' : 'false', remotePressed: onsite ? 'false' : 'true',
+      onsiteBg: onsite ? '#0B0D10' : '#FFFFFF', onsiteFg: onsite ? '#FFFFFF' : '#3A414B',
+      remoteBg: onsite ? '#FFFFFF' : '#0B0D10', remoteFg: onsite ? '#3A414B' : '#FFFFFF',
+      setOnsite: set({ view: 'onsite' }), setRemote: set({ view: 'remote', clip: false }),
+      bgFill: onsite ? '#161B22' : '#0E1217', bgLines: onsite ? scenePath : fine, bgStroke: onsite ? '#2A323C' : '#1A2028', bgWidth: onsite ? 2 : 1,
+      clipOpen: onsite && s.clip, clipLabel: s.clip ? 'Hide the clip' : 'Watch the 10-second clip', toggleClip: set({ clip: !s.clip }),
+      summaryOpen: s.summary && !isOpen(e.status), summaryLabel: s.summary ? 'Hide the summary' : 'Write a summary for your report', toggleSummary: set({ summary: !s.summary, copied: false }),
+      copiedText: s.copied ? 'Copied. Paste it into your email or report.' : '',
+      copySummary: () => { try { if (navigator && navigator.clipboard) navigator.clipboard.writeText(summary); } catch (err) {} this.setState({ copied: true }); },
+      todo: todo, stats: stats, filters: filters, rows: rows, emptyDisplay: rows.length ? 'none' : 'block',
+      c: {
+        id: e.id, camName: e.loc.cam, title: titleOf(e), when: fullDay(e.day) + ', ' + hm(e.time), where: e.loc.where,
+        levelLabel: l.label, levelNote: l.note, pillBg: l.bg, pillFg: l.fg, pillBorder: l.border, glyph: GLYPH[e.level],
+        isOpen: isOpen(e.status), isReal: e.status === 'confirmed', isClosed: e.status === 'resolved', isFalse: e.status === 'dismissed',
+        unsure: onsite ? 'Not sure? Watch the clip below first.' : 'Not sure? Ask the desk on site to watch the clip.',
+        decidedText: 'Marked real by the desk at ' + hm(addS(e.time, 40)) + '.',
+        falseText: 'Marked by the desk at ' + hm(addS(e.time, 40)) + '. Each false alarm you mark helps EarlyEye raise fewer at this spot.',
+        onReal: setStatus('confirmed'), onFalse: setStatus('dismissed'), onClose: setStatus('resolved'), onReopen: setStatus('confirmed'), onUndo: undo,
+        reason: e.reason, aria: 'Stick figures of the people at ' + e.loc.name + ' at the worst moment',
+        peakText: hm(addS(e.time, peakOffset)) + ' · the worst moment',
+        boxX: sc.box.x, boxY: sc.box.y, boxW: sc.box.w, boxH: sc.box.h, boxColor: l.box, boxFg: l.boxFg,
+        labelY: sc.box.y - 24, labelX: sc.box.x + 8, labelTY: sc.box.y - 7, labelW: Math.round(box.length * 9.4 + 16), boxLabel: box,
+        cyan: sc.cyan, violet: sc.violet, grey: sc.grey, ball: sc.ball,
+        trail: trail, nextHead: nextHead, steps: steps.map((t) => ({ text: t, fill: e.status === 'resolved' ? '#0B0D10' : '#FFFFFF' })), canSummary: !isOpen(e.status) && e.status !== 'dismissed', summary: summary,
+        note: e.note, onNote: (ev) => { const n = Object.assign({}, s.notes); n[e.id] = ev && ev.target ? ev.target.value : ''; this.setState({ notes: n }); },
+        hasPattern: !!pat, patternText: pat ? 'This keeps happening here: ' + pat.n + ' real incidents in 4 weeks, all between ' + pat.hours + '.' : '',
+        noEarlierDisplay: others.length ? 'none' : 'block',
+        earlier: others.slice(0, 4).map((x) => ({ when: x.day + ' · ' + hm(x.time), what: TYPE[x.type], status: STATUS(x.status).label, open: () => this.setState({ open: x.id, clip: false, summary: false, copied: false }) }))
+      }
+    };
+  }
+}
+</script>
+</body>
+</html>

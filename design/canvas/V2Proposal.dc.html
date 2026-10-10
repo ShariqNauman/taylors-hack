@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Direction v2: Ops Console</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Mono:wght@400;500;700&amp;family=Atkinson+Hyperlegible+Next:wght@400;500;700;800&amp;family=Saira+Condensed:wght@600;700;800&amp;display=swap">
+<style>
+body{margin:0;background:#0A0D11}
+a{color:#8EA2FF}a:hover{color:#B7C4FF}
+</style>
+</helmet>
+<div style="font-family: 'Atkinson Hyperlegible Next', system-ui, sans-serif; color: #ECEFF3; background: #0A0D11; box-sizing: border-box; padding: 56px 24px 80px">
+<div style="max-width: 1360px; margin: 0 auto; display: flex; flex-direction: column; gap: 56px">
+
+<header style="display: flex; flex-direction: column; gap: 18px; max-width: 1000px">
+<div style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 13px; font-weight: 700; letter-spacing: 0.1em; color: #808A97">V2/00 · DIRECTION PROPOSAL · NEEDS SIGN-OFF</div>
+<h1 style="margin: 0; font-family: 'Saira Condensed', 'Atkinson Hyperlegible Next', sans-serif; font-size: 88px; line-height: 0.92; font-weight: 800; text-transform: uppercase; letter-spacing: 0.005em">Ops Console:<br>see it, then send someone</h1>
+<p style="margin: 0; font-size: 21px; line-height: 1.5; color: #AEB7C2">A dark, video-first security console in the family of Ambient.ai and ZeroEyes, with Volt's plain-words alert cards. Every alert opens on the camera view, with the skeletons and the reason drawn on top, so the operator sees the evidence before they act.</p>
+<div style="display: flex; flex-wrap: wrap; gap: 8px">
+<span style="display: inline-flex; align-items: center; gap: 6px; min-height: 32px; padding: 0 12px; border-radius: 999px; border: 1px solid #36404C; font-size: 14px; font-weight: 700; color: #ECEFF3">Skeletons, never faces</span>
+<span style="display: inline-flex; align-items: center; gap: 6px; min-height: 32px; padding: 0 12px; border-radius: 999px; border: 1px solid #36404C; font-size: 14px; font-weight: 700; color: #ECEFF3">Video stays on site</span>
+<span style="display: inline-flex; align-items: center; gap: 6px; min-height: 32px; padding: 0 12px; border-radius: 999px; border: 1px solid #36404C; font-size: 14px; font-weight: 700; color: #ECEFF3">Human-confirmed alerts</span>
+<span style="display: inline-flex; align-items: center; gap: 6px; min-height: 32px; padding: 0 12px; border-radius: 999px; border: 1px solid #36404C; font-size: 14px; font-weight: 700; color: #ECEFF3">Works with your cameras</span>
+</div>
+</header>
+
+<section aria-labelledby="cmp-h" style="display: flex; flex-direction: column; gap: 20px">
+<div style="display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap">
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 14px; color: #808A97">V2/01</span>
+<h2 id="cmp-h" style="margin: 0; font-family: 'Saira Condensed', sans-serif; font-size: 44px; font-weight: 800; text-transform: uppercase">What the three competitors do</h2>
+</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 14px">
+<article style="background: #11161C; border: 1px solid #232A33; border-radius: 4px; padding: 24px; display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; justify-content: space-between; align-items: baseline"><h3 style="margin: 0; font-size: 26px; font-weight: 800">Ambient.ai</h3><span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; color: #808A97">ENTERPRISE · CAMPUS</span></div>
+<div style="display: flex; gap: 6px"><span style="width: 36px; height: 24px; background: #000000; border: 1px solid #36404C"></span><span style="width: 36px; height: 24px; background: #262626"></span><span style="width: 36px; height: 24px; background: #FFFFFF"></span><span style="width: 36px; height: 24px; background: #F2F2F2"></span></div>
+<ul style="margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 6px; font-size: 15px; line-height: 1.45; color: #AEB7C2">
+<li>Monochrome: black, charcoal, white. No brand colour.</li>
+<li>Condensed uppercase headlines. Mono section codes like A/02.</li>
+<li>Thin vertical grid lines. Corner-bracket buttons, like a camera HUD.</li>
+<li>Product shown as a dark video wall with detections on the feeds.</li>
+<li>Message: an always-on reasoning layer that turns reaction into prevention.</li>
+</ul>
+</article>
+<article style="background: #11161C; border: 1px solid #232A33; border-radius: 4px; padding: 24px; display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; justify-content: space-between; align-items: baseline"><h3 style="margin: 0; font-size: 26px; font-weight: 800">Volt</h3><span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; color: #808A97">SCHOOLS · CAMPUSES</span></div>
+<div style="display: flex; gap: 6px"><span style="width: 36px; height: 24px; background: #EEF2F9"></span><span style="width: 36px; height: 24px; background: #FFFFFF"></span><span style="width: 36px; height: 24px; background: #3B5BF0"></span><span style="width: 36px; height: 24px; background: #1B2340"></span></div>
+<ul style="margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 6px; font-size: 15px; line-height: 1.45; color: #AEB7C2">
+<li>Light and calm: pale blue-grey ground, white rounded cards, one blue button.</li>
+<li>Alert cards in plain words: what, where, which floor, who is on the way.</li>
+<li>"Verified by the review team" chip on every alert.</li>
+<li>Trust chips: human-verified, no facial recognition, works with your cameras.</li>
+<li>Fights framed as "noticed as they start", so staff step in early.</li>
+</ul>
+</article>
+<article style="background: #11161C; border: 1px solid #232A33; border-radius: 4px; padding: 24px; display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; justify-content: space-between; align-items: baseline"><h3 style="margin: 0; font-size: 26px; font-weight: 800">ZeroEyes</h3><span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; color: #808A97">WEAPONS · SCHOOLS</span></div>
+<div style="display: flex; gap: 6px"><span style="width: 36px; height: 24px; background: #0B0D10; border: 1px solid #36404C"></span><span style="width: 36px; height: 24px; background: #15181D"></span><span style="width: 36px; height: 24px; background: #FFFFFF"></span><span style="width: 36px; height: 24px; background: #3D5AFE"></span></div>
+<ul style="margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 6px; font-size: 15px; line-height: 1.45; color: #AEB7C2">
+<li>Near-black pages over real camera footage.</li>
+<li>Big white grotesque headline: detect threats before they escalate.</li>
+<li>Four-step flow: analyse, detect, verify, dispatch.</li>
+<li>Every alert human-verified within seconds, by their own staff.</li>
+<li>One blue button. Red is kept for the threat itself.</li>
+</ul>
+</article>
+</div>
+</section>
+
+<section aria-labelledby="take-h" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); gap: 14px">
+<div style="background: #11161C; border: 1px solid #232A33; border-radius: 4px; padding: 24px; display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; align-items: baseline; gap: 12px"><span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 14px; color: #808A97">V2/02</span><h2 id="take-h" style="margin: 0; font-family: 'Saira Condensed', sans-serif; font-size: 36px; font-weight: 800; text-transform: uppercase">What we take</h2></div>
+<ol style="margin: 0; padding-left: 22px; display: flex; flex-direction: column; gap: 10px; font-size: 16px; line-height: 1.45">
+<li><b>Evidence first.</b> The alert opens on the camera view with skeletons, a box, the distance line and the wrist trail drawn on it.</li>
+<li><b>Dark console</b> for the product, like Ambient's video wall and ZeroEyes.</li>
+<li><b>Camera wall</b> of six tiles, with the active one outlined in its level colour.</li>
+<li><b>Plain-words card</b> from Volt: what, where, who is going, who confirmed.</li>
+<li><b>Trust chips</b> on every screen.</li>
+<li><b>A four-step strip</b>: detect, explain, push, confirm.</li>
+<li><b>HUD details</b>: corner brackets, mono camera codes, REC dot, thin grid.</li>
+</ol>
+</div>
+<div style="background: #11161C; border: 1px dashed #36404C; border-radius: 4px; padding: 24px; display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; align-items: baseline; gap: 12px"><span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 14px; color: #808A97">V2/03</span><h2 style="margin: 0; font-family: 'Saira Condensed', sans-serif; font-size: 36px; font-weight: 800; text-transform: uppercase">What we do not take</h2></div>
+<ol style="margin: 0; padding-left: 22px; display: flex; flex-direction: column; gap: 10px; font-size: 16px; line-height: 1.45; color: #AEB7C2">
+<li><b style="color: #ECEFF3">Real video on the public link.</b> It would break the promise that video stays on site.</li>
+<li><b style="color: #ECEFF3">A paid review team.</b> Volt and ZeroEyes verify with staff. Our check is the operator's Confirm, and we say so.</li>
+<li><b style="color: #ECEFF3">Faces or identity</b> anywhere in the pipeline.</li>
+<li><b style="color: #ECEFF3">Broadcast alerts.</b> One person is pushed, never a group.</li>
+<li><b style="color: #ECEFF3">Weapon claims.</b> We detect physical aggression and crowding only.</li>
+</ol>
+</div>
+</section>
+
+<section aria-labelledby="ev-h" style="display: flex; flex-direction: column; gap: 20px">
+<div style="display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap">
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 14px; color: #808A97">V2/04</span>
+<h2 id="ev-h" style="margin: 0; font-family: 'Saira Condensed', sans-serif; font-size: 44px; font-weight: 800; text-transform: uppercase">Evidence without breaking the privacy promise</h2>
+</div>
+<p style="margin: 0; font-size: 18px; line-height: 1.5; color: #AEB7C2; max-width: 980px">The same incident has two views. At the desk on site, the operator sees the real recording with skeletons drawn over it. Anywhere else, people see a skeleton replay rebuilt from keypoints. No pixels leave the site.</p>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); gap: 14px">
+<figure style="margin: 0; display: flex; flex-direction: column; gap: 10px">
+<div style="position: relative; background: #0E1217; border: 1px solid #232A33">
+<svg viewBox="0 0 640 360" role="img" aria-label="On-site view: camera frame placeholder with two skeletons and a detection box" style="display: block; width: 100%; height: auto">
+<rect x="0" y="0" width="640" height="360" fill="#161B22"></rect>
+<path d="M0 318 L640 318 M0 318 L120 230 L520 230 L640 318 M120 230 L120 0 M520 230 L520 0" stroke="#2A323C" stroke-width="2" fill="none"></path>
+<path d="M520 230 L560 230 L560 205 L590 205 L590 180 L620 180 L620 155 L640 155" stroke="#2A323C" stroke-width="2" fill="none"></path>
+<path d="M150 60 L230 60 L230 130 L150 130 Z" fill="#1D232B" stroke="#2A323C"></path>
+<rect x="{{boxX}}" y="{{boxY}}" width="{{boxW}}" height="{{boxH}}" fill="none" stroke="#D92D20" stroke-width="2.5"></rect>
+<rect x="{{boxX}}" y="{{labelY}}" width="178" height="24" fill="#D92D20"></rect>
+<text x="{{labelX}}" y="{{labelTY}}" font-family="'Atkinson Hyperlegible Mono', monospace" font-size="14" font-weight="700" fill="#FFFFFF">FIGHT LIKELY 0.71</text>
+<path d="{{A.bones}}" stroke="#7FE0FF" stroke-width="4" stroke-linecap="round" fill="none"></path>
+<path d="{{A.joints}}" fill="#FFFFFF"></path>
+<circle cx="{{A.hx}}" cy="{{A.hy}}" r="{{A.hr}}" fill="none" stroke="#7FE0FF" stroke-width="4"></circle>
+<path d="{{B.bones}}" stroke="#C9A7FF" stroke-width="4" stroke-linecap="round" fill="none"></path>
+<path d="{{B.joints}}" fill="#FFFFFF"></path>
+<circle cx="{{B.hx}}" cy="{{B.hy}}" r="{{B.hr}}" fill="none" stroke="#C9A7FF" stroke-width="4"></circle>
+<line x1="{{A.hipX}}" y1="{{A.hipY}}" x2="{{B.hipX}}" y2="{{B.hipY}}" stroke="#FFFFFF" stroke-width="2" stroke-dasharray="5 4"></line>
+<text x="{{distX}}" y="{{distY}}" text-anchor="middle" font-family="'Atkinson Hyperlegible Mono', monospace" font-size="13" font-weight="700" fill="#FFFFFF">{{dist}} TL</text>
+<text x="16" y="28" font-family="'Atkinson Hyperlegible Mono', monospace" font-size="13" font-weight="700" fill="#ECEFF3">CAM-BC-03 · BLOCK C STAIRWELL</text>
+<circle cx="535" cy="23" r="6" fill="#FF453A"></circle>
+<text x="548" y="28" font-family="'Atkinson Hyperlegible Mono', monospace" font-size="13" font-weight="700" fill="#ECEFF3">REC 14:31:06</text>
+<text x="16" y="346" font-family="'Atkinson Hyperlegible Mono', monospace" font-size="12" fill="#AEB7C2">VIDEO FRAME PLACEHOLDER · REAL FOOTAGE ON THE EDGE LAPTOP</text>
+</svg>
+</div>
+<figcaption style="display: flex; flex-direction: column; gap: 4px">
+<span style="font-size: 18px; font-weight: 800">On-site desk: real recording plus overlay</span>
+<span style="font-size: 15px; line-height: 1.45; color: #AEB7C2">Served by the edge app on the laptop or the site network. A 10-second clip around each alert is kept on the laptop and auto-deletes after [N] days.</span>
+</figcaption>
+</figure>
+<figure style="margin: 0; display: flex; flex-direction: column; gap: 10px">
+<div style="position: relative; background: #0E1217; border: 1px solid #232A33">
+<svg viewBox="0 0 640 360" role="img" aria-label="Remote view: skeleton replay on a grid, no video" style="display: block; width: 100%; height: auto">
+<rect x="0" y="0" width="640" height="360" fill="#0E1217"></rect>
+<path d="{{grid}}" stroke="#1A2028" stroke-width="1" fill="none"></path>
+<line x1="0" y1="318" x2="640" y2="318" stroke="#36404C" stroke-width="2"></line>
+<rect x="{{boxX}}" y="{{boxY}}" width="{{boxW}}" height="{{boxH}}" fill="none" stroke="#D92D20" stroke-width="2.5"></rect>
+<rect x="{{boxX}}" y="{{labelY}}" width="178" height="24" fill="#D92D20"></rect>
+<text x="{{labelX}}" y="{{labelTY}}" font-family="'Atkinson Hyperlegible Mono', monospace" font-size="14" font-weight="700" fill="#FFFFFF">FIGHT LIKELY 0.71</text>
+<path d="{{A.bones}}" stroke="#7FE0FF" stroke-width="4" stroke-linecap="round" fill="none"></path>
+<path d="{{A.joints}}" fill="#FFFFFF"></path>
+<circle cx="{{A.hx}}" cy="{{A.hy}}" r="{{A.hr}}" fill="none" stroke="#7FE0FF" stroke-width="4"></circle>
+<path d="{{B.bones}}" stroke="#C9A7FF" stroke-width="4" stroke-linecap="round" fill="none"></path>
+<path d="{{B.joints}}" fill="#FFFFFF"></path>
+<circle cx="{{B.hx}}" cy="{{B.hy}}" r="{{B.hr}}" fill="none" stroke="#C9A7FF" stroke-width="4"></circle>
+<line x1="{{A.hipX}}" y1="{{A.hipY}}" x2="{{B.hipX}}" y2="{{B.hipY}}" stroke="#FFFFFF" stroke-width="2" stroke-dasharray="5 4"></line>
+<text x="{{distX}}" y="{{distY}}" text-anchor="middle" font-family="'Atkinson Hyperlegible Mono', monospace" font-size="13" font-weight="700" fill="#FFFFFF">{{dist}} TL</text>
+<text x="16" y="28" font-family="'Atkinson Hyperlegible Mono', monospace" font-size="13" font-weight="700" fill="#ECEFF3">CAM-BC-03 · SKELETON REPLAY</text>
+<text x="16" y="346" font-family="'Atkinson Hyperlegible Mono', monospace" font-size="12" fill="#AEB7C2">NO VIDEO · 17 KEYPOINTS PER PERSON · REBUILT FROM THE EVENT</text>
+</svg>
+</div>
+<figcaption style="display: flex; flex-direction: column; gap: 4px">
+<span style="font-size: 18px; font-weight: 800">Remote link: skeleton replay, no pixels</span>
+<span style="font-size: 15px; line-height: 1.45; color: #AEB7C2">What judges, managers and the person on duty see. Same box, same distance line, same score timeline, rebuilt from keypoints in the event.</span>
+</figcaption>
+</figure>
+</div>
+<div style="overflow-x: auto; background: #11161C; border: 1px solid #232A33; border-radius: 4px">
+<table style="width: 100%; min-width: 860px; border-collapse: collapse; font-size: 15px">
+<thead><tr style="text-align: left; border-bottom: 1px solid #36404C">
+<th scope="col" style="padding: 14px 18px; font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; color: #808A97; letter-spacing: 0.08em">WHAT</th>
+<th scope="col" style="padding: 14px 18px; font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; color: #808A97; letter-spacing: 0.08em">ON-SITE DESK</th>
+<th scope="col" style="padding: 14px 18px; font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; color: #808A97; letter-spacing: 0.08em">REMOTE LINK</th>
+</tr></thead>
+<tbody>
+<tr style="border-bottom: 1px solid #232A33"><th scope="row" style="padding: 14px 18px; text-align: left">Live camera view</th><td style="padding: 14px 18px; color: #AEB7C2">Real video with skeletons drawn on top</td><td style="padding: 14px 18px; color: #AEB7C2">Skeletons on a grid, only while an incident is active</td></tr>
+<tr style="border-bottom: 1px solid #232A33"><th scope="row" style="padding: 14px 18px; text-align: left">Incident recording</th><td style="padding: 14px 18px; color: #AEB7C2">10-second clip on the edge laptop, auto-deletes</td><td style="padding: 14px 18px; color: #AEB7C2">Keypoints for the same 10 seconds</td></tr>
+<tr style="border-bottom: 1px solid #232A33"><th scope="row" style="padding: 14px 18px; text-align: left">What the model saw</th><td style="padding: 14px 18px; color: #AEB7C2" colspan="2">Score timeline, distance line, wrist trail, top features, type rule checklist. Identical in both views.</td></tr>
+<tr><th scope="row" style="padding: 14px 18px; text-align: left">Leaves the site</th><td style="padding: 14px 18px; color: #AEB7C2">Nothing</td><td style="padding: 14px 18px; color: #AEB7C2">Event record plus keypoints</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+
+<section aria-labelledby="dec-h" style="display: flex; flex-direction: column; gap: 20px">
+<div style="display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap">
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 14px; color: #808A97">V2/05</span>
+<h2 id="dec-h" style="margin: 0; font-family: 'Saira Condensed', sans-serif; font-size: 44px; font-weight: 800; text-transform: uppercase">Needs the team's yes</h2>
+</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px">
+<div style="background: #11161C; border: 1px solid #F5B323; border-radius: 4px; padding: 20px; display: flex; flex-direction: column; gap: 8px"><span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 13px; font-weight: 700; color: #F5B323">D1 · THEME</span><span style="font-size: 18px; font-weight: 800">Dark console replaces "light theme only"</span><span style="font-size: 15px; line-height: 1.45; color: #AEB7C2">CLAUDE.md and the frontend plan say light only. Test v2 on the venue projector before switching. v1 light stays ready as the fallback.</span></div>
+<div style="background: #11161C; border: 1px solid #F5B323; border-radius: 4px; padding: 20px; display: flex; flex-direction: column; gap: 8px"><span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 13px; font-weight: 700; color: #F5B323">D2 · CONTRACT</span><span style="font-size: 18px; font-weight: 800">Keypoints for the replay</span><span style="font-size: 15px; line-height: 1.45; color: #AEB7C2">New GET /events/:id/evidence: 10 seconds of keypoints around the peak, about 60 to 90 KB at 10 fps. Cheaper fallback: one keypoint frame at the peak.</span></div>
+<div style="background: #11161C; border: 1px solid #F5B323; border-radius: 4px; padding: 20px; display: flex; flex-direction: column; gap: 8px"><span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 13px; font-weight: 700; color: #F5B323">D3 · EDGE</span><span style="font-size: 18px; font-weight: 800">Edge serves the on-site video</span><span style="font-size: 15px; line-height: 1.45; color: #AEB7C2">The edge app saves the 10-second clip it already dumps and serves it on localhost. Vercel never sees it. Set the auto-delete period.</span></div>
+<div style="background: #11161C; border: 1px solid #F5B323; border-radius: 4px; padding: 20px; display: flex; flex-direction: column; gap: 8px"><span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 13px; font-weight: 700; color: #F5B323">D4 · CLAIM</span><span style="font-size: 18px; font-weight: 800">Say the privacy line precisely</span><span style="font-size: 15px; line-height: 1.45; color: #AEB7C2">"Our model sees skeletons, never faces. The site's own video stays on site." The on-site view shows the site's own CCTV, which has faces.</span></div>
+<div style="background: #11161C; border: 1px solid #F5B323; border-radius: 4px; padding: 20px; display: flex; flex-direction: column; gap: 8px"><span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 13px; font-weight: 700; color: #F5B323">D5 · SCOPE</span><span style="font-size: 18px; font-weight: 800">Where this sits in the cut order</span><span style="font-size: 15px; line-height: 1.45; color: #AEB7C2">Skeleton replay is SHOULD. The peak-frame snapshot is the MUST-safe version. The live demo already shows real video in the edge window.</span></div>
+</div>
+</section>
+
+<section aria-labelledby="tok-h" style="display: flex; flex-direction: column; gap: 20px">
+<div style="display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap">
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 14px; color: #808A97">V2/06</span>
+<h2 id="tok-h" style="margin: 0; font-family: 'Saira Condensed', sans-serif; font-size: 44px; font-weight: 800; text-transform: uppercase">Console tokens</h2>
+</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px">
+<sc-for list="{{swatches}}" as="s" hint-placeholder-count="12">
+<div style="background: #11161C; border: 1px solid #232A33; border-radius: 4px; overflow: hidden">
+<div style="height: 56px; background: {{s.hex}}; border-bottom: 1px solid #232A33"></div>
+<div style="padding: 10px 12px; display: flex; flex-direction: column; gap: 2px">
+<span style="font-size: 14px; font-weight: 800">{{s.name}}</span>
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; color: #AEB7C2">{{s.hex}}</span>
+<span style="font-size: 12px; color: #808A97; line-height: 1.35">{{s.use}}</span>
+</div>
+</div>
+</sc-for>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 12px; align-items: center">
+<sc-for list="{{levels}}" as="l" hint-placeholder-count="4">
+<span style="display: inline-flex; align-items: center; gap: 10px; padding: 10px 20px 10px 14px; border-radius: 2px; background: {{l.bg}}; color: {{l.fg}}; border: 2px solid {{l.border}}; font-family: 'Saira Condensed', sans-serif; font-size: 32px; font-weight: 800; text-transform: uppercase; line-height: 1"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="{{l.glyph}}" fill="{{l.fg}}"></path></svg>{{l.label}}</span>
+</sc-for>
+</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 14px">
+<div style="background: #11161C; border: 1px solid #232A33; border-radius: 4px; padding: 20px; display: flex; flex-direction: column; gap: 10px">
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; color: #808A97">DISPLAY · SAIRA CONDENSED 800 · UPPERCASE</span>
+<span style="font-family: 'Saira Condensed', sans-serif; font-size: 56px; font-weight: 800; text-transform: uppercase; line-height: 1">Fight likely in ~6 s</span>
+<span style="font-size: 14px; color: #AEB7C2">Level words, ETA, page titles. Condensed uppercase reads like signage from 2 m.</span>
+</div>
+<div style="background: #11161C; border: 1px solid #232A33; border-radius: 4px; padding: 20px; display: flex; flex-direction: column; gap: 10px">
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; color: #808A97">TEXT · ATKINSON HYPERLEGIBLE NEXT · MONO FOR CODES</span>
+<span style="font-size: 24px; font-weight: 500; line-height: 1.35">Wrist speed spiked; distance below 0.5 torso-lengths for 1.2 s.</span>
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 16px; color: #AEB7C2">CAM-BC-03 · INC-2026-00142 · 14:31:06</span>
+</div>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 16px; align-items: center">
+<span style="position: relative; display: inline-flex; align-items: center; min-height: 48px; padding: 0 22px; font-size: 16px; font-weight: 800; color: #ECEFF3"><span style="position: absolute; left: 0; top: 0; width: 10px; height: 10px; border-left: 2px solid #8EA2FF; border-top: 2px solid #8EA2FF"></span><span style="position: absolute; right: 0; top: 0; width: 10px; height: 10px; border-right: 2px solid #8EA2FF; border-top: 2px solid #8EA2FF"></span><span style="position: absolute; left: 0; bottom: 0; width: 10px; height: 10px; border-left: 2px solid #8EA2FF; border-bottom: 2px solid #8EA2FF"></span><span style="position: absolute; right: 0; bottom: 0; width: 10px; height: 10px; border-right: 2px solid #8EA2FF; border-bottom: 2px solid #8EA2FF"></span>Corner-bracket frame</span>
+<span style="display: inline-flex; align-items: center; min-height: 48px; padding: 0 22px; border-radius: 2px; background: #3B55E6; color: #FFFFFF; font-size: 16px; font-weight: 800">Primary action</span>
+<span style="display: inline-flex; align-items: center; gap: 8px; font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 14px; font-weight: 700"><span style="width: 10px; height: 10px; border-radius: 50%; background: #FF453A"></span>REC</span>
+<span style="font-size: 14px; color: #AEB7C2">Radii drop to 2 to 4 px. Borders stay 1 px. Red is kept for the threat.</span>
+</div>
+</section>
+
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":3300}}'>
+class Component extends DCLogic {
+  fig(p, T, ground) {
+    const rad = (d) => d * Math.PI / 180;
+    const legL = 0.58 * T;
+    const hip = [p.x, ground - 2 * legL * 0.97];
+    const L = rad(p.lean || 0);
+    const neck = [hip[0] + p.dir * T * Math.sin(L), hip[1] - T * Math.cos(L)];
+    const head = [neck[0] + p.dir * 0.34 * T * Math.sin(L), neck[1] - 0.34 * T * Math.cos(L)];
+    const arm = (a, e) => {
+      const A = rad(a), E = rad(a + e);
+      const el = [neck[0] + p.dir * 0.5 * T * Math.sin(A), neck[1] + 0.5 * T * Math.cos(A)];
+      return [el, [el[0] + p.dir * 0.46 * T * Math.sin(E), el[1] + 0.46 * T * Math.cos(E)]];
+    };
+    const leg = (s) => {
+      const S = rad(s), S2 = rad(s * 0.4);
+      const k = [hip[0] + p.dir * legL * Math.sin(S), hip[1] + legL * Math.cos(S)];
+      return [k, [k[0] + p.dir * legL * Math.sin(S2), k[1] + legL * Math.cos(S2)]];
+    };
+    const r = arm(p.ra[0], p.ra[1]), l = arm(p.la[0], p.la[1]);
+    const st = p.stride == null ? 8 : p.stride;
+    const rl = leg(st), ll = leg(-st);
+    const f = (n) => Math.round(n * 10) / 10;
+    const seg = (a, b) => 'M' + f(a[0]) + ' ' + f(a[1]) + 'L' + f(b[0]) + ' ' + f(b[1]);
+    const dot = (q) => 'M' + f(q[0] - 2.8) + ' ' + f(q[1]) + 'a2.8 2.8 0 1 0 5.6 0a2.8 2.8 0 1 0 -5.6 0';
+    return {
+      bones: [seg(hip, neck), seg(neck, r[0]), seg(r[0], r[1]), seg(neck, l[0]), seg(l[0], l[1]), seg(hip, rl[0]), seg(rl[0], rl[1]), seg(hip, ll[0]), seg(ll[0], ll[1])].join(''),
+      joints: [neck, r[0], r[1], l[0], l[1], hip, rl[0], rl[1], ll[0], ll[1]].map(dot).join(''),
+      hx: f(head[0]), hy: f(head[1]), hr: f(0.2 * T), hipX: f(hip[0]), hipY: f(hip[1] - 20), top: head[1] - 0.2 * T
+    };
+  }
+  renderVals() {
+    const T = 56, G = 318;
+    const A = this.fig({ x: 309, dir: 1, lean: 12, ra: [125, 15], la: [45, 40], stride: 16 }, T, G);
+    const B = this.fig({ x: 334, dir: -1, lean: -4, ra: [60, 70], la: [30, 30], stride: 10 }, T, G);
+    const minX = 309 - 0.85 * T, maxX = 334 + 0.85 * T;
+    const top = Math.min(A.top, B.top) - 10;
+    let grid = '';
+    for (let x = 0; x <= 640; x += 40) grid += 'M' + x + ' 0L' + x + ' 360';
+    for (let y = 0; y <= 360; y += 40) grid += 'M0 ' + y + 'L640 ' + y;
+    return {
+      A: A, B: B, grid: grid,
+      boxX: Math.round(minX), boxY: Math.round(top), boxW: Math.round(maxX - minX), boxH: Math.round(G + 4 - top),
+      labelY: Math.round(top - 24), labelX: Math.round(minX + 8), labelTY: Math.round(top - 7),
+      dist: ((334 - 309) / T).toFixed(2), distX: Math.round((A.hipX + B.hipX) / 2), distY: Math.round(A.hipY - 8),
+      swatches: [
+        { name: 'Night', hex: '#0A0D11', use: 'Page ground' },
+        { name: 'Panel', hex: '#11161C', use: 'Cards, tiles' },
+        { name: 'Panel 2', hex: '#171D25', use: 'Raised rows, inputs' },
+        { name: 'Line', hex: '#232A33', use: 'Borders' },
+        { name: 'Line strong', hex: '#36404C', use: 'Chips, dividers' },
+        { name: 'Text', hex: '#ECEFF3', use: 'Primary text' },
+        { name: 'Text 2', hex: '#AEB7C2', use: 'Secondary text' },
+        { name: 'Muted', hex: '#808A97', use: 'Codes, labels. 5 : 1 on panel' },
+        { name: 'Signal blue', hex: '#3B55E6', use: 'Primary button' },
+        { name: 'Link blue', hex: '#8EA2FF', use: 'Links, focus, data' },
+        { name: 'Person A', hex: '#7FE0FF', use: 'Skeleton colour, first person' },
+        { name: 'Person B', hex: '#C9A7FF', use: 'Skeleton colour, second person' }
+      ],
+      levels: [
+        { label: 'Calm', bg: 'transparent', fg: '#7FE0A8', border: '#2F8F5B', glyph: 'M12 4a8 8 0 1 1-0.01 0z' },
+        { label: 'Tense', bg: '#F5B323', fg: '#1A1200', border: '#F5B323', glyph: 'M12 3 22 20H2z' },
+        { label: 'Fight likely', bg: '#D92D20', fg: '#FFFFFF', border: '#D92D20', glyph: 'M12 2 22 12 12 22 2 12z' },
+        { label: 'Fight', bg: '#A3160D', fg: '#FFFFFF', border: '#FF8A80', glyph: 'M8 2h8l6 6v8l-6 6H8l-6-6V8z' }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

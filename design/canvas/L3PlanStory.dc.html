@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Patrol plan use case</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Mono:wght@400;500;700&amp;family=Atkinson+Hyperlegible+Next:wght@400;500;700;800&amp;family=Saira+Condensed:wght@600;700;800&amp;display=swap">
+<style>
+body{margin:0;background:#F1F2F4}
+a{color:#2742D9}a:hover{color:#1F35B3}
+</style>
+</helmet>
+<div style="font-family: 'Atkinson Hyperlegible Next', system-ui, sans-serif; color: #0B0D10; background: #F1F2F4; box-sizing: border-box; padding: 40px 24px 48px">
+<div style="max-width: 1360px; margin: 0 auto; display: flex; flex-direction: column; gap: 24px">
+
+<header style="display: flex; flex-direction: column; gap: 8px; max-width: 980px">
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; color: #5D6672; letter-spacing: 0.08em">USE CASE · TAYLOR'S LAKESIDE · ILLUSTRATIVE, BUILT ON SYNTHETIC HISTORY</span>
+<h1 style="margin: 0; font-family: 'Saira Condensed', sans-serif; font-size: 56px; font-weight: 800; text-transform: uppercase; line-height: 0.95">One real week with the patrol plan</h1>
+<p style="margin: 0; font-size: 19px; line-height: 1.5; color: #3A414B">The security supervisor runs three guards, a hostel warden and one control-room desk watching thirty screens. This is how the Plan, Live, phone and Incidents screens fit into their week.</p>
+</header>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 12px">
+<sc-for list="{{panels}}" as="p" hint-placeholder-count="6">
+<article style="background: #FFFFFF; border: 1px solid #DCDFE4; border-radius: 2px; padding: 16px; display: flex; flex-direction: column; gap: 10px">
+<span style="display: flex; align-items: center; gap: 10px">
+<span style="flex: none; width: 34px; height: 34px; border-radius: 50%; background: #0B0D10; color: #FFFFFF; display: inline-flex; align-items: center; justify-content: center; font-weight: 800">{{p.n}}</span>
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 13px; font-weight: 700; color: #3A414B">{{p.when}}</span>
+</span>
+<span style="font-family: 'Saira Condensed', sans-serif; font-size: 30px; font-weight: 800; text-transform: uppercase; line-height: 1">{{p.title}}</span>
+<span style="font-size: 13px; font-weight: 700; color: #5D6672">{{p.who}}</span>
+<p style="margin: 0; font-size: 16px; line-height: 1.5">{{p.story}}</p>
+<span style="margin-top: auto; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; border-top: 1px solid #F1F2F4; padding-top: 10px">
+<span style="font-size: 13px; font-weight: 800; padding: 2px 8px; border-radius: 1px; background: #E7EBFD; color: #1F35B3">{{p.screen}}</span>
+<a href="{{p.href}}" style="font-size: 14px; font-weight: 800">Open the screen</a>
+</span>
+</article>
+</sc-for>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); gap: 12px">
+<section style="background: #FFFFFF; border: 1px solid #DCDFE4; border-radius: 2px; padding: 16px; display: flex; flex-direction: column; gap: 8px">
+<h2 style="margin: 0; font-family: 'Saira Condensed', sans-serif; font-size: 28px; font-weight: 800; text-transform: uppercase">Before EarlyEye</h2>
+<sc-for list="{{before}}" as="b" hint-placeholder-count="3">
+<p style="margin: 0; font-size: 16px; line-height: 1.5; color: #3A414B">{{b}}</p>
+</sc-for>
+</section>
+<section style="background: #0B0D10; color: #FFFFFF; border-radius: 2px; padding: 16px; display: flex; flex-direction: column; gap: 8px">
+<h2 style="margin: 0; font-family: 'Saira Condensed', sans-serif; font-size: 28px; font-weight: 800; text-transform: uppercase">With the patrol plan</h2>
+<sc-for list="{{after}}" as="a" hint-placeholder-count="3">
+<p style="margin: 0; font-size: 16px; line-height: 1.5">{{a}}</p>
+</sc-for>
+</section>
+</div>
+
+<p style="margin: 0; font-size: 14px; color: #5D6672; line-height: 1.5">An illustrative week on synthetic history. It shows how the screens are used. It is not a measured result; real results need several weeks on site.</p>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1250}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = {};
+  }
+  renderVals() {
+    return {
+      panels: [
+        { n: '1', when: 'MON 12 OCT · 08:00', title: 'Plan the week', who: 'Security supervisor, at the desk', screen: 'Plan', href: 'L3Plan.dc.html',
+          story: 'EarlyEye shows three places where trouble keeps happening. The top one is the Block C stairwell at weekday lunch: 5 incidents in the last 4 weeks.' },
+        { n: '2', when: 'MON 12 OCT · 08:05', title: 'Pick who goes', who: 'Security supervisor', screen: 'Plan', href: 'L3Plan.dc.html',
+          story: 'Guard B already works near Block C and is on shift at lunch, so EarlyEye suggests Guard B. Guard C takes the U Residence nights, Guard A covers Friday lunch at the food court. The roster goes into the team chat.' },
+        { n: '3', when: 'WED 14 OCT · 13:31', title: 'The post pays off', who: 'Guard B, on the Block C landing', screen: 'Live', href: 'L3Live.dc.html',
+          story: 'Three students box a fourth in on the landing. The desk sees Tense, with no alarm yet. Guard B is already standing 10 metres away and walks over. It never becomes a fight.' },
+        { n: '4', when: 'THU 15 OCT · 22:40', title: 'An alarm at night', who: 'Desk operator and Guard C', screen: 'Live and phone', href: 'L3Push.dc.html',
+          story: 'A shove in the U Residence level 3 corridor. EarlyEye sounds the alarm and alerts Guard C, who is on post at the far end of that corridor. Guard C taps "On my way" 5 seconds later.' },
+        { n: '5', when: 'FRI 16 OCT · 09:00', title: 'Close the case', who: 'Security supervisor', screen: 'Incidents', href: 'L3Incidents.dc.html',
+          story: 'The supervisor confirms Thursday night was real, writes "Two residents separated, reported to the hostel office", and copies the summary into the weekly report.' },
+        { n: '6', when: 'MON 19 OCT · 08:00', title: 'Did it work?', who: 'Security supervisor', screen: 'Plan', href: 'L3Plan.dc.html',
+          story: 'No incidents at Block C during the post hour, down from about one a week. The supervisor keeps that post, and EarlyEye builds the next week from the latest four weeks.' }
+      ],
+      before: [
+        'Guards walk a fixed route that is the same every day, whatever happened last week.',
+        'One operator watches thirty screens and finds most fights afterwards, on the recording.',
+        'Nobody can say which places and hours cause the most trouble, so nothing changes.'
+      ],
+      after: [
+        'One person stands where and when trouble usually starts, for a few hours a week.',
+        'The desk only hears an alarm when a fight is likely, and the nearest guard gets the alert.',
+        'Every Monday the supervisor sees whether last week’s posts worked, and adjusts.'
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

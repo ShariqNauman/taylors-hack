@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>EarlyEye incident blueprint</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Mono:wght@400;500;700&amp;family=Atkinson+Hyperlegible+Next:wght@400;500;700;800&amp;display=swap">
+<style>
+body{margin:0;background:#F4F5F7}
+a{color:#1E3A8A}a:hover{color:#142A66}
+</style>
+</helmet>
+<div style="font-family: 'Atkinson Hyperlegible Next', system-ui, sans-serif; color: #0F1419; background: #F4F5F7; box-sizing: border-box; padding: 56px 24px 72px">
+<div style="max-width: 1360px; margin: 0 auto; display: flex; flex-direction: column; gap: 32px">
+
+<header style="display: flex; flex-direction: column; gap: 14px; max-width: 980px">
+<div style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 13px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #5A6472">Service blueprint · demo incident INC-2026-00142 · Block C stairwell</div>
+<h1 style="margin: 0; font-size: 48px; line-height: 1.08; font-weight: 800">One incident, end to end</h1>
+<p style="margin: 0; font-size: 19px; line-height: 1.5; color: #3A4350">Seven moments, from the first sign of build-up to the quarterly review. Each lane is a role. The bottom three lanes show which screen carries the moment, which event fields change, and which rubric word it proves.</p>
+</header>
+
+<div style="overflow-x: auto; background: #FFFFFF; border: 1px solid #D9DDE3; border-radius: 10px">
+<div style="min-width: 1280px; display: flex; flex-direction: column">
+
+<div style="display: grid; grid-template-columns: 168px repeat(7, minmax(0, 1fr)); border-bottom: 2px solid #0F1419">
+<div style="padding: 18px 16px; font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: #5A6472; align-self: end">Lane</div>
+<sc-for list="{{phases}}" as="p" hint-placeholder-count="7">
+<div style="padding: 18px 14px; display: flex; flex-direction: column; gap: 8px; border-left: 1px solid #D9DDE3; background: {{p.bg}}">
+<div style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 13px; font-weight: 700; color: #3A4350">{{p.time}}</div>
+<div style="font-size: 18px; font-weight: 800; line-height: 1.2">{{p.name}}</div>
+<span style="align-self: flex-start; font-size: 12px; font-weight: 700; padding: 3px 9px; border-radius: 999px; background: {{p.chipBg}}; color: {{p.chipFg}}; border: 1px solid {{p.chipBorder}}">{{p.chip}}</span>
+</div>
+</sc-for>
+</div>
+
+<sc-for list="{{lanes}}" as="lane" hint-placeholder-count="8">
+<div style="display: grid; grid-template-columns: 168px repeat(7, minmax(0, 1fr)); border-bottom: 1px solid #D9DDE3; background: {{lane.rowBg}}">
+<div style="padding: 16px; display: flex; flex-direction: column; gap: 4px">
+<div style="font-size: 15px; font-weight: 800">{{lane.name}}</div>
+<div style="font-size: 12px; color: #5A6472; line-height: 1.35">{{lane.sub}}</div>
+</div>
+<sc-for list="{{lane.cells}}" as="c" hint-placeholder-count="7">
+<div style="padding: 14px; border-left: 1px solid #D9DDE3; font-size: {{lane.size}}; line-height: 1.4; color: {{c.color}}; font-family: {{lane.font}}; background: {{c.bg}}">{{c.t}}</div>
+</sc-for>
+</div>
+</sc-for>
+
+</div>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px">
+<div style="background: #FFFFFF; border: 1px solid #D9DDE3; border-radius: 10px; padding: 20px 22px; display: flex; flex-direction: column; gap: 8px">
+<div style="font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: #5A6472">The two tiers</div>
+<div style="font-size: 16px; line-height: 1.5">Tense lives only on the desk screen, silently. Fight likely is the first moment anyone is interrupted, and only one person is pushed.</div>
+</div>
+<div style="background: #FFFFFF; border: 1px solid #D9DDE3; border-radius: 10px; padding: 20px 22px; display: flex; flex-direction: column; gap: 8px">
+<div style="font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: #5A6472">The label loop</div>
+<div style="font-size: 16px; line-height: 1.5">Every Confirm or Dismiss becomes a label. Labels feed the false-alarm count on Proof and retune that camera's threshold.</div>
+</div>
+<div style="background: #FFFFFF; border: 1px solid #D9DDE3; border-radius: 10px; padding: 20px 22px; display: flex; flex-direction: column; gap: 8px">
+<div style="font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: #5A6472">The decision loop</div>
+<div style="font-size: 16px; line-height: 1.5">Records become hotspots. Hotspots become a patrol plan. The plan puts a person there before the next build-up starts.</div>
+</div>
+</div>
+
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1500}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const N = { chipBg: '#FFFFFF', chipFg: '#3A4350', chipBorder: '#B8BFC9', bg: '#FFFFFF' };
+    const phases = [
+      { time: 'T − 12 s', name: 'Build-up', chip: 'Tense · silent', chipBg: '#F5B323', chipFg: '#1A1200', chipBorder: '#E5A41C', bg: '#FFFFFF' },
+      { time: 'T − 6 s', name: 'Fight likely', chip: 'Alarm · 1 push', chipBg: '#C8241B', chipFg: '#FFFFFF', chipBorder: '#C8241B', bg: '#FDEDEB' },
+      { time: 'T 0', name: 'Shove', chip: 'Fight', chipBg: '#7F1310', chipFg: '#FFFFFF', chipBorder: '#7F1310', bg: '#FFFFFF' },
+      Object.assign({ time: '+ 10 s', name: 'Answer', chip: 'Label' }, N),
+      Object.assign({ time: '+ 5 min', name: 'Close', chip: 'Record' }, N),
+      Object.assign({ time: 'Monday', name: 'Plan the week', chip: 'Decide' }, N),
+      Object.assign({ time: 'Quarterly', name: 'Review', chip: 'Prove' }, N)
+    ];
+    const hot = 1;
+    const mk = (cells, opts) => cells.map((t, i) => ({
+      t: t || '—',
+      color: t ? (opts && opts.color ? opts.color : '#0F1419') : '#B8BFC9',
+      bg: i === hot ? '#FDEDEB' : 'transparent'
+    }));
+    const body = { size: '14px', font: "'Atkinson Hyperlegible Next', system-ui, sans-serif", rowBg: '#FFFFFF' };
+    const meta = { size: '13px', font: "'Atkinson Hyperlegible Next', system-ui, sans-serif", rowBg: '#F4F5F7' };
+    const code = { size: '12px', font: "'Atkinson Hyperlegible Mono', ui-monospace, monospace", rowBg: '#F4F5F7' };
+    const lanes = [
+      Object.assign({ name: 'EarlyEye', sub: 'Edge laptop + API', cells: mk([
+        'Pose skeletons, pair distance 0.6 torso-lengths. Score passes the tense line. ETA 12 s.',
+        'Score above the alarm line for 1 s. Priority ranks it top of the queue. Pushes the nearest person.',
+        'Shove detected. Type stays fight. Priority 0.61.',
+        'Writes the answer as a label against this camera.',
+        'Closes the record with end time and note.',
+        'Hotspot rule: 3+ in one place, same hour of week, within 4 weeks. Builds top-3 patrol slots.',
+        'Counts labels, false alarms per camera-hour, incidents avoided (estimated).'
+      ]) }, body),
+      Object.assign({ name: 'Desk operator', sub: 'Control room, 2 m from screen', cells: mk([
+        'Amber card, no sound. Glances at the Block C feed on the existing camera wall.',
+        'Red banner and alarm. Reads one sentence. Sees "Pushed to Guard B".',
+        'Watches the feed on the camera wall. Calls the security lead if it spreads.',
+        'Presses Confirm or Dismiss on the card.',
+        'Adds a one-line note. Marks resolved.',
+        '',
+        ''
+      ]) }, body),
+      Object.assign({ name: 'Person on duty', sub: 'Guard B, on foot, ~40 m', cells: mk([
+        'Nothing. Tense never pings anyone.',
+        'Phone buzzes. Card: place, type, reason, 10 s countdown.',
+        'Walking to the Block C landing.',
+        'Taps Confirm or Dismiss.',
+        'Separates the two people. Tells the desk.',
+        'Gets a fixed slot: Block C, Mon–Thu 13:00–14:00.',
+        ''
+      ]) }, body),
+      Object.assign({ name: 'Security manager', sub: 'Weekly, at a desk', cells: mk([
+        '', '', '', '', '',
+        'Opens Plan. Reads three slots with avoided per week and the assumption. Sends a camera repair.',
+        'Reports avoided incidents, response time, pushes per shift.'
+      ]) }, body),
+      Object.assign({ name: 'Buyer', sub: 'Quarterly', cells: mk([
+        '', '', '', '', '', '',
+        'Reads Proof and the plan summary. Renews or expands.'
+      ]) }, body),
+      Object.assign({ name: 'Screen', sub: 'Where it happens', cells: mk([
+        'Live · amber card', 'Live · red banner + Push', 'Live', 'Live or Push', 'Incidents', 'Plan', 'Proof'
+      ], { color: '#1E3A8A' }) }, meta),
+      Object.assign({ name: 'Event fields', sub: 'What changes', cells: mk([
+        'level=tense eta_seconds=12 status=new',
+        'level=fight_likely eta_seconds=6 pushed_to pushed_at status=pushed',
+        'level=fight peak_score=0.95',
+        'status=confirmed | dismissed',
+        'end_time status=resolved staff_note',
+        'GET /hotspots GET /plan',
+        'GET /proof'
+      ], { color: '#3A4350' }) }, code),
+      Object.assign({ name: 'Rubric', sub: 'Judges’ words', cells: mk([
+        'Detect', 'Prioritize · Explain', 'Categorize', 'Minimize false alarms', 'Record', 'Decide', 'Prove it'
+      ]) }, meta)
+    ];
+    return { phases: phases, lanes: lanes };
+  }
+}
+</script>
+</body>
+</html>

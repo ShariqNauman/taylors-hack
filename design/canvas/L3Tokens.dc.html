@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Light Console tokens</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Mono:wght@400;500;700&amp;family=Atkinson+Hyperlegible+Next:wght@400;500;700;800&amp;family=Saira+Condensed:wght@600;700;800&amp;display=swap">
+<style>
+body{margin:0;background:#F1F2F4}
+a{color:#2742D9}a:hover{color:#1F35B3}
+</style>
+</helmet>
+<div style="font-family: 'Atkinson Hyperlegible Next', system-ui, sans-serif; color: #0B0D10; background: #F1F2F4; box-sizing: border-box; padding: 56px 24px 72px">
+<div style="max-width: 1360px; margin: 0 auto; display: flex; flex-direction: column; gap: 44px">
+
+<header style="display: flex; flex-direction: column; gap: 16px; max-width: 1000px">
+<div style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 13px; font-weight: 700; letter-spacing: 0.1em; color: #5D6672">V3/00 · LIGHT CONSOLE · RECOMMENDED</div>
+<h1 style="margin: 0; font-family: 'Saira Condensed', sans-serif; font-size: 84px; line-height: 0.92; font-weight: 800; text-transform: uppercase">v2's console,<br>on daylight</h1>
+<p style="margin: 0; font-size: 20px; line-height: 1.5; color: #3A414B">Everything you liked in v2 stays: video-first evidence, the camera wall, condensed headings, mono camera codes and corner brackets. The chrome turns light, like Ambient.ai's white sections and Volt's cards. Camera frames stay dark, because camera feeds are dark.</p>
+<div style="display: flex; flex-wrap: wrap; gap: 8px">
+<span style="display: inline-flex; align-items: center; min-height: 32px; padding: 0 12px; border-radius: 999px; border: 1px solid #B4BAC3; background: #FFFFFF; font-size: 14px; font-weight: 700">Matches the light-only rule in CLAUDE.md</span>
+<span style="display: inline-flex; align-items: center; min-height: 32px; padding: 0 12px; border-radius: 999px; border: 1px solid #B4BAC3; background: #FFFFFF; font-size: 14px; font-weight: 700">Projects better in a lit pitch room</span>
+<span style="display: inline-flex; align-items: center; min-height: 32px; padding: 0 12px; border-radius: 999px; border: 1px solid #B4BAC3; background: #FFFFFF; font-size: 14px; font-weight: 700">Dark frames make the skeletons pop</span>
+</div>
+</header>
+
+<section aria-labelledby="sw-h" style="display: flex; flex-direction: column; gap: 16px">
+<h2 id="sw-h" style="margin: 0; font-family: 'Saira Condensed', sans-serif; font-size: 40px; font-weight: 800; text-transform: uppercase">Colour</h2>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px">
+<sc-for list="{{swatches}}" as="s" hint-placeholder-count="14">
+<div style="background: #FFFFFF; border: 1px solid #DCDFE4; border-radius: 2px; overflow: hidden">
+<div style="height: 52px; background: {{s.hex}}; border-bottom: 1px solid #DCDFE4"></div>
+<div style="padding: 10px 12px; display: flex; flex-direction: column; gap: 2px">
+<span style="font-size: 14px; font-weight: 800">{{s.name}}</span>
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; color: #3A414B">{{s.hex}}</span>
+<span style="font-size: 12px; color: #5D6672; line-height: 1.35">{{s.use}}</span>
+</div>
+</div>
+</sc-for>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center">
+<sc-for list="{{levels}}" as="l" hint-placeholder-count="4">
+<span style="display: inline-flex; align-items: center; gap: 10px; padding: 9px 20px 9px 14px; border-radius: 2px; background: {{l.bg}}; color: {{l.fg}}; border: 2px solid {{l.border}}; font-family: 'Saira Condensed', sans-serif; font-size: 32px; font-weight: 800; text-transform: uppercase; line-height: 1"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="{{l.glyph}}" fill="{{l.fg}}"></path></svg>{{l.label}}</span>
+</sc-for>
+<span style="font-size: 14px; color: #3A414B; max-width: 380px">Same severity ramp as v1. Colour means severity only. Every level keeps its shape and its word.</span>
+</div>
+</section>
+
+<section aria-label="Type and frame" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); gap: 14px">
+<div style="background: #FFFFFF; border: 1px solid #DCDFE4; border-radius: 2px; padding: 22px; display: flex; flex-direction: column; gap: 14px">
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; color: #5D6672">DISPLAY · SAIRA CONDENSED 800 · UPPERCASE</span>
+<span style="font-family: 'Saira Condensed', sans-serif; font-size: 58px; font-weight: 800; text-transform: uppercase; line-height: 0.95">Fight likely in ~6 s</span>
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; color: #5D6672">TEXT · ATKINSON HYPERLEGIBLE NEXT</span>
+<span style="font-size: 24px; font-weight: 500; line-height: 1.35">Fast whole-body motion while close, for 1.2 s.</span>
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 16px; color: #3A414B">CAM-BC-03 · INC-2026-00142 · 14:31:06</span>
+</div>
+<figure style="margin: 0; position: relative; background: #FFFFFF; border: 1px solid #DCDFE4; border-radius: 2px; padding: 16px; display: flex; flex-direction: column; gap: 10px">
+<div style="position: relative">
+<span style="position: absolute; left: -6px; top: -6px; width: 16px; height: 16px; border-left: 2px solid #0B0D10; border-top: 2px solid #0B0D10"></span>
+<span style="position: absolute; right: -6px; top: -6px; width: 16px; height: 16px; border-right: 2px solid #0B0D10; border-top: 2px solid #0B0D10"></span>
+<span style="position: absolute; left: -6px; bottom: -6px; width: 16px; height: 16px; border-left: 2px solid #0B0D10; border-bottom: 2px solid #0B0D10"></span>
+<span style="position: absolute; right: -6px; bottom: -6px; width: 16px; height: 16px; border-right: 2px solid #0B0D10; border-bottom: 2px solid #0B0D10"></span>
+<svg viewBox="0 0 640 360" role="img" aria-label="Dark camera frame with two skeletons and a red box, on a light panel" style="display: block; width: 100%; height: auto">
+<rect x="0" y="0" width="640" height="360" fill="#161B22"></rect>
+<path d="M0 318L640 318M0 318L120 230L520 230L640 318M120 230L120 0M520 230L520 0M520 230L560 230L560 205L590 205L590 180L620 180L620 155L640 155" stroke="#2A323C" stroke-width="2" fill="none"></path>
+<rect x="{{boxX}}" y="{{boxY}}" width="{{boxW}}" height="{{boxH}}" fill="none" stroke="#FF5A4F" stroke-width="2.5"></rect>
+<rect x="{{boxX}}" y="{{labelY}}" width="178" height="24" fill="#FF5A4F"></rect>
+<text x="{{labelX}}" y="{{labelTY}}" font-family="'Atkinson Hyperlegible Mono', monospace" font-size="14" font-weight="700" fill="#1A0503">FIGHT LIKELY 0.71</text>
+<path d="{{A}}" stroke="#7FE0FF" stroke-width="4" stroke-linecap="round" fill="none"></path>
+<path d="{{B}}" stroke="#C9A7FF" stroke-width="4" stroke-linecap="round" fill="none"></path>
+<circle cx="508" cy="29" r="6" fill="#FF453A"></circle>
+<text x="520" y="34" font-family="'Atkinson Hyperlegible Mono', monospace" font-size="13" font-weight="700" fill="#ECEFF3">LIVE 14:31:06</text>
+<text x="18" y="34" font-family="'Atkinson Hyperlegible Mono', monospace" font-size="13" font-weight="700" fill="#ECEFF3">CAM-BC-03 · BLOCK C STAIRWELL</text>
+</svg>
+</div>
+<figcaption style="font-size: 14px; color: #3A414B; line-height: 1.45">Frames stay dark on the light page. Corner brackets turn ink. Skeletons keep cyan and violet so two people are never confused.</figcaption>
+</figure>
+</section>
+
+<section aria-labelledby="live-h" style="display: flex; flex-direction: column; gap: 14px">
+<h2 id="live-h" style="margin: 0; font-family: 'Saira Condensed', sans-serif; font-size: 40px; font-weight: 800; text-transform: uppercase">Real time, two ways</h2>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 12px">
+<div style="background: #FFFFFF; border: 1px solid #DCDFE4; border-radius: 2px; padding: 20px; display: flex; flex-direction: column; gap: 10px">
+<span style="align-self: flex-start; display: inline-flex; align-items: center; gap: 8px; font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 13px; font-weight: 700; padding: 4px 10px; background: #0B0D10; color: #FFFFFF; border-radius: 1px"><span style="width: 8px; height: 8px; border-radius: 50%; background: #FF453A"></span>LIVE VIDEO · 30 FPS</span>
+<span style="font-size: 20px; font-weight: 800">On-site desk</span>
+<span style="font-size: 15px; line-height: 1.5; color: #3A414B">The real camera picture with skeletons drawn on top, smooth and live. The edge laptop already draws this today in its own window. The dashboard on the site network can show the same stream.</span>
+</div>
+<div style="background: #FFFFFF; border: 1px solid #DCDFE4; border-radius: 2px; padding: 20px; display: flex; flex-direction: column; gap: 10px">
+<span style="align-self: flex-start; display: inline-flex; align-items: center; gap: 8px; font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 13px; font-weight: 700; padding: 4px 10px; background: #E7EBFD; color: #1F35B3; border-radius: 1px"><span style="width: 8px; height: 8px; border-radius: 50%; background: #2742D9"></span>LIVE SKELETONS · EVERY 2 S</span>
+<span style="font-size: 20px; font-weight: 800">Remote link</span>
+<span style="font-size: 15px; line-height: 1.5; color: #3A414B">A fresh skeleton snapshot rides on each event post and arrives with the normal 2-second poll. No video, no websockets. Smoother 5 fps needs Supabase Realtime, a SHOULD.</span>
+</div>
+</div>
+</section>
+
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1900}}'>
+class Component extends DCLogic {
+  fig(p) {
+    const T = 56, G = 318, rad = (d) => d * Math.PI / 180, legL = 0.58 * T;
+    const hip = [p.x, G - 2 * legL * 0.97], L = rad(p.lean);
+    const neck = [hip[0] + p.dir * T * Math.sin(L), hip[1] - T * Math.cos(L)];
+    const head = [neck[0] + p.dir * 0.34 * T * Math.sin(L), neck[1] - 0.34 * T * Math.cos(L)];
+    const arm = (a, e) => { const A = rad(a), E = rad(a + e); const el = [neck[0] + p.dir * 0.5 * T * Math.sin(A), neck[1] + 0.5 * T * Math.cos(A)]; return [el, [el[0] + p.dir * 0.46 * T * Math.sin(E), el[1] + 0.46 * T * Math.cos(E)]]; };
+    const leg = (s) => { const S = rad(s), S2 = rad(s * 0.4); const k = [hip[0] + p.dir * legL * Math.sin(S), hip[1] + legL * Math.cos(S)]; return [k, [k[0] + p.dir * legL * Math.sin(S2), k[1] + legL * Math.cos(S2)]]; };
+    const r = arm(p.ra[0], p.ra[1]), l = arm(p.la[0], p.la[1]), rl = leg(p.stride), ll = leg(-p.stride);
+    const f = (n) => Math.round(n * 10) / 10, seg = (a, b) => 'M' + f(a[0]) + ' ' + f(a[1]) + 'L' + f(b[0]) + ' ' + f(b[1]);
+    const hr = 0.2 * T;
+    return { d: [seg(hip, neck), seg(neck, r[0]), seg(r[0], r[1]), seg(neck, l[0]), seg(l[0], l[1]), seg(hip, rl[0]), seg(rl[0], rl[1]), seg(hip, ll[0]), seg(ll[0], ll[1])].join('') + 'M' + f(head[0] - hr) + ' ' + f(head[1]) + 'a' + f(hr) + ' ' + f(hr) + ' 0 1 0 ' + f(2 * hr) + ' 0a' + f(hr) + ' ' + f(hr) + ' 0 1 0 ' + f(-2 * hr) + ' 0', top: head[1] - hr };
+  }
+  renderVals() {
+    const A = this.fig({ x: 309, dir: 1, lean: 12, ra: [125, 15], la: [45, 40], stride: 16 });
+    const B = this.fig({ x: 334, dir: -1, lean: -4, ra: [60, 70], la: [30, 30], stride: 10 });
+    const top = Math.round(Math.min(A.top, B.top) - 10);
+    return {
+      A: A.d, B: B.d, boxX: 261, boxY: top, boxW: 121, boxH: 322 - top, labelY: top - 24, labelX: 269, labelTY: top - 7,
+      swatches: [
+        { name: 'Ground', hex: '#F1F2F4', use: 'Page background' },
+        { name: 'Panel', hex: '#FFFFFF', use: 'Cards, tiles' },
+        { name: 'Raised', hex: '#F7F8FA', use: 'Rows, inputs' },
+        { name: 'Line', hex: '#DCDFE4', use: 'Borders' },
+        { name: 'Line strong', hex: '#B4BAC3', use: 'Chips, dividers' },
+        { name: 'Ink', hex: '#0B0D10', use: 'Text, Confirm, brackets' },
+        { name: 'Ink 2', hex: '#3A414B', use: 'Secondary text' },
+        { name: 'Muted', hex: '#5D6672', use: 'Codes, labels. 5.9 : 1 on white' },
+        { name: 'Signal blue', hex: '#2742D9', use: 'Primary action, links. 7.3 : 1' },
+        { name: 'Blue tint', hex: '#E7EBFD', use: 'Pushed, remote live badge' },
+        { name: 'Frame', hex: '#161B22', use: 'Camera frame on site' },
+        { name: 'Frame remote', hex: '#0E1217', use: 'Skeleton-only frame' },
+        { name: 'Person A', hex: '#7FE0FF', use: 'First skeleton' },
+        { name: 'Person B', hex: '#C9A7FF', use: 'Second skeleton' }
+      ],
+      levels: [
+        { label: 'Calm', bg: '#E4F3EA', fg: '#17663D', border: '#9FD3B4', glyph: 'M12 4a8 8 0 1 1-0.01 0z' },
+        { label: 'Tense', bg: '#F5B323', fg: '#1A1200', border: '#F5B323', glyph: 'M12 3 22 20H2z' },
+        { label: 'Fight likely', bg: '#C8241B', fg: '#FFFFFF', border: '#C8241B', glyph: 'M12 2 22 12 12 22 2 12z' },
+        { label: 'Fight', bg: '#7F1310', fg: '#FFFFFF', border: '#7F1310', glyph: 'M8 2h8l6 6v8l-6 6H8l-6-6V8z' }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

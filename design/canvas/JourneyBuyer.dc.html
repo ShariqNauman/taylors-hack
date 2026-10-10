@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Journey: buyer</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Mono:wght@400;500;700&amp;family=Atkinson+Hyperlegible+Next:wght@400;500;700;800&amp;display=swap">
+<style>
+body{margin:0;background:#F4F5F7}
+a{color:#1E3A8A}a:hover{color:#142A66}
+</style>
+</helmet>
+<div style="font-family: 'Atkinson Hyperlegible Next', system-ui, sans-serif; color: #0F1419; background: #F4F5F7; box-sizing: border-box; padding: 56px 24px 72px">
+<div style="max-width: 1360px; margin: 0 auto; display: flex; flex-direction: column; gap: 40px">
+
+<header style="display: flex; flex-direction: column; gap: 20px">
+<div style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 13px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #5A6472">{{eyebrow}}</div>
+<div style="display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px">
+<div style="display: flex; flex-direction: column; gap: 8px; max-width: 760px">
+<h1 style="margin: 0; font-size: 48px; line-height: 1.05; font-weight: 800">{{role}}</h1>
+<p style="margin: 0; font-size: 21px; line-height: 1.45; color: #3A4350">{{job}}</p>
+</div>
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 13px; font-weight: 700; padding: 6px 12px; border-radius: 6px; background: #EEF0F3; color: #0F1419">{{cadence}}</span>
+</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px">
+<sc-for list="{{facts}}" as="f" hint-placeholder-count="6">
+<div style="background: #FFFFFF; border: 1px solid #D9DDE3; border-radius: 10px; padding: 14px 16px; display: flex; flex-direction: column; gap: 4px">
+<div style="font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: #5A6472">{{f.k}}</div>
+<div style="font-size: 15px; line-height: 1.4">{{f.v}}</div>
+</div>
+</sc-for>
+</div>
+</header>
+
+<section aria-label="Workflow" style="display: flex; flex-direction: column; gap: 18px">
+<div style="display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 12px">
+<h2 style="margin: 0; font-size: 28px; font-weight: 800">Workflow</h2>
+<div style="display: flex; gap: 16px; font-size: 13px; color: #3A4350; flex-wrap: wrap">
+<span style="display: inline-flex; align-items: center; gap: 6px"><span style="width: 14px; height: 14px; border: 1px solid #0F1419; border-radius: 4px; background: #FFFFFF"></span>Step</span>
+<span style="display: inline-flex; align-items: center; gap: 6px"><span style="width: 14px; height: 14px; border: 1.5px dashed #1E3A8A; border-radius: 4px; background: #F4F7FD"></span>Decision</span>
+</div>
+</div>
+<div style="display: flex; flex-wrap: wrap; align-items: stretch; gap: 10px 8px">
+<sc-for list="{{flow}}" as="s" hint-placeholder-count="8">
+<div style="display: flex; align-items: center; gap: 8px">
+<sc-if value="{{s.isStep}}" hint-placeholder-val="{{ true }}">
+<div style="width: 196px; min-height: 132px; box-sizing: border-box; background: #FFFFFF; border: 1px solid #0F1419; border-radius: 8px; padding: 14px; display: flex; flex-direction: column; gap: 8px">
+<div style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 13px; font-weight: 700; color: #5A6472">{{s.n}}</div>
+<div style="font-size: 15px; line-height: 1.4; font-weight: 500; flex-grow: 1">{{s.t}}</div>
+<span style="align-self: flex-start; font-size: 12px; font-weight: 700; padding: 2px 8px; border-radius: 6px; background: #EEF0F3; color: #3A4350">{{s.screen}}</span>
+</div>
+</sc-if>
+<sc-if value="{{s.isDecision}}" hint-placeholder-val="{{ false }}">
+<div style="width: 250px; min-height: 132px; box-sizing: border-box; background: #F4F7FD; border: 1.5px dashed #1E3A8A; border-radius: 8px; padding: 14px; display: flex; flex-direction: column; gap: 8px">
+<div style="display: flex; align-items: center; gap: 6px; font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 13px; font-weight: 700; color: #1E3A8A">
+<svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 L22 12 L12 22 L2 12 Z" fill="none" stroke="#1E3A8A" stroke-width="2.5"></path></svg>{{s.n}}</div>
+<div style="font-size: 15px; line-height: 1.35; font-weight: 800">{{s.q}}</div>
+<div style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; line-height: 1.35">
+<div><span style="font-weight: 700">{{s.aLabel}} →</span> {{s.a}}</div>
+<div><span style="font-weight: 700">{{s.bLabel}} →</span> {{s.b}}</div>
+</div>
+</div>
+</sc-if>
+<sc-if value="{{s.notLast}}" hint-placeholder-val="{{ true }}">
+<svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6" fill="none" stroke="#5A6472" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+</sc-if>
+</div>
+</sc-for>
+</div>
+</section>
+
+<section aria-label="Journey map" style="display: flex; flex-direction: column; gap: 18px">
+<h2 style="margin: 0; font-size: 28px; font-weight: 800">Journey map</h2>
+<div style="overflow-x: auto; background: #FFFFFF; border: 1px solid #D9DDE3; border-radius: 10px">
+<div style="min-width: 1240px">
+<div style="display: grid; grid-template-columns: 150px repeat(6, minmax(0, 1fr)); border-bottom: 2px solid #0F1419">
+<div style="padding: 16px; font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: #5A6472; align-self: end">Stage</div>
+<sc-for list="{{stages}}" as="st" hint-placeholder-count="6">
+<div style="padding: 16px 14px; border-left: 1px solid #D9DDE3; display: flex; flex-direction: column; gap: 6px">
+<div style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 13px; font-weight: 700; color: #5A6472">{{st.n}}</div>
+<div style="font-size: 18px; font-weight: 800; line-height: 1.2">{{st.name}}</div>
+</div>
+</sc-for>
+</div>
+<sc-for list="{{rows}}" as="r" hint-placeholder-count="7">
+<div style="display: grid; grid-template-columns: 150px repeat(6, minmax(0, 1fr)); border-bottom: 1px solid #D9DDE3; background: {{r.bg}}">
+<div style="padding: 14px 16px; font-size: 14px; font-weight: 800">{{r.label}}</div>
+<sc-for list="{{r.cells}}" as="c" hint-placeholder-count="6">
+<div style="padding: 14px; border-left: 1px solid #D9DDE3; font-size: 14px; line-height: 1.42; color: {{c.color}}; font-weight: {{r.weight}}">{{c.t}}</div>
+</sc-for>
+</div>
+</sc-for>
+<div style="display: grid; grid-template-columns: 150px repeat(6, minmax(0, 1fr))">
+<div style="padding: 14px 16px; display: flex; flex-direction: column; gap: 2px">
+<div style="font-size: 14px; font-weight: 800">Stress</div>
+<div style="font-size: 12px; color: #5A6472">1 low · 5 high</div>
+</div>
+<sc-for list="{{stress}}" as="x" hint-placeholder-count="6">
+<div style="padding: 14px; border-left: 1px solid #D9DDE3; display: flex; align-items: flex-end; gap: 10px; height: 96px; box-sizing: border-box">
+<div style="width: 28px; height: {{x.h}}; background: #0F1419; border-radius: 3px 3px 0 0"></div>
+<div style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 14px; font-weight: 700">{{x.v}}</div>
+</div>
+</sc-for>
+</div>
+</div>
+</div>
+</section>
+
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1500}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const D = {
+      eyebrow: 'Journey 4 of 4 · Quarterly · Buyer or management',
+      role: 'Buyer or management',
+      job: 'Approve the spend and the privacy review, then show the board it changed something.',
+      cadence: 'AT PURCHASE, THEN QUARTERLY',
+      facts: [
+        { k: 'Who', v: 'Head of security, facilities director, principal' },
+        { k: 'Answers to', v: 'Board, parents, regulator' },
+        { k: 'Device', v: 'Laptop or phone, from a shared link' },
+        { k: 'Screens', v: 'Proof, Plan summary' },
+        { k: 'Cost frame', v: 'One guard post ~RM103k/yr; software RM11–27k/yr' },
+        { k: 'Success', v: 'Pilot signed, then renewal' }
+      ],
+      flow: [
+        { t: 'Opens the deployed link. Live replay runs with no camera.', screen: 'Live · replay' },
+        { q: 'Privacy acceptable?', aLabel: 'No', a: 'stop; nothing installed', bLabel: 'Yes', b: 'skeletons only, video stays on site' },
+        { t: 'Reads Proof: dataset and live numbers side by side, lead time, limits.', screen: 'Proof' },
+        { t: 'Approves a four-week pilot on one building.', screen: 'Outside EarlyEye' },
+        { t: 'Reads the pilot summary: avoided (estimated), response time, pushes per shift.', screen: 'Plan · summary' },
+        { q: 'Changed anything?', aLabel: 'Yes', a: 'renew; add buildings', bLabel: 'No', b: 'end the pilot' }
+      ],
+      stages: ['First contact', 'Privacy review', 'Evidence', 'Pilot', 'Review', 'Renew'],
+      rows: [
+        { label: 'Trigger', cells: ['A pitch, or the security manager asks', 'Before any camera is touched', 'Wants proof it works here', 'Approval for one building', 'Four weeks of data', 'Budget cycle'] },
+        { label: 'Doing', cells: ['Opens the link on a phone', 'Asks IT and the privacy officer to check the data flow', 'Reads Proof top to bottom', 'Signs off one building for one month', 'Reads the manager’s summary', 'Renews or expands'] },
+        { label: 'Sees', cells: ['Live replay; no camera needed', '"Skeletons, never faces. Video never leaves the laptop."', 'Dataset against live room; placeholder banner until real numbers land', 'Same dashboard, their own zones', 'Avoided per week with the assumption beside it', 'Price per camera per month'] },
+        { label: 'Thinking', cells: ['Is this real or a slide?', 'Will this land us in the news?', 'Is the number honest?', 'Small and safe first', 'Did it change anything?', 'Worth it next year?'] },
+        { label: 'Pain today', cells: ['Vendor demos that only run on stage', 'Video analytics feel like surveillance', 'Accuracy with no split and no live test', 'Big-bang rollouts', 'Security spend has no visible outcome', 'Cost compared with nothing'], tone: 'pain' },
+        { label: 'Design response', cells: ['Deployed link works with the API down', 'Privacy notes on Proof; no screen implies video upload', 'Domain-shift disclosure, CCTV-domain row, IR frame', 'One site; zone table per site', 'Patrol plan shows outcomes with the assumption stated', 'Compare against one guard post'], tone: 'design' },
+        { label: 'Measure', cells: ['Time to "it runs"', 'Privacy sign-off', '', 'Pilot started', 'Avoided, response time, false alarms per camera-hour', 'Renewal'] }
+      ],
+      stress: [2, 4, 3, 2, 3, 2]
+    };
+    return this.build(D);
+  }
+  build(D) {
+    const steps = D.flow.map((s, i) => {
+      const isDecision = !!s.q;
+      return Object.assign({}, s, {
+        n: (isDecision ? 'D' : 'S') + String(i + 1).padStart(2, '0'),
+        isStep: !isDecision,
+        isDecision: isDecision,
+        notLast: i < D.flow.length - 1
+      });
+    });
+    const rows = D.rows.map((r) => ({
+      label: r.label,
+      bg: r.tone === 'design' ? '#F4F7FD' : (r.tone === 'pain' ? '#F4F5F7' : '#FFFFFF'),
+      weight: r.tone === 'design' ? '700' : '400',
+      cells: r.cells.map((t) => ({ t: t || '—', color: t ? (r.tone === 'design' ? '#1E3A8A' : '#0F1419') : '#B8BFC9' }))
+    }));
+    return {
+      eyebrow: D.eyebrow, role: D.role, job: D.job, cadence: D.cadence, facts: D.facts,
+      flow: steps,
+      stages: D.stages.map((name, i) => ({ name: name, n: String(i + 1).padStart(2, '0') })),
+      rows: rows,
+      stress: D.stress.map((v) => ({ v: v, h: (v * 13) + 'px' }))
+    };
+  }
+}
+</script>
+</body>
+</html>

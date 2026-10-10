@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Guard app flow</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Mono:wght@400;500;700&amp;family=Atkinson+Hyperlegible+Next:wght@400;500;700;800&amp;family=Saira+Condensed:wght@600;700;800&amp;display=swap">
+<style>
+body{margin:0;background:#F1F2F4}
+</style>
+</helmet>
+<div style="font-family: 'Atkinson Hyperlegible Next', system-ui, sans-serif; color: #0B0D10; background: #F1F2F4; box-sizing: border-box; padding: 36px 32px 44px; display: flex; flex-direction: column; gap: 28px">
+<header style="display: flex; flex-direction: column; gap: 8px; max-width: 1200px">
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; color: #5D6672; letter-spacing: 0.08em">EARLYEYE FOR GUARDS · MOBILE APP · AIMAN HAKIMI (GUARD B), ONE SHIFT</span>
+<h1 style="margin: 0; font-family: 'Saira Condensed', sans-serif; font-size: 56px; font-weight: 800; text-transform: uppercase; line-height: 0.95">The guard's app runs the whole shift</h1>
+<p style="margin: 0; font-size: 19px; line-height: 1.5; color: #3A414B">Four tabs: Today, Schedule, Alerts and Me. Posts arrive from the supervisor's Plan page, the alarm takes over the screen on any tab, and every tap tells the desk where the guard is and what they found. Every screen is clickable.</p>
+</header>
+<div style="display: flex; gap: 22px; align-items: flex-start">
+<div style="flex: none; width: 390px; display: flex; flex-direction: column; gap: 12px">
+<span style="display: flex; align-items: center; gap: 10px"><span style="flex: none; width: 32px; height: 32px; border-radius: 50%; background: #0B0D10; color: #FFFFFF; display: inline-flex; align-items: center; justify-content: center; font-weight: 800">1</span><span style="display: flex; flex-direction: column"><span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; font-weight: 700; color: #5D6672">FIRST TIME ONLY</span><span style="font-size: 18px; font-weight: 800">Who is using this phone?</span></span></span>
+<dc-import name="GuardPhone" screen="setup" hint-size="390px,844px"></dc-import>
+<div style="background: #FFFFFF; border: 1px solid #DCDFE4; border-radius: 2px; padding: 10px 12px; display: flex; flex-direction: column; gap: 4px">
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; color: #5D6672">WHAT THE DESK SEES</span>
+<span style="font-size: 15px; line-height: 1.45">Nothing yet. The phone is now linked to Aiman (Guard B).</span>
+<span style="font-size: 12px; color: #5D6672">Saved as: device linked to staff</span>
+</div>
+</div>
+<div style="flex: none; width: 390px; display: flex; flex-direction: column; gap: 12px">
+<span style="display: flex; align-items: center; gap: 10px"><span style="flex: none; width: 32px; height: 32px; border-radius: 50%; background: #0B0D10; color: #FFFFFF; display: inline-flex; align-items: center; justify-content: center; font-weight: 800">2</span><span style="display: flex; flex-direction: column"><span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; font-weight: 700; color: #5D6672">09:58</span><span style="font-size: 18px; font-weight: 800">Start my shift</span></span></span>
+<dc-import name="GuardPhone" screen="start" hint-size="390px,844px"></dc-import>
+<div style="background: #FFFFFF; border: 1px solid #DCDFE4; border-radius: 2px; padding: 10px 12px; display: flex; flex-direction: column; gap: 4px">
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; color: #5D6672">WHAT THE DESK SEES</span>
+<span style="font-size: 15px; line-height: 1.45">Aiman is on duty and can get alerts. Their picture appears as on duty on Plan, Live and the map.</span>
+<span style="font-size: 12px; color: #5D6672">Saved as: on_duty = true</span>
+</div>
+</div>
+<div style="flex: none; width: 390px; display: flex; flex-direction: column; gap: 12px">
+<span style="display: flex; align-items: center; gap: 10px"><span style="flex: none; width: 32px; height: 32px; border-radius: 50%; background: #0B0D10; color: #FFFFFF; display: inline-flex; align-items: center; justify-content: center; font-weight: 800">3</span><span style="display: flex; flex-direction: column"><span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; font-weight: 700; color: #5D6672">SAT 10 OCT → 12:35</span><span style="font-size: 18px; font-weight: 800">Today: a new post arrives</span></span></span>
+<dc-import name="GuardPhone" screen="today" hint-size="390px,844px"></dc-import>
+<div style="background: #FFFFFF; border: 1px solid #DCDFE4; border-radius: 2px; padding: 10px 12px; display: flex; flex-direction: column; gap: 4px">
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; color: #5D6672">WHAT THE DESK SEES</span>
+<span style="font-size: 15px; line-height: 1.45">Plan shows &quot;Seen in the app&quot; next to post 1 when Aiman taps Got it.</span>
+<span style="font-size: 12px; color: #5D6672">Saved as: slot seen_at</span>
+</div>
+</div>
+<div style="flex: none; width: 390px; display: flex; flex-direction: column; gap: 12px">
+<span style="display: flex; align-items: center; gap: 10px"><span style="flex: none; width: 32px; height: 32px; border-radius: 50%; background: #0B0D10; color: #FFFFFF; display: inline-flex; align-items: center; justify-content: center; font-weight: 800">4</span><span style="display: flex; flex-direction: column"><span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; font-weight: 700; color: #5D6672">12:36</span><span style="font-size: 18px; font-weight: 800">Schedule: the next 7 days</span></span></span>
+<dc-import name="GuardPhone" screen="schedule" hint-size="390px,844px"></dc-import>
+<div style="background: #FFFFFF; border: 1px solid #DCDFE4; border-radius: 2px; padding: 10px 12px; display: flex; flex-direction: column; gap: 4px">
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; color: #5D6672">WHAT THE DESK SEES</span>
+<span style="font-size: 15px; line-height: 1.45">Nothing. Aiman sees every post coming up, with real dates. It always shows the next 7 days.</span>
+<span style="font-size: 12px; color: #5D6672">Saved as: from GET /plan</span>
+</div>
+</div>
+<div style="flex: none; width: 390px; display: flex; flex-direction: column; gap: 12px">
+<span style="display: flex; align-items: center; gap: 10px"><span style="flex: none; width: 32px; height: 32px; border-radius: 50%; background: #0B0D10; color: #FFFFFF; display: inline-flex; align-items: center; justify-content: center; font-weight: 800">5</span><span style="display: flex; flex-direction: column"><span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; font-weight: 700; color: #5D6672">13:02</span><span style="font-size: 18px; font-weight: 800">Check in at the post</span></span></span>
+<dc-import name="GuardPhone" screen="post" hint-size="390px,844px"></dc-import>
+<div style="background: #FFFFFF; border: 1px solid #DCDFE4; border-radius: 2px; padding: 10px 12px; display: flex; flex-direction: column; gap: 4px">
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; color: #5D6672">WHAT THE DESK SEES</span>
+<span style="font-size: 15px; line-height: 1.45">Plan counts this day as covered. That is where &quot;covered 8 of 10 days&quot; comes from.</span>
+<span style="font-size: 12px; color: #5D6672">Saved as: check-in: staff, post, time</span>
+</div>
+</div>
+<div style="flex: none; width: 390px; display: flex; flex-direction: column; gap: 12px">
+<span style="display: flex; align-items: center; gap: 10px"><span style="flex: none; width: 32px; height: 32px; border-radius: 50%; background: #0B0D10; color: #FFFFFF; display: inline-flex; align-items: center; justify-content: center; font-weight: 800">6</span><span style="display: flex; flex-direction: column"><span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; font-weight: 700; color: #5D6672">12:37</span><span style="font-size: 18px; font-weight: 800">Alerts: their own history</span></span></span>
+<dc-import name="GuardPhone" screen="alerts" hint-size="390px,844px"></dc-import>
+<div style="background: #FFFFFF; border: 1px solid #DCDFE4; border-radius: 2px; padding: 10px 12px; display: flex; flex-direction: column; gap: 4px">
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; color: #5D6672">WHAT THE DESK SEES</span>
+<span style="font-size: 15px; line-height: 1.45">Nothing new. It is the same record the desk keeps on Incidents.</span>
+<span style="font-size: 12px; color: #5D6672">Saved as: events where pushed_to = Aiman</span>
+</div>
+</div>
+</div>
+<div style="display: flex; gap: 22px; align-items: flex-start">
+<div style="flex: none; width: 390px; display: flex; flex-direction: column; gap: 12px">
+<span style="display: flex; align-items: center; gap: 10px"><span style="flex: none; width: 32px; height: 32px; border-radius: 50%; background: #0B0D10; color: #FFFFFF; display: inline-flex; align-items: center; justify-content: center; font-weight: 800">7</span><span style="display: flex; flex-direction: column"><span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; font-weight: 700; color: #5D6672">13:31</span><span style="font-size: 18px; font-weight: 800">The alarm takes over</span></span></span>
+<dc-import name="GuardPhone" screen="alert" hint-size="390px,844px"></dc-import>
+<div style="background: #FFFFFF; border: 1px solid #DCDFE4; border-radius: 2px; padding: 10px 12px; display: flex; flex-direction: column; gap: 4px">
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; color: #5D6672">WHAT THE DESK SEES</span>
+<span style="font-size: 15px; line-height: 1.45">Live card: &quot;Aiman alerted, 10 m away&quot;. No answer in 20 s and it names the next nearest guard.</span>
+<span style="font-size: 12px; color: #5D6672">Saved as: pushed_to, pushed_at</span>
+</div>
+</div>
+<div style="flex: none; width: 390px; display: flex; flex-direction: column; gap: 12px">
+<span style="display: flex; align-items: center; gap: 10px"><span style="flex: none; width: 32px; height: 32px; border-radius: 50%; background: #0B0D10; color: #FFFFFF; display: inline-flex; align-items: center; justify-content: center; font-weight: 800">8</span><span style="display: flex; flex-direction: column"><span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; font-weight: 700; color: #5D6672">13:31</span><span style="font-size: 18px; font-weight: 800">On my way</span></span></span>
+<dc-import name="GuardPhone" screen="enroute" hint-size="390px,844px"></dc-import>
+<div style="background: #FFFFFF; border: 1px solid #DCDFE4; border-radius: 2px; padding: 10px 12px; display: flex; flex-direction: column; gap: 4px">
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; color: #5D6672">WHAT THE DESK SEES</span>
+<span style="font-size: 15px; line-height: 1.45">Live card: &quot;Aiman on the way · 4 s&quot;. The camera keeps updating the level for both.</span>
+<span style="font-size: 12px; color: #5D6672">Saved as: acked_at</span>
+</div>
+</div>
+<div style="flex: none; width: 390px; display: flex; flex-direction: column; gap: 12px">
+<span style="display: flex; align-items: center; gap: 10px"><span style="flex: none; width: 32px; height: 32px; border-radius: 50%; background: #0B0D10; color: #FFFFFF; display: inline-flex; align-items: center; justify-content: center; font-weight: 800">9</span><span style="display: flex; flex-direction: column"><span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; font-weight: 700; color: #5D6672">13:32</span><span style="font-size: 18px; font-weight: 800">I&#x27;m here: what did you find?</span></span></span>
+<dc-import name="GuardPhone" screen="found" hint-size="390px,844px"></dc-import>
+<div style="background: #FFFFFF; border: 1px solid #DCDFE4; border-radius: 2px; padding: 10px 12px; display: flex; flex-direction: column; gap: 4px">
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; color: #5D6672">WHAT THE DESK SEES</span>
+<span style="font-size: 15px; line-height: 1.45">Live card: &quot;Aiman is there · 40 s&quot;. Need backup turns the desk banner red with the next guard.</span>
+<span style="font-size: 12px; color: #5D6672">Saved as: arrived_at, outcome</span>
+</div>
+</div>
+<div style="flex: none; width: 390px; display: flex; flex-direction: column; gap: 12px">
+<span style="display: flex; align-items: center; gap: 10px"><span style="flex: none; width: 32px; height: 32px; border-radius: 50%; background: #0B0D10; color: #FFFFFF; display: inline-flex; align-items: center; justify-content: center; font-weight: 800">10</span><span style="display: flex; flex-direction: column"><span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; font-weight: 700; color: #5D6672">13:33</span><span style="font-size: 18px; font-weight: 800">Done, back to the post</span></span></span>
+<dc-import name="GuardPhone" screen="done" hint-size="390px,844px"></dc-import>
+<div style="background: #FFFFFF; border: 1px solid #DCDFE4; border-radius: 2px; padding: 10px 12px; display: flex; flex-direction: column; gap: 4px">
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; color: #5D6672">WHAT THE DESK SEES</span>
+<span style="font-size: 15px; line-height: 1.45">Live card: &quot;Sorted · camera agrees: calm&quot;. The desk confirms with one tap and the case closes.</span>
+<span style="font-size: 12px; color: #5D6672">Saved as: outcome_at, then the desk&#x27;s label</span>
+</div>
+</div>
+<div style="flex: none; width: 390px; display: flex; flex-direction: column; gap: 12px">
+<span style="display: flex; align-items: center; gap: 10px"><span style="flex: none; width: 32px; height: 32px; border-radius: 50%; background: #0B0D10; color: #FFFFFF; display: inline-flex; align-items: center; justify-content: center; font-weight: 800">11</span><span style="display: flex; flex-direction: column"><span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; font-weight: 700; color: #5D6672">ANY TIME</span><span style="font-size: 18px; font-weight: 800">Me: profile and settings</span></span></span>
+<dc-import name="GuardPhone" screen="me" hint-size="390px,844px"></dc-import>
+<div style="background: #FFFFFF; border: 1px solid #DCDFE4; border-radius: 2px; padding: 10px 12px; display: flex; flex-direction: column; gap: 4px">
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; color: #5D6672">WHAT THE DESK SEES</span>
+<span style="font-size: 15px; line-height: 1.45">Ending the shift turns Aiman off duty, so alerts go to someone else.</span>
+<span style="font-size: 12px; color: #5D6672">Saved as: on_duty = false</span>
+</div>
+</div>
+<div style="flex: none; width: 390px; display: flex; flex-direction: column; gap: 12px">
+<span style="display: flex; align-items: center; gap: 10px"><span style="flex: none; width: 32px; height: 32px; border-radius: 50%; background: #2742D9; color: #FFFFFF; display: inline-flex; align-items: center; justify-content: center; font-weight: 800">+</span><span style="display: flex; flex-direction: column"><span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; font-weight: 700; color: #5D6672">SET UP ONCE</span><span style="font-size: 18px; font-weight: 800">How a guard gets the app</span></span></span>
+<div style="background: #FFFFFF; border: 2px solid #0B0D10; border-radius: 28px; height: 844px; box-sizing: border-box; padding: 28px 22px; display: flex; flex-direction: column; gap: 16px">
+<span style="width: 88px; height: 88px; border-radius: 22px; background: #0B0D10; display: inline-flex; align-items: center; justify-content: center"><svg width="54" height="54" viewBox="0 0 32 32" aria-hidden="true"><path d="M3 16c3.5-6 8-9 13-9s9.5 3 13 9c-3.5 6-8 9-13 9s-9.5-3-13-9z" fill="none" stroke="#FFFFFF" stroke-width="2.5" stroke-linejoin="round"></path><circle cx="16" cy="16" r="4.5" fill="#FFFFFF"></circle></svg></span>
+<span style="font-family: 'Saira Condensed', sans-serif; font-size: 36px; font-weight: 800; text-transform: uppercase; line-height: 0.95">EarlyEye for guards</span>
+<span style="font-size: 16px; line-height: 1.5">An app on the guard's own phone, with its own icon. It opens full screen like any other app.</span>
+<ol style="margin: 0; padding-left: 22px; font-size: 16px; line-height: 1.6"><li>Open the link the supervisor sends, for example <span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 14px">earlyeye.app/guard</span></li><li>Tap Share, then <span style="font-weight: 800">Add to Home Screen</span> (iPhone), or <span style="font-weight: 800">Install app</span> (Android)</li><li>Open EarlyEye from the home screen and pick your name</li></ol>
+<span style="font-size: 14px; line-height: 1.5; color: #3A414B">No app store needed for the pilot. A store version can come later with the same screens.</span>
+<span style="margin-top: auto; font-size: 13px; line-height: 1.5; color: #5D6672">Staff pictures and names live in the site's staff list. Only the security team sees them.</span>
+</div>
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":2560,"height":2300}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = {};
+  }
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

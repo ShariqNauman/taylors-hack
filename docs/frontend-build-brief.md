@@ -29,7 +29,7 @@ A light, video-first security console. It feels like Ambient.ai or ZeroEyes, but
 |---|---|---|---|
 | `/` | **Live** | Desk operator | See the build-up, get the alarm, send one person, label it |
 | `/cameras` | **Cameras** | Operator, manager | 3D campus: click a building or pin to open its feed. Then all cameras, health and activity. |
-| `/incidents` | **Incidents** | Operator, manager | Case review: evidence, why this type, audit trail, label, note |
+| `/incidents` | **Incidents** | Operator, manager | What needs you, was it real, what happened, what to do next. Plain language. |
 | `/plan` | **Plan** | Manager | 3D campus with patrol posts and hotspot columns, then three patrol slots, assumption, heatmap, hotspots |
 | `/proof` | **Proof** | Judges, buyer | Proven numbers, honest gaps, watch the model |
 | `/push?staff=Guard%20B` | **Push** | Person on duty | Phone: on duty, red takeover, "On my way" |
@@ -180,7 +180,7 @@ Load with `next/font/google`: `Saira_Condensed` (600, 700, 800), `Atkinson_Hyper
 
 **Header** on every desktop route, white, bottom border:
 - Logo (eye mark plus `EARLYEYE` in Saira) links to `/`. Site name in mono: `TAYLOR'S LAKESIDE · 6 CAMERAS`.
-- Nav: **Live · Cameras · Plan · Incidents · Proof**. Active item is ink fill with white text.
+- Nav: **Live · Cameras · Plan · Incidents · Track record** (route stays `/proof`). Active item is ink fill with white text.
 - Right side, Live only: **Arm alarm sound** (amber outline until clicked, needed for the autoplay rule) · **`N/3 pushes this shift`** (links to `/incidents?status=pushed`) · clock `HH:MM:SS MYT` · **End shift** (opens the handover drawer).
 - Data-source chip: dashed `MOCK DATA` when `usingMock` or the API failed; `REPLAY` when `?replay=1`.
 - View indicator: `ON-SITE DESK` or `REMOTE LINK` (§8). In dev, `?view=onsite|remote` forces it, and the prototype's toggle can stay behind that flag.
@@ -227,11 +227,15 @@ Load with `next/font/google`: `Saira_Condensed` (600, 700, 800), `Atkinson_Hyper
 | Grid tile | Cameras | Selects that camera |
 | Report repair (black camera only) | Cameras detail | Local state "Repair reported · HH:MM". No backend in v3. |
 | Open in Live / See its incidents / Patrol plan | Cameras detail | `/?cam=`, `/incidents?cam=`, `/plan` |
-| Status filter chips, list rows | Incidents | Filter the list, open a case |
-| Play 10 s clip on site | Incidents case, on site only | Plays `${camera.edge_url}/clips/<incident_id>.mp4` in a `<video>` inside the frame. Hidden on the remote link. |
-| Open this camera on the 3D campus | Incidents case | `/cameras?cam=` |
-| Mark resolved, staff note | Incidents case | `PATCH {status: "resolved", staff_note}` |
-| Show on the heatmap | Plan slot | Selects the zone and outlines that slot's cells |
+| Needs-you cards, tabs, list rows, earlier cases | Incidents | Filter the list and open a case |
+| Watch the 10-second clip | Incidents case, on site only | Plays `${camera.edge_url}/clips/<incident_id>.mp4` in a `<video>` inside the frame. Hidden on the remote link. |
+| Yes, it was real / No, false alarm / Undo | Incidents case | `PATCH {status: "confirmed" or "dismissed"}`; Undo sends `PATCH {status: "new"}` |
+| See it on the campus map / How EarlyEye decides / See the patrol plan | Incidents | `/cameras?cam=`, `/proof`, `/plan` |
+| Write a summary for your report, Copy summary | Incidents case, real incidents | Local only. Copies a plain paragraph to the clipboard. |
+| Mark as closed, Reopen, note | Incidents case | `PATCH {status: "resolved"}`, `PATCH {status: "confirmed"}`, `PATCH {staff_note}` |
+| Send (suggested) / Choose someone else / a person in the list / Change | Plan post card | Assigns that person to the post (API `assigned_to` or localStorage). Unavailable people are not clickable. |
+| Share the roster, Copy roster, Print | Plan | Opens the roster, copies plain text, `window.print()` |
+| A post in "Your week at a glance" | Plan | Focuses that post's card |
 | See the incidents behind this slot | Plan slot | `/incidents?cam=<camera>` |
 | Open the camera | Plan, black-camera strip | `/cameras?cam=CAM-HC-02` |
 | Zone chips | Plan heatmap | Filter the heatmap |
@@ -293,65 +297,139 @@ The canvas files are exact references for layout, sizes and copy. This section l
 
 ### 6.3 Incidents (`/incidents`), design file `L3Incidents.dc.html`
 
-**KPIs:** labels collected (ink tile), confirmed, dismissed, and median response, which is the median of `acked_at − pushed_at`. Show "—" when no `acked_at` exists.
+**Who uses it and why.** The desk operator needs to clear alerts still waiting for a decision. The security manager needs to see what really happened, follow up, and spot places where it keeps happening. Write every word for them: plain English, no scores, no camera codes in the main text, no model or rule vocabulary. The technical "why" lives on Proof, linked as "How EarlyEye decides".
 
-**List** (left, about 420 px): status chips All · Open · Confirmed · Dismissed · Resolved. Each row has a 104 px skeleton thumbnail from `peak_snapshot` (a dark tile if absent), level pill, type, status chip, location, and a mono line `DAY HH:MM · CAM · P 0.40 · ACK 4 S`.
+**Words to use:**
 
-**Case** (right):
-- Header: level pill, type, status, ID, location, and `when · cam · zone · priority`, plus the camera and Live links.
-- Evidence frame: peak frame with box and label. On site, add **Play 10 s clip on site**. Remote shows "Video stays on site…".
-- **Why this type:** a four-rule checklist with met or not met (tick or cross, green or grey). The rules are the type rules from team plan §5: two parties with strike pattern; 1 against 3 or more for over 5 s; 5 or more close with low motion; sports zone or rhythmic motion. Under it: "Types are rules on top of the model's score, not a separate model."
-- **Why the model flagged it:** the reason at 20 px.
-- **Audit trail**, built from the timestamps: start (tense, silent) · fight likely, pushed · tapped "On my way", response N s · fight · confirmed or dismissed · resolved.
-- **Staff note** textarea, Confirm, Dismiss, Mark resolved, and the line "The desk's Confirm or Dismiss is the label. The phone tap only records 'on my way'."
-- `?status=`, `?cam=` and `?id=` deep links.
+| Data | Show as |
+|---|---|
+| status `new`, `pushed` | Needs a decision |
+| status `confirmed` | Real · open |
+| status `resolved` | Real · closed |
+| status `dismissed` (or `false_alarm`) | False alarm |
+| type `fight`, `cornering`, `crowd`, `play` | Fight, Someone cornered, Crowd gathering, Rough play |
+| level | Tense, Fight likely, Fight, as everywhere else |
+| `pushed_to` + `acked_at − pushed_at` | "Guard B replied in 4 s" |
+| no push | "Desk screen only, no alarm" |
+
+Never show: `peak_score`, priority, zone risk, keypoint or skeleton jargon, rule checklists, "labels", "pushed", "ack", the camera code in headings.
+
+**Layout, top to bottom:**
+1. **Title block:** kicker "EVERY ALERT, SAVED AS A CASE", H1 "Incidents", one-line purpose.
+2. **Needs you now:** three cards computed from events.
+   - "N alerts need a decision", with **Review them**: filters to Needs a decision and opens the first.
+   - "N real incidents are still open", with **Open them**: filters to Real and opens the first `confirmed`.
+   - The top repeat place, "N real incidents at the Block C stairwell", with the hours and **See the patrol plan**. Use `GET /hotspots`, or the hotspot rule client-side.
+   - Each card has a calm empty state ("Every alert has a decision").
+3. **Last 4 weeks:** real incidents, false alarms, typical guard reply (median of `acked_at − pushed_at`, "—" when none), busiest place.
+4. **List (left):** tabs Needs a decision · Real · False alarms · All, with counts. Rows are grouped by day ("TODAY · SAT 10 OCT"). Each row shows time, "Type at place" as the title, level pill, status chip and the guard line. No thumbnails.
+5. **Case (right):**
+   - Level pill with "Highest level reached…", the title "Fight at the Grand Hall", and the full date with the building and floor.
+   - **Decision box** by status:
+     - Needs a decision: "Was this a real incident?", **Yes, it was real** / **No, false alarm** at 56 px, and "Not sure? Watch the clip below first."
+     - Real · open: **Mark as closed** and Undo.
+     - Real · closed: Reopen.
+     - False alarm: Undo, plus "Each false alarm you mark helps EarlyEye raise fewer at this spot."
+   - **What EarlyEye saw:** the `reason` at 20 px, in plain words.
+   - **The worst moment:** the peak frame with stick figures and the level word only, no score. On site: **Watch the 10-second clip** and "The clip stays on this computer." Remote: "People appear as stick figures. The video never leaves campus."
+   - **How it unfolded:** a plain timeline from the timestamps that exist. `ts`: noticed tension. `pushed_at`: alarm, guard alerted. `acked_at`: guard replied. Then the desk decision and closure. Skip a step if its time is missing, and never invent one.
+   - **What to do next:** a checklist by type. When `status` is `resolved`, the heading becomes "What was done" and the boxes are filled. Real incidents get **Write a summary for your report**, which opens a plain paragraph (what, where, when, what EarlyEye saw, guard reply, decision, note, reference) with **Copy summary**.
+   - **What happened, in your words:** the `staff_note` textarea, with "EarlyEye never knows who people are, so names go in your own records, not here."
+   - **Earlier at this place:** a pattern callout when the hotspot rule fires, plus up to 4 earlier cases, each clickable.
+   - **Footer:** "Reference INC-…", the camera's plain name, **See it on the campus map**, **How EarlyEye decides** (to `/proof`).
+6. Deep links: `?status=`, `?cam=`, `?id=`.
 
 ### 6.4 Plan (`/plan`), design file `L3Plan.dc.html`
 
-- Title "Where to put people this week" over a mono line built from `plan.generated_at`, for example `PATROL PLAN · WEEK OF MON 12 OCT · BUILT SAT 10 OCT 14:30`.
-- **This week on the campus**, first: `<Campus3D mode="plan">`. Each patrol slot is a blue post pin (`P/01 · MON–THU 13:00–14:00`) with a blue column whose height is its incidents in 4 weeks. Clicking a post opens its card. The mentors asked for this view, so it goes above the cards.
-- **Three slot cards:** `P/01`, "PLACE ONE PERSON AT", location in Saira, days and hours in ink chips. Three stats: incidents in 4 weeks; **avoided a week** in the signal-tint box with "≈ N a month"; avoided per patrol hour with hours per week. Then the rationale, **Show on the heatmap**, and "See the incidents behind this slot".
-- **Assumption** strip, dashed: "60% of hotspot incidents are avoided when a person is present. Stated, not measured. Avoided = incidents in 4 weeks × 0.6."
-- **Black camera** strip, ink: "CAM-HC-02, U Residence corridor L5, black for 3 days. Slot P/02 is the only eye on that block.", with **Open the camera**.
-- **Heatmap:** zone chips, then a 7 × 24 CSS grid with hour headers 00–23 and MON–SUN rows. Each cell shows its count and a tooltip. The selected slot's cells get a 2 px ink outline. Legend underneath.
-- **Hotspots** list beside it, with the rule sentence and a link to Incidents.
-- Wording: "~3 a month" for Block C. Never "~3 a week".
-- SHOULD, after 23:00: a "Weekly summary" button that calls `POST /report` and shows the text in a sheet.
+**The model: standing posts, checked daily, changed only by the supervisor.** A plan that resets every week, or changes every day as new incidents arrive, cannot be trusted by guards. So:
+- **Standing posts.** A post (place, days, hour) stays active until the supervisor ends it. Each post shows "standing post since Mon 5 Oct".
+- **A daily check.** Every morning at 06:00, EarlyEye rechecks the last 28 days with the hotspot rule: 3 or more real incidents at the same place and hour.
+- **Suggestions only.** A new pattern becomes a **suggestion** ("Add a post at the sports pitch, Tue and Thu 17:00–18:00", with **Add this post** and **Not now**). A post that has been quiet for 14 days becomes a suggestion to end it. Nothing changes without the supervisor.
+- **A rolling view.** The timetable is always today plus the next 6 days, with dates, so it never runs out.
 
-### 6.5 Proof (`/proof`), design file `L3Proof.dc.html`
+**Layout, top to bottom:**
+- **Title:** H1 "Guard posts". Kicker `PATROL PLAN · CHECKED TODAY, SAT 10 OCT, 06:00`. The rule in one sentence, plus "Based on incidents from 13 Sep to 10 Oct · next check tomorrow at 06:00".
+- **Four tiles with icons:**
+  - "3 posts · running now"
+  - "Sun 22:00 · next post starts" (place and guard)
+  - "2 of 3 · posts have a guard"
+  - "1 suggestion · to review"
+- **Suggestion card** in signal tint, with the dates behind it. After a choice, it becomes one line: "Post 4 added…" or "Not now…".
+1. **Where are the posts?** A 2D campus map, north up, with building names. Numbered circles are sized by incidents in 28 days and tagged with the guard's first name. A suggested post shows as a dashed "+". There's a **Map | 3D** toggle.
+2. **Who is going?**
+   - A team strip with a **picture and name** for each person, "On duty now · Guard B" or "Off duty".
+   - One row per post: number, place, days, hours, "standing post since …", then the guard's picture, name, call sign and shift, the app status ("Seen in the app · Sun 4 Oct, 18:02" or "Sent to the app, not seen yet") and **Change**. When empty: "Nobody yet", **Send Wei Jie** and **Someone else**.
+   - The chooser shows pictures. Anyone not free is greyed out with the reason. It also offers **Nobody** and **End this post**.
+3. **When: the next 7 days.** A timetable with one row per post and columns from Today through 6 more days, with dates. Blue blocks show the time and the guard's first name; dashed blocks show "Nobody yet".
+- **Statistics, optional and folded:** "The numbers behind this plan", with a one-line summary. Inside are two tabs: **Why these times** (hour-of-day bars with the guard's hour in blue, plus the dates) and **Did the posts work?** (4 weekly bars, the last week in blue, and a verdict).
 
-Show **real numbers from `model/REPORT.md` v2** and say clearly what is not measured. Banner: `SOURCE: MODEL REPORT V2`, "Dataset numbers are real, from 600 public RLVS clips. Live room, CCTV angle, lead time and night are not measured yet, and this page says so."
+**People:**
+- Show a **picture and full name** everywhere a person appears, with the call sign (Guard B) small, so the names match Live and Incidents.
+- Pictures come from `site.staff[].photo_url`, with initials as the fallback.
+- Staff pictures are employee data: only the security team sees them.
 
-| Proven tile | Value | Sub-line |
+**Data:**
+- Real incidents only (`confirmed` or `resolved`).
+- Slots carry `status` (`active`, `suggested` or `ended`), `since` and `assigned_to`.
+- Accept or end a post: `PATCH /plan/slots/:id {status}`. Assign: `PATCH /plan/slots/:id {assigned_to}`.
+- `seen_at` and `checkins` come from the guard app.
+- Until Web A adds these, mock them and show "Saved on this computer".
+
+### 6.5 Track record (`/proof`, nav label "Track record"), design file `L3Proof.dc.html`
+
+**Who uses it and why.** The security manager, weekly or monthly. They have three questions: can my team trust the alarms, where does it get confused and what should I change, and what do I tell management? Judges get the same answer. The model metrics move into a folded technical section, which still meets the "dataset against live" requirement.
+
+**Layout, top to bottom:**
+- **Title.** H1 "Can you trust the alarms?". Kicker `TRACK RECORD · LAST 4 WEEKS · FROM YOUR DESK'S YES/NO ANSWERS`. One sentence on where the numbers come from.
+- **The answer.**
+  - A plain verdict, e.g. "Mostly, yes.", with one sentence of evidence.
+  - Ten dots, "Out of every 10 alarms that sounded", filled for real and hollow for false.
+  - Three stats: alarms sounded, were real, guard on the way.
+  - **Share with management** opens a plain paragraph with **Copy summary**.
+1. **Does it miss fights?** Test videos ("about 8 of every 10 fights", as 10 dots) next to "On your campus: misses reported", plus a dated example of a reported miss and the known weak spot (arm-only fights).
+2. **Where does it get confused?** Alerts the desk said were nothing, by place, as bars with the plain reason. Each place has an action:
+   - "Make it a sports zone" (a zone_type change; the sports rule already exists);
+   - "Ask the EarlyEye team…";
+   - "Keep as is".
+3. **Is it getting better?** Four weekly bars of alerts the desk said were nothing, plus one sentence on how the answers are used.
+4. **How fast does it react?** A timeline: 0 s fight starts, +2 s alarm (from test videos), +5 s on the way and +40 s there (from the guard app). It also says: "Warning before a fight starts: not measured yet."
+5. **What can't it do?** Five cards: hear words, night cameras, recognise people, blind spots, arm-only fights.
+6. **Is it safe for students' privacy?** Four cards: video stays on campus, no faces, clips delete themselves, only your team sees it.
+- **Folded, "Technical details: how the model was tested", for IT teams and judges:**
+  - A table of test, what it means, fights caught and calm clips flagged. It holds RLVS split by video (82% / ~20%), the live rules replay (75.7% / 13.7%), clip AUC 0.876, webcam resolution 0.902, and three rows marked "not measured yet" or "not tested": staged fights on our cameras, CCTV held out, and night/IR.
+  - The model card cards.
+  - The KTH lesson.
+
+**Data:**
+- Campus numbers come only from desk decisions in the last 28 days: alarms (`fight_likely`+) by status, dismissed alerts by camera and by week, median `acked_at − pushed_at`, and `arrived_at`.
+- Below 10 decisions, show "Not enough answers yet: N so far. Answer Yes or No on alerts to build this." instead of percentages. Never invent a campus number.
+- Test-video numbers come from `GET /proof`.
+- **Make it a sports zone** sets that camera's zone_type to the sports zone, through the API if available. Otherwise mock it and say "Saved on this computer".
+
+### 6.6 Guard mobile app (`/guard`, design files `GuardPhone.dc.html` and `L3GuardFlow.dc.html`)
+
+**A mobile app on the guard's own phone**, built from the same Next.js code as an installable web app:
+- It has a web app manifest, a home-screen icon, full-screen display, `start_url=/guard` and a service worker for the app shell.
+- Guards install it with "Add to Home Screen" (iPhone) or "Install app" (Android).
+- No app store is needed for the pilot.
+- Keep `/push?staff=` working as an alias.
+
+**Screens**, at 390 px with big buttons:
+
+| Screen | What the guard sees | What the desk gets |
 |---|---|---|
-| CLIP ROC-AUC | 0.876 | 600 RLVS clips, 5-fold split by video. Best of 20 settings, so slightly optimistic. |
-| FIGHTS CAUGHT | 82% | At about a 20% false-alarm rate on the same clips. |
-| LIVE LOGIC REPLAY | 75.7% | Fight clips that reach fight after smoothing and the 1 s hold. Calm clips: 13.7%. |
-| WEBCAM RESOLUTION | 0.902 | Clip AUC on 241 to 480p clips. |
-| TIME TO FIGHT LEVEL | 2.1 s | Mean delay after a fight starts, in the replay. Detection, not early warning. |
+| Who is using this phone? (first time) | The team list with pictures, names, call signs and shifts. Tapping one links the phone (saved on the device). | The device is linked to that staff member |
+| Start my shift | Big picture, "Hi, Aiman", shift, and **Start my shift**. The tap unlocks audio, keeps the screen awake and goes full screen. | `on_duty = true` |
+| **Today** tab | "New from your supervisor" (standing post) with **Got it**; **Next** with the post, time, tip and **I'm at my post**, which turns into "At your post · until 14:00 · checked in 13:02"; and today's timeline | `seen_at`, then a check-in |
+| **Schedule** tab | The next 7 days with dates, shift and post for each day. Today is highlighted. The note says it's a standing post. | nothing |
+| **Alerts** tab | The guard's own alert history: level, time, place, what they reported, reply time | nothing |
+| **Me** tab | Picture, name, call sign and role; shift, sound, vibrate, screen awake and installed; **Test the alarm**, **End my shift** and "Not Aiman? Switch person" | `on_duty = false` on End |
+| Alarm, over any tab | Full red screen: "Aiman, you're the nearest guard", level, place, distance, the reason in plain words, and **On my way** (96 px). Looped sound and vibration. | `acked_at` |
+| On the way | Live camera level, a small map, and **I'm here** | `arrived_at` |
+| What did you find? | **Sorted, nobody hurt** · **Sorted, someone hurt** · **Need backup** · **Nothing there**, plus quick notes | `outcome`, `outcome_at` |
+| Done | What you reported, what the camera says now, and **Back to my post** | The Live card closes the loop |
 
-**Not measured** tiles, hatched, each with what is needed: lead time before the shove (5 escalation clips in the venue), false alarms per camera-hour (30 min of own normal footage), hugs and high-fives (own clips; `model/record_clips.py` exists), the CCTV-angle row, and night or IR (one IR frame).
-
-**Watch the model** inspector: five clips. "Fight caught · V_71" (in training, so it proves the pipeline only), "Fight missed · V_1" (arms only, peak 0.39), "Calm clip" (13.7% of calm clips reach fight), "Hug" (not tested), "CCTV angle" (not tested). Each shows ground truth against what the model said, plus a why. Use a skeleton illustration until real keypoints are exported.
-
-**What the model leans on:** a horizontal bar chart of LightGBM gain. `pair_motion_energy` 47%, `max_wrist_speed` 13%, `wrist_peaks_per_s` 7%, `max_wrist_accel` 6%, the other six 3–5% each.
-
-**Dataset against live room** table, plus the **LESSON** line. **Known weaknesses** (5), **We claim**, **We do not claim**, and a collapsed **Model card** with the real parameters from REPORT §6.
-
-**Data:** read `GET /proof` and map it. Show a metric as **not measured** when its source is missing: `own_footage_minutes === 0`, an empty `lead_time_s`, no `cctv_domain`, or `ir_check.frames === 0`. The report-only figures (75.7%, 13.7%, 0.902, 2.1 s, feature gains) are not in the contract. Keep them in `web/src/lib/model-report.ts` with a `// source: model/REPORT.md v2` comment. Never invent a number. A slot with no source says "not measured".
-
-### 6.6 Push (`/push?staff=Guard%20B`), design file `L3Push.dc.html`
-
-A phone layout at 390 px. States:
-1. **Off duty:** "START YOUR SHIFT", one line of explanation, and **I'M ON DUTY** (84 px, ink). The tap plays and pauses the alarm to unlock audio, calls `navigator.wakeLock.request("screen")`, then `requestFullscreen()`.
-2. **On duty, idle:** green dot, "ON DUTY · SCREEN STAYS AWAKE", "NO ALERTS. ALL QUIET.", pushes `1/3`, cameras live `5/6`, "Your patrol slot today", and a line about two tiers.
-3. **Pushed:** the whole screen turns `#C8241B`. "FIGHT LIKELY" in Saira with a diamond and time. A white card holds the location in Saira, type chip, "in ~6 s · ~40 m · 2 people", a **skeleton snapshot** from `peak_snapshot` or `snapshot` labelled "SKELETON SNAPSHOT · NO VIDEO", and the reason. Then a 10 s countdown ring and **ON MY WAY** (80 px white). Play the looped alarm and call `navigator.vibrate?.([500,200,500,200,800])`.
-4. **Acknowledged:** green "ACKNOWLEDGED IN N S", then back to idle after 5 s.
-5. **Timeout:** "NO ANSWER IN 10 S. The desk can see you did not answer and will call you by radio."
-
-Poll every 2 s for an event where `pushed_to === staff && status === "pushed" && !acked_at`.
-
----
+Poll every 2 s: `GET /events?since=` for alerts where `pushed_to` is this person, and `GET /plan` for their posts. There is no external notification service in the pilot. Web Push is the production answer, and the app stays open during the shift.
 
 ## 7. Alarm and two-tier state machine
 

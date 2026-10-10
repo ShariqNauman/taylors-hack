@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>EarlyEye Incidents</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Mono:wght@400;500;700&amp;family=Atkinson+Hyperlegible+Next:wght@400;500;700;800&amp;display=swap">
+<style>
+body{margin:0;background:#F4F5F7}
+a{color:#1E3A8A}a:hover{color:#142A66}
+button,select,textarea{font-family:inherit}
+</style>
+</helmet>
+<div style="font-family: 'Atkinson Hyperlegible Next', system-ui, sans-serif; color: #0F1419; background: #F4F5F7; min-height: 100vh; box-sizing: border-box">
+
+<header style="background: #FFFFFF; border-bottom: 1px solid #D9DDE3">
+<div style="max-width: 1600px; margin: 0 auto; padding: 12px 24px; display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px">
+<a href="Live.dc.html" style="display: flex; align-items: center; gap: 10px; text-decoration: none; color: #0F1419">
+<svg width="30" height="30" viewBox="0 0 32 32" aria-hidden="true"><path d="M3 16c3.5-6 8-9 13-9s9.5 3 13 9c-3.5 6-8 9-13 9s-9.5-3-13-9z" fill="none" stroke="#0F1419" stroke-width="2.5" stroke-linejoin="round"></path><circle cx="16" cy="16" r="4.5" fill="#0F1419"></circle></svg>
+<span style="font-size: 22px; font-weight: 800; letter-spacing: -0.01em">EarlyEye</span>
+</a>
+<span style="font-size: 15px; color: #5A6472">Taylor's Lakeside campus</span>
+<nav aria-label="Main" style="display: flex; gap: 4px; flex-wrap: wrap">
+<a href="Live.dc.html" style="font-size: 15px; font-weight: 700; padding: 10px 14px; border-radius: 6px; color: #3A4350; text-decoration: none">Live</a>
+<a href="Plan.dc.html" style="font-size: 15px; font-weight: 700; padding: 10px 14px; border-radius: 6px; color: #3A4350; text-decoration: none">Plan</a>
+<a href="Incidents.dc.html" aria-current="page" style="font-size: 15px; font-weight: 700; padding: 10px 14px; border-radius: 6px; background: #0F1419; color: #FFFFFF; text-decoration: none">Incidents</a>
+<a href="Proof.dc.html" style="font-size: 15px; font-weight: 700; padding: 10px 14px; border-radius: 6px; color: #3A4350; text-decoration: none">Proof</a>
+</nav>
+<div style="margin-left: auto; display: flex; align-items: center; gap: 10px">
+<span style="display: inline-flex; align-items: center; min-height: 36px; padding: 0 12px; border-radius: 6px; border: 1px dashed #8A93A0; font-size: 13px; font-weight: 700; color: #3A4350">Synthetic demo history · 8 weeks</span>
+</div>
+</div>
+</header>
+
+<main style="max-width: 1600px; margin: 0 auto; padding: 32px 24px 56px; display: flex; flex-direction: column; gap: 24px">
+
+<div style="display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px">
+<div style="display: flex; flex-direction: column; gap: 8px">
+<h1 style="margin: 0; font-size: 44px; line-height: 1.08; font-weight: 800">Incidents</h1>
+<p style="margin: 0; font-size: 18px; color: #3A4350">Every alert is a record. Every Confirm or Dismiss is a label that retunes that camera.</p>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 10px">
+<div style="background: #0F1419; color: #FFFFFF; border-radius: 10px; padding: 12px 16px; display: flex; flex-direction: column; gap: 2px; min-width: 150px">
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 30px; font-weight: 700; line-height: 1">{{labels}}</span>
+<span style="font-size: 13px; opacity: 0.9">labels collected</span>
+</div>
+<div style="background: #FFFFFF; border: 1px solid #D9DDE3; border-radius: 10px; padding: 12px 16px; display: flex; flex-direction: column; gap: 2px; min-width: 110px">
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 30px; font-weight: 700; line-height: 1">{{confirmed}}</span>
+<span style="font-size: 13px; color: #3A4350">confirmed</span>
+</div>
+<div style="background: #FFFFFF; border: 1px solid #D9DDE3; border-radius: 10px; padding: 12px 16px; display: flex; flex-direction: column; gap: 2px; min-width: 110px">
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 30px; font-weight: 700; line-height: 1">{{dismissed}}</span>
+<span style="font-size: 13px; color: #3A4350">dismissed</span>
+</div>
+<div style="background: #FFFFFF; border: 1px solid #D9DDE3; border-radius: 10px; padding: 12px 16px; display: flex; flex-direction: column; gap: 2px; min-width: 110px">
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 30px; font-weight: 700; line-height: 1">{{open}}</span>
+<span style="font-size: 13px; color: #3A4350">open</span>
+</div>
+</div>
+</div>
+
+<section aria-label="Filters" style="display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; background: #FFFFFF; border: 1px solid #D9DDE3; border-radius: 10px; padding: 14px 16px">
+<sc-for list="{{filters}}" as="f" hint-placeholder-count="4">
+<label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; font-weight: 700; color: #3A4350; min-width: 170px">{{f.label}}
+<select value="{{f.value}}" onChange="{{f.change}}" style="min-height: 44px; padding: 0 10px; border-radius: 6px; border: 1px solid #B8BFC9; background: #FFFFFF; color: #0F1419; font-size: 15px">
+<sc-for list="{{f.options}}" as="o" hint-placeholder-count="5">
+<option value="{{o.v}}">{{o.l}}</option>
+</sc-for>
+</select>
+</label>
+</sc-for>
+<button type="button" onClick="{{clear}}" style="min-height: 44px; padding: 0 14px; border-radius: 6px; border: 1px solid #B8BFC9; background: #FFFFFF; font-size: 15px; font-weight: 700; cursor: pointer">Clear</button>
+<span style="margin-left: auto; font-size: 14px; color: #5A6472">Showing {{shown}} of the {{total}} most recent</span>
+</section>
+
+<div style="overflow-x: auto; background: #FFFFFF; border: 1px solid #D9DDE3; border-radius: 10px">
+<table style="width: 100%; min-width: 1180px; border-collapse: collapse; font-size: 15px">
+<thead>
+<tr style="background: #EEF0F3; text-align: left">
+<th scope="col" style="padding: 12px 14px; font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: #3A4350">Time (MYT)</th>
+<th scope="col" style="padding: 12px 14px; font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: #3A4350">Location</th>
+<th scope="col" style="padding: 12px 14px; font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: #3A4350">Type</th>
+<th scope="col" style="padding: 12px 14px; font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: #3A4350">Level</th>
+<th scope="col" style="padding: 12px 14px; font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: #3A4350; text-align: right">Priority</th>
+<th scope="col" style="padding: 12px 14px; font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: #3A4350">Status</th>
+<th scope="col" style="padding: 12px 14px; font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: #3A4350; width: 34%">Reason</th>
+</tr>
+</thead>
+<tbody>
+<sc-for list="{{rows}}" as="r" hint-placeholder-count="12">
+<tr style="border-top: 1px solid #D9DDE3; background: {{r.bg}}">
+<td style="padding: 12px 14px; font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 14px; white-space: nowrap">{{r.when}}</td>
+<td style="padding: 12px 14px">
+<button type="button" onClick="{{r.open}}" style="border: none; background: transparent; padding: 0; text-align: left; cursor: pointer; display: flex; flex-direction: column; gap: 2px; color: #0F1419">
+<span style="font-size: 15px; font-weight: 800; text-decoration: underline; text-decoration-color: #B8BFC9; text-underline-offset: 3px">{{r.loc}}</span>
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; color: #5A6472">{{r.cam}} · {{r.zone}}</span>
+</button>
+</td>
+<td style="padding: 12px 14px"><span style="display: inline-flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 700; white-space: nowrap"><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="{{r.typeIcon}}" fill="none" stroke="#0F1419" stroke-width="2" stroke-linejoin="round"></path></svg>{{r.typeLabel}}</span></td>
+<td style="padding: 12px 14px"><span style="display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px 3px 8px; border-radius: 999px; background: {{r.pillBg}}; color: {{r.pillFg}}; font-size: 13px; font-weight: 800; white-space: nowrap"><svg width="12" height="12" viewBox="0 0 24 24" aria-hidden="true"><path d="{{r.glyph}}" fill="{{r.pillFg}}"></path></svg>{{r.levelLabel}}</span></td>
+<td style="padding: 12px 14px; text-align: right; font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 15px; font-weight: 700">{{r.prio}}</td>
+<td style="padding: 12px 14px"><span style="display: inline-flex; align-items: center; min-height: 26px; padding: 0 10px; border-radius: 6px; border: 1px solid {{r.stBorder}}; background: {{r.stBg}}; color: {{r.stFg}}; font-size: 13px; font-weight: 700; white-space: nowrap">{{r.statusLabel}}</span></td>
+<td style="padding: 12px 14px; font-size: 14px; line-height: 1.4; color: #3A4350">{{r.reason}}</td>
+</tr>
+</sc-for>
+</tbody>
+</table>
+<sc-if value="{{empty}}" hint-placeholder-val="{{ false }}">
+<div style="padding: 24px; font-size: 16px; color: #3A4350">No incidents match these filters.</div>
+</sc-if>
+</div>
+</main>
+
+<sc-if value="{{sheetOn}}" hint-placeholder-val="{{ true }}">
+<div style="position: fixed; inset: 0; z-index: 20; display: flex; justify-content: flex-end">
+<button type="button" onClick="{{close}}" aria-label="Close details" style="flex: 1 1 auto; border: none; background: rgba(15, 20, 25, 0.35); cursor: pointer"></button>
+<aside role="dialog" aria-label="Incident details" style="width: 480px; max-width: 100%; height: 100%; overflow-y: auto; box-sizing: border-box; background: #FFFFFF; border-left: 1px solid #D9DDE3; padding: 24px; display: flex; flex-direction: column; gap: 18px">
+<div style="display: flex; align-items: center; justify-content: space-between; gap: 8px">
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 14px; font-weight: 700; color: #3A4350">{{sel.id}}</span>
+<button type="button" onClick="{{close}}" aria-label="Close" style="width: 44px; height: 44px; border-radius: 6px; border: 1px solid #D9DDE3; background: #FFFFFF; cursor: pointer; display: inline-flex; align-items: center; justify-content: center"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="#0F1419" stroke-width="2.4" stroke-linecap="round"></path></svg></button>
+</div>
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px">
+<span style="display: inline-flex; align-items: center; gap: 10px; padding: 8px 18px 8px 14px; border-radius: 999px; background: {{sel.pillBg}}; color: {{sel.pillFg}}; font-size: 26px; font-weight: 800"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="{{sel.glyph}}" fill="{{sel.pillFg}}"></path></svg>{{sel.levelLabel}}</span>
+<span style="display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 0 12px; border-radius: 6px; border: 2px solid #0F1419; font-size: 16px; font-weight: 800"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="{{sel.typeIcon}}" fill="none" stroke="#0F1419" stroke-width="2" stroke-linejoin="round"></path></svg>{{sel.typeLabel}}</span>
+<span style="display: inline-flex; align-items: center; min-height: 30px; padding: 0 10px; border-radius: 6px; border: 1px solid {{sel.stBorder}}; background: {{sel.stBg}}; color: {{sel.stFg}}; font-size: 14px; font-weight: 700">{{sel.statusLabel}}</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 4px">
+<h2 style="margin: 0; font-size: 28px; font-weight: 800; line-height: 1.15">{{sel.loc}}</h2>
+<div style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 14px; color: #3A4350">{{sel.whenLong}} · {{sel.cam}} · priority {{sel.prio}}</div>
+</div>
+<div style="border: 1px solid #D9DDE3; border-radius: 10px; padding: 14px 16px; display: flex; flex-direction: column; gap: 4px">
+<div style="font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #5A6472">Why</div>
+<p style="margin: 0; font-size: 20px; line-height: 1.4; font-weight: 500">{{sel.reason}}</p>
+</div>
+<dl style="margin: 0; display: grid; grid-template-columns: 130px minmax(0, 1fr); gap: 10px 12px; font-size: 15px; line-height: 1.4">
+<dt style="color: #5A6472; font-weight: 700">Action</dt><dd style="margin: 0">{{sel.action}}</dd>
+<dt style="color: #5A6472; font-weight: 700">Nearest person</dt><dd style="margin: 0">{{sel.nearest}}</dd>
+<dt style="color: #5A6472; font-weight: 700">Pushed to</dt><dd style="margin: 0">{{sel.pushed}}</dd>
+<dt style="color: #5A6472; font-weight: 700">Zone</dt><dd style="margin: 0">{{sel.zone}}</dd>
+</dl>
+<label style="display: flex; flex-direction: column; gap: 6px; font-size: 14px; font-weight: 700">Staff note
+<textarea value="{{sel.note}}" onChange="{{sel.onNote}}" rows="3" placeholder="What happened, in one line" style="border: 1px solid #B8BFC9; border-radius: 8px; padding: 10px 12px; font-size: 15px; line-height: 1.4; resize: vertical; color: #0F1419"></textarea>
+</label>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
+<button type="button" onClick="{{sel.onConfirm}}" style="min-height: 52px; border-radius: 8px; border: none; background: #0F1419; color: #FFFFFF; font-size: 17px; font-weight: 800; cursor: pointer">Confirm: real</button>
+<button type="button" onClick="{{sel.onDismiss}}" style="min-height: 52px; border-radius: 8px; border: 2px solid #0F1419; background: #FFFFFF; color: #0F1419; font-size: 17px; font-weight: 800; cursor: pointer">Dismiss: false alarm</button>
+</div>
+<button type="button" onClick="{{sel.onResolve}}" style="min-height: 48px; border-radius: 8px; border: 1px solid #B8BFC9; background: #FFFFFF; color: #0F1419; font-size: 16px; font-weight: 700; cursor: pointer">Mark resolved</button>
+<div style="font-size: 13px; color: #5A6472; line-height: 1.45">Status changes send PATCH /events/{{sel.id}}. With the API down, the change stays on this screen only.</div>
+</aside>
+</div>
+</sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1300}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { zone: 'all', type: 'all', level: 'all', status: 'all', open: 'INC-2026-00140', patch: {}, notes: {} };
+  }
+  renderVals() {
+    const s = this.state;
+    const GLYPH = { calm: 'M12 4a8 8 0 1 1-0.01 0z', tense: 'M12 3 22 20H2z', fight_likely: 'M12 2 22 12 12 22 2 12z', fight: 'M8 2h8l6 6v8l-6 6H8l-6-6V8z' };
+    const LV = {
+      tense: { label: 'Tense', bg: '#F5B323', fg: '#1A1200' },
+      fight_likely: { label: 'Fight likely', bg: '#C8241B', fg: '#FFFFFF' },
+      fight: { label: 'Fight', bg: '#7F1310', fg: '#FFFFFF' }
+    };
+    const TYPE = { fight: 'Fight', cornering: 'Cornering', crowd: 'Crowd gathering', play: 'Play / sports' };
+    const TICON = {
+      fight: 'M13 2 4 14h7l-1 8 9-12h-7z',
+      cornering: 'M4 12a3 3 0 1 0 6 0a3 3 0 1 0-6 0M15 5a2 2 0 1 0 4 0a2 2 0 1 0-4 0M17 12a2 2 0 1 0 4 0a2 2 0 1 0-4 0M15 19a2 2 0 1 0 4 0a2 2 0 1 0-4 0',
+      crowd: 'M10.2 4.5a1.8 1.8 0 1 0 3.6 0a1.8 1.8 0 1 0-3.6 0M16.2 8a1.8 1.8 0 1 0 3.6 0a1.8 1.8 0 1 0-3.6 0M16.2 16a1.8 1.8 0 1 0 3.6 0a1.8 1.8 0 1 0-3.6 0M10.2 19.5a1.8 1.8 0 1 0 3.6 0a1.8 1.8 0 1 0-3.6 0M4.2 16a1.8 1.8 0 1 0 3.6 0a1.8 1.8 0 1 0-3.6 0M4.2 8a1.8 1.8 0 1 0 3.6 0a1.8 1.8 0 1 0-3.6 0',
+      play: 'M12 3a9 9 0 1 1-0.01 0zM3 12h18M12 3c3.5 3 3.5 15 0 18M12 3c-3.5 3-3.5 15 0 18'
+    };
+    const ST = {
+      new: { label: 'New', bg: '#FFFFFF', fg: '#0F1419', border: '#0F1419' },
+      pushed: { label: 'Pushed', bg: '#E8EEFB', fg: '#1E3A8A', border: '#A9BEEA' },
+      confirmed: { label: 'Confirmed', bg: '#0F1419', fg: '#FFFFFF', border: '#0F1419' },
+      dismissed: { label: 'Dismissed', bg: '#EEF0F3', fg: '#3A4350', border: '#D9DDE3' },
+      resolved: { label: 'Resolved', bg: '#FFFFFF', fg: '#3A4350', border: '#B8BFC9' }
+    };
+    const ZL = { hostel_corridor: 'Hostel corridor', stairwell: 'Stairwell', canteen: 'Canteen', car_park: 'Car park', sports_court: 'Sports court' };
+    const RAW = [
+      ['INC-2026-00140', 'Sat 10 Oct 14:29', 'CAM-CP-05', 'Car park B, level 2', 'car_park', 'fight', 'fight_likely', 0.29, 'pushed', 'Guard B', 'Guard B', 'Repeated arm strikes toward head height; one person stepped back twice.', 'Send Guard B now (~40 m); call a second person', ''],
+      ['INC-2026-00139', 'Sat 10 Oct 14:28', 'CAM-CT-04', 'Canteen, east entrance', 'canteen', 'crowd', 'tense', 0.16, 'new', null, 'Guard B', 'Six people stopped and faced the same point for 8 s.', 'Watch this camera; Guard B is nearest (~60 m)', ''],
+      ['INC-2026-00116', 'Fri 9 Oct 12:44', 'CAM-CT-04', 'Canteen, east entrance', 'canteen', 'crowd', 'tense', 0.14, 'resolved', null, 'Guard C', 'Eight people formed a ring in 4 s; two in the centre.', 'Watch this camera; Guard C is nearest (~60 m)', ''],
+      ['INC-2026-00127', 'Thu 8 Oct 14:16', 'CAM-CP-05', 'Car park B, level 2', 'car_park', 'fight', 'tense', 0.12, 'dismissed', null, 'Guard D', 'Two people closed to 0.4 torso-lengths; arm raised above shoulder for 0.8 s.', 'Watch this camera; Guard D is nearest (~60 m)', ''],
+      ['INC-2026-00104', 'Wed 7 Oct 13:47', 'CAM-BC-03', 'Block C stairwell', 'stairwell', 'cornering', 'fight_likely', 0.40, 'resolved', 'Guard B', 'Guard B', 'One person against the wall, three within 2 torso-lengths for 7 s.', 'Send Guard B now (~40 m); call a second person', ''],
+      ['INC-2026-00123', 'Mon 5 Oct 07:47', 'CAM-BC-03', 'Block C stairwell', 'stairwell', 'play', 'tense', 0.16, 'dismissed', null, 'Guard B', 'Fast arm movement but distance stayed above 1 torso-length; no approach.', 'Watch this camera; Guard B is nearest (~60 m)', 'Friends play-fighting.'],
+      ['INC-2026-00131', 'Sat 3 Oct 16:50', 'CAM-HC-02', 'Hostel U Block, corridor L5', 'hostel_corridor', 'play', 'tense', 0.21, 'dismissed', null, 'Guard A', 'Fast arm movement but distance stayed above 1 torso-length; no approach.', 'Watch this camera; Guard A is nearest (~60 m)', 'Friends play-fighting.'],
+      ['INC-2026-00120', 'Thu 1 Oct 12:06', 'CAM-HC-01', 'Hostel U Block, corridor L3', 'hostel_corridor', 'fight', 'fight_likely', 0.45, 'dismissed', 'Guard C', 'Guard C', 'Two people closed to 0.4 torso-lengths; arm raised above shoulder for 0.8 s.', 'Send Guard C now (~40 m); call a second person', ''],
+      ['INC-2026-00117', 'Thu 1 Oct 11:42', 'CAM-SC-06', 'Sports court, north', 'sports_court', 'crowd', 'tense', 0.06, 'resolved', null, 'Guard D', 'Eight people formed a ring in 4 s; two in the centre.', 'Watch this camera; Guard D is nearest (~60 m)', ''],
+      ['INC-2026-00101', 'Wed 30 Sep 13:24', 'CAM-BC-03', 'Block C stairwell', 'stairwell', 'cornering', 'fight', 0.54, 'resolved', 'Guard C', 'Guard C', 'Group of three closed in on one person; no exit path for 6 s.', 'Send Guard C now (~40 m); call the security lead', ''],
+      ['INC-2026-00100', 'Mon 28 Sep 13:18', 'CAM-BC-03', 'Block C stairwell', 'stairwell', 'fight', 'fight_likely', 0.37, 'resolved', 'Guard A', 'Guard A', 'Wrist speed spiked; distance below 0.5 torso-lengths for 1.2 s.', 'Send Guard A now (~40 m); call a second person', ''],
+      ['INC-2026-00122', 'Fri 25 Sep 16:44', 'CAM-HC-02', 'Hostel U Block, corridor L5', 'hostel_corridor', 'cornering', 'fight', 0.74, 'confirmed', 'Guard D', 'Guard D', 'Group of three closed in on one person; no exit path for 6 s.', 'Send Guard D now (~40 m); call the security lead', ''],
+      ['INC-2026-00114', 'Fri 25 Sep 12:11', 'CAM-CT-04', 'Canteen, east entrance', 'canteen', 'crowd', 'fight_likely', 0.39, 'dismissed', 'Guard D', 'Guard D', 'Crowd density doubled in 10 s around one pair.', 'Send Guard D now (~40 m); call a second person', ''],
+      ['INC-2026-00111', 'Mon 21 Sep 22:08', 'CAM-HC-01', 'Hostel U Block, corridor L3', 'hostel_corridor', 'fight', 'fight', 0.80, 'confirmed', 'Guard C', 'Guard C', 'Repeated arm strikes toward head height; one person stepped back twice.', 'Send Guard C now (~40 m); call the security lead', ''],
+      ['INC-2026-00121', 'Mon 21 Sep 14:07', 'CAM-BC-03', 'Block C stairwell', 'stairwell', 'crowd', 'fight_likely', 0.36, 'confirmed', 'Guard B', 'Guard B', 'Crowd density doubled in 10 s around one pair.', 'Send Guard B now (~40 m); call a second person', ''],
+      ['INC-2026-00102', 'Mon 21 Sep 13:52', 'CAM-BC-03', 'Block C stairwell', 'stairwell', 'cornering', 'tense', 0.13, 'resolved', null, 'Guard B', '1 vs 4 within 1.5 torso-lengths for 9 s; the one has not moved.', 'Watch this camera; Guard B is nearest (~60 m)', '']
+    ];
+    const all = RAW.map((r) => {
+      const status = s.patch[r[0]] || r[8];
+      const note = s.notes[r[0]] != null ? s.notes[r[0]] : r[13];
+      return { id: r[0], when: r[1], cam: r[2], loc: r[3], zoneKey: r[4], zone: ZL[r[4]], type: r[5], level: r[6], prio: r[7].toFixed(2), status: status, pushed: r[9] || 'Not pushed (tense is silent)', nearest: r[10], reason: r[11], action: r[12], note: note };
+    });
+    const vis = all.filter((e) => (s.zone === 'all' || e.zoneKey === s.zone) && (s.type === 'all' || e.type === s.type) && (s.level === 'all' || e.level === s.level) && (s.status === 'all' || e.status === s.status));
+    const deco = (e) => Object.assign({}, e, {
+      typeLabel: TYPE[e.type], typeIcon: TICON[e.type], glyph: GLYPH[e.level],
+      levelLabel: LV[e.level].label, pillBg: LV[e.level].bg, pillFg: LV[e.level].fg,
+      statusLabel: ST[e.status].label, stBg: ST[e.status].bg, stFg: ST[e.status].fg, stBorder: ST[e.status].border
+    });
+    const rows = vis.map((e) => Object.assign(deco(e), { bg: e.id === s.open ? '#F4F7FD' : '#FFFFFF', open: () => this.setState({ open: e.id }) }));
+    const pick = (key) => (ev) => { const p = {}; p[key] = ev && ev.target ? ev.target.value : 'all'; this.setState(p); };
+    const opt = (pairs) => pairs.map((p) => ({ v: p[0], l: p[1] }));
+    const filters = [
+      { label: 'Zone', value: s.zone, change: pick('zone'), options: opt([['all', 'All zones'], ['hostel_corridor', 'Hostel corridor'], ['stairwell', 'Stairwell'], ['canteen', 'Canteen'], ['car_park', 'Car park'], ['sports_court', 'Sports court']]) },
+      { label: 'Type', value: s.type, change: pick('type'), options: opt([['all', 'All types'], ['fight', 'Fight'], ['cornering', 'Cornering'], ['crowd', 'Crowd gathering'], ['play', 'Play / sports']]) },
+      { label: 'Level', value: s.level, change: pick('level'), options: opt([['all', 'All levels'], ['tense', 'Tense'], ['fight_likely', 'Fight likely'], ['fight', 'Fight']]) },
+      { label: 'Status', value: s.status, change: pick('status'), options: opt([['all', 'All statuses'], ['new', 'New'], ['pushed', 'Pushed'], ['confirmed', 'Confirmed'], ['dismissed', 'Dismissed'], ['resolved', 'Resolved']]) }
+    ];
+    const selRaw = all.find((e) => e.id === s.open);
+    const setStatus = (id, st) => () => { const p = Object.assign({}, s.patch); p[id] = st; this.setState({ patch: p }); };
+    let sel = { id: '', glyph: '', typeIcon: '' };
+    if (selRaw) {
+      sel = Object.assign(deco(selRaw), {
+        whenLong: selRaw.when,
+        onConfirm: setStatus(selRaw.id, 'confirmed'),
+        onDismiss: setStatus(selRaw.id, 'dismissed'),
+        onResolve: setStatus(selRaw.id, 'resolved'),
+        onNote: (ev) => { const n = Object.assign({}, s.notes); n[selRaw.id] = ev && ev.target ? ev.target.value : ''; this.setState({ notes: n }); }
+      });
+    }
+    const confirmed = 8 - RAW.filter((r) => r[8] === 'confirmed').length + all.filter((e) => e.status === 'confirmed').length;
+    const dismissed = 15 - RAW.filter((r) => r[8] === 'dismissed').length + all.filter((e) => e.status === 'dismissed').length;
+    const open = all.filter((e) => e.status === 'new' || e.status === 'pushed').length;
+    return {
+      rows: rows, shown: rows.length, total: RAW.length, empty: rows.length === 0, filters: filters,
+      clear: () => this.setState({ zone: 'all', type: 'all', level: 'all', status: 'all' }),
+      sheetOn: !!selRaw, sel: sel, close: () => this.setState({ open: null }),
+      confirmed: confirmed, dismissed: dismissed, labels: confirmed + dismissed, open: open
+    };
+  }
+}
+</script>
+</body>
+</html>

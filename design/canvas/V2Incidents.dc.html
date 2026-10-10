@@ -1,0 +1,355 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>EarlyEye v2 Incidents</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Mono:wght@400;500;700&amp;family=Atkinson+Hyperlegible+Next:wght@400;500;700;800&amp;family=Saira+Condensed:wght@600;700;800&amp;display=swap">
+<style>
+body{margin:0;background:#0A0D11}
+a{color:#8EA2FF}a:hover{color:#B7C4FF}
+button,textarea{font-family:inherit}
+</style>
+</helmet>
+<div style="font-family: 'Atkinson Hyperlegible Next', system-ui, sans-serif; color: #ECEFF3; background: #0A0D11; min-height: 100vh; box-sizing: border-box">
+
+<header style="border-bottom: 1px solid #232A33">
+<div style="max-width: 1680px; margin: 0 auto; padding: 10px 24px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 22px">
+<a href="V2Live.dc.html" style="display: flex; align-items: center; gap: 10px; text-decoration: none; color: #ECEFF3">
+<svg width="28" height="28" viewBox="0 0 32 32" aria-hidden="true"><path d="M3 16c3.5-6 8-9 13-9s9.5 3 13 9c-3.5 6-8 9-13 9s-9.5-3-13-9z" fill="none" stroke="#ECEFF3" stroke-width="2.5" stroke-linejoin="round"></path><circle cx="16" cy="16" r="4.5" fill="#ECEFF3"></circle></svg>
+<span style="font-family: 'Saira Condensed', sans-serif; font-size: 26px; font-weight: 800; letter-spacing: 0.04em">EARLYEYE</span>
+</a>
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 13px; color: #808A97">TAYLOR'S LAKESIDE · 6 CAMERAS</span>
+<nav aria-label="Main" style="display: flex; gap: 2px; flex-wrap: wrap">
+<a href="V2Live.dc.html" style="font-size: 15px; font-weight: 700; padding: 10px 14px; color: #AEB7C2; text-decoration: none">Live</a>
+<a href="V2Plan.dc.html" style="font-size: 15px; font-weight: 700; padding: 10px 14px; color: #AEB7C2; text-decoration: none">Plan</a>
+<a href="V2Incidents.dc.html" aria-current="page" style="font-size: 15px; font-weight: 700; padding: 10px 14px; border-radius: 2px; background: #171D25; color: #ECEFF3; text-decoration: none; box-shadow: inset 0 -2px 0 #8EA2FF">Incidents</a>
+<a href="V2Proof.dc.html" style="font-size: 15px; font-weight: 700; padding: 10px 14px; color: #AEB7C2; text-decoration: none">Proof</a>
+</nav>
+<div style="margin-left: auto; display: flex; flex-wrap: wrap; align-items: center; gap: 10px">
+<div role="group" aria-label="Where this screen is open" style="display: inline-flex; border: 1px solid #36404C; border-radius: 2px; overflow: hidden">
+<button type="button" onClick="{{setOnsite}}" aria-pressed="{{onsitePressed}}" style="min-height: 40px; padding: 0 12px; border: none; background: {{onsiteBg}}; color: {{onsiteFg}}; font-size: 13px; font-weight: 700; cursor: pointer">On-site desk</button>
+<button type="button" onClick="{{setRemote}}" aria-pressed="{{remotePressed}}" style="min-height: 40px; padding: 0 12px; border: none; border-left: 1px solid #36404C; background: {{remoteBg}}; color: {{remoteFg}}; font-size: 13px; font-weight: 700; cursor: pointer">Remote link</button>
+</div>
+<span style="display: inline-flex; align-items: center; min-height: 36px; padding: 0 10px; border: 1px dashed #36404C; border-radius: 2px; font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; color: #AEB7C2">SYNTHETIC HISTORY · 8 WEEKS</span>
+</div>
+</div>
+</header>
+
+<main style="max-width: 1680px; margin: 0 auto; padding: 20px 24px 40px; display: flex; flex-direction: column; gap: 16px">
+
+<div style="display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px">
+<div style="display: flex; flex-direction: column; gap: 4px">
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; color: #808A97; letter-spacing: 0.08em">CASE REVIEW</span>
+<h1 style="margin: 0; font-family: 'Saira Condensed', sans-serif; font-size: 52px; font-weight: 800; text-transform: uppercase; line-height: 0.95">Incidents</h1>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 8px">
+<sc-for list="{{kpis}}" as="k" hint-placeholder-count="4">
+<div style="background: #11161C; border: 1px solid #232A33; border-radius: 2px; padding: 10px 14px; min-width: 120px; display: flex; flex-direction: column; gap: 2px">
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 26px; font-weight: 700; line-height: 1">{{k.v}}</span>
+<span style="font-size: 12px; color: #AEB7C2">{{k.k}}</span>
+</div>
+</sc-for>
+</div>
+</div>
+
+<div style="display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start">
+
+<section aria-label="Incident list" style="flex: 1 1 420px; min-width: 0; background: #11161C; border: 1px solid #232A33; border-radius: 4px; padding: 12px; display: flex; flex-direction: column; gap: 10px">
+<div role="group" aria-label="Filter by status" style="display: flex; flex-wrap: wrap; gap: 6px">
+<sc-for list="{{filters}}" as="f" hint-placeholder-count="5">
+<button type="button" onClick="{{f.pick}}" aria-pressed="{{f.pressed}}" style="min-height: 36px; padding: 0 12px; border-radius: 2px; border: 1px solid {{f.border}}; background: {{f.bg}}; color: {{f.fg}}; font-size: 13px; font-weight: 700; cursor: pointer">{{f.label}} <span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; opacity: 0.8">{{f.n}}</span></button>
+</sc-for>
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<sc-for list="{{rows}}" as="r" hint-placeholder-count="8">
+<button type="button" onClick="{{r.open}}" aria-pressed="{{r.selected}}" style="text-align: left; width: 100%; box-sizing: border-box; display: grid; grid-template-columns: 104px minmax(0, 1fr); gap: 12px; align-items: center; padding: 8px; border-radius: 2px; border: {{r.border}}; background: {{r.bg}}; color: #ECEFF3; cursor: pointer">
+<svg viewBox="0 0 640 360" aria-hidden="true" style="display: block; width: 104px; height: auto; background: #0E1217; border: 1px solid #232A33">
+<path d="{{r.grid}}" stroke="#1A2028" stroke-width="2" fill="none"></path>
+<path d="{{r.grey}}" stroke="#C9CED6" stroke-width="8" stroke-linecap="round" fill="none"></path>
+<path d="{{r.cyan}}" stroke="#7FE0FF" stroke-width="8" stroke-linecap="round" fill="none"></path>
+<path d="{{r.violet}}" stroke="#C9A7FF" stroke-width="8" stroke-linecap="round" fill="none"></path>
+<path d="{{r.ball}}" fill="none" stroke="#ECEFF3" stroke-width="5"></path>
+</svg>
+<span style="display: flex; flex-direction: column; gap: 4px; min-width: 0">
+<span style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap">
+<span style="display: inline-flex; align-items: center; gap: 4px; padding: 1px 7px 1px 5px; border-radius: 1px; background: {{r.pillBg}}; color: {{r.pillFg}}; border: 1px solid {{r.pillBorder}}; font-size: 11px; font-weight: 800; text-transform: uppercase"><svg width="10" height="10" viewBox="0 0 24 24" aria-hidden="true"><path d="{{r.glyph}}" fill="{{r.pillFg}}"></path></svg>{{r.levelLabel}}</span>
+<span style="font-size: 12px; font-weight: 700; color: #AEB7C2">{{r.typeLabel}}</span>
+<span style="margin-left: auto; font-size: 11px; font-weight: 700; padding: 1px 6px; border-radius: 1px; background: {{r.stBg}}; color: {{r.stFg}}; border: 1px solid {{r.stBorder}}">{{r.statusLabel}}</span>
+</span>
+<span style="font-size: 15px; font-weight: 800; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{r.loc}}</span>
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 11px; color: #808A97">{{r.when}} · {{r.cam}} · P {{r.prio}}</span>
+</span>
+</button>
+</sc-for>
+</div>
+</section>
+
+<section aria-label="Case" style="flex: 2 1 640px; min-width: 0; background: #11161C; border: 1px solid #232A33; border-radius: 4px; padding: 16px; display: flex; flex-direction: column; gap: 16px">
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px">
+<span style="display: inline-flex; align-items: center; gap: 10px; padding: 6px 16px 6px 12px; border-radius: 2px; background: {{c.pillBg}}; color: {{c.pillFg}}; border: 2px solid {{c.pillBorder}}"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="{{c.glyph}}" fill="{{c.pillFg}}"></path></svg><span style="font-family: 'Saira Condensed', sans-serif; font-size: 34px; font-weight: 800; text-transform: uppercase; line-height: 1">{{c.levelLabel}}</span></span>
+<span style="display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 0 10px; border: 1px solid #ECEFF3; border-radius: 2px; font-size: 16px; font-weight: 800">{{c.typeLabel}}</span>
+<span style="display: inline-flex; align-items: center; min-height: 30px; padding: 0 10px; border-radius: 2px; background: {{c.stBg}}; color: {{c.stFg}}; border: 1px solid {{c.stBorder}}; font-size: 13px; font-weight: 700">{{c.statusLabel}}</span>
+<span style="margin-left: auto; font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 13px; color: #AEB7C2">{{c.id}}</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 4px">
+<h2 style="margin: 0; font-size: 28px; font-weight: 800">{{c.loc}}</h2>
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 13px; color: #AEB7C2">{{c.when}} · {{c.cam}} · {{c.zone}} · PRIORITY {{c.prio}}</span>
+</div>
+
+<div style="display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start">
+<figure style="flex: 3 1 420px; min-width: 0; margin: 0; display: flex; flex-direction: column; gap: 8px">
+<div style="position: relative; background: #0E1217; border: 1px solid #232A33">
+<span style="position: absolute; left: 6px; top: 6px; width: 16px; height: 16px; border-left: 2px solid #8EA2FF; border-top: 2px solid #8EA2FF"></span>
+<span style="position: absolute; right: 6px; top: 6px; width: 16px; height: 16px; border-right: 2px solid #8EA2FF; border-top: 2px solid #8EA2FF"></span>
+<span style="position: absolute; left: 6px; bottom: 6px; width: 16px; height: 16px; border-left: 2px solid #8EA2FF; border-bottom: 2px solid #8EA2FF"></span>
+<span style="position: absolute; right: 6px; bottom: 6px; width: 16px; height: 16px; border-right: 2px solid #8EA2FF; border-bottom: 2px solid #8EA2FF"></span>
+<svg viewBox="0 0 640 360" role="img" aria-label="{{c.aria}}" style="display: block; width: 100%; height: auto">
+<rect x="0" y="0" width="640" height="360" fill="{{bgFill}}"></rect>
+<path d="{{bgLines}}" stroke="{{bgStroke}}" stroke-width="{{bgWidth}}" fill="none"></path>
+<rect x="{{c.boxX}}" y="{{c.boxY}}" width="{{c.boxW}}" height="{{c.boxH}}" fill="none" stroke="{{c.boxColor}}" stroke-width="2.5"></rect>
+<rect x="{{c.boxX}}" y="{{c.labelY}}" width="{{c.labelW}}" height="24" fill="{{c.boxColor}}"></rect>
+<text x="{{c.labelX}}" y="{{c.labelTY}}" font-family="'Atkinson Hyperlegible Mono', monospace" font-size="14" font-weight="700" fill="{{c.boxFg}}">{{c.label}}</text>
+<path d="{{c.grey}}" stroke="#C9CED6" stroke-width="4" stroke-linecap="round" fill="none"></path>
+<path d="{{c.cyan}}" stroke="#7FE0FF" stroke-width="4" stroke-linecap="round" fill="none"></path>
+<path d="{{c.violet}}" stroke="#C9A7FF" stroke-width="4" stroke-linecap="round" fill="none"></path>
+<path d="{{c.joints}}" fill="#FFFFFF"></path>
+<path d="{{c.ball}}" fill="none" stroke="#ECEFF3" stroke-width="2.5"></path>
+<text x="18" y="34" font-family="'Atkinson Hyperlegible Mono', monospace" font-size="13" font-weight="700" fill="#ECEFF3">{{c.cam}} · PEAK FRAME · {{c.peakTime}}</text>
+<text x="18" y="342" font-family="'Atkinson Hyperlegible Mono', monospace" font-size="12" fill="#AEB7C2">{{footText}}</text>
+</svg>
+</div>
+<figcaption style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px">
+<sc-if value="{{onsite}}" hint-placeholder-val="{{ true }}">
+<button type="button" onClick="{{toggleClip}}" style="min-height: 40px; padding: 0 14px; border-radius: 2px; border: none; background: #3B55E6; color: #FFFFFF; font-size: 14px; font-weight: 800; cursor: pointer">{{clipLabel}}</button>
+<span style="font-size: 13px; color: #AEB7C2">10 s clip on the edge laptop · auto-deletes after [N] days · never uploaded</span>
+</sc-if>
+<sc-if value="{{remote}}" hint-placeholder-val="{{ false }}">
+<span style="font-size: 13px; color: #AEB7C2">Video stays on site. This is the skeleton at the peak, rebuilt from keypoints.</span>
+</sc-if>
+</figcaption>
+<sc-if value="{{clipOpen}}" hint-placeholder-val="{{ false }}">
+<div style="border: 1px dashed #36404C; border-radius: 2px; padding: 10px 12px; font-size: 13px; color: #AEB7C2; line-height: 1.45">On site, this opens the edge app's clip player at localhost with skeletons drawn over the real recording. Vercel never receives the file.</div>
+</sc-if>
+</figure>
+
+<div style="flex: 2 1 260px; min-width: 0; display: flex; flex-direction: column; gap: 10px">
+<div style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; color: #808A97">WHY THIS TYPE · RULES ON THE SCORE</div>
+<sc-for list="{{c.rules}}" as="u" hint-placeholder-count="4">
+<div style="display: grid; grid-template-columns: 18px minmax(0, 1fr); gap: 8px; align-items: start; padding: 8px 10px; background: #0A0D11; border: 1px solid {{u.border}}; border-radius: 2px">
+<svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" style="margin-top: 2px"><path d="{{u.icon}}" fill="none" stroke="{{u.color}}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+<span style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 14px; font-weight: 700; color: {{u.textColor}}">{{u.rule}}</span><span style="font-size: 12px; color: #808A97">{{u.seen}}</span></span>
+</div>
+</sc-for>
+<div style="font-size: 13px; color: #AEB7C2; line-height: 1.45">Types are rules on top of the classifier score, not a separate model.</div>
+</div>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 6px">
+<div style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; color: #808A97">WHY THE MODEL FLAGGED IT</div>
+<p style="margin: 0; font-size: 20px; line-height: 1.4; font-weight: 500">{{c.reason}}</p>
+</div>
+
+<div style="display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start">
+<div style="flex: 1 1 300px; min-width: 0; display: flex; flex-direction: column; gap: 8px">
+<div style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; color: #808A97">AUDIT TRAIL</div>
+<ol style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 0">
+<sc-for list="{{c.trail}}" as="a" hint-placeholder-count="5">
+<li style="display: grid; grid-template-columns: 76px 14px minmax(0, 1fr); gap: 10px; align-items: start; padding: 6px 0">
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 13px; color: #AEB7C2">{{a.t}}</span>
+<span style="width: 10px; height: 10px; margin-top: 4px; border-radius: 1px; background: {{a.dot}}; border: 1px solid #ECEFF3"></span>
+<span style="font-size: 14px; line-height: 1.4">{{a.text}}</span>
+</li>
+</sc-for>
+</ol>
+</div>
+<div style="flex: 1 1 300px; min-width: 0; display: flex; flex-direction: column; gap: 10px">
+<label style="display: flex; flex-direction: column; gap: 6px; font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; color: #808A97">STAFF NOTE
+<textarea value="{{c.note}}" onChange="{{c.onNote}}" rows="3" placeholder="What happened, in one line" style="background: #0A0D11; border: 1px solid #36404C; border-radius: 2px; padding: 10px 12px; font-size: 15px; line-height: 1.4; color: #ECEFF3; resize: vertical; letter-spacing: normal"></textarea>
+</label>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px">
+<button type="button" onClick="{{c.onConfirm}}" style="min-height: 52px; border-radius: 2px; border: none; background: #ECEFF3; color: #0A0D11; font-size: 16px; font-weight: 800; cursor: pointer">Confirm: real</button>
+<button type="button" onClick="{{c.onDismiss}}" style="min-height: 52px; border-radius: 2px; border: 2px solid #ECEFF3; background: transparent; color: #ECEFF3; font-size: 16px; font-weight: 800; cursor: pointer">Dismiss: false alarm</button>
+</div>
+<button type="button" onClick="{{c.onResolve}}" style="min-height: 44px; border-radius: 2px; border: 1px solid #36404C; background: transparent; color: #ECEFF3; font-size: 15px; font-weight: 700; cursor: pointer">Mark resolved</button>
+<span style="font-size: 12px; color: #808A97">The desk's Confirm or Dismiss is the label. The phone tap only records "on my way".</span>
+</div>
+</div>
+</section>
+</div>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"view":{"editor":"enum","options":["onsite","remote"],"default":"onsite"},"$preview":{"width":1440,"height":1250}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { open: 'INC-2026-00142', filter: 'all', patch: {}, notes: {}, view: (props && props.view) || 'onsite', clip: false };
+  }
+  componentDidUpdate(prev) { if (prev.view !== this.props.view) this.setState({ view: this.props.view || 'onsite' }); }
+  fig(p, T, G) {
+    const rad = (d) => d * Math.PI / 180;
+    const legL = 0.58 * T;
+    const hip = [p.x, G - 2 * legL * 0.97];
+    const L = rad(p.lean || 0);
+    const neck = [hip[0] + p.dir * T * Math.sin(L), hip[1] - T * Math.cos(L)];
+    const head = [neck[0] + p.dir * 0.34 * T * Math.sin(L), neck[1] - 0.34 * T * Math.cos(L)];
+    const arm = (a, e) => {
+      const A = rad(a), E = rad(a + e);
+      const el = [neck[0] + p.dir * 0.5 * T * Math.sin(A), neck[1] + 0.5 * T * Math.cos(A)];
+      return [el, [el[0] + p.dir * 0.46 * T * Math.sin(E), el[1] + 0.46 * T * Math.cos(E)]];
+    };
+    const leg = (s) => {
+      const S = rad(s), S2 = rad(s * 0.4);
+      const k = [hip[0] + p.dir * legL * Math.sin(S), hip[1] + legL * Math.cos(S)];
+      return [k, [k[0] + p.dir * legL * Math.sin(S2), k[1] + legL * Math.cos(S2)]];
+    };
+    const r = arm(p.ra[0], p.ra[1]), l = arm(p.la[0], p.la[1]);
+    const st = p.stride == null ? 8 : p.stride;
+    const rl = leg(st), ll = leg(-st);
+    const f = (n) => Math.round(n * 10) / 10;
+    const seg = (a, b) => 'M' + f(a[0]) + ' ' + f(a[1]) + 'L' + f(b[0]) + ' ' + f(b[1]);
+    const hr = 0.2 * T;
+    const circ = (c, rr) => 'M' + f(c[0] - rr) + ' ' + f(c[1]) + 'a' + f(rr) + ' ' + f(rr) + ' 0 1 0 ' + f(2 * rr) + ' 0a' + f(rr) + ' ' + f(rr) + ' 0 1 0 ' + f(-2 * rr) + ' 0';
+    return {
+      bones: [seg(hip, neck), seg(neck, r[0]), seg(r[0], r[1]), seg(neck, l[0]), seg(l[0], l[1]), seg(hip, rl[0]), seg(rl[0], rl[1]), seg(hip, ll[0]), seg(ll[0], ll[1])].join('') + circ(head, hr),
+      joints: [neck, r[0], r[1], l[0], l[1], hip, rl[0], rl[1], ll[0], ll[1]].map((q) => circ(q, 2.8)).join(''),
+      top: head[1] - hr
+    };
+  }
+  scene(kind) {
+    const T = 56, G = 318;
+    const S = {
+      fightPeak: [[311, 1, 14, 155, 5, 60, 50, 16], [338, -1, -14, 70, 80, 40, 40, 14]],
+      fightShove: [[327, 1, 28, 95, 0, 90, 0, 22], [372, -1, -24, 60, 40, 150, 20, 18]],
+      fightTense: [[305, 1, 8, 80, 60, 25, 20, 14], [334, -1, 2, 30, 30, 20, 20, 10]],
+      cornering: [[200, 1, -6, 20, 30, 15, 30, 6], [262, -1, 8, 40, 30, 20, 20, 12], [300, -1, 6, 30, 20, 10, 10, 10], [282, -1, 4, 60, 40, 20, 20, 14]],
+      crowd: [[232, 1, 4, 10, 5, -5, 5, 8], [282, 1, 6, 15, 10, -5, 5, 10], [330, 1, 2, 20, 30, 10, 10, 6], [392, -1, 6, 12, 8, -6, 6, 10], [444, -1, 4, 10, 6, -4, 5, 8]],
+      play: [[250, 1, -6, 170, 0, 150, 10, 22], [420, -1, -4, 150, 10, 20, 10, 20]]
+    }[kind];
+    const built = S.map((v) => this.fig({ x: v[0], dir: v[1], lean: v[2], ra: [v[3], v[4]], la: [v[5], v[6]], stride: v[7] }, T, G));
+    const xs = S.map((v) => v[0]);
+    const top = Math.min.apply(null, built.map((b) => b.top)) - 10;
+    return {
+      cyan: built[0].bones, violet: built[1].bones, grey: built.slice(2).map((b) => b.bones).join(''), joints: built.map((b) => b.joints).join(''),
+      ball: kind === 'play' ? 'M321 112a14 14 0 1 0 28 0a14 14 0 1 0 -28 0' : '',
+      box: { x: Math.round(Math.min.apply(null, xs) - 0.85 * T), y: Math.round(top), w: Math.round(Math.max.apply(null, xs) - Math.min.apply(null, xs) + 1.7 * T), h: Math.round(G + 4 - top) }
+    };
+  }
+  renderVals() {
+    const s = this.state;
+    const onsite = s.view !== 'remote';
+    const GLYPH = { tense: 'M12 3 22 20H2z', fight_likely: 'M12 2 22 12 12 22 2 12z', fight: 'M8 2h8l6 6v8l-6 6H8l-6-6V8z' };
+    const LV = {
+      tense: { label: 'Tense', bg: '#F5B323', fg: '#1A1200', border: '#F5B323', box: '#F5B323', boxFg: '#1A1200', tint: '#1E1A0C' },
+      fight_likely: { label: 'Fight likely', bg: '#D92D20', fg: '#FFFFFF', border: '#D92D20', box: '#FF5A4F', boxFg: '#1A0503', tint: '#24100F' },
+      fight: { label: 'Fight', bg: '#A3160D', fg: '#FFFFFF', border: '#FF8A80', box: '#FF8A80', boxFg: '#1A0503', tint: '#2A0D0B' }
+    };
+    const TYPE = { fight: 'Fight', cornering: 'Cornering', crowd: 'Crowd gathering', play: 'Play / sports' };
+    const ST = {
+      new: { label: 'New', bg: 'transparent', fg: '#ECEFF3', border: '#ECEFF3' },
+      pushed: { label: 'Pushed', bg: '#1B2550', fg: '#B7C4FF', border: '#3B55E6' },
+      confirmed: { label: 'Confirmed', bg: '#ECEFF3', fg: '#0A0D11', border: '#ECEFF3' },
+      dismissed: { label: 'Dismissed', bg: '#171D25', fg: '#AEB7C2', border: '#36404C' },
+      resolved: { label: 'Resolved', bg: 'transparent', fg: '#AEB7C2', border: '#36404C' }
+    };
+    const RAW = [
+      ['INC-2026-00142', 'Sat 10 Oct', '14:31:00', 'CAM-BC-03', 'Block C stairwell', 'Stairwell', 'fight', 'fight', 0.61, 'confirmed', 'Guard B', 'fightShove', 'Shove: upper-body lunge, second person displaced 0.7 torso-lengths.', 'Two people separated on the landing. Demo incident.'],
+      ['INC-2026-00140', 'Sat 10 Oct', '14:29:12', 'CAM-CP-05', 'Car park B, level 2', 'Car park', 'fight', 'fight_likely', 0.29, 'pushed', 'Guard B', 'fightPeak', 'Repeated arm strikes toward head height; one person stepped back twice.', ''],
+      ['INC-2026-00139', 'Sat 10 Oct', '14:28:40', 'CAM-CT-04', 'Canteen, east entrance', 'Canteen', 'crowd', 'tense', 0.16, 'new', null, 'crowd', 'Six people stopped and faced the same point for 8 s.', ''],
+      ['INC-2026-00116', 'Fri 9 Oct', '12:44:05', 'CAM-CT-04', 'Canteen, east entrance', 'Canteen', 'crowd', 'tense', 0.14, 'resolved', null, 'crowd', 'Eight people formed a ring in 4 s; two in the centre.', ''],
+      ['INC-2026-00127', 'Thu 8 Oct', '14:16:31', 'CAM-CP-05', 'Car park B, level 2', 'Car park', 'fight', 'tense', 0.12, 'dismissed', null, 'fightTense', 'Two people closed to 0.4 torso-lengths; arm raised above shoulder for 0.8 s.', ''],
+      ['INC-2026-00104', 'Wed 7 Oct', '13:47:02', 'CAM-BC-03', 'Block C stairwell', 'Stairwell', 'cornering', 'fight_likely', 0.40, 'resolved', 'Guard B', 'cornering', 'One person against the wall, three within 2 torso-lengths for 7 s.', ''],
+      ['INC-2026-00123', 'Mon 5 Oct', '07:47:20', 'CAM-BC-03', 'Block C stairwell', 'Stairwell', 'play', 'tense', 0.16, 'dismissed', null, 'play', 'Fast arm movement but distance stayed above 1 torso-length; no approach.', 'Friends play-fighting.'],
+      ['INC-2026-00120', 'Thu 1 Oct', '12:06:44', 'CAM-HC-01', 'Hostel U, corridor L3', 'Hostel corridor', 'fight', 'fight_likely', 0.45, 'dismissed', 'Guard C', 'fightTense', 'Two people closed to 0.4 torso-lengths; arm raised above shoulder for 0.8 s.', ''],
+      ['INC-2026-00101', 'Wed 30 Sep', '13:24:10', 'CAM-BC-03', 'Block C stairwell', 'Stairwell', 'cornering', 'fight', 0.54, 'resolved', 'Guard C', 'cornering', 'Group of three closed in on one person; no exit path for 6 s.', ''],
+      ['INC-2026-00111', 'Mon 21 Sep', '22:08:15', 'CAM-HC-01', 'Hostel U, corridor L3', 'Hostel corridor', 'fight', 'fight', 0.80, 'confirmed', 'Guard C', 'fightPeak', 'Repeated arm strikes toward head height; one person stepped back twice.', '']
+    ];
+    let grid = '';
+    for (let x = 0; x <= 640; x += 80) grid += 'M' + x + ' 0L' + x + ' 360';
+    for (let y = 0; y <= 360; y += 80) grid += 'M0 ' + y + 'L640 ' + y;
+    const all = RAW.map((r) => {
+      const status = s.patch[r[0]] || r[9];
+      return { id: r[0], day: r[1], time: r[2], cam: r[3], loc: r[4], zone: r[5], type: r[6], level: r[7], prio: r[8].toFixed(2), status: status, staff: r[10], scene: r[11], reason: r[12], note: s.notes[r[0]] != null ? s.notes[r[0]] : r[13] };
+    });
+    const counts = { all: all.length, open: 0, confirmed: 0, dismissed: 0, resolved: 0 };
+    all.forEach((e) => { if (e.status === 'new' || e.status === 'pushed') counts.open++; else counts[e.status]++; });
+    const match = (e) => s.filter === 'all' || (s.filter === 'open' ? (e.status === 'new' || e.status === 'pushed') : e.status === s.filter);
+    const rows = all.filter(match).map((e) => {
+      const sc = this.scene(e.scene); const l = LV[e.level]; const st = ST[e.status]; const on = e.id === s.open;
+      return {
+        loc: e.loc, cam: e.cam, when: e.day + ' ' + e.time.slice(0, 5), prio: e.prio, typeLabel: TYPE[e.type],
+        levelLabel: l.label, pillBg: l.bg, pillFg: l.fg, pillBorder: l.border, glyph: GLYPH[e.level],
+        statusLabel: st.label, stBg: st.bg, stFg: st.fg, stBorder: st.border,
+        grid: grid, cyan: sc.cyan, violet: sc.violet, grey: sc.grey, ball: sc.ball,
+        selected: on ? 'true' : 'false', bg: on ? l.tint : '#0A0D11', border: on ? ('2px solid ' + l.border) : '1px solid #232A33',
+        open: () => this.setState({ open: e.id, clip: false })
+      };
+    });
+    const filters = [['all', 'All'], ['open', 'Open'], ['confirmed', 'Confirmed'], ['dismissed', 'Dismissed'], ['resolved', 'Resolved']].map((p) => {
+      const on = s.filter === p[0];
+      return { label: p[1], n: counts[p[0]], pressed: on ? 'true' : 'false', bg: on ? '#ECEFF3' : 'transparent', fg: on ? '#0A0D11' : '#ECEFF3', border: on ? '#ECEFF3' : '#36404C', pick: () => this.setState({ filter: p[0] }) };
+    });
+    const e = all.find((x) => x.id === s.open) || all[0];
+    const sc = this.scene(e.scene); const l = LV[e.level]; const st = ST[e.status];
+    const addS = (hms, d) => { const p = hms.split(':').map(Number); let tot = p[0] * 3600 + p[1] * 60 + p[2] + d; const h = Math.floor(tot / 3600) % 24; tot %= 3600; return String(h).padStart(2, '0') + ':' + String(Math.floor(tot / 60)).padStart(2, '0') + ':' + String(tot % 60).padStart(2, '0'); };
+    const peakOffset = e.level === 'fight' ? 9 : (e.level === 'fight_likely' ? 6 : 2);
+    const trail = [{ t: e.time, text: 'Tense. Shown on the desk, silent.', dot: '#F5B323' }];
+    if (e.level !== 'tense') trail.push({ t: addS(e.time, 6), text: 'Fight likely. ' + e.staff + ' pushed.', dot: '#D92D20' });
+    if (e.staff) trail.push({ t: addS(e.time, 10), text: e.staff + ' tapped "On my way". Acknowledged in 4 s.', dot: '#3B55E6' });
+    if (e.level === 'fight') trail.push({ t: addS(e.time, 9), text: 'Fight. Alarm kept on; security lead called.', dot: '#FF8A80' });
+    trail.sort((a, b) => (a.t < b.t ? -1 : 1));
+    if (e.status === 'confirmed') trail.push({ t: addS(e.time, 25), text: 'Desk confirmed: real incident.', dot: '#ECEFF3' });
+    if (e.status === 'dismissed') trail.push({ t: addS(e.time, 25), text: 'Desk dismissed: false alarm. Label saved for ' + e.cam + '.', dot: '#36404C' });
+    if (e.status === 'resolved') trail.push({ t: addS(e.time, 120), text: 'Resolved.', dot: '#808A97' });
+    if (e.status === 'new' || e.status === 'pushed') trail.push({ t: 'now', text: 'Open. Waiting for the desk.', dot: '#0A0D11' });
+    const OK = 'M4 12.5l5 5L20 6.5', NO = 'M6 6l12 12M18 6L6 18';
+    const R = (rule, seen, met) => ({ rule: rule, seen: seen, icon: met ? OK : NO, color: met ? '#7FE0A8' : '#808A97', textColor: met ? '#ECEFF3' : '#808A97', border: met ? '#2F8F5B' : '#232A33' });
+    const RULES = {
+      fight: [R('Two parties, strike pattern', 'Wrist speed above 3 TL/s toward the other person', true), R('1 against 3 or more, over 5 s', 'Only 2 people in range', false), R('5 or more close, low motion', 'Not a crowd', false), R('Sports zone or rhythmic motion', e.zone + ', motion not rhythmic', false)],
+      cornering: [R('1 against 3 or more, over 5 s', 'Three within 2 TL of one person', true), R('Two parties, strike pattern', 'No strike yet', false), R('5 or more close, low motion', 'Only 4 people', false), R('Sports zone or rhythmic motion', e.zone, false)],
+      crowd: [R('5 or more close, low motion', 'Ring formed within 3 TL', true), R('Two parties, strike pattern', 'No fast arms', false), R('1 against 3 or more, over 5 s', 'No single target', false), R('Sports zone or rhythmic motion', e.zone, false)],
+      play: [R('Sports zone or rhythmic motion', 'Rhythmic arm swings, no approach', true), R('Two parties, strike pattern', 'Distance stayed above 1 TL', false), R('1 against 3 or more, over 5 s', 'No single target', false), R('5 or more close, low motion', 'Not a crowd', false)]
+    };
+    const label = l.label.toUpperCase() + ' ' + e.prio;
+    const setStatus = (stt) => () => { const p = Object.assign({}, s.patch); p[e.id] = stt; this.setState({ patch: p }); };
+    const scene = 'M0 318L640 318M0 318L120 230L520 230L640 318M120 230L120 0M520 230L520 0M520 230L560 230L560 205L590 205L590 180L620 180L620 155L640 155M150 60L230 60L230 130L150 130Z';
+    let fine = '';
+    for (let x = 0; x <= 640; x += 40) fine += 'M' + x + ' 0L' + x + ' 360';
+    for (let y = 0; y <= 360; y += 40) fine += 'M0 ' + y + 'L640 ' + y;
+    const set = (patch) => () => this.setState(patch);
+    return {
+      onsite: onsite, remote: !onsite,
+      onsitePressed: onsite ? 'true' : 'false', remotePressed: onsite ? 'false' : 'true',
+      onsiteBg: onsite ? '#ECEFF3' : 'transparent', onsiteFg: onsite ? '#0A0D11' : '#AEB7C2',
+      remoteBg: onsite ? 'transparent' : '#ECEFF3', remoteFg: onsite ? '#AEB7C2' : '#0A0D11',
+      setOnsite: set({ view: 'onsite' }), setRemote: set({ view: 'remote', clip: false }),
+      bgFill: onsite ? '#161B22' : '#0E1217', bgLines: onsite ? scene : fine, bgStroke: onsite ? '#2A323C' : '#1A2028', bgWidth: onsite ? 2 : 1,
+      footText: onsite ? 'VIDEO FRAME PLACEHOLDER · REAL CLIP STAYS ON THE EDGE LAPTOP' : 'NO PIXELS · SKELETON AT PEAK, FROM KEYPOINTS',
+      clipOpen: onsite && s.clip, clipLabel: s.clip ? 'Hide clip details' : 'Play 10 s clip on site', toggleClip: set({ clip: !s.clip }),
+      kpis: [
+        { v: '23', k: 'labels collected' }, { v: '8', k: 'confirmed real' }, { v: '15', k: 'dismissed' }, { v: '[x] s', k: 'median time to "On my way"' }
+      ],
+      filters: filters, rows: rows,
+      c: {
+        id: e.id, loc: e.loc, cam: e.cam, zone: e.zone.toUpperCase(), prio: e.prio, when: e.day + ' ' + e.time,
+        levelLabel: l.label, pillBg: l.bg, pillFg: l.fg, pillBorder: l.border, glyph: GLYPH[e.level], typeLabel: TYPE[e.type],
+        statusLabel: st.label, stBg: st.bg, stFg: st.fg, stBorder: st.border,
+        aria: 'Peak frame skeletons at ' + e.loc,
+        boxX: sc.box.x, boxY: sc.box.y, boxW: sc.box.w, boxH: sc.box.h, boxColor: l.box, boxFg: l.boxFg,
+        labelY: sc.box.y - 24, labelX: sc.box.x + 8, labelTY: sc.box.y - 7, labelW: Math.round(label.length * 8.6 + 16), label: label,
+        cyan: sc.cyan, violet: sc.violet, grey: sc.grey, joints: sc.joints, ball: sc.ball,
+        peakTime: addS(e.time, peakOffset), reason: e.reason, rules: RULES[e.type], trail: trail, note: e.note,
+        onNote: (ev) => { const n = Object.assign({}, s.notes); n[e.id] = ev && ev.target ? ev.target.value : ''; this.setState({ notes: n }); },
+        onConfirm: setStatus('confirmed'), onDismiss: setStatus('dismissed'), onResolve: setStatus('resolved')
+      }
+    };
+  }
+}
+</script>
+</body>
+</html>

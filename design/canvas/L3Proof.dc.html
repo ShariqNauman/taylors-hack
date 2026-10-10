@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>EarlyEye Track Record</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Mono:wght@400;500;700&amp;family=Atkinson+Hyperlegible+Next:wght@400;500;700;800&amp;family=Saira+Condensed:wght@600;700;800&amp;display=swap">
+<style>
+body{margin:0;background:#F1F2F4}
+a{color:#2742D9}a:hover{color:#1F35B3}
+button{font-family:inherit}
+</style>
+</helmet>
+<div style="font-family: 'Atkinson Hyperlegible Next', system-ui, sans-serif; color: #0B0D10; background: #F1F2F4; min-height: 100vh; box-sizing: border-box">
+
+<header style="background: #FFFFFF; border-bottom: 1px solid #DCDFE4">
+<div style="max-width: 1680px; margin: 0 auto; padding: 10px 24px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 22px">
+<a href="L3Live.dc.html" style="display: flex; align-items: center; gap: 10px; text-decoration: none; color: #0B0D10">
+<svg width="28" height="28" viewBox="0 0 32 32" aria-hidden="true"><path d="M3 16c3.5-6 8-9 13-9s9.5 3 13 9c-3.5 6-8 9-13 9s-9.5-3-13-9z" fill="none" stroke="#0B0D10" stroke-width="2.5" stroke-linejoin="round"></path><circle cx="16" cy="16" r="4.5" fill="#0B0D10"></circle></svg>
+<span style="font-family: 'Saira Condensed', sans-serif; font-size: 26px; font-weight: 800; letter-spacing: 0.04em">EARLYEYE</span>
+</a>
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 13px; color: #5D6672">TAYLOR'S LAKESIDE · 6 CAMERAS</span>
+<nav aria-label="Main" style="display: flex; gap: 2px; flex-wrap: wrap">
+<a href="L3Live.dc.html" style="font-size: 15px; font-weight: 700; padding: 10px 14px; color: #3A414B; text-decoration: none">Live</a>
+<a href="L3Cameras.dc.html" style="font-size: 15px; font-weight: 700; padding: 10px 14px; color: #3A414B; text-decoration: none">Cameras</a>
+<a href="L3Plan.dc.html" style="font-size: 15px; font-weight: 700; padding: 10px 14px; color: #3A414B; text-decoration: none">Plan</a>
+<a href="L3Incidents.dc.html" style="font-size: 15px; font-weight: 700; padding: 10px 14px; color: #3A414B; text-decoration: none">Incidents</a>
+<a href="L3Proof.dc.html" aria-current="page" style="font-size: 15px; font-weight: 700; padding: 10px 14px; border-radius: 2px; background: #0B0D10; color: #FFFFFF; text-decoration: none">Track record</a>
+</nav>
+</div>
+</header>
+<main style="max-width: 1680px; margin: 0 auto; padding: 22px 24px 48px; display: flex; flex-direction: column; gap: 20px">
+
+<div style="display: flex; flex-direction: column; gap: 8px; max-width: 1000px">
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; color: #5D6672; letter-spacing: 0.08em">TRACK RECORD · LAST 4 WEEKS · FROM YOUR DESK'S YES/NO ANSWERS</span>
+<h1 style="margin: 0; font-family: 'Saira Condensed', sans-serif; font-size: 58px; font-weight: 800; text-transform: uppercase; line-height: 0.95">Can you trust the alarms?</h1>
+<p style="margin: 0; font-size: 19px; line-height: 1.5; color: #3A414B">Every time the desk answers "Was this real?", EarlyEye learns how it is doing on your cameras. This page turns those answers into a track record you can check, act on and share with management.</p>
+</div>
+
+<section aria-label="The answer" style="background: #FFFFFF; border: 2px solid #0B0D10; border-radius: 2px; padding: 20px; display: flex; flex-wrap: wrap; gap: 20px 32px; align-items: center">
+<div style="flex: 1 1 420px; display: flex; flex-direction: column; gap: 10px">
+<span style="font-family: 'Saira Condensed', sans-serif; font-size: 52px; font-weight: 800; text-transform: uppercase; line-height: 0.95">Mostly, yes.</span>
+<span style="font-size: 19px; line-height: 1.5">8 of every 10 alarms were real. There were 3 false alarms in 4 weeks, and a guard was on the way in about 5 seconds.</span>
+<span style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 4px">
+<button type="button" onClick="{{toggleShare}}" style="min-height: 46px; padding: 0 18px; border-radius: 2px; border: none; background: #0B0D10; color: #FFFFFF; font-size: 16px; font-weight: 800; cursor: pointer">{{shareLabel}}</button>
+</span>
+</div>
+<div style="flex: 1 1 420px; display: flex; flex-direction: column; gap: 10px">
+<span style="font-size: 15px; font-weight: 800">Out of every 10 alarms that sounded</span>
+<div style="display: flex; flex-wrap: wrap; gap: 8px">
+<sc-for list="{{alarmDots}}" as="d" hint-placeholder-count="10">
+<span title="{{d.t}}" style="width: 30px; height: 30px; border-radius: 50%; box-sizing: border-box; background: {{d.bg}}; border: 3px solid {{d.border}}"></span>
+</sc-for>
+</div>
+<span style="display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 14px; color: #3A414B"><span style="display: inline-flex; align-items: center; gap: 6px"><span style="width: 16px; height: 16px; border-radius: 50%; background: #0B0D10"></span>Real: the desk said yes</span><span style="display: inline-flex; align-items: center; gap: 6px"><span style="width: 16px; height: 16px; border-radius: 50%; border: 3px solid #8B939E; box-sizing: border-box"></span>False alarm</span></span>
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-top: 6px">
+<sc-for list="{{heroStats}}" as="h" hint-placeholder-count="3">
+<div style="border: 1px solid #DCDFE4; border-radius: 2px; padding: 10px 12px; display: flex; flex-direction: column; gap: 2px"><span style="font-family: 'Saira Condensed', sans-serif; font-size: 30px; font-weight: 800; line-height: 1">{{h.v}}</span><span style="font-size: 13px; color: #3A414B">{{h.k}}</span></div>
+</sc-for>
+</div>
+</div>
+<sc-if value="{{showShare}}" hint-placeholder-val="{{ false }}">
+<div style="flex-basis: 100%; background: #F7F8FA; border: 1px solid #DCDFE4; border-radius: 2px; padding: 12px 14px; display: flex; flex-direction: column; gap: 10px">
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; color: #5D6672">SUMMARY FOR MANAGEMENT</span>
+<p style="margin: 0; font-size: 16px; line-height: 1.55">{{shareText}}</p>
+<span style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px"><button type="button" onClick="{{copyShare}}" style="min-height: 40px; padding: 0 14px; border-radius: 2px; border: none; background: #2742D9; color: #FFFFFF; font-size: 14px; font-weight: 800; cursor: pointer">Copy summary</button><span style="font-size: 14px; font-weight: 700; color: #1F35B3">{{copiedText}}</span></span>
+</div>
+</sc-if>
+</section>
+
+<div style="display: flex; flex-wrap: wrap; gap: 16px; align-items: stretch">
+<section aria-label="Misses" style="flex: 1 1 560px; min-width: 0; background: #FFFFFF; border: 1px solid #DCDFE4; border-radius: 2px; padding: 16px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px"><span style="flex: none; width: 34px; height: 34px; border-radius: 50%; background: #0B0D10; color: #FFFFFF; display: inline-flex; align-items: center; justify-content: center; font-weight: 800; font-size: 17px">1</span><h2 style="margin: 0; font-family: 'Saira Condensed', sans-serif; font-size: 30px; font-weight: 800; text-transform: uppercase; line-height: 1">Does it miss fights?</h2></div>
+<div style="display: flex; flex-wrap: wrap; gap: 16px">
+<div style="flex: 1 1 240px; display: flex; flex-direction: column; gap: 8px">
+<span style="font-size: 15px; font-weight: 800">In public test videos</span>
+<div style="display: flex; flex-wrap: wrap; gap: 8px">
+<sc-for list="{{caughtDots}}" as="d" hint-placeholder-count="10">
+<span title="{{d.t}}" style="width: 30px; height: 30px; border-radius: 50%; box-sizing: border-box; background: {{d.bg}}; border: 3px solid {{d.border}}"></span>
+</sc-for>
+</div>
+<span style="font-size: 15px; line-height: 1.45">It caught <span style="font-weight: 800">about 8 of every 10 fights</span>. These are videos it never trained on.</span>
+</div>
+<div style="flex: 1 1 240px; display: flex; flex-direction: column; gap: 8px">
+<span style="font-size: 15px; font-weight: 800">On your campus</span>
+<span style="font-family: 'Saira Condensed', sans-serif; font-size: 40px; font-weight: 800; line-height: 1">1 reported</span>
+<span style="font-size: 15px; line-height: 1.45">A miss only shows up when someone reports a fight that had no alarm. That happened once in 4 weeks.</span>
+</div>
+</div>
+<div style="background: #F7F8FA; border: 1px solid #DCDFE4; border-radius: 2px; padding: 12px 14px; display: flex; flex-direction: column; gap: 4px">
+<span style="font-size: 15px; font-weight: 800">Thu 1 Oct · Block C stairwell</span>
+<span style="font-size: 15px; line-height: 1.45">Two students shoved each other, but mostly their arms moved, so EarlyEye stayed at Tense. <span style="font-weight: 800">Known weak spot:</span> fights where only the arms move. A guard now stands there at lunch (Plan, post 1).</span>
+</div>
+</section>
+
+<section aria-label="Confused" style="flex: 1 1 560px; min-width: 0; background: #FFFFFF; border: 1px solid #DCDFE4; border-radius: 2px; padding: 16px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px"><span style="flex: none; width: 34px; height: 34px; border-radius: 50%; background: #0B0D10; color: #FFFFFF; display: inline-flex; align-items: center; justify-content: center; font-weight: 800; font-size: 17px">2</span><h2 style="margin: 0; font-family: 'Saira Condensed', sans-serif; font-size: 30px; font-weight: 800; text-transform: uppercase; line-height: 1">Where does it get confused?</h2></div>
+<span style="font-size: 15px; color: #3A414B">Alerts the desk said were nothing, by place. Fix the biggest one first.</span>
+<sc-for list="{{confused}}" as="c" hint-placeholder-count="4">
+<div style="border: 1px solid #DCDFE4; border-radius: 2px; padding: 10px 12px; display: flex; flex-direction: column; gap: 8px">
+<span style="display: flex; align-items: center; gap: 10px"><span style="font-size: 16px; font-weight: 800; min-width: 170px">{{c.place}}</span><span style="flex: 1; height: 16px; background: #F1F2F4; border-radius: 1px; overflow: hidden"><span style="display: block; height: 100%; width: {{c.w}}; background: #8B939E"></span></span><span style="font-family: 'Saira Condensed', sans-serif; font-size: 24px; font-weight: 800; min-width: 28px; text-align: right">{{c.n}}</span></span>
+<span style="font-size: 14px; line-height: 1.45; color: #3A414B">{{c.why}}</span>
+<span style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px"><button type="button" onClick="{{c.act}}" style="display: {{c.btnDisplay}}; min-height: 38px; padding: 0 12px; border-radius: 2px; border: {{c.btnBorder}}; background: {{c.btnBg}}; color: {{c.btnFg}}; font-size: 14px; font-weight: 800; cursor: pointer">{{c.btn}}</button><span style="font-size: 13px; font-weight: 700; color: #1F35B3">{{c.note}}</span></span>
+</div>
+</sc-for>
+</section>
+</div>
+
+<div style="display: flex; flex-wrap: wrap; gap: 16px; align-items: stretch">
+<section aria-label="Better" style="flex: 1 1 560px; min-width: 0; background: #FFFFFF; border: 1px solid #DCDFE4; border-radius: 2px; padding: 16px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px"><span style="flex: none; width: 34px; height: 34px; border-radius: 50%; background: #0B0D10; color: #FFFFFF; display: inline-flex; align-items: center; justify-content: center; font-weight: 800; font-size: 17px">3</span><h2 style="margin: 0; font-family: 'Saira Condensed', sans-serif; font-size: 30px; font-weight: 800; text-transform: uppercase; line-height: 1">Is it getting better?</h2></div>
+<span style="font-size: 15px; color: #3A414B">Alerts the desk said were nothing, week by week</span>
+<div style="display: flex; align-items: flex-end; gap: 14px; height: 140px; border-bottom: 2px solid #0B0D10; padding-top: 24px">
+<sc-for list="{{weeks}}" as="w" hint-placeholder-count="4">
+<span style="flex: 1 1 0; position: relative; height: {{w.h}}; background: {{w.bg}}; border-radius: 1px 1px 0 0"><span style="position: absolute; top: -24px; left: 0; right: 0; text-align: center; font-family: 'Saira Condensed', sans-serif; font-size: 22px; font-weight: 800">{{w.n}}</span></span>
+</sc-for>
+</div>
+<div style="display: flex; gap: 14px; margin-top: -6px">
+<sc-for list="{{weeks}}" as="w" hint-placeholder-count="4">
+<span style="flex: 1 1 0; text-align: center; font-size: 13px; font-weight: {{w.weight}}; color: #3A414B">{{w.label}}</span>
+</sc-for>
+</div>
+<span style="font-size: 15px; line-height: 1.45"><span style="font-weight: 800">Down from 8 to 3.</span> Each Yes/No the desk answers is used to retune that camera once a week, so the same mistake gets rarer.</span>
+</section>
+
+<section aria-label="Speed" style="flex: 1 1 560px; min-width: 0; background: #FFFFFF; border: 1px solid #DCDFE4; border-radius: 2px; padding: 16px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px"><span style="flex: none; width: 34px; height: 34px; border-radius: 50%; background: #0B0D10; color: #FFFFFF; display: inline-flex; align-items: center; justify-content: center; font-weight: 800; font-size: 17px">4</span><h2 style="margin: 0; font-family: 'Saira Condensed', sans-serif; font-size: 30px; font-weight: 800; text-transform: uppercase; line-height: 1">How fast does it react?</h2></div>
+<div style="display: flex; align-items: stretch; gap: 0; margin-top: 4px">
+<sc-for list="{{speed}}" as="sp" hint-placeholder-count="4">
+<div style="flex: 1 1 0; display: flex; flex-direction: column; gap: 6px; padding: 0 8px 0 0">
+<span style="display: flex; align-items: center; gap: 0"><span style="flex: none; width: 18px; height: 18px; border-radius: 50%; background: {{sp.dot}}; border: 2px solid #0B0D10"></span><span style="flex: 1; height: 3px; background: {{sp.line}}"></span></span>
+<span style="font-family: 'Saira Condensed', sans-serif; font-size: 26px; font-weight: 800; line-height: 1">{{sp.t}}</span>
+<span style="font-size: 14px; line-height: 1.4">{{sp.what}}</span>
+</div>
+</sc-for>
+</div>
+<span style="font-size: 14px; line-height: 1.45; color: #3A414B">The 2 seconds comes from test videos. Guard times come from the guards' app on your campus. <span style="font-weight: 800">Warning before a fight starts: not measured yet.</span> We will time it on our own recorded clips before claiming it.</span>
+</section>
+</div>
+
+<div style="display: flex; flex-wrap: wrap; gap: 16px; align-items: stretch">
+<section aria-label="Limits" style="flex: 1 1 560px; min-width: 0; background: #FFFFFF; border: 1px solid #DCDFE4; border-radius: 2px; padding: 16px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px"><span style="flex: none; width: 34px; height: 34px; border-radius: 50%; background: #0B0D10; color: #FFFFFF; display: inline-flex; align-items: center; justify-content: center; font-weight: 800; font-size: 17px">5</span><h2 style="margin: 0; font-family: 'Saira Condensed', sans-serif; font-size: 30px; font-weight: 800; text-transform: uppercase; line-height: 1">What can't it do?</h2></div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 8px">
+<sc-for list="{{limits}}" as="l" hint-placeholder-count="5">
+<div style="display: flex; gap: 10px; align-items: flex-start; border: 1px solid #DCDFE4; border-radius: 2px; padding: 10px 12px"><span style="flex: none; width: 34px; height: 34px; border-radius: 50%; background: #F1F2F4; display: inline-flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="{{l.icon}}" fill="none" stroke="#3A414B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><span style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 15px; font-weight: 800">{{l.k}}</span><span style="font-size: 13px; line-height: 1.4; color: #3A414B">{{l.v}}</span></span></div>
+</sc-for>
+</div>
+</section>
+
+<section aria-label="Privacy" style="flex: 1 1 560px; min-width: 0; background: #FFFFFF; border: 1px solid #DCDFE4; border-radius: 2px; padding: 16px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px"><span style="flex: none; width: 34px; height: 34px; border-radius: 50%; background: #0B0D10; color: #FFFFFF; display: inline-flex; align-items: center; justify-content: center; font-weight: 800; font-size: 17px">6</span><h2 style="margin: 0; font-family: 'Saira Condensed', sans-serif; font-size: 30px; font-weight: 800; text-transform: uppercase; line-height: 1">Is it safe for students’ privacy?</h2></div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 8px">
+<sc-for list="{{privacy}}" as="p" hint-placeholder-count="4">
+<div style="display: flex; gap: 10px; align-items: flex-start; border: 1px solid #DCDFE4; border-radius: 2px; padding: 10px 12px"><span style="flex: none; width: 34px; height: 34px; border-radius: 50%; background: #E7EBFD; display: inline-flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="{{p.icon}}" fill="none" stroke="#1F35B3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><span style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 15px; font-weight: 800">{{p.k}}</span><span style="font-size: 13px; line-height: 1.4; color: #3A414B">{{p.v}}</span></span></div>
+</sc-for>
+</div>
+</section>
+</div>
+
+<section aria-label="Technical details" style="background: #F7F8FA; border: 1px solid #DCDFE4; border-radius: 2px; padding: 14px 16px; display: flex; flex-direction: column; gap: 12px">
+<button type="button" onClick="{{toggleTech}}" aria-expanded="{{techExpanded}}" style="display: flex; align-items: center; justify-content: space-between; gap: 10px; border: none; background: none; padding: 0; text-align: left; cursor: pointer; color: #0B0D10">
+<span style="display: flex; flex-direction: column; gap: 2px"><span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; color: #5D6672">FOR IT TEAMS AND JUDGES</span><span style="font-size: 20px; font-weight: 800">Technical details: how the model was tested</span><span style="font-size: 14px; color: #3A414B">Test results on public videos next to your campus, the model card and known weaknesses.</span></span>
+<span style="font-size: 15px; font-weight: 800; color: #2742D9">{{techLabel}}</span>
+</button>
+<sc-if value="{{showTech}}" hint-placeholder-val="{{ false }}">
+<div style="overflow-x: auto"><div style="min-width: 760px; display: grid; grid-template-columns: 2.2fr 1.6fr 1fr 1fr; border: 1px solid #DCDFE4; background: #FFFFFF">
+<span style="padding: 8px 10px; font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; font-weight: 700; background: #F1F2F4">TEST</span><span style="padding: 8px 10px; font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; font-weight: 700; background: #F1F2F4">WHAT IT MEANS</span><span style="padding: 8px 10px; font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; font-weight: 700; background: #F1F2F4">FIGHTS CAUGHT</span><span style="padding: 8px 10px; font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; font-weight: 700; background: #F1F2F4">CALM CLIPS FLAGGED</span>
+<sc-for list="{{tech}}" as="t" hint-placeholder-count="6">
+<div style="display: contents"><span style="padding: 8px 10px; border-top: 1px solid #F1F2F4; font-size: 14px; font-weight: 700">{{t.test}}</span><span style="padding: 8px 10px; border-top: 1px solid #F1F2F4; font-size: 13px; color: #3A414B">{{t.means}}</span><span style="padding: 8px 10px; border-top: 1px solid #F1F2F4; font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 14px; font-weight: 700; color: {{t.color}}">{{t.caught}}</span><span style="padding: 8px 10px; border-top: 1px solid #F1F2F4; font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 14px; font-weight: 700; color: {{t.color}}">{{t.flagged}}</span></div>
+</sc-for>
+</div></div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 10px">
+<sc-for list="{{card}}" as="k" hint-placeholder-count="6">
+<div style="background: #FFFFFF; border: 1px solid #DCDFE4; border-radius: 2px; padding: 10px 12px; display: flex; flex-direction: column; gap: 3px"><span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; font-weight: 700; color: #5D6672">{{k.k}}</span><span style="font-size: 14px; line-height: 1.45">{{k.v}}</span></div>
+</sc-for>
+</div>
+<span style="font-size: 13px; color: #5D6672; line-height: 1.5">Lesson from practice: 100% on KTH clips, then zero on a live camera until retuned. That is why the campus numbers above come from your desk's answers, not from a test set.</span>
+</sc-if>
+</section>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2100}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { share: false, copied: false, tech: false, sportsZone: false };
+  }
+  renderVals() {
+    const s = this.state;
+    const dot = (on, t) => ({ bg: on ? '#0B0D10' : '#FFFFFF', border: on ? '#0B0D10' : '#8B939E', t: t });
+    const alarmDots = []; for (let i = 0; i < 10; i++) alarmDots.push(dot(i < 8, i < 8 ? 'Real' : 'False alarm'));
+    const caughtDots = []; for (let i = 0; i < 10; i++) caughtDots.push(dot(i < 8, i < 8 ? 'Caught' : 'Missed'));
+    const shareText = 'EarlyEye track record, Taylor’s Lakeside, last 4 weeks (14 Sep to 11 Oct). 15 alarms sounded; the security desk confirmed 12 as real and 3 as false alarms. Guards were on the way in about 5 seconds and on the scene in under a minute. One fight was reported that the system missed (arm-only shove, Block C stairwell); a guard now stands there at lunch. Alerts the desk marked as nothing fell from 8 to 3 a week. Video never leaves campus and the system does not identify anyone.';
+    const confused = [
+      { place: 'Sports pitch', n: '9', w: '100%', why: 'Football and rough play look like fighting.',
+        btn: s.sportsZone ? 'Sports zone on' : 'Make it a sports zone', btnDisplay: 'inline-flex',
+        btnBg: s.sportsZone ? '#FFFFFF' : '#0B0D10', btnFg: s.sportsZone ? '#1F35B3' : '#FFFFFF', btnBorder: s.sportsZone ? '1px solid #2742D9' : 'none',
+        note: s.sportsZone ? 'Rough play stays quiet here now. Real fights still alarm.' : 'Rough play stops alerting here. Real fights still do.',
+        act: () => this.setState({ sportsZone: !s.sportsZone }) },
+      { place: 'Syopz Mall food court', n: '6', w: '67%', why: 'Lunch queues look like a crowd gathering.', btn: '', btnDisplay: 'none', btnBg: '#FFFFFF', btnFg: '#0B0D10', btnBorder: 'none', note: 'Ask the EarlyEye team to quiet crowd alerts here at lunchtime.', act: () => {} },
+      { place: 'Block C stairwell', n: '3', w: '33%', why: 'Friends play-fighting on the stairs.', btn: '', btnDisplay: 'none', btnBg: '#FFFFFF', btnFg: '#0B0D10', btnBorder: 'none', note: 'Keep as is. This is your busiest real hotspot.', act: () => {} },
+      { place: 'U Residence, corridor L3', n: '1', w: '11%', why: 'Two residents carrying a mattress.', btn: '', btnDisplay: 'none', btnBg: '#FFFFFF', btnFg: '#0B0D10', btnBorder: 'none', note: 'Nothing to change.', act: () => {} }
+    ];
+    const W = [['14 Sep', 8], ['21 Sep', 6], ['28 Sep', 5], ['Last week', 3]];
+    const weeks = W.map((w, i) => ({ label: w[0], n: String(w[1]), h: Math.round(w[1] / 8 * 100) + '%', bg: i === 3 ? '#2742D9' : '#C9CED6', weight: i === 3 ? 800 : 500 }));
+    const speed = [
+      { t: '0 s', what: 'A fight starts', dot: '#FFFFFF', line: '#0B0D10' },
+      { t: '+2 s', what: 'EarlyEye sounds the alarm', dot: '#C8241B', line: '#0B0D10' },
+      { t: '+5 s', what: 'Guard taps "On my way"', dot: '#2742D9', line: '#0B0D10' },
+      { t: '+40 s', what: 'Guard is there', dot: '#0B0D10', line: 'transparent' }
+    ];
+    const limits = [
+      { icon: 'M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3zM5 11a7 7 0 0 0 14 0M12 18v3M4 4l16 16', k: 'Hear words', v: 'It sees bodies, not sound. Verbal or online bullying is out of reach.' },
+      { icon: 'M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z', k: 'Night cameras', v: 'Not tested on night-time or infrared video yet.' },
+      { icon: 'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21a8 8 0 0 1 16 0M3 3l18 18', k: 'Recognise people', v: 'No faces, no names. The guard finds out who was involved.' },
+      { icon: 'M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12zM4 4l16 16', k: 'See blind spots', v: 'Only what a camera can see. Corners out of view stay dark.' },
+      { icon: 'M7 11V8a5 5 0 0 1 10 0v3M5 11h14v10H5z', k: 'Arm-only fights', v: 'Its known weak spot. A shove with little body movement can stay at Tense.' }
+    ];
+    const privacy = [
+      { icon: 'M3 11l9-7 9 7v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z', k: 'Video stays on campus', v: 'Footage never leaves the camera laptop. Only times and stick-figure data go online.' },
+      { icon: 'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21a8 8 0 0 1 16 0', k: 'No faces, no identities', v: 'It tracks 12 body points per person. No face points, no names.' },
+      { icon: 'M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14', k: 'Clips delete themselves', v: 'The 10-second clip for each alert is deleted automatically after a set number of days.' },
+      { icon: 'M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7z', k: 'Only your team sees it', v: 'The desk, the supervisor and guards on duty. Nothing is public.' }
+    ];
+    const NM = '#5D6672';
+    const tech = [
+      { test: 'Public fight videos (RLVS), 600 clips, split by video', means: 'Videos it never trained on', caught: '82%', flagged: '~20%', color: '#0B0D10' },
+      { test: 'Same videos, with the live alarm rules', means: 'Smoothing and a 1 s hold, as on campus', caught: '75.7%', flagged: '13.7%', color: '#0B0D10' },
+      { test: 'Overall separation (clip AUC)', means: '1.0 is perfect, 0.5 is guessing', caught: '0.876', flagged: '', color: '#0B0D10' },
+      { test: 'At webcam resolution (241–480p)', means: 'Clip AUC', caught: '0.902', flagged: '', color: '#0B0D10' },
+      { test: 'Staged fights on our own cameras', means: 'Our recorded clips, timed and scored', caught: 'not measured yet', flagged: 'not measured yet', color: NM },
+      { test: 'CCTV angle, held out', means: 'High wide camera it never saw', caught: 'not measured yet', flagged: 'not measured yet', color: NM },
+      { test: 'Night or infrared', means: 'One real IR frame through the pose model', caught: 'not tested', flagged: 'not tested', color: NM }
+    ];
+    const card = [
+      { k: 'POSE', v: 'YOLO26n-pose with ByteTrack. 12 body keypoints, face points dropped. About 65 frames a second on a laptop.' },
+      { k: 'CLASSIFIER', v: 'LightGBM, 10 movement features, scored every 0.5 s over 1 s and 2 s windows.' },
+      { k: 'SPLIT', v: '5-fold, grouped by video, so no clip is in both training and testing. 0.876 is the best of 20 settings, so slightly optimistic.' },
+      { k: 'DATA', v: 'RLVS: 300 fight and 300 calm clips. RWF-2000 was withdrawn and is not used.' },
+      { k: 'WHAT IT LEANS ON', v: 'One feature, how much two people move together, carries 47% of the weight. That is why arm-only fights get missed.' },
+      { k: 'LIVE LEVELS', v: 'Calm, tense at 0.5, fight at 0.55 held for 1 s. Fight likely, ETA and type are rules on top of the score.' }
+    ];
+    return {
+      alarmDots: alarmDots, caughtDots: caughtDots,
+      heroStats: [{ v: '15', k: 'alarms sounded' }, { v: '12', k: 'were real' }, { v: '5 s', k: 'guard on the way' }],
+      showShare: s.share, shareLabel: s.share ? 'Hide the summary' : 'Share with management', toggleShare: () => this.setState({ share: !s.share, copied: false }),
+      shareText: shareText, copiedText: s.copied ? 'Copied. Paste it into your email or report.' : '',
+      copyShare: () => { try { if (navigator && navigator.clipboard) navigator.clipboard.writeText(shareText); } catch (e) {} this.setState({ copied: true }); },
+      confused: confused, weeks: weeks, speed: speed, limits: limits, privacy: privacy, tech: tech, card: card,
+      showTech: s.tech, techExpanded: s.tech ? 'true' : 'false', techLabel: s.tech ? 'Hide' : 'Show', toggleTech: () => this.setState({ tech: !s.tech })
+    };
+  }
+}
+</script>
+</body>
+</html>
