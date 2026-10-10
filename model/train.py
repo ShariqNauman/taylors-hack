@@ -26,7 +26,9 @@ Usage:  python train.py            # uses whatever keypoints exist so far; rerun
 import hashlib
 import json
 import time
+import os
 import warnings
+from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
 
 import joblib
@@ -60,6 +62,7 @@ DEFAULT_PARAMS = dict(n_estimators=300, learning_rate=0.05, num_leaves=15, min_c
 TUNE_GRID = dict(num_leaves=[7, 15, 31, 63], learning_rate=[0.02, 0.05, 0.1],
                  n_estimators=[100, 200, 400, 800], min_child_samples=[10, 20, 50, 100])
 N_TUNE = 12              # random LightGBM settings tried (best by out-of-fold clip ROC-AUC)
+N_JOBS = max(1, (os.cpu_count() or 2) - 2)  # feature workers (leave 2 cores free)
 SUSPICIOUS_AUC = 0.97    # warn about possible leakage above this clip ROC-AUC
 # ---------------------------------------------------
 
@@ -98,8 +101,11 @@ def load_windows(videos):
         cache = cache[(cache["feat_hash"] == FEATURES_HASH) & cache["path"].isin(videos["path"])]
     todo = videos[~videos["path"].isin(set(cache["path"]) if len(cache) else set())]
     if len(todo):
-        rows = [r for _, v in tqdm(todo.iterrows(), total=len(todo), desc="features", unit="video")
-                for r in video_windows(v)]
+        # One process per core: features for 3,000 videos take minutes in one process.
+        with ProcessPoolExecutor(max_workers=N_JOBS) as pool:
+            per_video = list(tqdm(pool.map(video_windows, [v for _, v in todo.iterrows()], chunksize=8),
+                                  total=len(todo), desc="features", unit="video"))
+        rows = [r for video_rows in per_video for r in video_rows]
         new = pd.DataFrame(rows).assign(feat_hash=FEATURES_HASH)
         cache = pd.concat([cache, new], ignore_index=True)
         cache.to_csv(WINDOWS_CACHE, index=False)
