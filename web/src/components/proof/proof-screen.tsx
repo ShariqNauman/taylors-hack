@@ -835,7 +835,7 @@ export function ProofScreen() {
         )}
         {suggestions.map((sg) => {
           const saved = sensSaved[sg.cam.camera_id];
-          const current = saved?.sensitivity ?? sg.cam.sensitivity ?? "strict";
+          const current = saved?.sensitivity ?? sg.cam.sensitivity ?? null;
           const isSports = camZone(sg.cam) === sportsZone;
           const applied =
             sg.kind === "sports" ? isSports : !!saved && saved.sensitivity === (sg.kind === "strict" ? "strict" : "sensitive");
@@ -848,7 +848,7 @@ export function ProofScreen() {
                   {title} · {sg.cam.location}
                 </span>
                 <span className="text-[14px] leading-[1.45] text-ink-2">{sg.why}</span>
-                {sg.kind !== "sports" && (
+                {sg.kind !== "sports" && current && (
                   <span className="font-mono text-[12px] text-muted-ink">
                     NOW: {current === "strict" ? "STRICT (FEWER ALARMS)" : "SENSITIVE (EARLIER ALARMS)"}
                   </span>
@@ -904,7 +904,7 @@ export function ProofScreen() {
           </div>
           <div className="-mt-1.5 flex gap-3.5">
             {weeks.map((w, i) => {
-              const applied = appliedMarks.filter((t) => t >= w.a && t < w.b);
+              const applied = appliedMarks.filter((t) => t >= w.a && (i === 3 || t < w.b));
               return (
                 <span
                   key={w.label}
