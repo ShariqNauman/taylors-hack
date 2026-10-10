@@ -1,6 +1,6 @@
 """
 Start every camera from edge/cameras.json: the live webcam (posts to the API unless --no-post)
-plus each recording (never posts; labelled SAMPLE CCTV CLIP on the stream). Ctrl+C stops all.
+plus each recording (never posts; labelled on the stream with its "label", default SAMPLE CCTV CLIP). Ctrl+C stops all.
 Usage: <venv python> edge/run_all.py [--no-post] [--fake-live]
 """
 import json
@@ -26,7 +26,7 @@ for r in cfg["recordings"]:
         print(f"skip {r['camera_id']}: {r['file']} not found", flush=True)
         continue
     start(["--camera", str(f), "--loop", "--source", "recorded", "--no-post",
-           "--label", "SAMPLE CCTV CLIP", "--camera-id", r["camera_id"], "--location", r["location"],
+           "--label", r.get("label", "SAMPLE CCTV CLIP"), "--camera-id", r["camera_id"], "--location", r["location"],
            "--zone", r["zone"], "--zone-risk", str(r["zone_risk"]), "--staff", r["staff"],
            "--port", str(r["port"])], r["camera_id"])
 live = cfg["live"]

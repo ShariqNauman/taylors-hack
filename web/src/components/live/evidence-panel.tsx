@@ -133,7 +133,9 @@ export function EvidencePanel({
     };
   else if (onsiteStream && isRecording)
     badge = {
-      text: "RECORDING · SAMPLE CCTV CLIP · LOOP",
+      text: camera?.recorded_at
+        ? "RECORDING · FILMED ON CAMPUS · LOOP"
+        : "RECORDING · SAMPLE CCTV CLIP · LOOP",
       cls: "bg-ground text-ink",
     };
   else if (onsiteStream)

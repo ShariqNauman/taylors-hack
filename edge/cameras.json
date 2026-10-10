@@ -1,5 +1,5 @@
 {
-  "_note": "Cameras for edge/run_edge.sh all and run_edge.bat all. The live webcam is the only camera that posts to the API. Recordings are sample CCTV clips (not filmed on campus). Checked with the v5 model on 10 Oct (45-60 s each): clip 5 max 0.41, clip 2 max 0.48, clip 3 max 0.20, all calm. Not used: clip 1 (restaurant) and clip 4 (umbrellas) reach FIGHT under v5; clip 6 shows a real kick.",
+  "_note": "Cameras for edge/run_edge.sh all and run_edge.bat all. The live webcam is the only camera that posts to the API. Block C and the food court loop our own footage filmed on campus on 10 Oct (22:14 and 22:13); the others are sample CCTV clips (not filmed on campus). Checked with the v5 model on 10 Oct, looping 60 s: Block C peaks at tense (raw 0.76, never FIGHT), food court peaks at 0.60. The food-court file has 15-24 s cut out: the full take (campus_foodcourt_full_with_grab.mp4) reaches FIGHT when one person runs up and grabs another, which would ring the desk every loop. Clip 5 (old Block C), clip 2 and clip 3 are calm under v5; clip 1 (restaurant) and clip 4 (umbrellas) reach FIGHT; clip 6 shows a real kick.",
   "live": {
     "camera": "0",
     "camera_id": "CAM-AU-01",
@@ -11,13 +11,26 @@
   },
   "recordings": [
     {
-      "file": "edge/recordings/clip5.mp4",
+      "file": "edge/recordings/campus_blockc_stairwell.mp4",
       "camera_id": "CAM-BC-03",
       "location": "Block C stairwell",
       "zone": "stairwell",
       "zone_risk": 0.8,
       "staff": "Guard B",
-      "port": 8766
+      "port": 8766,
+      "recorded_at": "2026-10-10T22:14:53+08:00",
+      "label": "RECORDED ON CAMPUS"
+    },
+    {
+      "file": "edge/recordings/campus_foodcourt.mp4",
+      "camera_id": "CAM-CT-04",
+      "location": "Syopz Mall food court",
+      "zone": "canteen",
+      "zone_risk": 0.7,
+      "staff": "Guard A",
+      "port": 8767,
+      "recorded_at": "2026-10-10T22:13:57+08:00",
+      "label": "RECORDED ON CAMPUS"
     },
     {
       "file": "edge/recordings/clip2.mp4",

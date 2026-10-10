@@ -31,7 +31,8 @@
       "floor": "level 1 landing"
     },
     "source": "recorded",
-    "edge_url": "http://127.0.0.1:8766"
+    "edge_url": "http://127.0.0.1:8766",
+    "recorded_at": "2026-10-10T22:14:53+08:00"
   },
   {
     "camera_id": "CAM-CT-04",
@@ -48,7 +49,8 @@
       "floor": "east entrance"
     },
     "source": "recorded",
-    "edge_url": ""
+    "edge_url": "http://127.0.0.1:8767",
+    "recorded_at": "2026-10-10T22:13:57+08:00"
   },
   {
     "camera_id": "CAM-HC-01",
