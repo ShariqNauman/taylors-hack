@@ -1,7 +1,7 @@
 """
 EarlyEye API — Site & Camera router.
 
-GET /site    → returns the demo site with its zones embedded.
+GET /site    → returns the demo site with its zones and team (staff) embedded.
 GET /cameras → returns all cameras with computed online / black_since status.
 """
 
@@ -12,7 +12,7 @@ from datetime import datetime, timedelta, timezone
 from fastapi import APIRouter, HTTPException
 
 from api.db import get_supabase
-from api.models import Camera, Site, Zone
+from api.models import Camera, Site, SiteStaff, StaffShift, Zone
 
 router = APIRouter(prefix="", tags=["site"])
 
@@ -59,7 +59,34 @@ async def get_site() -> Site:
         name=site_row["name"],
         site_type=site_row["site_type"],
         zones=zones,
+        staff=_staff(sb, site_row["site_id"]),
     )
+
+
+def _staff(sb, site_id: str) -> list[SiteStaff]:
+    """The team for the Plan page and the guard app. name stays the call sign ("Guard B");
+    display_name, photo_url and shift come from api/sql/migration_plan_guard.sql."""
+    try:
+        rows = sb.table("staff").select("*").eq("site_id", site_id).execute().data or []
+    except Exception:
+        return []
+    out = []
+    for r in rows:
+        shift = r.get("shift")
+        try:
+            shift = StaffShift(**shift) if isinstance(shift, dict) else None
+        except Exception:
+            shift = None
+        out.append(SiteStaff(
+            name=r["name"],
+            display_name=r.get("display_name"),
+            photo_url=r.get("photo_url"),
+            role=r.get("role"),
+            zone_type=r.get("zone"),
+            shift=shift,
+            on_duty=r.get("on_duty"),
+        ))
+    return out
 
 
 # ── GET /cameras ──────────────────────────────────────────────────────────────

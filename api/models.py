@@ -36,6 +36,14 @@ class Level(str, Enum):
     fight = "fight"
 
 
+class Outcome(str, Enum):
+    """What the guard found on arrival (guard app, "What did you find?")."""
+    sorted = "sorted"
+    hurt = "hurt"
+    backup = "backup"
+    nothing = "nothing"
+
+
 class Status(str, Enum):
     new = "new"
     pushed = "pushed"
@@ -53,11 +61,32 @@ class Zone(BaseModel):
     risk: float = Field(ge=0, le=1)
 
 
+class StaffShift(BaseModel):
+    """A person's usual shift. days: 0=Mon … 6=Sun. from/to are "HH:MM"; to < from means it ends after midnight."""
+    model_config = {"populate_by_name": True}
+    label: str                                  # "Mon–Sat 07:00–15:00"
+    days: list[int]
+    from_: str = Field(alias="from")
+    to: str
+
+
+class SiteStaff(BaseModel):
+    """A person on the team. name is the call sign used everywhere else (nearest_staff, pushed_to)."""
+    name: str                                   # call sign, e.g. "Guard B"
+    display_name: Optional[str] = None          # "Aiman Hakimi"
+    photo_url: Optional[str] = None
+    role: Optional[str] = None                  # "guard" | "warden" | "supervisor"
+    zone_type: Optional[str] = None             # base zone
+    shift: Optional[StaffShift] = None
+    on_duty: Optional[bool] = None
+
+
 class Site(BaseModel):
     site_id: str
     name: str
     site_type: SiteType
     zones: list[Zone]
+    staff: list[SiteStaff] = Field(default_factory=list)
 
 
 class Camera(BaseModel):
@@ -116,6 +145,9 @@ class Event(BaseModel):
     pushed_to: Optional[str] = None
     pushed_at: Optional[str] = None
     acked_at: Optional[str] = None
+    arrived_at: Optional[str] = None
+    outcome: Optional[Outcome] = None
+    outcome_at: Optional[str] = None
     status: Status
     staff_note: Optional[str] = None
     snapshot: Optional[dict[str, Any]] = None
@@ -124,10 +156,14 @@ class Event(BaseModel):
 
 
 class EventPatch(BaseModel):
-    """PATCH body. The desk sends status (+ staff_note); the duty phone sends acked_at only."""
+    """PATCH body. The desk sends status (+ staff_note); the duty phone sends acked_at ("On my way"),
+    arrived_at ("I'm here") and outcome + outcome_at ("What did you find?")."""
     status: Optional[Status] = None
     staff_note: Optional[str] = None
     acked_at: Optional[str] = None
+    arrived_at: Optional[str] = None
+    outcome: Optional[Outcome] = None
+    outcome_at: Optional[str] = None
 
 
 # ── Hotspot & Patrol Plan ─────────────────────────────────────────────────────
@@ -141,18 +177,55 @@ class Hotspot(BaseModel):
     last_seen: str
 
 
+class SlotStatus(str, Enum):
+    active = "active"
+    suggested = "suggested"
+    ended = "ended"
+
+
+class Checkin(BaseModel):
+    staff: str
+    at: str
+
+
 class PatrolSlot(BaseModel):
+    """A standing guard post. Active posts stay until the supervisor ends them; the daily
+    06:00 recheck only adds suggestions (status "suggested") or sets suggestion = "end"."""
+    id: Optional[str] = None
     location: str
+    zone_type: Optional[str] = None
     days: str
     hours: str
     incidents_4w: int
     expected_avoided_per_week: float
     rationale: str
+    status: SlotStatus = SlotStatus.active
+    since: Optional[str] = None
+    assigned_to: Optional[str] = None           # call sign
+    seen_at: Optional[str] = None               # when the guard opened it in their app
+    tip: Optional[str] = None
+    suggestion: Optional[str] = None            # "add" | "end" | None
+    ended_at: Optional[str] = None
+    evidence: list[str] = Field(default_factory=list)
+    checkins: list[Checkin] = Field(default_factory=list)
+
+
+class SlotPatch(BaseModel):
+    """PATCH /plan/slots/{id}. assigned_to may be sent as null ("Nobody")."""
+    status: Optional[SlotStatus] = None
+    assigned_to: Optional[str] = None
+    seen_at: Optional[str] = None
+
+
+class CheckinCreate(BaseModel):
+    staff: str
+    at: Optional[str] = None
 
 
 class PatrolPlan(BaseModel):
     generated_at: str
     slots: list[PatrolSlot]
+    last_check: Optional[str] = None            # last 06:00 recheck
     assumption: str = (
         "60% of hotspot incidents avoided when a person is present "
         "(stated, not measured)"

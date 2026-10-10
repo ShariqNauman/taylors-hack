@@ -220,14 +220,16 @@ async def list_events(since: Optional[str] = Query(default=None)):
 async def patch_event(incident_id: str, body: EventPatch):
     """
     The desk sends status (+ staff_note): confirmed / dismissed / resolved, or pushed for an
-    early push. The duty phone sends acked_at only ("On my way"); response = acked_at - pushed_at.
+    early push. The duty phone sends acked_at ("On my way"; response = acked_at - pushed_at),
+    arrived_at ("I'm here") and outcome + outcome_at ("What did you find?").
     """
     supabase = get_supabase()
     update_data = live_loop.patch_update(
-        body.status.value if body.status is not None else None, body.staff_note, body.acked_at
+        body.status.value if body.status is not None else None, body.staff_note, body.acked_at,
+        body.arrived_at, body.outcome.value if body.outcome is not None else None, body.outcome_at,
     )
     if not update_data:
-        raise HTTPException(status_code=422, detail="Send status, staff_note or acked_at.")
+        raise HTTPException(status_code=422, detail="Send status, staff_note, acked_at, arrived_at or outcome.")
     update_data["incident_id"] = incident_id
     try:
         data = _write(supabase, update_data, existing=True)
