@@ -1,19 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
+import { useEffect, useMemo, useState } from "react";
 import useSWR from "swr";
-import {
-  getCameras,
-  getEvents,
-  getProof,
-  getSite,
-  patchCamera,
-  usingMock,
-} from "@/lib/api";
-import type { Camera, CameraSensitivity, Event, Proof } from "@/lib/types";
+import { getEvents, getProof, usingMock } from "@/lib/api";
+import type { Event, Proof } from "@/lib/types";
 import { normaliseStatus } from "@/lib/format";
-import { QUIET_DAYS as SUGGEST_DAYS_14, WINDOW_DAYS } from "@/lib/posts";
+import { WINDOW_DAYS } from "@/lib/posts";
 import { HowItWorks } from "@/components/chrome/how-it-works";
 import {
   MODEL_CARD,
@@ -73,67 +66,6 @@ const CONFUSED_WHY: Record<Event["type"], string> = {
   cornering: "People standing close look like someone being boxed in.",
   fight: "Fast, close movement, like play-fighting, looks like a fight.",
 };
-
-// ── Zone changes: PATCH /cameras/:id, else kept in this browser ──
-
-const ZONES_KEY = "earlyeye.camera-zones.v1";
-const zoneListeners = new Set<() => void>();
-const readZones = () => {
-  try {
-    return localStorage.getItem(ZONES_KEY) ?? "{}";
-  } catch {
-    return "{}";
-  }
-};
-function subscribeZones(cb: () => void) {
-  zoneListeners.add(cb);
-  return () => zoneListeners.delete(cb);
-}
-function writeZone(cameraId: string, zone: string | null) {
-  let all: Record<string, string> = {};
-  try {
-    all = JSON.parse(readZones());
-  } catch {}
-  if (zone) all[cameraId] = zone;
-  else delete all[cameraId];
-  try {
-    localStorage.setItem(ZONES_KEY, JSON.stringify(all));
-  } catch {}
-  zoneListeners.forEach((l) => l());
-}
-
-// ── Sensitivity: PATCH /cameras/:id {sensitivity}, else kept in this browser ──
-
-const SENS_KEY = "earlyeye.camera-sensitivity.v1";
-type SensSaved = Record<string, { sensitivity: CameraSensitivity; at: string; where: "api" | "this-computer" }>;
-const sensListeners = new Set<() => void>();
-const readSens = () => {
-  try {
-    return localStorage.getItem(SENS_KEY) ?? "{}";
-  } catch {
-    return "{}";
-  }
-};
-function subscribeSens(cb: () => void) {
-  sensListeners.add(cb);
-  return () => sensListeners.delete(cb);
-}
-function writeSens(cameraId: string, v: SensSaved[string] | null) {
-  let all: SensSaved = {};
-  try {
-    all = JSON.parse(readSens());
-  } catch {}
-  if (v) all[cameraId] = v;
-  else delete all[cameraId];
-  try {
-    localStorage.setItem(SENS_KEY, JSON.stringify(all));
-  } catch {}
-  sensListeners.forEach((l) => l());
-}
-
-const SUGGEST_DAYS = SUGGEST_DAYS_14;
-/** The guard said "Nothing there", or the desk said false alarm. */
-const saidNothing = (e: Event) => isFalse(e) || e.outcome === "nothing";
 
 // ── Small pieces ──
 
@@ -287,25 +219,9 @@ export function ProofScreen() {
   const { data: events } = useSWR(["events", "28d", since28], () => getEvents(since28), {
     refreshInterval: 10_000,
   });
-  const { data: cameras, mutate: mutateCameras } = useSWR(
-    "cameras",
-    getCameras,
-    { refreshInterval: 30_000 },
-  );
-  const { data: site } = useSWR("site", getSite, { revalidateOnFocus: false });
   const apiDown = useAppStore((s) => s.apiDown);
   const synthetic = usingMock || apiDown;
 
-  const zonesRaw = useSyncExternalStore(subscribeZones, readZones, () => "{}");
-  const localZones = useMemo(() => {
-    try {
-      return JSON.parse(zonesRaw) as Record<string, string>;
-    } catch {
-      return {};
-    }
-  }, [zonesRaw]);
-  const [savedOnApi, setSavedOnApi] = useState<Record<string, boolean>>({});
-  const [copied, setCopied] = useState<string | null>(null);
   const [tech, setTech] = useState(false);
   // Ticks, so a decision made on Live a moment ago counts here without a reload.
   const [now, setNow] = useState(() => Date.now());
@@ -313,14 +229,6 @@ export function ProofScreen() {
     const t = setInterval(() => setNow(Date.now()), 15_000);
     return () => clearInterval(t);
   }, []);
-  const sensRaw = useSyncExternalStore(subscribeSens, readSens, () => "{}");
-  const sensSaved = useMemo(() => {
-    try {
-      return JSON.parse(sensRaw) as SensSaved;
-    } catch {
-      return {} as SensSaved;
-    }
-  }, [sensRaw]);
 
   const since = now - WINDOW_DAYS * DAY_MS;
   const recent = useMemo(
@@ -361,7 +269,7 @@ export function ProofScreen() {
           : "Not yet.";
   const evidence = !enough
     ? `The desk has answered ${plural(decided, "alarm")} in the last ${WEEKS} weeks. EarlyEye needs at least ${MIN_DECISIONS} answers before it gives a verdict.`
-    : `${realDots} of every 10 alarms were real. There ${falseAlarms === 1 ? "was" : "were"} ${plural(falseAlarms, "false alarm")} ${" " + IN_WINDOW}${ack != null ? `, and a guard was on the way in about ${fmtS(ack)}` : ""}.`;
+    : `${realDots} of every 10 alarms the desk answered were real${alarms.length > decided ? ` (${alarms.length - decided} not answered yet)` : ""}. There ${falseAlarms === 1 ? "was" : "were"} ${plural(falseAlarms, "false alarm")} ${" " + IN_WINDOW}${ack != null ? `, and a guard was on the way in about ${fmtS(ack)}` : ""}.`;
 
   // ── 1. Misses ──
   const misses = recent
@@ -374,10 +282,6 @@ export function ProofScreen() {
   const cctvCaught = proof?.cctv_domain?.recall;
 
   // ── 2. Where it gets confused ──
-  const sportsZone =
-    site?.zones.find((z) => /sport/i.test(z.zone_type))?.zone_type ??
-    "sports_court";
-  const camZone = (c: Camera) => localZones[c.camera_id] ?? c.zone_type;
   const confused = useMemo(() => {
     const by = new Map<string, Event[]>();
     for (const e of recent.filter(isFalse))
@@ -409,20 +313,6 @@ export function ProofScreen() {
   }, [recent]);
   const maxConfused = Math.max(1, ...confused.map((c) => c.n));
 
-  const toggleSports = async (cam: Camera) => {
-    const original = cam.zone_type;
-    const on = camZone(cam) === sportsZone;
-    const next = on ? original : sportsZone;
-    const ok = await patchCamera(cam.camera_id, { zone_type: next });
-    if (ok) {
-      writeZone(cam.camera_id, null);
-      setSavedOnApi((s) => ({ ...s, [cam.camera_id]: true }));
-      mutateCameras();
-    } else {
-      writeZone(cam.camera_id, on ? null : sportsZone);
-      setSavedOnApi((s) => ({ ...s, [cam.camera_id]: false }));
-    }
-  };
 
   // ── 3. Getting better ──
   const weeks = Array.from({ length: 4 }, (_, i) => {
@@ -448,59 +338,7 @@ export function ProofScreen() {
         ? `Up from ${weeks[0].n} to ${weeks[3].n}.`
         : `Level at ${weeks[3].n} a week.`;
 
-  // ── What EarlyEye suggests changing (per camera, last 14 days) ──
-  const since14 = now - SUGGEST_DAYS * DAY_MS;
-  const suggestions = useMemo(() => {
-    const out: {
-      cam: Camera;
-      kind: "strict" | "sensitive" | "sports";
-      why: string;
-    }[] = [];
-    for (const cam of cameras ?? []) {
-      const here = recent.filter((e) => e.camera_id === cam.camera_id && Date.parse(e.start_time) >= since14);
-      const alerts = here.filter((e) => isAlarm(e) || e.outcome === "nothing");
-      const nothing = alerts.filter(saidNothing).length;
-      const realAlarms = alerts.filter(isReal).length;
-      const missed = here.filter(isMiss);
-      if (alerts.length >= 5 && nothing / alerts.length >= 0.7) {
-        const play = alerts.filter((e) => saidNothing(e) && e.type === "play").length;
-        out.push({
-          cam,
-          kind: "strict",
-          why: `${nothing} of ${alerts.length} alerts in ${SUGGEST_DAYS} days were nothing (desk or guard)${play >= nothing / 2 ? ", mostly games and rough play" : ""}.`,
-        });
-        if (play >= nothing / 2 && camZone(cam) !== sportsZone)
-          out.push({ cam, kind: "sports", why: "Sport looks like fighting here. A sports zone counts as lower risk; real fights still sound the alarm." });
-      } else if (missed.length || (realAlarms >= 3 && nothing === 0)) {
-        out.push({
-          cam,
-          kind: "sensitive",
-          why: missed.length
-            ? `The desk reported ${plural(missed.length, "fight")} here that never reached an alarm.`
-            : `${realAlarms} real alarms in ${SUGGEST_DAYS} days and no false ones: it can afford to warn earlier.`,
-        });
-      }
-    }
-    return out;
-    // camZone reads localZones
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cameras, recent, since14, localZones, sportsZone]);
   const answers = recent.filter((e) => isReal(e) || isFalse(e) || e.outcome === "nothing").length;
-  const applySens = async (cam: Camera, sensitivity: CameraSensitivity) => {
-    const ok = await patchCamera(cam.camera_id, { sensitivity });
-    writeSens(cam.camera_id, { sensitivity, at: new Date().toISOString(), where: ok ? "api" : "this-computer" });
-    if (ok) mutateCameras();
-  };
-  const appliedMarks = Object.values(sensSaved).map((v) => Date.parse(v.at));
-
-  const copy = async (key: string, text: string) => {
-    try {
-      await navigator.clipboard.writeText(text);
-    } catch {
-      // clipboard blocked: the text is on screen to select by hand
-    }
-    setCopied(key);
-  };
 
   // ── Technical table: GET /proof rows + REPORT rows + your campus ──
   const pct = (x: number) => `${(x * 100).toFixed(1)}%`;
@@ -544,9 +382,9 @@ export function ProofScreen() {
         </h1>
         <span className={CHIP_DASHED}>LAST {WINDOW_DAYS} DAYS</span>
         <HowItWorks>
-          <span>Every time the desk answers &ldquo;Was this real?&rdquo;, EarlyEye learns how it is doing on your cameras. Campus numbers come only from those answers in the last {WINDOW_DAYS} days.</span>
+          <span>Every time the desk answers &ldquo;Was this real?&rdquo;, that answer is counted here. Campus numbers come only from those answers in the last {WINDOW_DAYS} days.</span>
           <span>A miss only shows up when the desk marks a fight as real that never reached an alarm.</span>
-          <span>Sports zones count as lower risk; real fights still sound the alarm. Each answer is saved as a label for that camera and used to retune it.</span>
+          <span>Answers are stored with each incident. The model team can use them to retune a camera by hand; the system does not retrain itself.</span>
           <span>Guard times are medians from the guards&rsquo; phones. Test-video numbers come from the model team&rsquo;s held-out clips.</span>
         </HowItWorks>
       </div>
@@ -574,7 +412,7 @@ export function ProofScreen() {
         </div>
         <div className="flex flex-[1_1_420px] flex-col gap-2.5">
           <span className="text-[15px] font-extrabold">
-            Out of every 10 alarms that sounded
+            Out of every 10 alarms the desk answered
           </span>
           {enough ? (
             <>
@@ -681,19 +519,6 @@ export function ProofScreen() {
             </p>
           )}
           {confused.map((c) => {
-            const cam = cameras?.find((x) => x.camera_id === c.camera_id);
-            const isSports = cam ? camZone(cam) === sportsZone : false;
-            const wasSports =
-              cam?.zone_type === sportsZone && !localZones[c.camera_id];
-            const action: "sports" | "keep" | "ask" | "none" =
-              c.top === "play" && cam && !wasSports
-                ? "sports"
-                : c.realHere >= 3
-                  ? "keep"
-                  : c.n >= 2
-                    ? "ask"
-                    : "none";
-            const askText = `Please look at ${c.place} (${c.camera_id}): the desk marked ${plural(c.n, "alert")} as nothing in the last ${WEEKS} weeks, mostly ${c.top === "crowd" ? "crowd gatherings" : c.top} around ${String(c.busyHour).padStart(2, "0")}:00. Can you quiet these without missing real fights?`;
             return (
               <div
                 key={c.camera_id}
@@ -718,58 +543,9 @@ export function ProofScreen() {
                 <span className="text-[14px] leading-[1.45] text-ink-2">
                   {CONFUSED_WHY[c.top]}
                 </span>
-                <span className="flex flex-wrap items-center gap-2.5">
-                  {action === "sports" && cam && (
-                    <>
-                      <button
-                        type="button"
-                        aria-pressed={isSports}
-                        onClick={() => toggleSports(cam)}
-                        className={cn(
-                          "min-h-[38px] cursor-pointer rounded-[2px] px-3 text-[14px] font-extrabold",
-                          isSports
-                            ? "border border-signal bg-white text-signal-ink"
-                            : "bg-ink text-white",
-                        )}
-                      >
-                        {isSports
-                          ? "Sports zone on · undo"
-                          : "Make it a sports zone"}
-                      </button>
-                      <span className="flex-[1_1_240px] text-[13px] font-bold text-signal-ink">
-                        {isSports
-                          ? `${savedOnApi[cam.camera_id] ? "Saved" : "Saved on this computer only"}. This camera now counts as a sports zone, which is lower risk. Real fights still sound the alarm.`
-                          : ""}
-                      </span>
-                    </>
-                  )}
-                  {action === "ask" && (
-                    <>
-                      <button
-                        type="button"
-                        onClick={() => copy(c.camera_id, askText)}
-                        className="min-h-[38px] cursor-pointer rounded-[2px] border border-line-strong bg-white px-3 text-[14px] font-extrabold text-ink"
-                      >
-                        Copy a request
-                      </button>
-                      <span className="flex-[1_1_240px] text-[13px] font-bold text-signal-ink">
-                        {copied === c.camera_id
-                          ? "Copied. Send it to the EarlyEye team."
-                          : `Ask the EarlyEye team to quiet ${c.top === "crowd" ? "crowd alerts" : "these alerts"} here around ${String(c.busyHour).padStart(2, "0")}:00.`}
-                      </span>
-                    </>
-                  )}
-                  {action === "keep" && (
-                    <span className="text-[13px] font-bold text-signal-ink">
-                      Keep as is. This is one of your busiest real hotspots (
-                      {plural(c.realHere, "real incident")} {IN_WINDOW}).
-                    </span>
-                  )}
-                  {action === "none" && (
-                    <span className="text-[13px] font-bold text-signal-ink">
-                      Keep as is. Nothing to change for one alert.
-                    </span>
-                  )}
+                <span className="text-[13px] font-bold text-ink-2">
+                  Mostly around {String(c.busyHour).padStart(2, "0")}:00 ·{" "}
+                  {plural(c.realHere, "real incident")} here {IN_WINDOW}
                 </span>
               </div>
             );
@@ -777,58 +553,13 @@ export function ProofScreen() {
         </section>
       </div>
 
-      {/* ── What EarlyEye suggests changing ── */}
-      <section aria-labelledby="suggest-h" className="flex flex-col gap-3 rounded-[2px] border-2 border-signal bg-white p-4">
-        <div className="flex flex-col gap-1">
-          <span className={CHIP_DASHED + " self-start"}>LAST {SUGGEST_DAYS} DAYS · DESK AND GUARD ANSWERS</span>
-          <h2 id="suggest-h" className="ee-display text-[28px] leading-none sm:text-[30px]">What EarlyEye suggests changing</h2>
-        </div>
-        {suggestions.length === 0 && (
-          <p className="text-[15px]">Nothing to change. No camera has enough answers pointing one way.</p>
-        )}
-        {suggestions.map((sg) => {
-          const saved = sensSaved[sg.cam.camera_id];
-          const current = saved?.sensitivity ?? sg.cam.sensitivity ?? null;
-          const isSports = camZone(sg.cam) === sportsZone;
-          const applied =
-            sg.kind === "sports" ? isSports : !!saved && saved.sensitivity === (sg.kind === "strict" ? "strict" : "sensitive");
-          const title =
-            sg.kind === "strict" ? "Make this camera stricter" : sg.kind === "sensitive" ? "More sensitive here" : "Make it a sports zone";
-          return (
-            <div key={`${sg.cam.camera_id}-${sg.kind}`} className="flex flex-wrap items-center gap-x-4 gap-y-2 rounded-[2px] border border-line px-3.5 py-3">
-              <span className="flex flex-[1_1_320px] flex-col gap-0.5">
-                <span className="text-[17px] font-extrabold">
-                  {title} · {sg.cam.location}
-                </span>
-                <span className="text-[14px] leading-[1.45] text-ink-2">{sg.why}</span>
-                {sg.kind !== "sports" && current && (
-                  <span className="font-mono text-[12px] text-muted-ink">
-                    NOW: {current === "strict" ? "STRICT (FEWER ALARMS)" : "SENSITIVE (EARLIER ALARMS)"}
-                  </span>
-                )}
-              </span>
-              {sg.kind === "sports" ? (
-                <button type="button" aria-pressed={isSports} onClick={() => toggleSports(sg.cam)} className={cn("min-h-11 rounded-[2px] px-4 text-[15px] font-extrabold", isSports ? "border border-signal bg-white text-signal-ink" : "bg-ink text-white")}>
-                  {isSports ? "Sports zone on · undo" : "Make it a sports zone"}
-                </button>
-              ) : applied ? (
-                <span className="flex flex-col items-end gap-0.5 text-right">
-                  <span className="text-[15px] font-extrabold text-signal-ink">Applied {wdm(Date.parse(saved!.at))}, {new Date(Date.parse(saved!.at) + MYT).toISOString().slice(11, 16)}</span>
-                  <span className="text-[12px] text-muted-ink">{saved!.where === "api" ? "Saved. The camera uses it within 10 s." : "Saved on this computer"}</span>
-                  <button type="button" onClick={() => writeSens(sg.cam.camera_id, null)} className="text-[13px] font-bold text-signal">Undo</button>
-                </span>
-              ) : (
-                <button type="button" onClick={() => applySens(sg.cam, sg.kind === "strict" ? "strict" : "sensitive")} className="min-h-11 rounded-[2px] bg-ink px-4 text-[15px] font-extrabold text-white">
-                  Apply
-                </button>
-              )}
-            </div>
-          );
-        })}
-        <p className="m-0 text-[14px] leading-[1.45] text-ink-2">
-          <span className="font-extrabold">{plural(answers, "answer")} saved as training examples (stick figures only).</span> The camera setting changes now; the model team retrains weekly.
-        </p>
-      </section>
+      <p className="m-0 rounded-[2px] border border-line bg-white px-4 py-3 text-[15px] leading-[1.5] text-ink-2">
+        <span className="font-extrabold text-ink">
+          {plural(answers, "Confirm or Dismiss answer")} stored with their incidents.
+        </span>{" "}
+        The model team can use them to retune the alarm line for a camera. This
+        is done by hand; the system does not retrain itself.
+      </p>
 
       <div className="flex flex-wrap items-stretch gap-4">
         {/* ── 3. Getting better ── */}
@@ -857,7 +588,6 @@ export function ProofScreen() {
           </div>
           <div className="-mt-1.5 flex gap-3.5">
             {weeks.map((w, i) => {
-              const applied = appliedMarks.filter((t) => t >= w.a && (i === 3 || t < w.b));
               return (
                 <span
                   key={w.label}
@@ -867,11 +597,6 @@ export function ProofScreen() {
                   )}
                 >
                   {w.label}
-                  {applied.length > 0 && (
-                    <span className="mt-0.5 rounded-[1px] border border-dashed border-signal px-1 font-mono text-[11px] font-bold text-signal-ink">
-                      ◆ CHANGE APPLIED {wdm(applied[0]).toUpperCase()}
-                    </span>
-                  )}
                 </span>
               );
             })}
