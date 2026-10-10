@@ -335,6 +335,21 @@ export async function sendBackup(
   if (!r.ok) throw new PatchError(r.status, `backup ${incident_id} failed: ${r.status}`);
 }
 
+/**
+ * Demo mode only (no API): start the live demo clean. Clears the shared store's pushes,
+ * guard taps and labels from earlier runs. Once per page load (a refresh of Live).
+ */
+let demoResetDone = false;
+export async function resetDemoOnce(): Promise<boolean> {
+  if (!usingMock || demoResetDone) return false;
+  demoResetDone = true;
+  try {
+    return (await fetch("/api/mock/reset", { method: "POST" })).ok;
+  } catch {
+    return false;
+  }
+}
+
 /** Back-compat alias. */
 export const patchStatus = patchEvent;
 

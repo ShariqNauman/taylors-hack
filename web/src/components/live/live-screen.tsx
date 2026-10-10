@@ -1,9 +1,9 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import useSWR from "swr";
-import { getCameras, getPatrolPlan, getSite, usingMock } from "@/lib/api";
+import useSWR, { useSWRConfig } from "swr";
+import { getCameras, getPatrolPlan, getSite, resetDemoOnce, usingMock } from "@/lib/api";
 import { LEVEL_ORDER, mytWeekday } from "@/lib/format";
 import { useAlarmStore, selectPulsingCameras } from "@/lib/store/alarm-store";
 import { useAppStore } from "@/lib/store/app-store";
@@ -34,6 +34,16 @@ const handledNow = (e: { outcome_at?: string | null }, now: number) =>
 
 export function LiveScreen() {
   const params = useSearchParams();
+  // Demo mode: a refresh of Live starts a clean demo (no pushes or labels from earlier runs).
+  const { mutate: mutateAll } = useSWRConfig();
+  const clearAlarms = useAlarmStore((s) => s.retain);
+  useEffect(() => {
+    void resetDemoOnce().then((done) => {
+      if (!done) return;
+      clearAlarms(new Set());
+      void mutateAll((k) => Array.isArray(k) && k[0] === "events");
+    });
+  }, [mutateAll, clearAlarms]);
   const camParam = params.get("cam");
   const apiDown = useAppStore((s) => s.apiDown);
   const view = useAppStore((s) => s.view);

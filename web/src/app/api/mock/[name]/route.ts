@@ -159,6 +159,15 @@ export async function POST(
     if (newPush) await notify(e.pushed_to);
     return NextResponse.json(e, { status: 201 });
   }
+  if (name === "reset") {
+    // A fresh demo (Live page refresh): forget pushes, guard taps and desk labels from earlier
+    // runs. The seed history, Plan edits, who is on shift and phone registrations stay.
+    await updateStore((s) => {
+      s.events = {};
+      s.added = {};
+    });
+    return NextResponse.json({ reset: true });
+  }
   if (name === "staff") {
     if (typeof body.name !== "string" || typeof body.on_duty !== "boolean")
       return NextResponse.json({ detail: "Send name and on_duty." }, { status: 422 });
