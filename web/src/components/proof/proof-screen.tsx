@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import useSWR from "swr";
 import {
@@ -304,7 +305,6 @@ export function ProofScreen() {
     }
   }, [zonesRaw]);
   const [savedOnApi, setSavedOnApi] = useState<Record<string, boolean>>({});
-  const [share, setShare] = useState(false);
   const [copied, setCopied] = useState<string | null>(null);
   const [tech, setTech] = useState(false);
   // Ticks, so a decision made on Live a moment ago counts here without a reload.
@@ -493,25 +493,6 @@ export function ProofScreen() {
   };
   const appliedMarks = Object.values(sensSaved).map((v) => Date.parse(v.at));
 
-  // ── Summary for management ──
-  const shareText = [
-    `EarlyEye track record, ${site?.name ?? "our site"}, last ${WEEKS} weeks (${dm(since)} to ${dm(now)}).`,
-    enough
-      ? `${plural(alarms.length, "alarm")} sounded; the security desk confirmed ${real} as real and ${falseAlarms} as false ${falseAlarms === 1 ? "alarm" : "alarms"}.`
-      : `${plural(alarms.length, "alarm")} sounded, but the desk has answered only ${decided}, too few to judge accuracy yet.`,
-    ack != null
-      ? `Guards were on the way in about ${fmtS(ack)}${there != null ? ` and on the scene in about ${fmtS(there)}` : ""}.`
-      : "",
-    misses.length
-      ? `${misses.length === 1 ? "One fight was" : `${misses.length} fights were`} reported that the system missed (latest: ${wdm(Date.parse(misses[0].start_time))}, ${misses[0].location}).`
-      : "No missed fights were reported.",
-    `Alerts the desk marked as nothing: ${weeks[0].n} in the first week, ${weeks[3].n} in the last.`,
-    "In public test videos it never trained on, it caught about " +
-      `${testDots} of every 10 fights. Video never leaves campus and the system does not identify anyone.`,
-  ]
-    .filter(Boolean)
-    .join(" ");
-
   const copy = async (key: string, text: string) => {
     try {
       await navigator.clipboard.writeText(text);
@@ -583,17 +564,12 @@ export function ProofScreen() {
             {evidence}
           </span>
           <span className="mt-1 flex flex-wrap gap-2.5">
-            <button
-              type="button"
-              aria-expanded={share}
-              onClick={() => {
-                setShare((s) => !s);
-                setCopied(null);
-              }}
-              className="min-h-[46px] cursor-pointer rounded-[2px] bg-ink px-[18px] text-[16px] font-extrabold text-white"
+            <Link
+              href="/reports?period=weekly"
+              className="inline-flex min-h-[46px] items-center rounded-[2px] bg-ink px-[18px] text-[16px] font-extrabold text-white no-underline"
             >
-              {share ? "Hide the summary" : "Share with management"}
-            </button>
+              Weekly report for management (PDF)
+            </Link>
           </span>
         </div>
         <div className="flex flex-[1_1_420px] flex-col gap-2.5">
@@ -638,29 +614,6 @@ export function ProofScreen() {
             ))}
           </div>
         </div>
-        {share && (
-          <div className="flex basis-full flex-col gap-2.5 rounded-[2px] border border-line bg-raised px-3.5 py-3">
-            <span className="ee-label text-[12px]">Summary for management</span>
-            <p className="text-[16px] leading-[1.55]">{shareText}</p>
-            <span className="flex flex-wrap items-center gap-2.5">
-              <button
-                type="button"
-                onClick={() => copy("share", shareText)}
-                className="min-h-10 cursor-pointer rounded-[2px] bg-signal px-3.5 text-[14px] font-extrabold text-white"
-              >
-                Copy summary
-              </button>
-              <span
-                className="text-[14px] font-bold text-signal-ink"
-                aria-live="polite"
-              >
-                {copied === "share"
-                  ? "Copied. Paste it into your email or report."
-                  : ""}
-              </span>
-            </span>
-          </div>
-        )}
       </section>
 
       <div className="flex flex-wrap items-stretch gap-4">

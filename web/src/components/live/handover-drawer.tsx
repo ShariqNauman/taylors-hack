@@ -1,9 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
-import type { Camera, HandoverBrief, HandoverFacts } from "@/lib/types";
-import { postHandover } from "@/lib/api";
+import type { Camera, HandoverFacts } from "@/lib/types";
 import { fmtBlackFor, fmtTime, LEVEL_LABEL } from "@/lib/format";
 import { cameraKind } from "@/lib/camera-meta";
 import {
@@ -36,8 +34,7 @@ export function HandoverDrawer({
   /** "Aiman Hakimi (Guard B)" from a call sign. */
   nameOf?: (call: string | null | undefined) => string;
 }) {
-  const [copied, setCopied] = useState(false);
-  const { facts, open_, unlabelled, black, lines } = buildFacts({
+  const { open_, unlabelled, black, lines } = buildFacts({
     now,
     pushes,
     budget,
@@ -47,61 +44,8 @@ export function HandoverDrawer({
     nameOf,
   });
 
-  // The written brief is an enhancement: the facts above never wait for it.
-  const [brief, setBrief] = useState<HandoverBrief | null>(null);
-  const [writing, setWriting] = useState(false);
-  const [briefError, setBriefError] = useState(false);
-  const ctrl = useRef<AbortController | null>(null);
-  const stop = () => {
-    ctrl.current?.abort();
-    ctrl.current = null;
-    setWriting(false);
-  };
-  useEffect(() => () => ctrl.current?.abort(), []);
-  const writeBrief = async () => {
-    stop();
-    const c = new AbortController();
-    ctrl.current = c;
-    setWriting(true);
-    setBriefError(false);
-    try {
-      const b = await postHandover(facts, c.signal);
-      if (!c.signal.aborted) {
-        setBrief(b);
-        setCopied(false); // what is shown changed, so "copied" no longer applies
-      }
-    } catch {
-      if (!c.signal.aborted) setBriefError(true);
-    } finally {
-      if (ctrl.current === c) {
-        ctrl.current = null;
-        setWriting(false);
-      }
-    }
-  };
-
-  const summary = [
-    `Shift handover · ${fmtTime(now)}`,
-    `Pushes used: ${pushes}/${budget}`,
-    `Incidents still open: ${open_.length}`,
-    `Alerts with no label: ${unlabelled.length}`,
-    `Cameras black: ${black.length}`,
-    ...lines.map((l) => `- ${l}`),
-  ].join("\n");
-
   return (
-    <Sheet
-      open={open}
-      onOpenChange={(o) => {
-        onOpenChange(o);
-        if (!o) {
-          setCopied(false);
-          stop();
-          setBrief(null);
-          setBriefError(false);
-        }
-      }}
-    >
+    <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
         side="right"
         className="w-[440px] max-w-full gap-3.5 data-[side=right]:w-full data-[side=right]:sm:w-[440px] overflow-y-auto rounded-none border-line bg-white p-[22px] shadow-none transition-none data-[side=right]:sm:max-w-[440px]"
@@ -115,7 +59,7 @@ export function HandoverDrawer({
         </SheetDescription>
         <div className="grid grid-cols-2 gap-2">
           {[
-            [`${pushes}/${budget}`, "pushes used"],
+            [String(pushes), `guard alerts (aim: ${budget} or fewer)`],
             [String(open_.length), "incidents still open"],
             [String(unlabelled.length), "alerts with no label"],
           ].map(([v, l]) => (
@@ -136,44 +80,7 @@ export function HandoverDrawer({
             </span>
           </div>
         </div>
-        <div className="flex flex-col gap-2" aria-live="polite">
-          <button
-            type="button"
-            onClick={writeBrief}
-            disabled={writing}
-            className="min-h-11 self-start rounded-[2px] border-2 border-ink bg-white px-3.5 text-[14px] font-extrabold text-ink disabled:opacity-60"
-          >
-            {writing
-              ? "Writing the brief…"
-              : briefError
-                ? "Couldn't write it. Try again"
-                : brief
-                  ? "Write it again"
-                  : "Write the brief"}
-          </button>
-          {briefError && (
-            <span className="sr-only">
-              The brief could not be written just now. The facts below are
-              complete; copy them instead.
-            </span>
-          )}
-          {brief && (
-            <div className="flex flex-col gap-1.5 rounded-[2px] border border-line bg-raised p-3">
-              <span className="ee-label">Handover brief</span>
-              <p className="m-0 text-[15px] leading-[1.5]">{brief.text}</p>
-              <span className="text-[11px] leading-snug text-muted-ink">
-                Numbers computed from the shift log.{" "}
-                {brief.model.startsWith("claude")
-                  ? "Wording by Claude."
-                  : "Wording by the offline template (the writing service was not reachable)."}{" "}
-                Nothing is sent to anyone — copy it into your handover.
-              </span>
-            </div>
-          )}
-        </div>
-        <span className="ee-label text-[12px]">
-          Hand over{brief ? " · the facts behind it" : ""}
-        </span>
+        <span className="ee-label text-[12px]">Hand over</span>
         <ul className="m-0 flex flex-col gap-2 pl-[18px] text-[15px] leading-[1.45]">
           {lines.map((l) => (
             <li key={l}>{l}</li>
@@ -195,31 +102,12 @@ export function HandoverDrawer({
             </Link>
           )}
         </div>
-        <button
-          type="button"
-          onClick={async () => {
-            try {
-              await navigator.clipboard.writeText(brief ? brief.text : summary);
-              setCopied(true);
-            } catch {
-              setCopied(false);
-            }
-          }}
-          className="min-h-[52px] rounded-[2px] bg-signal text-[16px] font-extrabold text-white"
+        <Link
+          href="/reports?period=daily"
+          className="inline-flex min-h-[52px] items-center justify-center rounded-[2px] bg-signal text-[16px] font-extrabold text-white no-underline"
         >
-          {copied
-            ? brief
-              ? "Brief copied"
-              : "Summary copied"
-            : brief
-              ? "Copy brief"
-              : "Copy summary"}
-        </button>
-        <span className="text-[12px] text-muted-ink">
-          {brief
-            ? "Copies the written brief for the next operator or the group chat."
-            : "Copies a plain-text summary for the next operator or the group chat."}
-        </span>
+          Today&apos;s report as a PDF
+        </Link>
       </SheetContent>
     </Sheet>
   );
