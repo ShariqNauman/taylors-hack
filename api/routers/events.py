@@ -17,6 +17,7 @@ from supabase import Client
 
 from api.db import get_supabase
 from api.models import Event, EventCreate, EventPatch, Status
+from api.services import live_loop
 
 router = APIRouter(prefix="", tags=["events"])
 
@@ -89,84 +90,96 @@ def get_nearest_staff(
 # ── Routes ────────────────────────────────────────────────────────────────────
 
 
+def _write(sb: Client, row: dict, existing: bool) -> list:
+    """Upsert / update an event, dropping columns the table does not have yet (pre-migration)."""
+    for _ in range(6):
+        try:
+            if existing:
+                q = sb.table("events").update(row).eq("incident_id", row["incident_id"])
+            else:
+                q = sb.table("events").upsert(row, on_conflict="incident_id")
+            return q.execute().data or []
+        except Exception as exc:
+            smaller = live_loop.without_unknown_columns(row, str(exc))
+            if smaller is None:
+                raise
+            row = smaller
+    return []
+
+
+def _ensure_camera(sb: Client, camera_id: str, location: str, zone_type: str) -> None:
+    """events.camera_id references cameras: register a new edge camera instead of failing."""
+    try:
+        if sb.table("cameras").select("camera_id").eq("camera_id", camera_id).limit(1).execute().data:
+            return
+        site = sb.table("sites").select("site_id").limit(1).execute().data
+        if not site:
+            return
+        sb.table("cameras").insert({"camera_id": camera_id, "site_id": site[0]["site_id"],
+                                    "location": location, "zone_type": zone_type,
+                                    "online": True}).execute()
+    except Exception:
+        pass  # if this fails, the insert below reports the real error
+
+
 @router.post("/events", response_model=Event, status_code=201)
 async def create_event(body: EventCreate):
     """
-    Receive an incident from the edge analyser, enrich it with zone risk
-    and priority, optionally auto‑push to the nearest staff member, and
-    persist it in Supabase.
+    Edge -> API, every 0.5 s while level >= tense, same incident_id (contract §6).
+    Upserts by incident_id. The edge never overwrites pushed_to / pushed_at / acked_at /
+    status / staff_note. The API pushes on the first fight_likely or fight; the shift
+    budget (3 per 8 h) caps fight_likely only, fight always pushes.
     """
     supabase = get_supabase()
     now_iso = datetime.now(timezone.utc).isoformat()
 
-    # 1. Generate incident_id if the edge app didn't supply one
     incident_id = body.incident_id or (
         f"INC-{datetime.now(timezone.utc).strftime('%Y')}-{random.randint(10000, 99999)}"
     )
-
-    # 2. Look up zone risk
     zone_risk = get_zone_risk(supabase, body.zone_type)
-
-    # 3. Compute priority if not provided by the caller
     priority = body.priority if body.priority is not None else compute_priority(
         body.level.value, body.peak_score, zone_risk, body.people_count
     )
 
-    # 4. Two-tier alert logic
-    pushed_to: str | None = None
-    pushed_at: str | None = None
-    status = body.status
-
-    if body.level in (body.level.fight_likely, body.level.fight):
-        # High-severity → auto-push to nearest staff
-        staff_id, staff_name = get_nearest_staff(supabase, body.zone_type)
-        if staff_name:
-            pushed_to = staff_name
-            pushed_at = now_iso
-            status = Status.pushed
-    # 'tense' and 'calm' stay as 'new' — no auto-push
-
-    # 5. Touch the camera's last_frame_at timestamp
-    try:
-        supabase.table("cameras").update(
-            {"last_frame_at": now_iso}
-        ).eq("camera_id", body.camera_id).execute()
-    except Exception:
-        pass  # non-critical; don't fail the event creation
-
-    # 6. Build the row and insert
-    row = {
-        "incident_id": incident_id,
-        "camera_id": body.camera_id,
-        "location": body.location,
-        "zone_type": body.zone_type,
-        "start_time": body.start_time,
-        "end_time": body.end_time,
-        "type": body.type.value,
-        "level": body.level.value,
-        "peak_score": body.peak_score,
-        "eta_seconds": body.eta_seconds,
-        "priority": priority,
-        "reason": body.reason,
-        "people_count": body.people_count,
-        "action": body.action,
-        "nearest_staff": body.nearest_staff,
-        "pushed_to": pushed_to,
-        "pushed_at": pushed_at,
-        "status": status.value,
-        "staff_note": body.staff_note,
-    }
+    incoming = body.model_dump(mode="json", exclude_none=False)
+    incoming.update({"incident_id": incident_id, "priority": priority})
+    for k in ("snapshot", "peak_snapshot", "top_features"):
+        if incoming.get(k) is None:
+            incoming.pop(k, None)
 
     try:
-        resp = supabase.table("events").insert(row).execute()
+        found = supabase.table("events").select("*").eq("incident_id", incident_id).limit(1).execute().data
     except Exception as exc:
-        raise HTTPException(status_code=500, detail=f"Insert failed: {exc}")
+        raise HTTPException(status_code=500, detail=f"Lookup failed: {exc}")
+    existing = found[0] if found else None
+    row = live_loop.merge_for_upsert(existing, incoming)
 
-    if not resp.data:
-        raise HTTPException(status_code=500, detail="Insert returned no data")
+    # The API owns the push.
+    pushes = 0
+    try:
+        pushes = len(supabase.table("events").select("incident_id")
+                     .gte("pushed_at", live_loop.shift_start()).execute().data or [])
+    except Exception:
+        pass
+    staff_name = body.nearest_staff
+    if not staff_name:
+        _, staff_name = get_nearest_staff(supabase, body.zone_type)
+    row.update(live_loop.push_decision(row, pushes, staff_name, now_iso))
 
-    # 7. Return the created event
-    return Event(**resp.data[0])
+    if existing is None:
+        _ensure_camera(supabase, body.camera_id, body.location, body.zone_type)
+    try:
+        supabase.table("cameras").update({"last_frame_at": now_iso}).eq("camera_id", body.camera_id).execute()
+    except Exception:
+        pass
+
+    try:
+        data = _write(supabase, row, existing is not None)
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f"Write failed: {exc}")
+    if not data:
+        raise HTTPException(status_code=500, detail="Write returned no data")
+    return Event(**data[0])
 
 
 @router.get("/events", response_model=list[Event])
@@ -206,29 +219,20 @@ async def list_events(since: Optional[str] = Query(default=None)):
 @router.patch("/events/{incident_id}", response_model=Event)
 async def patch_event(incident_id: str, body: EventPatch):
     """
-    Update an event's status (and optionally add a staff note).
-    Used by guards / admins to confirm, dismiss, or resolve incidents.
+    The desk sends status (+ staff_note): confirmed / dismissed / resolved, or pushed for an
+    early push. The duty phone sends acked_at only ("On my way"); response = acked_at - pushed_at.
     """
     supabase = get_supabase()
-
-    update_data: dict = {"status": body.status.value}
-    if body.staff_note is not None:
-        update_data["staff_note"] = body.staff_note
-
+    update_data = live_loop.patch_update(
+        body.status.value if body.status is not None else None, body.staff_note, body.acked_at
+    )
+    if not update_data:
+        raise HTTPException(status_code=422, detail="Send status, staff_note or acked_at.")
+    update_data["incident_id"] = incident_id
     try:
-        resp = (
-            supabase.table("events")
-            .update(update_data)
-            .eq("incident_id", incident_id)
-            .execute()
-        )
+        data = _write(supabase, update_data, existing=True)
     except Exception as exc:
         raise HTTPException(status_code=500, detail=f"Update failed: {exc}")
-
-    if not resp.data:
-        raise HTTPException(
-            status_code=404,
-            detail=f"Event {incident_id} not found",
-        )
-
-    return Event(**resp.data[0])
+    if not data:
+        raise HTTPException(status_code=404, detail=f"Event {incident_id} not found")
+    return Event(**data[0])
