@@ -20,23 +20,28 @@ Persona: Ah Seng, printing shop, Kajang, RM65k/month (inside MyInvois Phase 5), 
 - `api/` Python 3.11 FastAPI + pandas → **Render**. Endpoints: `GET /invoices /customers /projection /proof`, `POST /promise`, (SHOULD) `POST /parse-buku /ask`.
 - `model/` LightGBM classifier (late) + regressor (days late), sklearn baseline + isotonic calibration, SHAP. One `features.py` for both training and demo data. `export_predictions.py` writes JSON into `web/public/mock/` (fallback if Render fails; decide 06:00).
 - Claude `claude-sonnet-5-5` via `anthropic` SDK: reads text/images and polishes sentences only. **Never in the prediction path.**
-- `data/` CSV/JSON in repo, no DB. Real Kaggle AR dataset for training; simulated Ah Seng book in MyInvois-ish JSON + settlements CSV for demo; `my_calendar_2026_27.csv`; `ladder_rungs.csv`.
+- `data/` CSV/JSON in repo, no DB. **IBM "Late Payment Histories" public benchmark (simulated per IBM's docs; never call it "real")** for training; optional Kaggle 50k AR dataset as a second test set; simulated Ah Seng book in MyInvois-ish JSON + settlements CSV for demo; **`real_slice.csv`: ≥20 anonymised, consented real invoices from one business (raw file never in the repo)**; `my_calendar_2026_27.csv`; `ladder_rungs.csv` (3 rungs, every number sourced inline).
 - Secrets only in Vercel/Render env vars. `grep -r sk-ant` before the repo goes public.
 
 ## Non-negotiable modelling rules
+- **Prediction point:** score at issue date, re-score daily until due date. After due date P(late)=1 by definition and is never shown; overdue invoices take the overdue path (ranked by amount × days overdue).
 - Time-based split AND hold-out-customers split (GroupKFold). Never random.
 - Censoring: label only invoices settled by cutoff or ≥30 days past due at cutoff; drop the rest.
-- Customer features and 12-month rating computed strictly as of each invoice's issue date.
+- Customer history features use **only prior invoices settled before this invoice's issue date**; open ones count only toward open balance. Rating window = 12 months as of issue date.
+- `Disputed` excluded from the headline model; reported with/without as a footnote.
 - Tune chase threshold on a validation slice (precision ≥ 0.7 on chase bucket). Action table thresholds are placeholders until then.
-- Policy backtest: top-5 daily list by model vs largest-first vs oldest-first vs random, % of late ringgit covered. State on the proof page that this measures coverage, not recovery.
+- Policy backtest (owned by Backend from `model/predictions_test.csv`): **weekly** top-N (N=3/5/10), pre-due predictions only, model vs largest-first vs oldest-first vs random (50 seeds); metric = share of eventually-late ringgit surfaced before due. Caption: coverage, not recovery; benchmark amounts vary little so largest-first is weak here.
+- Proof page also carries: model card, 3-row ablation, cold-start AUC (history truncated), and the **real-invoice slice** result.
 - Never quote accuracy on the demo book; its patterns are planted.
+- Owner mode is the default UI: words ("Likely late / Watch / Fine"), one reason, one action. Numbers and SHAP behind "Details". The proof page is for accountants and judges.
 
 ## Scope
-- MUST: chase list · invoice detail (SHAP + action + customer note) · payer rating · promise-to-pay · cash projection · money ladder · proof page.
-- Build order: chase list → **proof page** → invoice detail → cashflow/ladder → rating → promise-to-pay.
+- MUST: chase list (owner mode) · invoice detail (reason + action; SHAP under Details) · **draft & send via `wa.me` link, owner taps send, never auto-send** · payer rating · **promise-to-pay** · cash projection · proof page (incl. real-invoice slice + real UK-council-invoice robustness row) · money ladder (3 rungs, sourced inline).
+- Build order: chase list → **proof page** → invoice detail → rating → cashflow → promise-to-pay → ladder.
 - SHOULD (only after 23:00 checkpoint): buku 555 photo → transactions; "can I afford it?" Q&A.
-- CUT: GrantCheck, WhatsApp bot (one mockup image), multi-business, contagion graph (slide only), auth, dark mode, i18n toggle.
-- Cut order if behind: SHOULD → best-time-to-chase → ladder to 3 rungs → promise-to-pay. Never cut the proof page.
+- CUT: GrantCheck, WhatsApp bot (one mockup image), multi-business, contagion graph (Q&A only), auth, dark mode, i18n toggle, rubric-walkthrough slide.
+- Cut order if behind: SHOULD → best-time-to-chase → ladder (whole) → SHAP bars (keep sentence) → promise-to-pay. Never cut the proof page or the real-invoice slice.
+- Pitch person is scope enforcer at 19:00 and 23:00. The pitch claims only what ran in the 03:00 run-through.
 
 ## Checkpoints
 13:00 contract locked + both hello-worlds deployed and opened on a phone on mobile data · 19:00 backtest numbers exist, Home renders from mock · 23:00 end-to-end on the deployed link · 03:00–05:00 run-throughs + record demo video · 06:00 live-API vs precomputed decision · 08:00 freeze · **08:30 submit**.
@@ -45,7 +50,11 @@ Persona: Ah Seng, printing shop, Kajang, RM65k/month (inside MyInvois Phase 5), 
 - `docs/kirakira-TEAM-FINAL.md` — full team plan: features, logic (rating/categorize/prioritize/action tables), data plan, roles, timeline, pitch script, Q&A, checklist, risks.
 - `docs/kayla-frontend-plan.md` — frontend: TypeScript contract (`Invoice`, `Customer`, `Projection`, `Proof`), screens in build order, repo layout, timeline.
 - `docs/kirakira-research-and-pivot.md` — judges and sponsor, Malaysian stats with URLs, MyInvois facts, local competitors, US/China inspiration, ladder rung figures, promise-to-pay spec, honesty lines.
-- `docs/kirakira-review.md` — external review whose fixes are already applied to the plan.
+- `docs/kirakira-review.md`, `docs/kirakira-review-v2.md` — external reviews; all fixes applied to the plan.
+- `docs/kirakira-dataset-shortlist.md` — dataset profiling (IBM primary, Kaggle optional), leakage checks, known quirks.
+
+## Git attribution
+- **Never add `Co-Authored-By` trailers or "Generated with Claude Code" footers** to commits or PRs in this repo. Commits are authored by the team member only. `.claude/settings.json` enforces this; this line is the backup.
 
 ## Working style for this repo
 - Match the contract in `docs/kayla-frontend-plan.md` exactly; if a field must change, change the doc first.

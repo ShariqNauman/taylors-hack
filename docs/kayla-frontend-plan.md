@@ -61,18 +61,27 @@ interface Projection {
   ladder: { option: string; cost_label: string; speed_days: number; act_by: string; covers: number; feasible: boolean; source?: string }[];
 }
 interface Proof {
-  dataset: string; licence: string; n_train: number; n_test: number; n_dropped_censored: number;
-  auc_time: number; auc_customer: number; auc_coldstart: number; auc_noisy: number;
+  dataset: string; dataset_nature: "public benchmark (simulated)" | "real"; licence: string;
+  n_train: number; n_test: number; n_dropped_censored: number;
+  auc_time: number; auc_customer: number; auc_coldstart: number; auc_noisy?: number;
+  auc_with_disputed?: number;                          // footnote only
   threshold: number; precision: number; recall: number; top20_capture: number; mae_days: number;
   calibration: { bin: number; predicted: number; actual: number }[];
-  policy: { strategy: "Model" | "Largest first" | "Oldest first" | "Random"; late_ringgit_covered_pct: number }[];
-  policy_assumption: string;   // "we measure coverage of late ringgit, not recovery…"
-  disclosure: string;          // real vs simulated
+  policy: { strategy: "Model" | "Largest first" | "Oldest first" | "Random"; n: 3 | 5 | 10; covered_pct: number }[];
+  policy_assumption: string;   // verbatim caption from the team plan
+  ablation: { features: string; auc: number }[];       // 3 rows
+  model_card: { inputs: string; target: string; censoring: string; splits: string; calibration: string; failure_modes: string[] };
+  real_slice?: { business_label: string; n_invoices: number; n_flagged: number; n_flagged_actually_late: number; note: string };
+  disclosure: string;          // simulated benchmark + simulated demo, stated plainly
   feature_mapping: string;     // how training and demo schemas line up
 }
+
+// Owner mode: every screen defaults to words. Map p_late → "Likely late" (≥T_hi) | "Watch" (T_lo–T_hi) | "Fine" (<T_lo).
+// A single "Details" toggle (persist in localStorage, try/catch) reveals %, cash_at_risk, SHAP bars.
+// Overdue invoices (due < today) never show a %, they show "X days overdue · expected ~DATE".
 ```
 
-Endpoints: `GET /invoices` → `Invoice[]` · `GET /customers` → `Customer[]` · `GET /projection` → `Projection` · `POST /promise {invoice_id, message}` → `{invoice: Invoice, projection: Projection}` · `GET /proof` → `Proof`.
+Endpoints: `GET /invoices` → `Invoice[]` · `GET /customers` → `Customer[]` · `GET /projection` → `Projection` · `POST /promise {invoice_id, message}` → `{invoice: Invoice, projection: Projection}` · `POST /draft {invoice_id}` → `{text, language, tone, wa_link}` · `POST /chase-sent {invoice_id, channel}` → `{ok}` · `GET /proof` → `Proof`. Add `phone: string` to `Customer` (demo numbers = teammates' phones).
 
 Write `public/mock/*.json` yourself in the first hour with Ah Seng's 10 invoices. Make ABC the chronic late payer, Delta Print the large & new one, three good customers with `action: "No action"`.
 
@@ -90,6 +99,7 @@ Write `public/mock/*.json` yourself in the first hour with Ah Seng's 10 invoices
 - Top: customer, amount, due, rating badge, big P(late).
 - **Why**: the `reason` sentence in large text; under it a horizontal bar chart of `shap_top3` (positive = red bars pushing risk up, negative = green).
 - **Do this**: `action` as a primary button, `action_why` beneath, `best_chase_time` as a small line.
+- **Draft & send**: button "Draft reminder" → `POST /draft` → editable textarea with the text, a small tone/language chip, and a primary button **Send on WhatsApp** that opens `wa_link` in a new tab and fires `POST /chase-sent`. Toast "Logged · best time Tue 10:00". On stage this opens WhatsApp on the phone/desktop with the message pre-filled; the presenter taps send. Never auto-send.
 - **Promise-to-pay**: textarea "Paste the customer's reply", button "Read it". Calls `POST /promise`, shows the extracted promise(s) with confidence, then a toast "Forecast updated" and a link to Cashflow. Pre-fill the textarea with the demo message via a `?demo=1` query so you never type on stage.
 
 ### 3. Cashflow (by 20:00)
@@ -98,7 +108,8 @@ Write `public/mock/*.json` yourself in the first hour with Ah Seng's 10 invoices
 - Replays after a promise is posted (swr `mutate`).
 
 ### 4. Proof (build right after Home, before Invoice detail)
-- **Policy chart first**, top of page: horizontal bars, 4 strategies, "% of late ringgit covered by a 5-a-day chase list". Model bar highlighted. `policy_assumption` as a caption under it. This is the answer to the core judging question; it goes above the fold.
+- **Real-invoice slice first** if `real_slice` exists: one sentence card, "Scored N real invoices from a Klang Valley business (anonymised, consented): flagged M, of which K were paid late." Then the **policy chart**: grouped bars, 4 strategies × N=3/5/10, "% of late ringgit surfaced before due date by a weekly chase list". Model bars highlighted. `policy_assumption` as the caption. These two are the answer to the core judging question; they go above the fold.
+- Model card as a compact definition list; ablation as a 3-row table. Both collapsed by default.
 - Stat tiles: AUC (later invoices), AUC (unseen customers), AUC (cold start), precision / recall at threshold, top-20% capture. MAE and `n_dropped_censored` in small text.
 - Calibration chart (line, predicted vs actual, with the diagonal).
 - Disclosure paragraph verbatim from `proof.disclosure`; `feature_mapping` under it in a collapsible. Dataset name, licence, split method, train/test counts.
