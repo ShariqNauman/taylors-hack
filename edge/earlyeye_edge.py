@@ -1,9 +1,10 @@
 """
 earlyeye_edge.py - the bridge between the live model and the dashboard.
 
-Runs the same pipeline as model/live_detector.py (YOLO26n-pose + ByteTrack -> 12 body keypoints
--> features.window_features over the last 2 s -> predict.py -> smoothed score -> CALM / TENSE /
-FIGHT with the same thresholds), and adds what the dashboard needs:
+Runs the same pipeline as model/live_detector.py (YOLO26n-pose + ByteTrack -> 17 keypoints + boxes
+-> seq_features.window_inputs over the last 2 s (LightGBM features + CNN sequence) -> predict.py ->
+guards.LevelLogic: CALM / TENSE / FIGHT with the same preset, thresholds, guards and single-person
+rule as live_detector.py), and adds what the dashboard needs:
 
   GET  /health       {ok, camera_id, source}            dashboard's on-site probe (800 ms)
   GET  /stream.mjpg  MJPEG, skeletons drawn, ~10 fps    on-site video, never leaves the laptop
@@ -74,6 +75,7 @@ class State:
         self.level = "CALM"
         self.score = 0.0
         self.feats: dict = {}
+        self.blocked: list = []      # guards that blocked an alarm-level score in the last window
         self.updated_at = iso_now()
         self.incident: dict | None = None
         self.calm_since: float | None = None
@@ -196,16 +198,17 @@ def _predict_worker(conn, model_dir: str):
     runtimes and segfault when both load in one process, so the score runs here."""
     os.chdir(model_dir)
     sys.path.insert(0, model_dir)
-    from predict import predict  # noqa: E402  (model/predict.py, not modified)
+    from predict import predict  # noqa: E402  (model/predict.py)
     while True:
         try:
-            feats = conn.recv()
+            msg = conn.recv()
         except (EOFError, KeyboardInterrupt):
             return
-        if feats is None:
+        if msg is None:
             return
         try:
-            conn.send(float(predict(feats)))
+            feats, seq = msg
+            conn.send(float(predict(feats, seq)))
         except Exception as e:  # report, keep serving
             conn.send(("error", str(e)))
 
@@ -218,8 +221,8 @@ class PredictProcess:
         self.proc = ctx.Process(target=_predict_worker, args=(child, str(MODEL_DIR)), daemon=True)
         self.proc.start()
 
-    def __call__(self, feats: dict) -> float:
-        self.conn.send(feats)
+    def __call__(self, feats: dict, seq=None) -> float:
+        self.conn.send((feats, seq))
         out = self.conn.recv()
         if isinstance(out, tuple):
             raise RuntimeError(out[1])
@@ -247,8 +250,11 @@ def run_model(s: State):
     src = int(a.camera) if str(a.camera).isdigit() else str(Path(a.camera).expanduser().resolve())
     os.chdir(MODEL_DIR)                      # model code uses relative paths (joblib, tracker yaml)
     sys.path.insert(0, str(MODEL_DIR))
-    import live_detector as ld               # noqa: E402  (model/live_detector.py, not modified)
+    import live_detector as ld               # noqa: E402  (model/live_detector.py: thresholds, guards, preset)
+    import predict as predict_module         # noqa: E402
     from features import window_features     # noqa: E402
+    from guards import LevelLogic            # noqa: E402  (same CALM / TENSE / FIGHT logic as live_detector)
+    from seq_features import window_inputs   # noqa: E402  (LightGBM features + CNN sequence, one pass)
     if worker is None:
         from predict import predict          # noqa: E402
     else:
@@ -288,7 +294,8 @@ def run_model(s: State):
     threading.Thread(target=capture, daemon=True).start()
     rows, frame_times = deque(), deque()
     last_id, next_score = 0, ld.SHORT_S
-    smooth, high_since, fight_until = 0.0, None, -1.0
+    logic = LevelLogic(ld.LOGIC_CONFIG)     # model mode, preset thresholds and guards from live_detector.py
+    print(f"Scoring: predict.MODE={predict_module.MODE}, FIGHT_AT={ld.ACTIVE_FIGHT_AT}", flush=True)
     while s.running:
         with s.lock:
             frame, fid = s.frame, s.frame_id
@@ -325,15 +332,16 @@ def run_model(s: State):
         if t < next_score:
             continue
         next_score = t + ld.SCORE_EVERY_S
-        feats = window_features(pd.DataFrame(list(rows)), t, frame_times)
-        raw = predict(feats)
-        smooth = ld.SMOOTH_ALPHA * raw + (1 - ld.SMOOTH_ALPHA) * smooth
-        high_since = (high_since if high_since is not None else t) if smooth >= ld.FIGHT_AT else None
-        if high_since is not None and t - high_since >= ld.MIN_DURATION:
-            fight_until = t + ld.FIGHT_HOLD
-        level = "FIGHT" if t <= fight_until else "TENSE" if smooth >= ld.TENSE_AT else "CALM"
+        kp = pd.DataFrame(list(rows))
+        if predict_module.NEEDS_SEQUENCE:   # ensemble: the CNN needs the keypoint sequence too
+            feats, seq = window_inputs(kp, t, frame_times)
+        else:
+            feats, seq = window_features(kp, t, frame_times), None
+        raw = predict(feats, seq)
+        level, smooth, blocked = logic.step(t, raw, feats)
         with s.lock:
             s.level, s.score, s.feats, s.updated_at = level, float(smooth), feats, iso_now()
+            s.blocked = blocked
             tick_incident(s, time.time())
     cap.release()
     if worker is not None:
