@@ -180,7 +180,7 @@ Load with `next/font/google`: `Saira_Condensed` (600, 700, 800), `Atkinson_Hyper
 
 **Header** on every desktop route, white, bottom border:
 - Logo (eye mark plus `EARLYEYE` in Saira) links to `/`. Site name in mono: `TAYLOR'S LAKESIDE · 6 CAMERAS`.
-- Nav: **Live · Cameras · Plan · Incidents · Proof**. Active item is ink fill with white text.
+- Nav: **Live · Cameras · Plan · Incidents · Track record** (route stays `/proof`). Active item is ink fill with white text.
 - Right side, Live only: **Arm alarm sound** (amber outline until clicked, needed for the autoplay rule) · **`N/3 pushes this shift`** (links to `/incidents?status=pushed`) · clock `HH:MM:SS MYT` · **End shift** (opens the handover drawer).
 - Data-source chip: dashed `MOCK DATA` when `usingMock` or the API failed; `REPLAY` when `?replay=1`.
 - View indicator: `ON-SITE DESK` or `REMOTE LINK` (§8). In dev, `?view=onsite|remote` forces it, and the prototype's toggle can stay behind that flag.
@@ -375,27 +375,36 @@ Never show: `peak_score`, priority, zone risk, keypoint or skeleton jargon, rule
 - `seen_at` and `checkins` come from the guard app.
 - Until Web A adds these, mock them and show "Saved on this computer".
 
-### 6.5 Proof (`/proof`), design file `L3Proof.dc.html`
+### 6.5 Track record (`/proof`, nav label "Track record"), design file `L3Proof.dc.html`
 
-Show **real numbers from `model/REPORT.md` v2** and say clearly what is not measured. Banner: `SOURCE: MODEL REPORT V2`, "Dataset numbers are real, from 600 public RLVS clips. Live room, CCTV angle, lead time and night are not measured yet, and this page says so."
+**Who uses it and why.** The security manager, weekly or monthly. They have three questions: can my team trust the alarms, where does it get confused and what should I change, and what do I tell management? Judges get the same answer. The model metrics move into a folded technical section, which still meets the "dataset against live" requirement.
 
-| Proven tile | Value | Sub-line |
-|---|---|---|
-| CLIP ROC-AUC | 0.876 | 600 RLVS clips, 5-fold split by video. Best of 20 settings, so slightly optimistic. |
-| FIGHTS CAUGHT | 82% | At about a 20% false-alarm rate on the same clips. |
-| LIVE LOGIC REPLAY | 75.7% | Fight clips that reach fight after smoothing and the 1 s hold. Calm clips: 13.7%. |
-| WEBCAM RESOLUTION | 0.902 | Clip AUC on 241 to 480p clips. |
-| TIME TO FIGHT LEVEL | 2.1 s | Mean delay after a fight starts, in the replay. Detection, not early warning. |
+**Layout, top to bottom:**
+- **Title.** H1 "Can you trust the alarms?". Kicker `TRACK RECORD · LAST 4 WEEKS · FROM YOUR DESK'S YES/NO ANSWERS`. One sentence on where the numbers come from.
+- **The answer.**
+  - A plain verdict, e.g. "Mostly, yes.", with one sentence of evidence.
+  - Ten dots, "Out of every 10 alarms that sounded", filled for real and hollow for false.
+  - Three stats: alarms sounded, were real, guard on the way.
+  - **Share with management** opens a plain paragraph with **Copy summary**.
+1. **Does it miss fights?** Test videos ("about 8 of every 10 fights", as 10 dots) next to "On your campus: misses reported", plus a dated example of a reported miss and the known weak spot (arm-only fights).
+2. **Where does it get confused?** Alerts the desk said were nothing, by place, as bars with the plain reason. Each place has an action:
+   - "Make it a sports zone" (a zone_type change; the sports rule already exists);
+   - "Ask the EarlyEye team…";
+   - "Keep as is".
+3. **Is it getting better?** Four weekly bars of alerts the desk said were nothing, plus one sentence on how the answers are used.
+4. **How fast does it react?** A timeline: 0 s fight starts, +2 s alarm (from test videos), +5 s on the way and +40 s there (from the guard app). It also says: "Warning before a fight starts: not measured yet."
+5. **What can't it do?** Five cards: hear words, night cameras, recognise people, blind spots, arm-only fights.
+6. **Is it safe for students' privacy?** Four cards: video stays on campus, no faces, clips delete themselves, only your team sees it.
+- **Folded, "Technical details: how the model was tested", for IT teams and judges:**
+  - A table of test, what it means, fights caught and calm clips flagged. It holds RLVS split by video (82% / ~20%), the live rules replay (75.7% / 13.7%), clip AUC 0.876, webcam resolution 0.902, and three rows marked "not measured yet" or "not tested": staged fights on our cameras, CCTV held out, and night/IR.
+  - The model card cards.
+  - The KTH lesson.
 
-**Not measured** tiles, hatched, each with what is needed: lead time before the shove (5 escalation clips in the venue), false alarms per camera-hour (30 min of own normal footage), hugs and high-fives (own clips; `model/record_clips.py` exists), the CCTV-angle row, and night or IR (one IR frame).
-
-**Watch the model** inspector: five clips. "Fight caught · V_71" (in training, so it proves the pipeline only), "Fight missed · V_1" (arms only, peak 0.39), "Calm clip" (13.7% of calm clips reach fight), "Hug" (not tested), "CCTV angle" (not tested). Each shows ground truth against what the model said, plus a why. Use a skeleton illustration until real keypoints are exported.
-
-**What the model leans on:** a horizontal bar chart of LightGBM gain. `pair_motion_energy` 47%, `max_wrist_speed` 13%, `wrist_peaks_per_s` 7%, `max_wrist_accel` 6%, the other six 3–5% each.
-
-**Dataset against live room** table, plus the **LESSON** line. **Known weaknesses** (5), **We claim**, **We do not claim**, and a collapsed **Model card** with the real parameters from REPORT §6.
-
-**Data:** read `GET /proof` and map it. Show a metric as **not measured** when its source is missing: `own_footage_minutes === 0`, an empty `lead_time_s`, no `cctv_domain`, or `ir_check.frames === 0`. The report-only figures (75.7%, 13.7%, 0.902, 2.1 s, feature gains) are not in the contract. Keep them in `web/src/lib/model-report.ts` with a `// source: model/REPORT.md v2` comment. Never invent a number. A slot with no source says "not measured".
+**Data:**
+- Campus numbers come only from desk decisions in the last 28 days: alarms (`fight_likely`+) by status, dismissed alerts by camera and by week, median `acked_at − pushed_at`, and `arrived_at`.
+- Below 10 decisions, show "Not enough answers yet: N so far. Answer Yes or No on alerts to build this." instead of percentages. Never invent a campus number.
+- Test-video numbers come from `GET /proof`.
+- **Make it a sports zone** sets that camera's zone_type to the sports zone, through the API if available. Otherwise mock it and say "Saved on this computer".
 
 ### 6.6 Guard mobile app (`/guard`, design files `GuardPhone.dc.html` and `L3GuardFlow.dc.html`)
 
