@@ -65,7 +65,7 @@
       "floor": "residence level 3"
     },
     "source": "recorded",
-    "edge_url": "http://127.0.0.1:8768"
+    "edge_url": ""
   },
   {
     "camera_id": "CAM-HC-02",
