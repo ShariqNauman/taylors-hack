@@ -100,7 +100,7 @@ export function HandoverDrawer({
     >
       <SheetContent
         side="right"
-        className="w-[440px] max-w-full gap-3.5 overflow-y-auto rounded-none border-line bg-white p-[22px] shadow-none transition-none data-[side=right]:sm:max-w-[440px]"
+        className="w-[440px] max-w-full gap-3.5 data-[side=right]:w-full data-[side=right]:sm:w-[440px] overflow-y-auto rounded-none border-line bg-white p-[22px] shadow-none transition-none data-[side=right]:sm:max-w-[440px]"
       >
         <span className="ee-label text-[12px]">
           Shift handover · desk 1 · {fmtTime(now)}
