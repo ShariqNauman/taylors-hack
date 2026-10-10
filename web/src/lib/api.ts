@@ -127,7 +127,10 @@ async function getJson<T>(path: string, mock: MockName): Promise<T> {
 }
 
 export const getSite = () => getJson<Site>("/site", "site");
-export const getCameras = () => getJson<Camera[]>("/cameras", "cameras");
+export const getCameras = async () => {
+  const list = await getJson<Camera[]>("/cameras", "cameras");
+  return list.map((c) => (c.source === "live" && EDGE_URL ? { ...c, edge_url: EDGE_URL } : c));
+};
 export const getHotspots = () => getJson<Hotspot[]>("/hotspots", "hotspots");
 export const getPatrolPlan = () => getJson<PatrolPlan>("/plan", "plan");
 /**

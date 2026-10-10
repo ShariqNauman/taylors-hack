@@ -14,7 +14,7 @@
       "floor": "level 2, stage left"
     },
     "source": "live",
-    "edge_url": "http://127.0.0.1:8765"
+    "edge_url": "https://xbox-bent-quickly-reunion.trycloudflare.com"
   },
   {
     "camera_id": "CAM-BC-03",

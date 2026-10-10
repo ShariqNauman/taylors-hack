@@ -238,6 +238,31 @@ def draw(frame, people_17, level, score, a, is_live: bool):
             cv2.circle(frame, pt, 4, (255, 255, 255), -1, cv2.LINE_AA)
             cv2.circle(frame, pt, 2, col, -1, cv2.LINE_AA)
 
+        # Prominent Head Tracking Circle & Neck
+        face_pts = [pts[k] for k in range(5) if k in pts]
+        head_pos = None
+        if face_pts:
+            hx = int(sum(p[0] for p in face_pts) / len(face_pts))
+            hy = int(sum(p[1] for p in face_pts) / len(face_pts))
+            head_pos = (hx, hy)
+        elif 5 in pts and 6 in pts:
+            sho_mid_x = (pts[5][0] + pts[6][0]) // 2
+            sho_mid_y = (pts[5][1] + pts[6][1]) // 2
+            sho_dist = int(math.hypot(pts[5][0] - pts[6][0], pts[5][1] - pts[6][1]))
+            head_pos = (sho_mid_x, max(15, sho_mid_y - int(sho_dist * 0.55)))
+
+        if head_pos:
+            hr = 22
+            if 5 in pts and 6 in pts:
+                sho_dist = int(math.hypot(pts[5][0] - pts[6][0], pts[5][1] - pts[6][1]))
+                hr = max(16, int(sho_dist * 0.25))
+            cv2.circle(frame, head_pos, hr, col, 2, cv2.LINE_AA)
+            cv2.circle(frame, head_pos, 5, (255, 255, 255), -1, cv2.LINE_AA)
+            cv2.circle(frame, head_pos, 3, col, -1, cv2.LINE_AA)
+            if 5 in pts and 6 in pts:
+                neck = ((pts[5][0] + pts[6][0]) // 2, (pts[5][1] + pts[6][1]) // 2)
+                cv2.line(frame, neck, head_pos, col, 3, cv2.LINE_AA)
+
     # Bottom HUD Bar
     cv2.rectangle(frame, (0, h - 34), (w, h), (18, 22, 28), -1)
     badge = "● LIVE WEBCAM" if is_live else "● CAMPUS DEMO"

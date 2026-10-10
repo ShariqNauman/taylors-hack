@@ -33,7 +33,7 @@ Under **Environment Variables**, add the following key-value pairs:
 | Variable Name | Production Value | Purpose |
 |---|---|---|
 | `NEXT_PUBLIC_API_URL` | `https://earl-eye-backend.onrender.com` | Connects to the live FastAPI backend on Render |
-| `NEXT_PUBLIC_EDGE_URL` | `https://rec-refuse-apparatus-web.trycloudflare.com` | Connects to the GraphiLab RTX 5090 Cloud URL for live video & skeletons |
+| `NEXT_PUBLIC_EDGE_URL` | `https://xbox-bent-quickly-reunion.trycloudflare.com` | Connects to the GraphiLab RTX 5090 Cloud URL for live video & skeletons |
 | `NEXT_PUBLIC_API_RESOURCES` | `events` | Syncs real-time events and alert triage with Render |
 
 ### Optional Environment Variables:
