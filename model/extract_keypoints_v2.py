@@ -41,6 +41,8 @@ DEVICE = "intel:gpu"               # OpenVINO device; falls back to OpenVINO cpu
 USE_OPENVINO = True
 MAX_FPS = 30                       # videos above this are subsampled to MAX_FPS
 MAX_SECONDS = 30                   # only process the first N seconds (a few clips are minutes long)
+OWN_DATASETS = {"OwnRec"}          # our own phone / webcam videos: full length, and each frame's own
+                                   # timestamp (phones and webcams record at a variable frame rate)
 DET_CONF = 0.25                    # min person detection confidence
 TRACKER = "bytetrack_v2.yaml"      # ByteTrack with track_buffer 60 (frames)
 SUBSET_SEED = 42                   # makes --per-class pick the same videos every run
@@ -99,8 +101,11 @@ def result_rows(res, frame_idx, t, fps, w, h):
     return rows
 
 
-def extract_video(model, video_path, device, imgsz=IMGSZ):
-    """Returns (DataFrame of rows, number of frames run through the model)."""
+def extract_video(model, video_path, device, imgsz=IMGSZ, max_seconds=MAX_SECONDS, use_pts=False):
+    """Returns (DataFrame of rows, number of frames run through the model).
+    use_pts: time = the frame's own timestamp (variable frame rate) instead of frame / fps."""
+    if use_pts:
+        return _extract_pts(model, video_path, device, imgsz, max_seconds)
     cap = cv2.VideoCapture(str(video_path))
     if not cap.isOpened():
         raise RuntimeError("cannot open video")
@@ -110,7 +115,7 @@ def extract_video(model, video_path, device, imgsz=IMGSZ):
     rows, frame_idx, n_used, next_t = [], 0, 0, 0.0
     while True:
         t = frame_idx / fps  # exact time of this frame (constant frame rate)
-        if t > MAX_SECONDS:
+        if max_seconds is not None and t > max_seconds:
             break
         # Above MAX_FPS: only decode the frames we use; grab() just advances the others.
         if fps > MAX_FPS and t + 1e-6 < next_t:
@@ -130,6 +135,35 @@ def extract_video(model, video_path, device, imgsz=IMGSZ):
         n_used += 1
         frame_idx += 1
 
+    cap.release()
+    return pd.DataFrame(rows, columns=COLUMNS), n_used
+
+
+def _extract_pts(model, video_path, device, imgsz, max_seconds):
+    """Variable frame rate: grab every frame, read its timestamp, keep at most MAX_FPS per second."""
+    cap = cv2.VideoCapture(str(video_path))
+    if not cap.isOpened():
+        raise RuntimeError("cannot open video")
+    fps = cap.get(cv2.CAP_PROP_FPS) or 30.0
+    w, h = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)), int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    rows, frame_idx, n_used, next_t, t0 = [], -1, 0, 0.0, None
+    while cap.grab():
+        frame_idx += 1
+        pts = cap.get(cv2.CAP_PROP_POS_MSEC) / 1000.0
+        t0 = pts if t0 is None else t0
+        t = pts - t0                                  # first frame = 0 s
+        if max_seconds is not None and t > max_seconds:
+            break
+        if t + 1e-6 < next_t:                         # above MAX_FPS: skip this frame
+            continue
+        ok, frame = cap.retrieve()
+        if not ok:
+            break
+        next_t = t + 1.0 / MAX_FPS
+        res = model.track(frame, persist=n_used > 0, tracker=TRACKER, imgsz=imgsz,
+                          conf=DET_CONF, device=device, verbose=False)[0]
+        rows += result_rows(res, frame_idx, t, fps, w, h)
+        n_used += 1
     cap.release()
     return pd.DataFrame(rows, columns=COLUMNS), n_used
 
@@ -180,7 +214,8 @@ def main():
     for r in tqdm(todo, unit="video"):
         out = out_path_for(r)
         try:
-            kp, n = extract_video(model, r["path"], device)
+            own = r["dataset"] in OWN_DATASETS
+            kp, n = extract_video(model, r["path"], device, max_seconds=None if own else MAX_SECONDS, use_pts=own)
             frames += n
             out.parent.mkdir(parents=True, exist_ok=True)
             tmp = out.with_suffix(".tmp")

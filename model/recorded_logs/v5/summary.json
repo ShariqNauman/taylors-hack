@@ -1,0 +1,95 @@
+[
+  {
+    "video": "WhatsApp Video 2026-10-10 at 9.13.57 PM.mp4",
+    "folder": "nonviolence",
+    "duration_s": 33.0,
+    "max_score": 0.823,
+    "max_raw": 0.867,
+    "FIGHT_starts_s": [
+      22.6
+    ],
+    "FIGHT_seconds": 2.0,
+    "false_alarms": 1,
+    "false_alarms_per_min": 1.82
+  },
+  {
+    "video": "WhatsApp Video 2026-10-10 at 9.14.53 PM.mp4",
+    "folder": "nonviolence",
+    "duration_s": 22.5,
+    "max_score": 0.638,
+    "max_raw": 0.662,
+    "FIGHT_starts_s": [],
+    "FIGHT_seconds": 0.0,
+    "false_alarms": 0,
+    "false_alarms_per_min": 0.0
+  },
+  {
+    "video": "WIN_20261010_20_00_43_Pro.mp4",
+    "folder": "nonviolence",
+    "duration_s": 57.1,
+    "max_score": 0.707,
+    "max_raw": 0.783,
+    "FIGHT_starts_s": [],
+    "FIGHT_seconds": 0.0,
+    "false_alarms": 0,
+    "false_alarms_per_min": 0.0
+  },
+  {
+    "video": "WhatsApp Video 2026-10-10 at 9.13.44 PM.mp4",
+    "folder": "violence",
+    "duration_s": 70.8,
+    "max_score": 0.883,
+    "max_raw": 0.923,
+    "FIGHT_starts_s": [
+      11.8,
+      17.0,
+      50.3,
+      64.6
+    ],
+    "FIGHT_seconds": 19.5,
+    "false_alarms": 4,
+    "false_alarms_per_min": 3.39
+  },
+  {
+    "video": "WhatsApp Video 2026-10-10 at 9.14.17 PM.mp4",
+    "folder": "violence",
+    "duration_s": 52.4,
+    "max_score": 0.954,
+    "max_raw": 0.974,
+    "FIGHT_starts_s": [
+      6.5,
+      21.8,
+      26.9,
+      31.0
+    ],
+    "FIGHT_seconds": 25.0,
+    "false_alarms": 4,
+    "false_alarms_per_min": 4.58
+  },
+  {
+    "video": "WhatsApp Video 2026-10-10 at 9.15.28 PM.mp4",
+    "folder": "violence",
+    "duration_s": 85.2,
+    "max_score": 0.751,
+    "max_raw": 0.871,
+    "FIGHT_starts_s": [],
+    "FIGHT_seconds": 0.0,
+    "false_alarms": 0,
+    "false_alarms_per_min": 0.0
+  },
+  {
+    "video": "WIN_20261010_19_59_33_Pro.mp4",
+    "folder": "violence",
+    "duration_s": 35.1,
+    "max_score": 0.89,
+    "max_raw": 0.923,
+    "FIGHT_starts_s": [
+      13.3,
+      17.8,
+      25.5
+    ],
+    "FIGHT_seconds": 15.0,
+    "false_alarms": 3,
+    "false_alarms_per_min": 5.13
+  }
+]

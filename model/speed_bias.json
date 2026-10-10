@@ -1,0 +1,61 @@
+{
+  "correlation": {
+    "non-violent windows, all": 0.706,
+    "non-violent, within clip (median)": 0.426,
+    "fight windows, all (for comparison)": 0.53
+  },
+  "fast_cut": 2.4898086349478743,
+  "fight_at": 0.656,
+  "slices": [
+    {
+      "slice": "fast non-violent (top 20% speed, energy_max >= 2.49)",
+      "windows": 1097,
+      "median speed": 3.48,
+      "mean score": 0.659,
+      "hot % (score >= FIGHT_AT)": 39.1,
+      "FIGHT % (live logic)": 19.5,
+      "clips reaching FIGHT %": 26.7
+    },
+    {
+      "slice": "KTH running + walking (unseen)",
+      "windows": 6084,
+      "median speed": 3.47,
+      "mean score": 0.28,
+      "hot % (score >= FIGHT_AT)": 0.0,
+      "FIGHT % (live logic)": 0.0,
+      "clips reaching FIGHT %": 0.0
+    },
+    {
+      "slice": "slow non-violent (other 80%)",
+      "windows": 4385,
+      "median speed": 0.98,
+      "mean score": 0.3,
+      "hot % (score >= FIGHT_AT)": 6.9,
+      "FIGHT % (live logic)": 3.5,
+      "clips reaching FIGHT %": 8.4
+    },
+    {
+      "slice": "fight windows",
+      "windows": 12348,
+      "median speed": 2.77,
+      "mean score": 0.684,
+      "hot % (score >= FIGHT_AT)": 51.9,
+      "FIGHT % (live logic)": 37.6,
+      "clips reaching FIGHT %": 64.5
+    }
+  ],
+  "kth_by_action": [
+    {
+      "path": "walking",
+      "windows": 3292,
+      "mean_score": 0.2517842008653609,
+      "hot": 0.060753341433778855
+    },
+    {
+      "path": "running",
+      "windows": 2792,
+      "mean_score": 0.314241957561866,
+      "hot": 0.0
+    }
+  ]
+}
