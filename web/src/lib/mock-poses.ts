@@ -258,7 +258,7 @@ export const FEATURE_LABEL: Record<
   },
   pair_motion_energy: {
     label: "PAIR MOTION ENERGY",
-    note: "Top signal: 47% of model gain",
+    note: "Top signal: 35% of model gain",
     max: 1,
   },
   max_wrist_speed: {

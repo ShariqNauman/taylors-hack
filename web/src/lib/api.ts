@@ -59,9 +59,23 @@ export const getProof = () => getJson<Proof>("/proof", "proof");
 export const getReplay = () => getJson<Event[]>("/replay", "replay");
 
 /** GET /events?since=. The API filters by start_time only (brief §11), so callers also poll without `since`. */
-export function getEvents(since?: string): Promise<Event[]> {
+export async function getEvents(since?: string): Promise<Event[]> {
   const q = since ? `?since=${encodeURIComponent(since)}` : "";
-  return getJson<Event[]>(`/events${q}`, "events");
+  const list = await getJson<Event[]>(`/events${q}`, "events");
+  return list.map(normaliseEvent);
+}
+
+const LEVELS = new Set(["calm", "tense", "fight_likely", "fight"]);
+/**
+ * The live detector (model/live_detector.py) speaks CALM / TENSE / FIGHT. Accept that
+ * vocabulary and "fight likely" spellings so a bridge can forward it unchanged.
+ */
+function normaliseEvent(e: Event): Event {
+  const raw = String(e.level ?? "")
+    .toLowerCase()
+    .replace(/[\s-]+/g, "_");
+  const level = (LEVELS.has(raw) ? raw : "tense") as Event["level"];
+  return level === e.level ? e : { ...e, level };
 }
 
 export class PatchError extends Error {

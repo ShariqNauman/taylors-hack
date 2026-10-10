@@ -20,6 +20,7 @@ function measured(p: Proof) {
     cctv: !!p.cctv_domain,
     ir: p.ir_check.frames > 0,
     live: p.live_recall != null || p.live_precision != null,
+    fa: p.fa_per_camera_hour != null && p.own_footage_minutes > 0,
     latency: p.latency_ms > 0,
   };
 }
@@ -46,37 +47,46 @@ export function ProofScreen() {
   }
   const m = measured(proof);
   const R = MODEL_REPORT;
-  const fromReport = proof.note === "report-v2";
   const placeholder = proof.note === "placeholder";
+  const partly =
+    !!proof.note && proof.note !== "placeholder" && proof.note !== "report-v2";
 
   const proven: { k: string; v: string; sub: string; strong?: boolean }[] = [
     {
       k: "CLIP ROC-AUC",
       v: proof.clip_auc.toFixed(3),
-      sub: `${proof.n_clips} clips from ${proof.datasets.join(", ")}, 5-fold split by video. Best of 20 settings, so slightly optimistic.`,
+      sub: `Phone-video sets (${proof.datasets.filter((d) => !proof.cctv_domain?.datasets.includes(d)).join(" + ")}), out-of-fold, split by video. Best of 12 settings, so slightly optimistic.`,
       strong: true,
     },
     {
-      k: "FIGHTS CAUGHT",
-      v: fmtPct(proof.clip_recall),
-      sub: `At about a ${fmtPct(R.falseAlarmAtRecall.value)} false-alarm rate on the same clips.`,
+      k: "WHEN IT ALARMS, IT IS RIGHT",
+      v: fmtPct(proof.clip_precision),
+      sub: `Precision with the 1 s hold. It catches ${fmtPct(proof.clip_recall)} of fight clips (recall).`,
     },
     {
       k: "LIVE LOGIC REPLAY",
-      v: fmtPct(R.liveLogicFightClips.value, 1),
-      sub: `Fight clips that reach the fight level after smoothing and the 1 s hold. Calm clips: ${fmtPct(R.liveLogicCalmClips.value, 1)}.`,
-    },
-    {
-      k: "WEBCAM RESOLUTION",
-      v: R.webcamBandAuc.value.toFixed(3),
-      sub: "Clip AUC on 241 to 480p clips, the webcam range.",
-    },
-    {
-      k: "TIME TO FIGHT LEVEL",
-      v: `${R.meanDelayToFightS.value} s`,
-      sub: "Mean delay after a fight starts, in the replay. Detection, not early warning.",
+      v: fmtPct(R.liveLogicViolent.value),
+      sub: `Violent clips that reach fight with the live thresholds, on all ${R.allDatasetsAuc.clips.toLocaleString("en")} clips. Non-violent: ${fmtPct(R.liveLogicNonViolent.value)}.`,
     },
   ];
+  if (m.cctv && proof.cctv_domain)
+    proven.push({
+      k: "CCTV ANGLE, HELD OUT",
+      v: proof.cctv_domain.auc.toFixed(3),
+      sub: `${proof.cctv_domain.datasets.join(" + ")}, never seen in training. Precision ${fmtPct(proof.cctv_domain.precision)}, recall ${fmtPct(proof.cctv_domain.recall)}. The hardest domain.`,
+    });
+  if (proof.airtlab_fp_rate > 0)
+    proven.push({
+      k: "HUGS AND CLAPS FLAGGED",
+      v: fmtPct(proof.airtlab_fp_rate),
+      sub: "AIRTLab hug, clap and high-five clips that raise an alarm with the 1 s hold. The known weak spot.",
+    });
+  if (m.latency)
+    proven.push({
+      k: "LATENCY PER WINDOW",
+      v: `${proof.latency_ms} ms`,
+      sub: "Pose 22 + features 15 + LightGBM about 1 ms, on the demo laptop.",
+    });
   if (m.lead) {
     const mean =
       proof.lead_time_s.reduce((a, b) => a + b, 0) / proof.lead_time_s.length;
@@ -86,17 +96,11 @@ export function ProofScreen() {
       sub: `Mean over ${proof.lead_time_s.length} escalation clips filmed in the venue.`,
     });
   }
-  if (m.ownFootage)
+  if (m.ownFootage && proof.fa_per_camera_hour != null)
     proven.push({
       k: "FALSE ALARMS PER CAMERA-HOUR",
       v: proof.fa_per_camera_hour.toFixed(1),
       sub: `On ${proof.own_footage_minutes} min of our own normal footage.`,
-    });
-  if (m.cctv && proof.cctv_domain)
-    proven.push({
-      k: "CCTV-ANGLE ROW",
-      v: proof.cctv_domain.auc.toFixed(3),
-      sub: `Clip AUC on held-out ${proof.cctv_domain.datasets.join(", ")}; recall ${fmtPct(proof.cctv_domain.recall)}.`,
     });
   if (m.ir)
     proven.push({
@@ -112,11 +116,11 @@ export function ProofScreen() {
     },
     !m.ownFootage && {
       k: "FALSE ALARMS PER CAMERA-HOUR",
-      need: "Needs 30 minutes of normal footage from our camera.",
+      need: "Needs a labelled session on our own camera (live_detector.py --log, then tune_live.py).",
     },
-    !m.ownFootage && {
-      k: "HUGS AND HIGH-FIVES",
-      need: "Needs a few own clips. record_clips.py already exists.",
+    !m.live && {
+      k: "LIVE-ROOM ACCURACY",
+      need: "Needs our own labelled fights and hugs in the venue. Dataset clips are 2–5 s long; a camera is continuous.",
     },
     !m.cctv && {
       k: "CCTV-ANGLE ROW",
@@ -150,12 +154,18 @@ export function ProofScreen() {
       ) : (
         <div className="flex flex-wrap items-center gap-3 rounded-[2px] border border-line bg-white px-3.5 py-2.5">
           <span className="rounded-[1px] bg-ink px-2.5 py-1 font-mono text-[12px] font-bold tracking-[0.08em] text-white">
-            SOURCE:{" "}
-            {fromReport
-              ? `MODEL REPORT ${R.version.toUpperCase()}`
-              : "GET /PROOF"}
+            SOURCE: MODEL/PROOF.JSON · REPORT {R.version.toUpperCase()}
           </span>
-          <span className="text-[15px]">{proof.disclosure}</span>
+          <span className="text-[15px]">
+            Dataset numbers are real, from {proof.n_clips.toLocaleString("en")}{" "}
+            public clips. Live room, lead time and night are not measured yet,
+            and this page says so.
+          </span>
+          {partly && (
+            <span className="w-full font-mono text-[12px] text-muted-ink">
+              MODEL NOTE: {proof.note}
+            </span>
+          )}
         </div>
       )}
 
@@ -252,8 +262,8 @@ export function ProofScreen() {
             ))}
           </div>
           <span className="text-[14px] font-bold">
-            One feature carries almost half the weight. That is why arm-only
-            fights get missed.
+            Whole-body motion of the active pair carries a third of the weight,
+            less dominated by one feature than v2 (47%).
           </span>
         </div>
         <div className="flex flex-col gap-2.5 rounded-[2px] border border-line bg-white p-4">
@@ -268,6 +278,9 @@ export function ProofScreen() {
                   <th scope="col" className="ee-label py-2 pr-3">
                     Fights caught
                   </th>
+                  <th scope="col" className="ee-label py-2 pr-3">
+                    Alarm is right
+                  </th>
                   <th scope="col" className="ee-label py-2">
                     Calm flagged
                   </th>
@@ -275,35 +288,48 @@ export function ProofScreen() {
               </thead>
               <tbody className="[&_td]:py-2 [&_td]:pr-3 [&_td]:font-mono [&_th]:py-2 [&_th]:pr-3 [&_th]:font-bold [&_tr]:border-b [&_tr]:border-line">
                 <tr>
-                  <th scope="row">
-                    {proof.datasets[0]?.split(" (")[0] ?? "Dataset"} clips,
-                    split by video
-                  </th>
+                  <th scope="row">Phone-video clips, split by video</th>
                   <td>{fmtPct(proof.clip_recall)}</td>
-                  <td>~{fmtPct(R.falseAlarmAtRecall.value)}</td>
-                </tr>
-                <tr>
-                  <th scope="row">Live logic replayed on RLVS</th>
-                  <td>{fmtPct(R.liveLogicFightClips.value, 1)}</td>
-                  <td>{fmtPct(R.liveLogicCalmClips.value, 1)}</td>
-                </tr>
-                <tr>
-                  <th scope="row">Our venue, live camera</th>
-                  <td className={cn(!m.live && "ee-hatch text-ink-2")}>
-                    {m.live ? fmtPct(proof.live_recall) : NM}
-                  </td>
-                  <td className={cn(!m.ownFootage && "ee-hatch text-ink-2")}>
-                    {m.ownFootage
-                      ? `${proof.fa_per_camera_hour.toFixed(1)} / cam-h`
-                      : NM}
-                  </td>
+                  <td>{fmtPct(proof.clip_precision)}</td>
+                  <td>—</td>
                 </tr>
                 <tr>
                   <th scope="row">CCTV angle, held out</th>
                   <td className={cn(!m.cctv && "ee-hatch text-ink-2")}>
                     {proof.cctv_domain ? fmtPct(proof.cctv_domain.recall) : NM}
                   </td>
-                  <td className="ee-hatch text-ink-2">{NM}</td>
+                  <td className={cn(!m.cctv && "ee-hatch text-ink-2")}>
+                    {proof.cctv_domain
+                      ? fmtPct(proof.cctv_domain.precision)
+                      : NM}
+                  </td>
+                  <td>—</td>
+                </tr>
+                <tr>
+                  <th scope="row">Live thresholds replayed on all clips</th>
+                  <td>{fmtPct(R.liveLogicViolent.value)}</td>
+                  <td>—</td>
+                  <td>{fmtPct(R.liveLogicNonViolent.value)}</td>
+                </tr>
+                <tr>
+                  <th scope="row">AIRTLab hugs and claps</th>
+                  <td>—</td>
+                  <td>—</td>
+                  <td>{fmtPct(proof.airtlab_fp_rate)}</td>
+                </tr>
+                <tr>
+                  <th scope="row">Our venue, live camera</th>
+                  <td className={cn(!m.live && "ee-hatch text-ink-2")}>
+                    {m.live ? fmtPct(proof.live_recall) : NM}
+                  </td>
+                  <td className={cn(!m.live && "ee-hatch text-ink-2")}>
+                    {m.live ? fmtPct(proof.live_precision) : NM}
+                  </td>
+                  <td className={cn(!m.fa && "ee-hatch text-ink-2")}>
+                    {m.fa
+                      ? `${proof.fa_per_camera_hour.toFixed(1)} / cam-h`
+                      : NM}
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -313,8 +339,10 @@ export function ProofScreen() {
               LESSON
             </span>
             <span className="text-[15px]">
-              Practice run: 100% on KTH, zero live until retuned. RLVS clips are
-              5 s long; a continuous camera is not.
+              Practice run: 100% on KTH, zero live until retuned. Dataset clips
+              are 2–5 s long; a continuous camera is not. Trained without
+              YouTube-style footage, the model over-fires on it: domain shift is
+              why thresholds must be tuned on our own camera.
             </span>
           </div>
         </div>
@@ -336,8 +364,12 @@ export function ProofScreen() {
           <h2 className="ee-display text-[24px]">We claim</h2>
           <ul className="m-0 flex list-disc flex-col gap-1.5 pl-5 text-[15px] leading-snug">
             <li>
-              Physical fights from body pose, {proof.clip_auc.toFixed(3)} clip
-              AUC on held-out public clips.
+              Physical fights from body pose: {proof.clip_auc.toFixed(3)} clip
+              AUC on held-out phone-video clips
+              {proof.cctv_domain
+                ? `, ${proof.cctv_domain.auc.toFixed(3)} on a CCTV angle it never saw`
+                : ""}
+              .
             </li>
             <li>
               12 body keypoints per person. No face points, no identities.
@@ -385,20 +417,25 @@ export function ProofScreen() {
             {[
               [
                 "POSE",
-                `${proof.model_card.inputs}. About ${R.poseFps.value} pose fps on an Intel iGPU via OpenVINO.`,
+                `${proof.model_card.inputs}. About ${R.poseFps.value} pose fps on the webcam via OpenVINO.`,
               ],
               ["WINDOWS", proof.model_card.windows],
               ["CLASSIFIER", proof.model_card.classifier],
               ["SPLIT", proof.model_card.split],
               [
                 "LIVE LEVELS",
-                `${proof.model_card.threshold}. Fight likely, ETA, type and reason are not built in the live code yet.`,
+                `${proof.model_card.threshold}. The live detector outputs calm, tense and fight; fight likely, ETA, type and reason are not built yet.`,
               ],
               [
                 "DATA",
                 `${proof.datasets.join(", ")}. RWF-2000 withdrawn and not used.`,
               ],
-              ["LATENCY", m.latency ? `${proof.latency_ms} ms per frame` : NM],
+              [
+                "LATENCY",
+                m.latency
+                  ? `${proof.latency_ms} ms per window (pose 22, features 15, LightGBM about 1)`
+                  : NM,
+              ],
             ].map(([k, v]) => (
               <div key={k} className="contents">
                 <dt className="ee-label pt-1">{k}</dt>
@@ -475,11 +512,19 @@ function Inspector() {
   const tagStyle = (tag: string) =>
     tag === "CAUGHT"
       ? "bg-likely text-white"
-      : tag === "MISSED"
+      : tag.endsWith("CAUGHT") || tag === "MISSED"
         ? "bg-ink text-white"
         : tag.includes("FLAGGED")
           ? "bg-tense text-tense-fg"
           : "bg-ground text-ink-2";
+  const tagBorder = (tag: string) =>
+    tag === "CAUGHT"
+      ? "#C8241B"
+      : tag.endsWith("CAUGHT") || tag === "MISSED"
+        ? "#0B0D10"
+        : tag.includes("FLAGGED")
+          ? "#F5B323"
+          : "#B4BAC3";
 
   return (
     <section
@@ -533,14 +578,7 @@ function Inspector() {
             <div
               className="flex flex-col gap-1 rounded-[2px] border-2 bg-white p-3"
               style={{
-                borderColor:
-                  cur.tag === "CAUGHT"
-                    ? "#C8241B"
-                    : cur.tag === "MISSED"
-                      ? "#0B0D10"
-                      : cur.tag.includes("FLAGGED")
-                        ? "#F5B323"
-                        : "#B4BAC3",
+                borderColor: tagBorder(cur.tag),
               }}
             >
               <span className="ee-label">Model said</span>
@@ -551,7 +589,7 @@ function Inspector() {
             <span className="ee-label">Why</span>
             <span className="text-[16px] leading-snug">{cur.why}</span>
             <span className="font-mono text-[11px] text-muted-ink">
-              MODEL REPORT V2 {cur.ref}
+              MODEL REPORT {MODEL_REPORT.version.toUpperCase()} {cur.ref}
             </span>
           </div>
         </div>
