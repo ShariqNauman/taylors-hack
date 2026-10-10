@@ -1,0 +1,10 @@
+# ByteTrack for extract_keypoints_v2.py and the live detector.
+# Same as Ultralytics' default bytetrack.yaml except track_buffer 30 -> 60, so a person who is
+# hidden for up to 60 frames (2 s at 30 fps) keeps the same ID instead of getting a new one.
+tracker_type: bytetrack
+track_high_thresh: 0.25
+track_low_thresh: 0.1
+new_track_thresh: 0.25
+track_buffer: 60
+match_thresh: 0.8
+fuse_score: True
