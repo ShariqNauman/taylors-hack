@@ -122,7 +122,7 @@ AIRTLab hug false alarms: 11.1% (2/18).
 
 ## V5.5 Live sensitivity presets and guards
 
-**Shared logic:** live and the evaluation run the same code (`guards.LevelLogic`). `evaluate_guards.py` tests it on the hold-out (second look). With guards off, it reproduces V5.3 exactly.
+**Shared logic:** live and the evaluation run the same code (`guards.LevelLogic`). `evaluate_guards.py` tests it on the hold-out (second look). With guards off, it reproduces the V5.4 hold-out results exactly.
 
 **Presets** (both chosen on the training part, out-of-fold, full-body clips):
 
