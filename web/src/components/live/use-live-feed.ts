@@ -152,7 +152,9 @@ export function useLiveFeed(
         isEdge: true,
       } as unknown as Event);
     }
-    return [...byId.values()];
+    // A backup (<id>-B, a second guard sent by the desk) takes over its incident: the desk shows
+    // one card, the latest guard's, so their "Sorted" closes it and "Push next" stops showing.
+    return [...byId.values()].filter((e) => !byId.has(`${e.incident_id}-B`));
   }, [full.data, recent.data, edgeLive]);
 
   // Local overrides: operator decisions and early pushes. They survive polls until the server agrees.
