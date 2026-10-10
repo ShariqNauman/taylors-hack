@@ -6,6 +6,12 @@
 It imports that code read-only, and adds what the dashboard needs. On macOS (no OpenVINO) `predict.py` falls back
 to LightGBM alone with its own threshold.
 
+The pose thread only runs pose and scoring (like `live_detector.py`); drawing, the MJPEG stream and incident
+clips run on their own thread at 10 fps. `/live.json` reports `pose_fps` (frames per second that reach the
+model), `capture_fps` and `pose_fps_ok`; the stream shows the pose rate in the top-left corner, red below
+15 fps. Below that the model's 10 fps windows get gaps and accuracy drops: close other camera pipelines.
+`run_all.py` caps the sample recordings at 10 pose fps so the live webcam keeps the GPU.
+
 | Endpoint | What | Who uses it |
 |---|---|---|
 | `GET /health` | `{ok, camera_id, source}` | Dashboard's on-site probe; when it answers, the page switches to ON-SITE DESK |

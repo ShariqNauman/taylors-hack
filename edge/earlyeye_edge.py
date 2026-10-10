@@ -60,6 +60,7 @@ PERSON_BGR = [(255, 224, 127), (255, 167, 201), (214, 206, 201)]  # cyan, violet
 LEVEL_BGR = {"CALM": (122, 178, 63), "TENSE": (35, 179, 245), "FIGHT": (79, 90, 255)}
 CLOSE_AFTER_CALM_S = 3.0      # an incident ends after this long back at CALM
 STREAM_FPS = 10
+MIN_POSE_FPS = 15             # below this the model's 10 fps windows get gaps: accuracy drops (shown red)
 
 
 def iso_now() -> str:
@@ -74,6 +75,9 @@ class State:
         self.running = True
         self.frame = None            # newest BGR frame
         self.frame_id = 0
+        self.frame_t = 0.0           # capture time of the newest frame (s since start), as in live_detector
+        self.pose_fps = 0.0          # frames per second that reach the model (needs >= ~15 for full accuracy)
+        self.capture_fps = 0.0       # frames per second the camera delivers
         self.jpeg = None             # newest annotated JPEG for /stream.mjpg
         self.people = []             # [{id, kp: [[x,y,conf] x12]}] normalised 0-1
         self.level = "CALM"
@@ -385,7 +389,7 @@ def run_model(s: State):
     start = time.time()
 
     def capture():
-        n, t0 = 0, time.time()
+        n, t0, last = 0, time.time(), time.time()
         while s.running:
             ok, frame = cap.read()
             if not ok:
@@ -397,11 +401,36 @@ def run_model(s: State):
             n += 1
             if is_file:
                 time.sleep(max(0.0, n / file_fps - (time.time() - t0)))
+            now = time.time()
             with s.lock:
-                s.frame, s.frame_id = frame, s.frame_id + 1
+                s.frame, s.frame_id, s.frame_t = frame, s.frame_id + 1, now - start
+                s.capture_fps = 0.9 * s.capture_fps + 0.1 / max(now - last, 1e-6)
+            last = now
         s.running = False
 
+    def stream():
+        """Draw, record and JPEG-encode at STREAM_FPS on its own thread, so the pose thread only does
+        pose + scoring (same split as model/live_detector.py) and the model gets every frame it can."""
+        while s.running:
+            time.sleep(1 / STREAM_FPS)
+            with s.lock:
+                frame, people, level, score = s.frame, s.people, s.level, s.score
+                pose_fps, cam_fps = s.pose_fps, s.capture_fps
+            if frame is None:
+                continue
+            annotated = draw(frame.copy(), people, level, score, a)
+            colour = (0, 200, 0) if pose_fps >= MIN_POSE_FPS else (0, 0, 255)
+            cv2.putText(annotated, f"pose {pose_fps:4.1f} fps  camera {cam_fps:4.1f} fps", (10, 22),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.55, colour, 2, cv2.LINE_AA)
+            if s.clips is not None:   # the clip shows what the model saw: skeletons, level and score
+                s.clips.add(annotated, time.time())
+            ok, jpg = cv2.imencode(".jpg", annotated, [cv2.IMWRITE_JPEG_QUALITY, 70])
+            if ok:
+                with s.lock:
+                    s.jpeg = jpg.tobytes()
+
     threading.Thread(target=capture, daemon=True).start()
+    threading.Thread(target=stream, daemon=True).start()
     rows, frame_times = deque(), deque()
     last_id, next_score = 0, ld.SHORT_S
     smooth, high_since, fight_until = 0.0, None, -1.0
@@ -409,13 +438,16 @@ def run_model(s: State):
     last_pose = 0.0
     while s.running:
         with s.lock:
-            frame, fid = s.frame, s.frame_id
+            frame, fid, t = s.frame, s.frame_id, s.frame_t
         if frame is None or fid == last_id or time.time() - last_pose < min_gap:
             time.sleep(0.002)
             continue
         last_id = fid
-        last_pose = time.time()
-        t = time.time() - start
+        now = time.time()
+        if last_pose:
+            with s.lock:
+                s.pose_fps = 0.9 * s.pose_fps + 0.1 / max(now - last_pose, 1e-6)
+        last_pose = now
         res = model.track(frame, persist=True, tracker=ld.TRACKER, imgsz=ld.IMGSZ, conf=ld.DET_CONF,
                           device=device, verbose=False)[0]
         h, w = frame.shape[:2]
@@ -434,14 +466,8 @@ def run_model(s: State):
                 people.append({"id": int(pid), "kp": [[round(float(xy[p, k, 0]) / w, 4),
                                                        round(float(xy[p, k, 1]) / h, 4),
                                                        round(float(conf[p, k]), 2)] for k in COCO_12]})
-        annotated = draw(frame.copy(), people, s.level, s.score, a)
-        if s.clips is not None:   # the clip shows what the model saw: skeletons, level and score
-            s.clips.add(annotated, time.time())
-        ok, jpg = cv2.imencode(".jpg", annotated, [cv2.IMWRITE_JPEG_QUALITY, 70])
         with s.lock:
-            s.people = people
-            if ok:
-                s.jpeg = jpg.tobytes()
+            s.people = people   # drawn by the stream thread
 
         if t < next_score:
             continue
@@ -645,7 +671,9 @@ def make_handler(s: State):
                             "level": s.level.lower(), "score": round(s.score, 3),
                             "people_count": len(s.people), "updated_at": s.updated_at,
                             "snapshot": {"t": s.updated_at, "people": s.people},
-                            "incident": inc, "posts": list(s.post_log)[-5:]}
+                            "incident": inc, "posts": list(s.post_log)[-5:],
+                            "pose_fps": round(s.pose_fps, 1), "capture_fps": round(s.capture_fps, 1),
+                            "pose_fps_ok": s.pose_fps >= MIN_POSE_FPS, "blocked": list(s.blocked)}
                 return self._json(body)
             if path == "/stream.mjpg":
                 if a.fake:
