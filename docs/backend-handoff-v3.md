@@ -70,6 +70,10 @@ The first must return slots with `id`, `status` and `assigned_to`. The second mu
 | 15 | `POST /handover` `{facts: HandoverFacts}` | Live: End shift → "Write the brief" | `HandoverBrief {text, model, generated_at}` | **Missing.** Optional; the mock template works. If built: one Claude call with `claude-sonnet-5-5`, wording only the facts sent. No raw events, no invented numbers. |
 | 16 | `GET /replay` | Live demo replay | `Event[]` | **Not needed.** The replay is mock-only. Phase 2 uses `edge/replay.py` posting to `POST /events`. |
 | 17 | `POST /report` | (weekly brief, optional) | — | **Fix if kept.** Wrong default model name, ignores `period`, and returns invented numbers ("5.8 s", "Asrama Puteri") when the call fails. Return an error instead. |
+| 18 | `POST /plan/slots` | Plan: "+ Add a post" | `{location, zone_type, geo {lat,lng}, days, hours, tip, assigned_to, source:"manual"}` → the new slot, with `status:"active"` and `since: now` | **Missing.** New. |
+| 19 | `PATCH /plan/slots/:id`, extended | Plan: "Edit" | also accepts `days`, `hours`, `location`, `zone_type`, `geo`, `tip`. Return `source` (`"model"` or `"manual"`) on every slot. If the guard is no longer free at the new time, still save, but clear `seen_at` so the app shows "Changed by your supervisor". | **Missing.** Today it takes only status, assigned_to and seen_at. |
+| 20 | `PATCH /cameras/:id` `{sensitivity}` | Track record: "Apply" on "What EarlyEye suggests changing" | `sensitivity` is `"strict"` or `"sensitive"`, the model team's two presets in `model/live_detector.py`. `GET /cameras` returns it; default `"strict"`. | **Missing.** The camera-zone route takes only zone_type. |
+| 21 | `GET /labels?since=` | model team (not the dashboard) | one row per decided incident: `incident_id, camera_id, start_time, level, peak_score, status, outcome, peak_snapshot` (keypoints only, never video) | **Missing.** New. A CSV export script is fine instead. |
 
 ---
 
@@ -84,7 +88,10 @@ The first must return slots with `id`, `status` and `assigned_to`. The second mu
 3. **Human fields are never overwritten by the edge:** `status`, `staff_note`, `acked_at`, `arrived_at`, `outcome`, `outcome_at`, `pushed_to`, `pushed_at`.
 4. **Calm after the guard.** When the edge reports the incident ended (`end_time`) or calm again, keep the event and return it with `end_time` and its last level. Live shows "Sorted · camera agrees: calm" only when it can see that.
 5. **Times:** ISO 8601 with `+08:00`. `outcome` is one of `sorted | hurt | backup | nothing`.
-6. **Writes are open in the pilot,** with no auth: PUT /proof, PATCH events, plan and cameras. Say so in the README limitations. Don't add auth tonight.
+6. **Manual posts follow the same rules as model posts.** They count for "Did the posts work?". After 14 quiet days the daily check suggests ending them (`suggestion:"end"`), never ending them on its own. A model suggestion answered "Not now" comes back only after 3 new incidents (already in `plan_logic.py`).
+7. **Nearest guard is where people are now.** A guard with a check-in on an active post during its hours counts as standing at that post. Otherwise use their `post` geo. Use this for `nearest_staff` and the push (rule 2).
+8. **The guard's "Nothing there" is a hint, not a label.** Store `outcome:"nothing"`; never change `status` from it. The desk still decides Confirm or Dismiss.
+9. **Writes are open in the pilot,** with no auth: PUT /proof, PATCH events, plan and cameras. Say so in the README limitations. Don't add auth tonight.
 
 ---
 
@@ -93,7 +100,9 @@ The first must return slots with `id`, `status` and `assigned_to`. The second mu
 - **Post live updates.** `edge/run_all.py` never passes `--upsert`, so each incident is posted once at the first FIGHT: no tense, no snapshot updates, no end. Turn on `--upsert` for the live webcam (CAM-AU-01) and post every 0.5 s while an incident is open. Recordings run with `--no-post`; turn posting on for them too, with `source:"recorded"`.
 - **Send `fight_likely` with `eta_seconds`,** not just tense or fight. Without it the push budget and the "Fight likely in ~N s" card never happen live.
 - **Send the end.** Set `end_time` when the scene is calm for 5 s, so the desk can show "camera agrees: calm".
-- **Heartbeat** (route 4) every 10 s per camera.
+- **Heartbeat** (route 4) every 10 s per camera. Have the heartbeat response return `{zone_type, sensitivity}` so a change from Track record takes effect within 10 s.
+- **Per-camera sensitivity.** Switch `FIGHT_AT` per camera between the existing `"strict"` and `"sensitive"` presets (`model/live_detector.py`), instead of the one global `SENSITIVITY`.
+- **Keep the keypoints for training.** Save each incident's keypoint windows (no video) with its `incident_id`, so the model team can join them with route 21 and retrain weekly.
 - **Leave `nearest_staff` empty,** so the API picks the nearest on-duty person (rule 2).
 - `GET /clips/<id>.mp4` is a 404 stub. The Incidents "Watch the 10-second clip" button needs it on site. It's optional if time is short; the screen falls back to stick figures.
 - `GET /live.json`, `/stream.mjpg` and `/health` are used by the on-site view. Keep them.
@@ -110,6 +119,8 @@ With the API deployed and Vercel pointed at it:
 4. The desk taps Confirm. Incidents shows the case with the guard's steps in the timeline.
 5. Plan: assign Wei Jie to post 3. His phone shows "New from your supervisor"; he taps Got it, and Plan shows "Seen in the app".
 6. Track record's counts go up by one real alarm.
+7. Plan: "+ Add a post" at the sports pitch, Tue 17:00. It appears on the map, in the timetable, and in the chosen guard's app as "Changed by your supervisor". Edit its hour, and the app updates again.
+8. Track record: Apply "Make this camera stricter" on the sports pitch. `GET /cameras` returns `sensitivity:"strict"`, and the edge log shows the new preset within 10 s.
 
 If any step needs the mock to pass, it is not done.
 
@@ -121,4 +132,6 @@ If any step needs the mock to pass, it is not done.
 2. **P0, edge:** `--upsert`, `fight_likely` with ETA, and end/calm.
 3. **P1:** route 2 (on duty) and rule 2 (push to the nearest on-duty guard); route 4 (heartbeat) and route 3's camera fields.
 4. **P1:** schedule the 06:00 check (route 12) with a lock.
-5. **P2:** route 15 (handover), route 17 fixes, the clips endpoint, `tip` seed.
+5. **P1:** routes 18 and 19 (add and edit posts) and rules 6 and 7.
+6. **P1, with the edge owner:** route 20 plus per-camera `FIGHT_AT` on the edge. Skip it if the edge owner has no time; the frontend then keeps the setting on the dashboard with "Saved on this computer".
+7. **P2:** route 21 (labels), route 15 (handover), route 17 fixes, the clips endpoint, `tip` seed.
