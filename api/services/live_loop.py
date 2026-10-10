@@ -13,7 +13,9 @@ from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone
 
-HUMAN_FIELDS = ("pushed_to", "pushed_at", "acked_at", "status", "staff_note")
+HUMAN_FIELDS = ("pushed_to", "pushed_at", "acked_at", "status", "staff_note",
+                "arrived_at", "outcome", "outcome_at")
+NO_ANSWER_S = 20
 SHIFT_HOURS = 8
 PUSH_BUDGET = 3
 LEVEL_ORDER = {"calm": 0, "tense": 1, "fight_likely": 2, "fight": 3}
@@ -92,3 +94,62 @@ def without_unknown_columns(row: dict, error_text: str) -> dict | None:
             r.pop(col)
             return r
     return None
+
+
+# ── Who gets the alarm (guard app) ───────────────────────────────────────────
+
+def choose_guard(staff: list[dict], preferred: str | None, zone_type: str | None,
+                 exclude: tuple[str, ...] = ()) -> str | None:
+    """
+    The person to push. Only people on duty (on_duty is not False: a guard who never tapped
+    Start my shift still counts, so nobody is silently skipped). Preference: the edge's
+    nearest_staff, then someone based in this zone, then anyone on duty. If nobody is on
+    duty, the edge's choice still gets it rather than nobody.
+    """
+    on = [r for r in staff if r.get("on_duty") is not False and r.get("name") not in exclude]
+    names = [r["name"] for r in on]
+    if preferred and preferred in names:
+        return preferred
+    for r in on:
+        if zone_type and r.get("zone") == zone_type:
+            return r["name"]
+    if names:
+        return names[0]
+    return preferred if preferred and preferred not in exclude else None
+
+
+def escalation_due(row: dict, now: datetime, backup_exists: bool) -> bool:
+    """No "On my way" within 20 s of the push: send the next guard (once per incident)."""
+    if backup_exists or str(row.get("incident_id", "")).endswith("-B"):
+        return False
+    if row.get("status") != "pushed" or not row.get("pushed_at") or row.get("acked_at"):
+        return False
+    if row.get("end_time"):
+        return False
+    try:
+        pushed = datetime.fromisoformat(str(row["pushed_at"]).replace("Z", "+00:00"))
+    except ValueError:
+        return False
+    if pushed.tzinfo is None:
+        pushed = pushed.replace(tzinfo=timezone.utc)
+    return (now - pushed).total_seconds() >= NO_ANSWER_S
+
+
+BACKUP_SKIP = ("pushed_to", "pushed_at", "acked_at", "arrived_at", "outcome", "outcome_at",
+               "staff_note", "status", "incident_id", "created_at", "updated_at", "id")
+
+
+def backup_row(row: dict, staff: str, now_iso: str, why: str) -> dict:
+    """A second incident on the same camera, pushed to the backup guard. id = <id>-B."""
+    out = {k: v for k, v in row.items() if k not in BACKUP_SKIP}
+    first = row.get("pushed_to") or "the first guard"
+    out.update({
+        "incident_id": f"{row['incident_id']}-B",
+        "pushed_to": staff,
+        "pushed_at": now_iso,
+        "nearest_staff": staff,
+        "status": "pushed",
+        "action": f"Back up {first} at {row.get('location', 'the scene')}",
+        "reason": f"{why} {row.get('reason', '')}".strip(),
+    })
+    return out

@@ -43,6 +43,33 @@ def test_patch_and_unknown_columns():
     assert L.without_unknown_columns({"a": 1}, "other error") is None
 
 
+def test_choose_guard_on_duty_only():
+    staff = [{"name": "Guard A", "zone": "canteen", "on_duty": True},
+             {"name": "Guard B", "zone": "stairwell", "on_duty": False},
+             {"name": "Guard C", "zone": "stairwell", "on_duty": None}]
+    assert L.choose_guard(staff, "Guard B", "stairwell") == "Guard C"   # B ended the shift
+    assert L.choose_guard(staff, "Guard A", "stairwell") == "Guard A"   # edge's choice is on duty
+    assert L.choose_guard(staff, None, "canteen") == "Guard A"
+    assert L.choose_guard(staff, None, "stairwell", exclude=("Guard C",)) == "Guard A"
+    assert L.choose_guard([{"name": "Guard B", "on_duty": False}], "Guard B", "x") == "Guard B"  # nobody on: still someone
+    assert L.choose_guard([], None, "x") is None
+
+
+def test_escalation_after_20_s_once():
+    from datetime import datetime, timedelta, timezone
+    now = datetime(2026, 10, 10, 6, 0, 30, tzinfo=timezone.utc)
+    row = {"incident_id": "I1", "status": "pushed", "pushed_at": "2026-10-10T06:00:05+00:00", "end_time": None}
+    assert L.escalation_due(row, now, backup_exists=False)
+    assert not L.escalation_due(row, now, backup_exists=True)
+    assert not L.escalation_due({**row, "acked_at": "x"}, now, False)
+    assert not L.escalation_due({**row, "pushed_at": "2026-10-10T06:00:20+00:00"}, now, False)
+    assert not L.escalation_due({**row, "incident_id": "I1-B"}, now, False)
+    b = L.backup_row({**row, "location": "Grand Hall", "pushed_to": "Guard B", "acked_at": "t", "outcome": "backup",
+                      "reason": "Shove."}, "Guard C", "now", "No answer from Guard B in 20 s.")
+    assert b["incident_id"] == "I1-B" and b["pushed_to"] == "Guard C" and b["status"] == "pushed"
+    assert "acked_at" not in b and "outcome" not in b and b["reason"].startswith("No answer")
+
+
 if __name__ == "__main__":
     for name, fn in list(globals().items()):
         if name.startswith("test_"):

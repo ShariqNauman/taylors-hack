@@ -14,6 +14,13 @@ database.
 | `PATCH /plan/slots/{id}` | `{status}` / `{assigned_to}` (null = nobody) / `{seen_at}` | Plan: Add this post, Not now, End this post, pick a guard. Guard app: opened the post |
 | `POST /plan/slots/{id}/checkins` | `{staff, at?}` | Guard app: "I'm at my post" |
 | `PATCH /events/{id}` | adds `arrived_at`, `outcome` (sorted/hurt/backup/nothing), `outcome_at` | Guard app: I'm here, What did you find? |
+| `PATCH /staff/{name}` | `{on_duty}` | Guard app: Start my shift / End my shift. Off duty = no alarms |
+| `POST /events/{id}/backup` | `{staff?, reason: need_backup / no_answer}` | Desk: Send Priya. Creates `<id>-B` pushed to that guard or the next on duty |
+
+**Real-incident rules in `POST /events`:**
+- **The alarm only goes to someone on duty.** It goes to the edge's `nearest_staff` if they're on duty; otherwise to someone on duty in that zone; otherwise to anyone on duty. If nobody is on duty, it still goes to the edge's choice. A guard who never tapped Start my shift (`on_duty` null) counts as on duty, so nobody is skipped silently.
+- **No answer in 20 s:** if the guard hasn't tapped "On my way" 20 s after the push and the edge is still posting, the API pushes `<id>-B` to the next guard on duty, once per incident.
+- **A repeat edge post never overwrites the guard's taps:** `acked_at`, `arrived_at`, `outcome` and `outcome_at` are human fields.
 
 Rules (pure, tested in `api/services/plan_logic.py` / `api/test_plan_logic.py`):
 - **Active posts:** the recheck never ends them, moves them or reassigns them.
@@ -40,7 +47,7 @@ Rules (pure, tested in `api/services/plan_logic.py` / `api/test_plan_logic.py`):
    INSERT INTO plan_meta (key, value) VALUES ('last_check', '2026-10-10T06:00:00+08:00');
    ```
    The sports pitch suggestion (P4) appears on the next `POST /plan/recheck`, but only if the events table has 3 confirmed incidents there at 17:00 in the last 28 days.
-5. **Vercel env:** set `NEXT_PUBLIC_API_RESOURCES=events,plan,site` and redeploy the web app. Plan writes then go to the API. If a write fails with 404/405/503 or a network error, it falls back to "Saved on this computer".
+5. **Vercel env:** set `NEXT_PUBLIC_API_URL=https://earl-eye-backend.onrender.com` and `NEXT_PUBLIC_API_RESOURCES=events,plan,site`, then redeploy the web app. The guard app on a phone then reads and writes the same database as the desk. Plan writes then go to the API. If a write fails with 404/405/503 or a network error, it falls back to "Saved on this computer".
 6. **Optional cron.** The check also runs lazily on the first `GET /plan` after 06:00, so a cron isn't required. If you want one: a Render cron job, `curl -X POST $API/plan/recheck` at `0 22 * * *` UTC (06:00 MYT).
 
 ## Acceptance (curl against Render)
@@ -52,6 +59,8 @@ curl -s $API/plan | jq '.last_check, (.slots[] | {id, status, assigned_to})'    
 curl -s -X PATCH $API/plan/slots/P3 -H 'content-type: application/json' -d '{"assigned_to":"Guard A"}' | jq '{assigned_to, seen_at}'   # Guard A, null
 curl -s -X POST $API/plan/slots/P1/checkins -H 'content-type: application/json' -d '{"staff":"Guard B"}' | jq '.checkins | length'
 curl -s -X PATCH $API/events/<id> -H 'content-type: application/json' -d '{"arrived_at":"2026-10-10T22:05:00+08:00","outcome":"sorted"}' | jq '{arrived_at, outcome}'
+curl -s -X PATCH $API/staff/Guard%20B -H 'content-type: application/json' -d '{"on_duty":true}'          # {"name":"Guard B","on_duty":true}
+curl -s -X POST $API/events/<id>/backup -H 'content-type: application/json' -d '{"reason":"need_backup"}' | jq '{incident_id, pushed_to}'   # <id>-B, next guard
 curl -s -o /dev/null -w '%{http_code}\n' -X PATCH $API/plan/slots/P9 -H 'content-type: application/json' -d '{"status":"ended"}'   # 404
 ```
 
@@ -59,5 +68,6 @@ Then open the deployed `/plan` on a laptop and `/guard` on a phone. Assign a gua
 
 ## Not in #28 (say so if asked)
 - **No auth.** It's on the CUT list. Anyone with the URL can change posts.
+- **Edge must keep posting:** auto-escalation runs on the edge's repeat posts (every 0.5 s while ≥ tense). If the scene calms and the edge stops posting, the desk card still shows "No answer in 20 s" and the desk sends the next guard by hand.
 - **No push notification to the phone.** The guard app polls every 2 s. Web Push is the production answer, for Q&A only.
 - **Hotspot times:** `GET /hotspots` and `GET /plan` now bucket by Malaysia time. Before #28 they used UTC, so they were 8 hours off.

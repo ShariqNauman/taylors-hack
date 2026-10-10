@@ -36,6 +36,16 @@ class Level(str, Enum):
     fight = "fight"
 
 
+class BackupRequest(BaseModel):
+    """POST /events/{id}/backup. staff omitted = the next guard on duty."""
+    staff: Optional[str] = None
+    reason: str = "need_backup"   # "need_backup" | "no_answer"
+
+
+class StaffDuty(BaseModel):
+    on_duty: bool
+
+
 class Outcome(str, Enum):
     """What the guard found on arrival (guard app, "What did you find?")."""
     sorted = "sorted"
