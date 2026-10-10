@@ -39,6 +39,7 @@ import type { Event, Level, Outcome, PatrolSlot } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { Avatar } from "@/components/plan/avatar";
 import { useGuardDevice } from "./use-guard-device";
+import { disablePush, enablePush, pushState, type PushState } from "@/lib/push";
 
 const ME_KEY = "ee-guard-staff";
 const SHIFT_KEY = "ee-guard-on-shift";
@@ -216,7 +217,17 @@ export function GuardApp() {
     setShift(false);
     setTab("today");
   };
+  const [push, setPush] = useState<PushState>("off");
+  useEffect(() => {
+    void pushState().then(setPush);
+  }, [shift]);
+  const turnOnPush = () => {
+    if (!me || !person) return;
+    void enablePush(me, person.first).then(setPush);
+  };
   const startShift = async () => {
+    // Ask for lock-screen alarms first, while the tap still counts (iPhone).
+    if (me && person) void enablePush(me, person.first).then(setPush);
     await dev.unlock();
     dev.keepAwake(true);
     store.set(SHIFT_KEY, me);
@@ -225,6 +236,7 @@ export function GuardApp() {
     if (me) void setOnDuty(me, true);
   };
   const endShift = () => {
+    void disablePush().then(() => setPush("off"));
     dev.keepAwake(false);
     store.set(SHIFT_KEY, null);
     setShift(false);
@@ -481,6 +493,8 @@ export function GuardApp() {
             );
           }}
           onEnd={endShift}
+          push={push}
+          onPushOn={turnOnPush}
           onSwitch={() => {
             endShift();
             store.set(ME_KEY, null);
@@ -684,13 +698,24 @@ function AlertsTab({ me, events, now }: { me: string; events: Event[]; now: numb
   );
 }
 
-function MeTab({ person, site, dev, onTest, onEnd, onSwitch }: { person: Person; site?: string; dev: ReturnType<typeof useGuardDevice>; onTest: () => void; onEnd: () => void; onSwitch: () => void }) {
+const PUSH_WORDS: Record<PushState, string> = {
+  on: "On",
+  off: "Off",
+  blocked: "Blocked in settings",
+  "install-first": "Add to Home Screen first",
+  unsupported: "Not on this phone",
+  "not-configured": "Not set up on the server",
+  "needs-https": "Needs the https link",
+};
+
+function MeTab({ person, site, dev, push, onPushOn, onTest, onEnd, onSwitch }: { person: Person; site?: string; dev: ReturnType<typeof useGuardDevice>; push: PushState; onPushOn: () => void; onTest: () => void; onEnd: () => void; onSwitch: () => void }) {
   const rows: [string, string][] = [
     ["Shift", person.shiftLabel],
     ["Alert sound", dev.soundOn ? "On" : "Off"],
     ["Vibrate", dev.canVibrate ? "On" : "Not on this phone"],
     ["Screen stays awake on shift", dev.awake ? "On" : "Off"],
     ["Installed on this phone", dev.installed ? "✓" : "Not yet"],
+    ["Alarms with the app closed", PUSH_WORDS[push]],
   ];
   return (
     <div className="flex flex-col gap-3 px-4 py-[18px]">
@@ -709,6 +734,11 @@ function MeTab({ person, site, dev, onTest, onEnd, onSwitch }: { person: Person;
         <p className="m-0 text-[13px] leading-normal text-muted-ink">
           To install: iPhone, tap Share, then Add to Home Screen. Android, tap the menu, then Install app.
         </p>
+      )}
+      {(push === "off" || push === "not-configured") && (
+        <button type="button" onClick={onPushOn} className="min-h-[52px] rounded-[4px] bg-signal text-[17px] font-extrabold text-white">
+          Turn on alarms with the app closed
+        </button>
       )}
       <button type="button" onClick={onTest} className="min-h-[52px] rounded-[4px] border-2 border-ink bg-white text-[17px] font-extrabold">Test the alarm</button>
       <button type="button" onClick={onEnd} className="min-h-[52px] rounded-[4px] bg-ink text-[17px] font-extrabold text-white">End my shift</button>

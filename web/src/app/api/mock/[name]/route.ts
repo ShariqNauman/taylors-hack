@@ -3,6 +3,7 @@ import path from "path";
 import { NextResponse } from "next/server";
 import { readStore, updateStore } from "@/lib/server/local-store";
 import { withStore } from "@/lib/server/mock-plan";
+import { notify } from "@/lib/server/webpush";
 import type { Event, PatrolPlan, Site } from "@/lib/types";
 
 const ALLOWED = new Set([
@@ -147,11 +148,15 @@ export async function POST(
   if (name === "events") {
     const e = body.event as Event | undefined;
     if (!e?.incident_id) return NextResponse.json({ detail: "Send event." }, { status: 422 });
-    await updateStore((s) => {
-      const base = body.reset ? undefined : s.added[e.incident_id];
+    const newPush = await updateStore((s) => {
+      const prev = s.added[e.incident_id];
+      const base = body.reset ? undefined : prev;
       s.added[e.incident_id] = { ...base, ...e, acked_at: null, arrived_at: null, outcome: null, outcome_at: null };
       if (body.reset) delete s.events[e.incident_id];
+      return !!e.pushed_to && (prev?.pushed_to !== e.pushed_to || prev?.pushed_at !== e.pushed_at);
     });
+    // A new push: wake that guard's phone, even with the app closed.
+    if (newPush) await notify(e.pushed_to);
     return NextResponse.json(e, { status: 201 });
   }
   if (name === "staff") {

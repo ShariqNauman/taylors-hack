@@ -21,7 +21,7 @@ import { useAppStore } from "./store/app-store";
  * API is unreachable, we fall back to the mock as well, so every screen
  * renders with the API down.
  */
-const API_URL = (process.env.NEXT_PUBLIC_API_URL ?? "").replace(/\/$/, "");
+export const API_URL = (process.env.NEXT_PUBLIC_API_URL ?? "").replace(/\/$/, "");
 
 export const usingMock = API_URL === "";
 
@@ -85,6 +85,9 @@ const API_RESOURCES = new Set(
     .map((x) => x.trim())
     .filter(Boolean),
 );
+
+/** Events (and so guard pushes) come from the API, not the laptop's demo store. */
+export const API_RESOURCES_HAS_EVENTS = API_RESOURCES.has("events");
 
 async function getJson<T>(path: string, mock: MockName): Promise<T> {
   if (!usingMock && API_RESOURCES.has(mock)) {

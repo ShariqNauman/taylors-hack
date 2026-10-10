@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { updateStore } from "@/lib/server/local-store";
+import { notify } from "@/lib/server/webpush";
 import type { StatusPatch } from "@/lib/types";
 
 const FIELDS = [
@@ -28,6 +29,13 @@ export async function PATCH(
     if (typeof body[k] === "string") (patch as Record<string, string>)[k] = body[k] as string;
   if (!Object.keys(patch).length)
     return NextResponse.json({ detail: "Send status, staff_note, pushed_to, acked_at, arrived_at or outcome." }, { status: 422 });
-  const merged = await updateStore((s) => (s.events[id] = { ...s.events[id], ...patch }));
-  return NextResponse.json({ incident_id: id, ...merged });
+  const isNewPush = !!patch.pushed_to;
+  const merged = await updateStore((s) => {
+    const was = s.events[id]?.pushed_to;
+    s.events[id] = { ...s.events[id], ...patch };
+    return { ...s.events[id], _newPush: isNewPush && was !== patch.pushed_to };
+  });
+  const { _newPush, ...out } = merged;
+  if (_newPush) await notify(patch.pushed_to);
+  return NextResponse.json({ incident_id: id, ...out });
 }

@@ -90,6 +90,15 @@ Without an API, the laptop's server keeps a shared demo store (`web/.local-store
 
 "Add to Home Screen" and keeping the screen awake need **https**. For that, run a Cloudflare tunnel from the laptop (`cloudflared tunnel --url http://localhost:3000`) and open its `https://….trycloudflare.com/guard` link on the phone.
 
+### Alarms with the app closed (Web Push)
+
+On **Start my shift** the guard app asks to allow notifications and registers the phone for that guard. From then on, every alarm pushed to that guard wakes the phone with a notification, even when EarlyEye is closed. The notification shows the level, the place and the reason; tapping it opens the app on the alarm.
+
+- **Deployed:** the API sends the pushes. Run `api/sql/migration_push.sql` in Supabase, run `python -m api.scripts.gen_vapid`, and put `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY` and `VAPID_SUBJECT` into Render's environment. The web app needs no extra setting.
+- **Laptop demo:** the laptop's server sends them itself, with keys it generates into `web/.local-vapid.json` (git-ignored). The phone must use an https link, e.g. a Cloudflare tunnel.
+- **Phones:** Android works in Chrome. iPhone (iOS 16.4+) only after **Add to Home Screen**, opening EarlyEye from that icon, and allowing notifications. The **Me** tab shows the state ("On", "Add to Home Screen first", "Blocked in settings"…).
+- Ending the shift or switching person stops the alarms on that phone.
+
 ### Environment variables (web)
 
 | Variable | What it does | Default |
