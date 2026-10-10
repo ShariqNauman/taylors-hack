@@ -28,9 +28,9 @@ export function PersonTag({
     <span className={cn("inline-flex min-w-0 items-center gap-2", className)}>
       <Avatar person={person ?? (call ? fallback(call) : null)} size={size} />
       <span className="flex min-w-0 flex-col leading-tight">
-        <span className="truncate font-extrabold">
-          {name}
-          {person && id && <span className={cn("ml-1.5 font-mono text-[11px] font-bold uppercase", dark ? "text-white/75" : "text-muted-ink")}>{id}</span>}
+        <span className="flex min-w-0 flex-wrap items-baseline gap-x-1.5 font-extrabold">
+          <span className="min-w-0 break-words">{name}</span>
+          {person && id && <span className={cn("font-mono text-[11px] font-bold whitespace-nowrap uppercase", dark ? "text-white/75" : "text-muted-ink")}>{id}</span>}
         </span>
         {sub && <span className={cn("text-[13px] font-medium", dark ? "text-white/85" : "text-ink-2")}>{sub}</span>}
       </span>
