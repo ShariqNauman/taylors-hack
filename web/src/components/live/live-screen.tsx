@@ -36,7 +36,8 @@ export function LiveScreen() {
   // opening the deployed link with no camera attached (a judge, a buyer) must
   // see the product work, not a quiet screen. On site the webcam drives it.
   const replayParam = params.get("replay");
-  const replayOn = replayParam !== "0" && (replayParam === "1" || view === "remote");
+  const replayOn =
+    replayParam !== "0" && (replayParam === "1" || view === "remote");
   const now = useClock(replayOn ? 100 : 500);
 
   const { data: site } = useSWR("site", getSite, { revalidateOnFocus: false });
@@ -96,7 +97,8 @@ export function LiveScreen() {
             active.includes(e)),
       )) ||
     fromCam ||
-    active[0] ||
+    // ?cam= pins the card to that camera: calm if it has no incident (the banner still shows alarms elsewhere).
+    (camParam ? null : active[0]) ||
     replayCalm ||
     null;
 

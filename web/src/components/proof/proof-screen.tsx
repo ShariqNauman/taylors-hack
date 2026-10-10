@@ -417,9 +417,9 @@ export function ProofScreen() {
           ) : (
             <>
               <p className="m-0 max-w-[70ch] text-[15px] leading-normal text-ink-2">
-                This is what a hostel corridor camera gives you at 2am: infrared,
-                grey, wide. Every number on this page comes from daylight or
-                indoor footage.{" "}
+                This is what a hostel corridor camera gives you at 2am:
+                infrared, grey, wide. Every number on this page comes from
+                daylight or indoor footage.{" "}
                 <strong>
                   We have not run the pose model on infrared, so we do not claim
                   it works at night.

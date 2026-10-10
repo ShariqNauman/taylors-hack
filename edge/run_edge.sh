@@ -17,4 +17,5 @@ fi
 if [ "$(uname)" = "Darwin" ] && ! "$PY" -c "import lightgbm" 2>/dev/null; then
   echo "LightGBM needs OpenMP on macOS: brew install libomp"; exit 1
 fi
+if [ "${1:-}" = "all" ]; then shift; exec "$PY" edge/run_all.py "$@"; fi
 exec "$PY" edge/earlyeye_edge.py "$@"

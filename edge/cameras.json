@@ -1,0 +1,41 @@
+{
+  "_note": "Cameras for edge/run_edge.sh all and run_edge.bat all. The live webcam is the only camera that posts to the API. Recordings are sample CCTV clips (not filmed on campus), checked with the v3 model on 10 Oct: clips 2, 3 and 5 stay calm (one brief tense at most). Not used: clip 1 (restaurant) is tense throughout and reached FIGHT once at the recording pose rate; clip 4 (umbrellas) false-alarms to FIGHT; clip 6 shows a real kick.",
+  "live": {
+    "camera": "0",
+    "camera_id": "CAM-AU-01",
+    "location": "Grand Hall",
+    "zone": "auditorium",
+    "zone_risk": 0.5,
+    "staff": "Guard B",
+    "port": 8765
+  },
+  "recordings": [
+    {
+      "file": "edge/recordings/clip5.mp4",
+      "camera_id": "CAM-BC-03",
+      "location": "Block C stairwell",
+      "zone": "stairwell",
+      "zone_risk": 0.8,
+      "staff": "Guard B",
+      "port": 8766
+    },
+    {
+      "file": "edge/recordings/clip2.mp4",
+      "camera_id": "CAM-HC-01",
+      "location": "U Residence, corridor L3",
+      "zone": "hostel_corridor",
+      "zone_risk": 1.0,
+      "staff": "Guard C",
+      "port": 8768
+    },
+    {
+      "file": "edge/recordings/clip3.mp4",
+      "camera_id": "CAM-SC-06",
+      "location": "Sports pitch",
+      "zone": "sports_court",
+      "zone_risk": 0.3,
+      "staff": "Guard C",
+      "port": 8769
+    }
+  ]
+}
