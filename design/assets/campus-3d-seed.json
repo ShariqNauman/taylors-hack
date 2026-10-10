@@ -21,7 +21,9 @@
     "lat": 3.0645574,
     "lng": 101.6170349,
     "alt_m": 10
-   }
+   },
+   "heading_deg": 5,
+   "heading_estimated": true
   },
   {
    "camera_id": "CAM-BC-03",
@@ -34,7 +36,9 @@
     "lat": 3.0640871,
     "lng": 101.6175477,
     "alt_m": 8
-   }
+   },
+   "heading_deg": 330,
+   "heading_estimated": true
   },
   {
    "camera_id": "CAM-CT-04",
@@ -47,7 +51,9 @@
     "lat": 3.0638158,
     "lng": 101.6164681,
     "alt_m": 8
-   }
+   },
+   "heading_deg": 275,
+   "heading_estimated": true
   },
   {
    "camera_id": "CAM-HC-01",
@@ -60,7 +66,9 @@
     "lat": 3.0642137,
     "lng": 101.6160904,
     "alt_m": 16
-   }
+   },
+   "heading_deg": 135,
+   "heading_estimated": true
   },
   {
    "camera_id": "CAM-HC-02",
@@ -73,7 +81,9 @@
     "lat": 3.0643042,
     "lng": 101.6162883,
     "alt_m": 22
-   }
+   },
+   "heading_deg": 205,
+   "heading_estimated": true
   },
   {
    "camera_id": "CAM-SC-06",
@@ -86,7 +96,9 @@
     "lat": 3.0617539,
     "lng": 101.6172328,
     "alt_m": 8
-   }
+   },
+   "heading_deg": 90,
+   "heading_estimated": true
   }
  ],
  "staff": [
@@ -173,5 +185,6 @@
   "facilities": "https://university.taylors.edu.my/en/study/campus-facilities.html",
   "on_campus_hostels": "https://taylorshostel.taylors.edu.my/accommodations/on-campus/ruemz",
   "footprints": "https://www.openstreetmap.org/way/210350320"
- }
+ },
+ "_heading_note": "heading_deg is ESTIMATED (compass degrees, 0 = north): each camera points from its pin toward the space it watches (its building's interior, the U Residence tower, or the football pitch). Nobody has checked the real mounts. Fix on site and set heading_estimated to false."
 }
