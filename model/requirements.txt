@@ -1,0 +1,10 @@
+ultralytics
+opencv-python
+numpy
+pandas
+scikit-learn
+lightgbm
+joblib
+tqdm
+lap
+openvino

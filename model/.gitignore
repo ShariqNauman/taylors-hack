@@ -1,0 +1,9 @@
+venv/
+data/
+keypoints/
+*.pt
+*.joblib
+__pycache__/
+*_openvino_*/
+windows*.csv
+live_features*.csv
