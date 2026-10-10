@@ -2,8 +2,10 @@
 features.py - Turn the last 2 seconds of raw keypoints into fight features.
 Shared by train.py and live_detector.py so training and live use the exact same math.
 
-Input: a DataFrame in the keypoints CSV format (time_s, person_id, <kp>_x, <kp>_y, <kp>_conf ...)
-holding everyone seen in the last 2 s, plus t_end (the window's end time).
+Entry point: window_features(kp, t_end) - keeps only the frames nearest a FEATURE_FPS grid over the
+last LONG_S seconds (training and live both go through this, so both see the same frame rate),
+then compute_features(). Input is the keypoints CSV format (time_s, person_id, <kp>_x, <kp>_y,
+<kp>_conf ..., and in v2 files box_x1, box_y1, box_x2, box_y2). Face keypoints are ignored.
 Output: dict {feature_name: value}, NaN if not computable.
 
 All distances are divided by torso length (shoulder midpoint -> hip midpoint), so features don't
@@ -20,8 +22,10 @@ import pandas as pd
 # ---------------- Tunable constants ----------------
 MIN_CONF = 0.5           # wrists / joints below this confidence are ignored for motion
 TORSO_MIN_CONF = 0.3     # shoulders / hips below this are ignored for torso centre and length
-MIN_BBOX_POINTS = 3      # keypoints needed for the bounding-box fallback centre
-BBOX_TO_TORSO = 0.37     # torso length ~ 0.37 x keypoint box height (fallback scale)
+FEATURE_FPS = 10         # features always see keypoints resampled to this frame rate
+MIN_BBOX_POINTS = 3      # keypoints needed for the keypoint-box fallback (v1 files without YOLO boxes)
+BBOX_TO_TORSO = 0.37     # torso length ~ 0.37 x keypoint box height (v1 fallback scale)
+BOX_TO_TORSO = 0.30      # torso length ~ this x YOLO box height (v2 fallback scale, see REPORT.md)
 MIN_TORSO_PX = 5.0       # ignore people whose torso is smaller than this (bad detections)
 MAX_GAP_S = 0.25         # don't compute speed across gaps longer than this (missed frames)
 SHORT_S = 1.0            # the "1 s" features use the last SHORT_S seconds
@@ -69,17 +73,21 @@ def _nanmax(values):
     return max(values) if values else np.nan
 
 
-def mirror_keypoints(df: pd.DataFrame) -> pd.DataFrame:
-    """Left-right flip: x -> frame_w - x and swap left/right keypoint columns."""
-    out = df.copy()
-    for c in out.columns:
-        if c.endswith("_x"):
-            out[c] = out["frame_w"] - out[c]
-    swap = {}
-    for c in out.columns:
-        if c.startswith("l_"):
-            swap[c], swap["r_" + c[2:]] = "r_" + c[2:], c
-    return out.rename(columns=swap)
+def resample_window(kp: pd.DataFrame, t_end: float, frame_times=None) -> pd.DataFrame:
+    """Rows of the frames nearest a FEATURE_FPS grid over the last LONG_S seconds before t_end.
+    frame_times: every pose frame time (live knows empty frames too); default = times in kp."""
+    if kp is None or kp.empty:
+        return pd.DataFrame()
+    ft = np.unique(kp["time_s"].to_numpy() if frame_times is None else np.asarray(frame_times))
+    grid = t_end - np.arange(int(round(FEATURE_FPS * LONG_S))) / FEATURE_FPS
+    nearest = ft[np.abs(ft[None, :] - grid[:, None]).argmin(axis=1)]  # nearest frame per grid point
+    chosen = nearest[np.abs(nearest - grid) <= 0.5 / FEATURE_FPS]     # skip grid points with no frame
+    return kp[kp["time_s"].isin(chosen)]
+
+
+def window_features(kp: pd.DataFrame, t_end: float, frame_times=None) -> dict:
+    """Features for the window ending at t_end: resample to FEATURE_FPS, then compute_features."""
+    return compute_features(resample_window(kp, t_end, frame_times), t_end)
 
 
 class _Person:
@@ -143,15 +151,20 @@ def _people(win):
     torso[torso < MIN_TORSO_PX] = np.nan
     centre = (sh_mid + hip_mid) / 2
 
-    # Bounding-box fallback (box around all keypoints with conf >= TORSO_MIN_CONF).
-    all_xy = np.stack([_points(win, j, TORSO_MIN_CONF) for j in JOINTS], axis=1)  # (N, 12, 2)
-    n_pts = np.isfinite(all_xy[:, :, 0]).sum(axis=1)
-    with warnings.catch_warnings():  # all-NaN rows are expected here
-        warnings.simplefilter("ignore", RuntimeWarning)
-        lo, hi = np.nanmin(all_xy, axis=1), np.nanmax(all_xy, axis=1)
-    box_ok = n_pts >= MIN_BBOX_POINTS
-    box_centre = np.where(box_ok[:, None], (lo + hi) / 2, np.nan)
-    box_torso = np.where(box_ok, (hi[:, 1] - lo[:, 1]) * BBOX_TO_TORSO, np.nan)
+    # Bounding-box fallback for centre and scale when shoulders / hips are missing.
+    if "box_x1" in win:  # v2 files: YOLO's own person box (always present)
+        lo = win[["box_x1", "box_y1"]].to_numpy(dtype=float)
+        hi = win[["box_x2", "box_y2"]].to_numpy(dtype=float)
+        box_centre, box_torso = (lo + hi) / 2, (hi[:, 1] - lo[:, 1]) * BOX_TO_TORSO
+    else:  # v1 files: box around all keypoints with conf >= TORSO_MIN_CONF
+        all_xy = np.stack([_points(win, j, TORSO_MIN_CONF) for j in JOINTS], axis=1)  # (N, 12, 2)
+        n_pts = np.isfinite(all_xy[:, :, 0]).sum(axis=1)
+        with warnings.catch_warnings():  # all-NaN rows are expected here
+            warnings.simplefilter("ignore", RuntimeWarning)
+            lo, hi = np.nanmin(all_xy, axis=1), np.nanmax(all_xy, axis=1)
+        box_ok = n_pts >= MIN_BBOX_POINTS
+        box_centre = np.where(box_ok[:, None], (lo + hi) / 2, np.nan)
+        box_torso = np.where(box_ok, (hi[:, 1] - lo[:, 1]) * BBOX_TO_TORSO, np.nan)
     centre = np.where(np.isfinite(centre).all(axis=1, keepdims=True), centre, box_centre)
 
     t, pid = win["time_s"].to_numpy(dtype=float), win["person_id"].to_numpy()

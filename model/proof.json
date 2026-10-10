@@ -1,0 +1,51 @@
+{
+  "datasets": [
+    "AIRTLab",
+    "RLVS",
+    "SCF",
+    "SCVD"
+  ],
+  "n_clips": 3131,
+  "clip_auc": 0.887,
+  "clip_precision": 0.88,
+  "clip_recall": 0.682,
+  "cctv_domain": {
+    "datasets": [
+      "SCF",
+      "SCVD"
+    ],
+    "auc": 0.709,
+    "precision": 0.803,
+    "recall": 0.317
+  },
+  "live_precision": null,
+  "live_recall": null,
+  "fa_per_camera_hour": null,
+  "own_footage_minutes": 0,
+  "airtlab_fp_rate": 0.192,
+  "lead_time_s": [],
+  "pushes_per_shift_target": 3,
+  "latency_ms": 38,
+  "ir_check": {
+    "frames": 0,
+    "skeletons_detected": 0,
+    "note": "not run yet",
+    "image": ""
+  },
+  "model_card": {
+    "inputs": "12 body keypoints per person from YOLO26n-pose + ByteTrack (no faces, no video stored)",
+    "windows": "last 2 s resampled to 10 fps, scored every 0.5 s; distances scaled by torso length",
+    "classifier": "LightGBM {'num_leaves': 31, 'learning_rate': 0.02, 'n_estimators': 800, 'min_child_samples': 20}, sample weights {'AIRTLab': 3.0, 'SCF': 2.0, 'SCVD': 2.0, 'RLVS': 1.0, 'Own': 3.0}",
+    "split": "GroupKFold by video (AIRTLab cam1/cam2 of one scene kept together); clip score = max window",
+    "threshold": "alarm when the smoothed score (alpha 0.6) stays >= 0.75 for 1.0 s; tuned on dataset clips, not yet on own footage",
+    "failure_modes": [
+      "hugs and close contact: 19% of AIRTLab hugs/claps raise an alarm",
+      "small or distant people on CCTV: pair features often missing",
+      "only one person tracked: pair features unavailable",
+      "weapons are not detected as objects; only the body motion is scored",
+      "night / IR footage untested"
+    ]
+  },
+  "disclosure": "Dataset numbers: phone-video sets (RLVS + AIRTLab, 2350 clips, out-of-fold) and a held-out CCTV row (SCF + SCVD, 781 clips, model trained without them). The shipped model also trains on SCF + SCVD; their out-of-fold AUC with CCTV in training is 0.745. Dataset clips are 2-5 s long, so false alarms per camera-hour are not measured yet; live-room numbers come from our own labelled footage. Practice-run lesson: 100% on KTH, zero live until retuned, so we report dataset and live numbers side by side. We detect physical aggression from body motion only; we do not claim verbal or online bullying, weapon recognition, or night vision.",
+  "note": "partly placeholder: dataset numbers are real; live_precision/recall, fa_per_camera_hour, lead_time_s and ir_check need own-venue footage"
+}
