@@ -62,6 +62,7 @@ files_to_upload = [
     (os.path.join(REPO_DIR, "model", "seq_features.py"), "/root/earlyeye/seq_features.py"),
     (os.path.join(REPO_DIR, "model", "seq_model.onnx"), "/root/earlyeye/seq_model.onnx"),
     (os.path.join(REPO_DIR, "model", "seq_clip.json"), "/root/earlyeye/seq_clip.json"),
+    (os.path.join(REPO_DIR, "model", "guards.py"), "/root/earlyeye/guards.py"),
 ]
 
 for local_path, remote_path in files_to_upload:

@@ -21,7 +21,7 @@ import time
 import urllib.request
 import cv2
 
-DEFAULT_GPU_URL = "https://xbox-bent-quickly-reunion.trycloudflare.com"
+DEFAULT_GPU_URL = "https://eye-dated-stylish-surrounding.trycloudflare.com"
 
 ALL_BONES = [
     # Head & Face

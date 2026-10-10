@@ -275,28 +275,40 @@ def draw(frame, people_17, level, score, a, is_live: bool):
     return frame
 
 
+KEYPOINTS_NAMES = [
+    "nose", "l_eye", "r_eye", "l_ear", "r_ear",
+    "l_shoulder", "r_shoulder", "l_elbow", "r_elbow", "l_wrist", "r_wrist",
+    "l_hip", "r_hip", "l_knee", "r_knee", "l_ankle", "r_ankle"
+]
+
+
 def to_rows(res, t: float, w: int, h: int) -> list[dict]:
-    out = []
+    rows = []
     if res.keypoints is None or len(res.boxes) == 0:
-        return out
-    xy = res.keypoints.xy.cpu().numpy()
-    conf = res.keypoints.conf.cpu().numpy()
-    ids = res.boxes.id.int().tolist() if res.boxes.id is not None else list(range(len(xy)))
+        return rows
+    xy, conf = res.keypoints.xy.cpu().numpy(), res.keypoints.conf.cpu().numpy()
+    boxes = res.boxes.xyxy.cpu().numpy()
+    box_conf = res.boxes.conf.cpu().numpy()
+    ids = res.boxes.id.int().tolist() if res.boxes.id is not None else [-1] * len(xy)
     for p, pid in enumerate(ids):
-        for k in range(17):
-            out.append({
-                "time_s": t,
-                "person_id": int(pid),
-                "keypoint_idx": k,
-                "x": float(xy[p, k, 0]),
-                "y": float(xy[p, k, 1]),
-                "conf": float(conf[p, k]),
-                "box_w": float(res.boxes.xywh[p, 2].item()),
-                "box_h": float(res.boxes.xywh[p, 3].item()),
-                "frame_w": w,
-                "frame_h": h,
-            })
-    return out
+        x1, y1, x2, y2 = boxes[p]
+        row = {
+            "time_s": t,
+            "frame_w": w,
+            "frame_h": h,
+            "person_id": int(pid),
+            "box_x1": float(x1),
+            "box_y1": float(y1),
+            "box_x2": float(x2),
+            "box_y2": float(y2),
+            "box_conf": float(box_conf[p]),
+        }
+        for k, name in enumerate(KEYPOINTS_NAMES):
+            row[f"{name}_x"] = float(xy[p, k, 0])
+            row[f"{name}_y"] = float(xy[p, k, 1])
+            row[f"{name}_conf"] = float(conf[p, k])
+        rows.append(row)
+    return rows
 
 
 def run_pipeline(s: State):
@@ -417,12 +429,13 @@ def run_pipeline(s: State):
                 raw = predict(feats)
                 smooth = 0.6 * raw + 0.4 * smooth
             except Exception as e:
+                print(f"[scoring error]: {e}", flush=True)
                 feats = {}
 
             high_since = (high_since if high_since is not None else t) if smooth >= 0.55 else None
             if high_since is not None and t - high_since >= 1.0:
                 fight_until = t + 2.0
-            level = "FIGHT" if t <= fight_until else "TENSE" if smooth >= 0.5 else "CALM"
+            level = "FIGHT" if t <= fight_until else "TENSE" if smooth >= 0.385 else "CALM"
 
             with s.lock:
                 s.level, s.score, s.feats, s.updated_at = level, float(smooth), feats, iso_now()
