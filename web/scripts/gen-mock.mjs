@@ -243,7 +243,12 @@ const proof = {
 };
 
 const w = (name, obj) => writeFileSync(path.join(OUT, `${name}.json`), JSON.stringify(obj, null, 2) + "\n");
-w("site", site); w("cameras", cameras); w("events", events); w("replay", replay); w("hotspots", hotspots); w("plan", plan); w("proof", proof);
+w("site", site); w("cameras", cameras); w("events", events); w("replay", replay); w("hotspots", hotspots); w("plan", plan);
+// Proof: the model team's real proof.json when it exists (model/proof.json), else the REPORT v2 fallback above.
+import { existsSync } from "fs";
+const modelProof = path.join(WEB, "..", "model", "proof.json");
+if (existsSync(modelProof)) writeFileSync(path.join(OUT, "proof.json"), readFileSync(modelProof, "utf8"));
+else w("proof", proof);
 console.log(`events ${events.length} · with peak_snapshot ${events.filter((e) => e.peak_snapshot).length} · acked ${events.filter((e) => e.acked_at).length} · dismissed ${events.filter((e) => e.status === "dismissed").length}`);
 console.log("hotspots ≥3:", hotspots.filter((h) => h.count >= 3).map((h) => `${h.location} wd${h.weekday} ${h.hour}:00 ×${h.count}`));
 console.log("BC Mon–Thu 13h last 4w:", events.filter((e) => e.camera_id === "CAM-BC-03" && Date.parse(e.start_time) >= cutoff && e.start_time.slice(11, 13) === "13").length);

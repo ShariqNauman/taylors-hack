@@ -1,37 +1,51 @@
 {
   "datasets": [
-    "RLVS (300 fight, 300 calm)"
+    "AIRTLab",
+    "RLVS",
+    "SCF",
+    "SCVD"
   ],
-  "n_clips": 600,
-  "clip_auc": 0.876,
-  "clip_precision": 0.8,
-  "clip_recall": 0.82,
-  "fa_per_camera_hour": 0,
+  "n_clips": 3131,
+  "clip_auc": 0.887,
+  "clip_precision": 0.88,
+  "clip_recall": 0.682,
+  "cctv_domain": {
+    "datasets": [
+      "SCF",
+      "SCVD"
+    ],
+    "auc": 0.709,
+    "precision": 0.803,
+    "recall": 0.317
+  },
+  "live_precision": null,
+  "live_recall": null,
+  "fa_per_camera_hour": null,
   "own_footage_minutes": 0,
-  "airtlab_fp_rate": 0,
+  "airtlab_fp_rate": 0.192,
   "lead_time_s": [],
   "pushes_per_shift_target": 3,
-  "latency_ms": 0,
+  "latency_ms": 38,
   "ir_check": {
     "frames": 0,
     "skeletons_detected": 0,
-    "note": "Night and IR not measured.",
+    "note": "not run yet",
     "image": ""
   },
   "model_card": {
-    "inputs": "12 body keypoints per person from YOLO26n-pose (no face points), 10 fps, torso-scaled",
-    "windows": "One window every 0.5 s; 1 s features over the last 1 s, 2 s features over the last 2 s; active pair = the two people whose wrists move fastest",
-    "classifier": "LightGBM, 10 features, num_leaves 15, learning_rate 0.02, n_estimators 400, min_child_samples 50 (best of 20 settings)",
-    "split": "5-fold GroupKFold by video on 600 RLVS clips; clip score = highest window score",
-    "threshold": "Live: smoothing alpha 0.4, TENSE 0.5, FIGHT 0.55, 1.0 s minimum, 2.0 s hold; tuned in simulation on RLVS clips (tune_live.py --rlvs), not on webcam footage",
+    "inputs": "12 body keypoints per person from YOLO26n-pose + ByteTrack (no faces, no video stored)",
+    "windows": "last 2 s resampled to 10 fps, scored every 0.5 s; distances scaled by torso length",
+    "classifier": "LightGBM {'num_leaves': 31, 'learning_rate': 0.02, 'n_estimators': 800, 'min_child_samples': 20}, sample weights {'AIRTLab': 3.0, 'SCF': 2.0, 'SCVD': 2.0, 'RLVS': 1.0, 'Own': 3.0}",
+    "split": "GroupKFold by video (AIRTLab cam1/cam2 of one scene kept together); clip score = max window",
+    "threshold": "alarm when the smoothed score (alpha 0.6) stays >= 0.75 for 1.0 s; tuned on dataset clips, not yet on own footage",
     "failure_modes": [
-      "One feature dominates (pair_motion_energy, 47% of gain); arm-only fights like V_1 are missed",
-      "Pair features missing 24–77% of the time when only one person is tracked",
-      "No own or CCTV footage; all numbers are on YouTube-style RLVS clips",
-      "Live thresholds tuned in simulation, not on the webcam",
-      "Tuned AUC is slightly optimistic (best of 20 on the same folds)"
+      "hugs and close contact: 19% of AIRTLab hugs/claps raise an alarm",
+      "small or distant people on CCTV: pair features often missing",
+      "only one person tracked: pair features unavailable",
+      "weapons are not detected as objects; only the body motion is scored",
+      "night / IR footage untested"
     ]
   },
-  "disclosure": "Dataset numbers are real, from 600 public RLVS clips. Live room, CCTV angle, lead time and night are not measured yet, and this page says so.",
-  "note": "report-v2"
+  "disclosure": "Dataset numbers: phone-video sets (RLVS + AIRTLab, 2350 clips, out-of-fold) and a held-out CCTV row (SCF + SCVD, 781 clips, model trained without them). The shipped model also trains on SCF + SCVD; their out-of-fold AUC with CCTV in training is 0.745. Dataset clips are 2-5 s long, so false alarms per camera-hour are not measured yet; live-room numbers come from our own labelled footage. Practice-run lesson: 100% on KTH, zero live until retuned, so we report dataset and live numbers side by side. We detect physical aggression from body motion only; we do not claim verbal or online bullying, weapon recognition, or night vision.",
+  "note": "partly placeholder: dataset numbers are real; live_precision/recall, fa_per_camera_hour, lead_time_s and ir_check need own-venue footage"
 }

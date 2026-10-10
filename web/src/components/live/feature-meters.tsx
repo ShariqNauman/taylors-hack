@@ -29,7 +29,7 @@ export function FeatureMeters({
             : f.value.toFixed(2);
         const note =
           f.name === "risk_score"
-            ? f.value >= 0.55
+            ? f.value >= 0.75
               ? "Above the alarm line"
               : f.value >= 0.5
                 ? "Above the tense line"
