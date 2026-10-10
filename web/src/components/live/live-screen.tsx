@@ -50,6 +50,7 @@ export function LiveScreen() {
   );
   const feed = useLiveFeed(replayOn, edgeUrls);
   const view = useAppStore((s) => s.view);
+  const mockOnSite = view === "onsite" && (usingMock || apiDown);
 
   const active = useMemo(
     () =>
@@ -62,12 +63,14 @@ export function LiveScreen() {
             (e.isEdge ||
               e.isReplay ||
               Date.now() - Date.parse(e.start_time) < ACTIVE_WINDOW_MS) &&
+            // On site without an API, mock "now" incidents would hide the real webcam.
+            (!mockOnSite || e.isEdge || e.isReplay) &&
             LEVEL_ORDER[e.level] >= LEVEL_ORDER.tense &&
             e.status !== "dismissed" &&
             e.status !== "resolved",
         )
         .sort((a, b) => b.priority - a.priority),
-    [feed.events],
+    [feed.events, mockOnSite],
   );
 
   const [selectedId, setSelectedId] = useState<string | null>(null);

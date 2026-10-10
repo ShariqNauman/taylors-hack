@@ -190,6 +190,48 @@ def _post(s: State, url: str, body: dict):
     print(msg, flush=True)
 
 
+# ------------------------------------------------------------------ prediction worker
+def _predict_worker(conn, model_dir: str):
+    """LightGBM in its own process. On macOS, PyTorch and LightGBM ship different OpenMP
+    runtimes and segfault when both load in one process, so the score runs here."""
+    os.chdir(model_dir)
+    sys.path.insert(0, model_dir)
+    from predict import predict  # noqa: E402  (model/predict.py, not modified)
+    while True:
+        try:
+            feats = conn.recv()
+        except (EOFError, KeyboardInterrupt):
+            return
+        if feats is None:
+            return
+        try:
+            conn.send(float(predict(feats)))
+        except Exception as e:  # report, keep serving
+            conn.send(("error", str(e)))
+
+
+class PredictProcess:
+    def __init__(self):
+        import multiprocessing as mp
+        ctx = mp.get_context("spawn")
+        self.conn, child = ctx.Pipe()
+        self.proc = ctx.Process(target=_predict_worker, args=(child, str(MODEL_DIR)), daemon=True)
+        self.proc.start()
+
+    def __call__(self, feats: dict) -> float:
+        self.conn.send(feats)
+        out = self.conn.recv()
+        if isinstance(out, tuple):
+            raise RuntimeError(out[1])
+        return out
+
+    def close(self):
+        try:
+            self.conn.send(None)
+        except Exception:
+            pass
+
+
 # ------------------------------------------------------------------ real pipeline
 def run_model(s: State):
     """Capture + pose + scoring with the model team's code and thresholds (read-only import)."""
@@ -198,13 +240,19 @@ def run_model(s: State):
     import pandas as pd
 
     a = s.args
+    # macOS: score in a separate process (OpenMP clash between torch and LightGBM). Start it
+    # before torch loads. Windows/Linux keep the model team's in-process path.
+    worker = PredictProcess() if sys.platform == "darwin" else None
     # Resolve a video path against where the user ran the command, before moving into model/.
     src = int(a.camera) if str(a.camera).isdigit() else str(Path(a.camera).expanduser().resolve())
     os.chdir(MODEL_DIR)                      # model code uses relative paths (joblib, tracker yaml)
     sys.path.insert(0, str(MODEL_DIR))
     import live_detector as ld               # noqa: E402  (model/live_detector.py, not modified)
     from features import window_features     # noqa: E402
-    from predict import predict              # noqa: E402
+    if worker is None:
+        from predict import predict          # noqa: E402
+    else:
+        predict = worker
 
     a = s.args
     cap = open_capture(cv2, src)
@@ -288,6 +336,8 @@ def run_model(s: State):
             s.level, s.score, s.feats, s.updated_at = level, float(smooth), feats, iso_now()
             tick_incident(s, time.time())
     cap.release()
+    if worker is not None:
+        worker.close()
 
 
 def open_capture(cv2, src):

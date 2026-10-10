@@ -1,18 +1,18 @@
 #!/usr/bin/env bash
 # EarlyEye edge on macOS (Apple Silicon or Intel) and Linux. Usage: edge/run_edge.sh [options]
+# Uses uv's self-contained Python 3.11: Homebrew's python@3.11 can break on macOS 26
+# (pyexpat vs the system libexpat), which also breaks pip.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 PY=edge/.venv/bin/python
-if [ ! -x "$PY" ]; then
-  BASE=$(command -v python3.11 || true)
-  [ -z "$BASE" ] && { echo "Install Python 3.11 first: brew install python@3.11"; exit 1; }
-  echo "Creating edge/.venv with $BASE ..."
-  "$BASE" -m venv edge/.venv || "$BASE" -m venv --without-pip edge/.venv
-  if ! "$PY" -m pip --version >/dev/null 2>&1; then
-    curl -sSL https://bootstrap.pypa.io/get-pip.py -o /tmp/get-pip.py && "$PY" /tmp/get-pip.py
+if [ ! -x "$PY" ] || ! "$PY" -c "import cv2, ultralytics, lightgbm" 2>/dev/null; then
+  if ! command -v uv >/dev/null 2>&1; then
+    echo "Installing uv (Python manager) ..."
+    if command -v brew >/dev/null 2>&1; then brew install uv; else curl -LsSf https://astral.sh/uv/install.sh | sh; export PATH="$HOME/.local/bin:$PATH"; fi
   fi
-  "$PY" -m pip install --upgrade pip
-  "$PY" -m pip install -r edge/requirements.txt
+  [ -x "$PY" ] || uv venv --python 3.11 --managed-python edge/.venv
+  echo "Installing the model's packages (first run only, a few minutes) ..."
+  uv pip install --python "$PY" -r edge/requirements.txt
 fi
 if [ "$(uname)" = "Darwin" ] && ! "$PY" -c "import lightgbm" 2>/dev/null; then
   echo "LightGBM needs OpenMP on macOS: brew install libomp"; exit 1

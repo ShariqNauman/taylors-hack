@@ -22,7 +22,10 @@ One command per OS. The first run creates `edge/.venv` (Python 3.11) and install
 | MacBook, Apple Silicon | `edge/run_edge.sh` | PyTorch on the Apple GPU (`mps`), then CPU |
 | MacBook, Intel | `edge/run_edge.sh` | PyTorch on CPU (`--device openvino` if you install openvino) |
 
-Needs Python 3.11: Windows from python.org (tick "Add to PATH"), macOS `brew install python@3.11`.
+Needs Python 3.11. Windows: from python.org (tick "Add to PATH"). macOS: the launcher uses `uv`'s
+self-contained Python 3.11 (it installs `uv` with Homebrew if missing), because Homebrew's python@3.11
+breaks on macOS 26 (pyexpat vs the system libexpat, which also breaks pip). On macOS, LightGBM runs in a
+small separate process: PyTorch and LightGBM ship different OpenMP runtimes and segfault in one process.
 macOS also needs `brew install libomp` for LightGBM, and asks once for camera permission for the terminal
 (System Settings → Privacy & Security → Camera). Windows opens the webcam through DirectShow.
 
