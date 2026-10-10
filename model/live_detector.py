@@ -57,7 +57,7 @@ FIGHT_AT_LGBM = 0.695   # used instead when predict.MODE == "lgbm"
 MIN_DURATION = 1.0       # ... for at least this many seconds -> FIGHT
 FIGHT_HOLD = 2.0         # keep showing FIGHT this many seconds after it triggers
 LOG_CSV = "live_features.csv"
-MIN_DRAW_CONF = 0.5      # only draw keypoints at least this confident
+MIN_DRAW_CONF = 0.3      # only draw keypoints at least this confident (display only; the model has its own)
 LABEL_KEYS = {"F": "fight", "H": "hug", "N": "normal"}  # hold key -> label; nothing held = normal
 LABEL_COLORS = {"fight": (0, 0, 220), "hug": (200, 120, 0), "normal": (90, 90, 90)}  # BGR
 KEY_HOLD_TIMEOUT = 0.6   # non-Windows fallback: key counts as held this long after its last repeat
@@ -65,7 +65,8 @@ KEY_HOLD_TIMEOUT = 0.6   # non-Windows fallback: key counts as held this long af
 # All 17 COCO keypoints, same as extract_keypoints_v2.py: the head features and the sequence model need
 # the face points (used only as head position). Only the 12 body points are drawn.
 KEYPOINTS = {name: i for i, name in enumerate(EXTRACT_KEYPOINTS)}
-BODY_POINTS = [KEYPOINTS[n] for n in KEYPOINTS if n not in ("nose", "l_eye", "r_eye", "l_ear", "r_ear")]
+FACE_POINTS = [KEYPOINTS[n] for n in ("nose", "l_eye", "r_eye", "l_ear", "r_ear")]
+BODY_POINTS = [KEYPOINTS[n] for n in KEYPOINTS if KEYPOINTS[n] not in FACE_POINTS]
 BONES = [(5, 7), (7, 9), (6, 8), (8, 10), (5, 6), (5, 11), (6, 12), (11, 12),
          (11, 13), (13, 15), (12, 14), (14, 16)]
 ACTIVE_FIGHT_AT = FIGHT_AT_LGBM if predict_module.MODE == "lgbm" else FIGHT_AT
@@ -217,6 +218,10 @@ def draw_skeletons(frame, pose):
                 cv2.line(frame, pts[a], pts[b], (255, 200, 0), 2)
         for pt in pts.values():
             cv2.circle(frame, pt, 3, (255, 255, 255), -1)
+        # Head as one dot (average of the confident face points): shows the head is tracked, no face mesh.
+        face = [xy[p, k] for k in FACE_POINTS if conf[p, k] >= MIN_DRAW_CONF]
+        if face:
+            cv2.circle(frame, tuple(map(int, np.mean(face, axis=0))), 7, (255, 200, 0), 2)
 
 
 def draw_hud(frame, s, label, model_name):
