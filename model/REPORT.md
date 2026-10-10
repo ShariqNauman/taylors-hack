@@ -2,6 +2,27 @@
 
 Fight detection from video using body keypoints (no faces). Model only, no backend or website.
 
+## Status at a glance (10 Oct 2026, 21:00)
+
+| | |
+|---|---|
+| **Current model** | **v5**: ensemble of LightGBM (24 features) + 1D-CNN (keypoint sequences), averaged. Made robust to half bodies, one person and people close to the camera. Branch `model-halfbody` (pushed, PR not opened yet). |
+| **Model files** | `violence_model.joblib` (LightGBM + clipping ranges), `seq_model.onnx` (CNN), `seq_clip.json` (CNN coordinate range) |
+| **Live default** | `SENSITIVITY = "strict"` (FIGHT_AT 0.656); all guards off except `CLIP_FEATURES`; single-person rule always on |
+| **Hold-out (470 clips, second look)** | Full body: AUC 0.917, 64.5% of fights caught, 5.2% of normal clips → FIGHT, 11.1% of hugs → FIGHT. Waist-up AUC 0.922, chest-up 0.928. One person alone or close to the camera: 0% → FIGHT. |
+| **Proof page** (`proof.json`) | Phone-video sets AUC 0.942 (precision 0.93, recall 0.70); CCTV AUC 0.813; AIRTLab hug false alarms 11.1% |
+| **Live room** | v4 gave 2 false alarms in 4 min (`session4.csv`). v5 has not been tested in the room yet. |
+| **Fallbacks** | `predict.MODE = "lgbm"` (LightGBM alone, FIGHT_AT 0.67). v4 models in `backup_v4/`, v3 in `backup_v3/`. |
+
+**Branches:**
+
+| Branch | Content | State |
+|---|---|---|
+| `model-dev` | v3 multi-dataset LightGBM | merged (PR #12) |
+| `model-final` | v4 ensemble, hold-out | merged (PR #21) |
+| `model-live-display` | Live drawing: threshold 0.3, head as one dot | local only (not pushed, not merged) |
+| `model-halfbody` | v5 + presets + guards + `--save-keypoints` | pushed, PR pending |
+
 - **Part V5** (below): v5, half-body round. Same ensemble, made robust to partial bodies, one person and people close to the camera. **Current model.**
 - **Part A0**: v4, the final training round. LightGBM + 1D-CNN ensemble, tested on a locked hold-out (backed up in `backup_v4/`).
 - **Part A**: v3, multi-dataset LightGBM on v2 keypoints (the previous model, backed up in `backup_v3/`).
@@ -19,6 +40,22 @@ The v4 ensemble broke in the room:
 - **One of those alarms had a pair distance of ~0.** That means one person was detected twice.
 - **Simulated framings:** with only the upper body visible, v4 missed most fights. The cause was the torso fallback (YOLO box height × 0.30), which made bodies look about 2.7× too small, so every speed and distance looked 2.7× too big.
 
+**Measured on 300 AIRTLab + RLVS clips with v4** (these clips were in v4's training, so the full-body row is flattering; the drop is what matters):
+
+| Framing (simulated) | Clip AUC | Fight clips reaching FIGHT_AT | Calm clips reaching FIGHT_AT | Torso scale (× frame height) |
+|---|---|---|---|---|
+| Full body | 0.970 | 96% | 18% | 0.164 |
+| Waist-up (no knees or ankles) | 0.906 | 76% | 14% | 0.162 |
+| Chest-up (no hips either) | 0.807 | **26%** | 5% | **0.060** |
+
+**Why it broke:**
+
+1. **Scale:** without hips, the box fallback measured the torso about 2.7× too short.
+2. **Missing features:** the leg and hip features were empty.
+3. **No half bodies in training:** neither model had ever seen one.
+
+**The other live failures:** a single person moving, and people walking close to the camera, also raised alarms. Recording a new session was not possible, so v5 uses synthetic stand-ins for those cases (V5.2).
+
 ## V5.2 What changed
 
 | Change | Detail |
@@ -34,7 +71,21 @@ The v4 ensemble broke in the room:
 
 Training settings are the same as v4 (LightGBM trial 94 and the 1D-CNN, same folds, same weights), on 82,824 training-part windows. FIGHT_AT 0.656 is fixed at 9% normal false alarms on full-body training clips.
 
-## V5.3 Hold-out results (second look: this hold-out was also used once for v4)
+## V5.3 Cross-validation (training part, out-of-fold, same folds as v4)
+
+Thresholds are fixed at 9% normal false alarms on full-body training clips: ensemble 0.656, LightGBM 0.67, CNN 0.707.
+
+| Model | Framing | Clip AUC | Fights caught | Normal → FIGHT | Hugs → FIGHT | Weapon caught |
+|---|---|---|---|---|---|---|
+| LightGBM | full / waist-up / chest-up | 0.874 / 0.866 / 0.859 | 61 / 59 / 61% | 9 / 8 / 10% | 11 / 13 / 13% | 44 / 44 / 41% |
+| CNN | full / waist-up / chest-up | 0.880 / 0.881 / 0.884 | 64 / 67 / 66% | 9 / 10 / 11% | 12 / 11 / 6% | 56 / 64 / 67% |
+| **Ensemble** | full / waist-up / chest-up | **0.895 / 0.899 / 0.893** | 65 / 66 / 66% | 9 / 8 / 9% | **7 / 9 / 7%** | 51 / 52 / 55% |
+
+- **Single and close copies** of non-violent clips (1,288 each): 0% reach FIGHT for every model.
+- **The ensemble beats either model alone** on every framing.
+- **Single-person rule cost:** 6.1% of fight windows and 1.7% of fight clips (only one person tracked in every window) can never reach FIGHT.
+
+## V5.4 Hold-out results (second look: this hold-out was also used once for v4)
 
 Both models here were trained on the training part only.
 
@@ -121,10 +172,39 @@ The remaining rows are in `guards_results.json`.
 - **`CLIP_FEATURES` costs nothing:** no hold-out clip has extreme values. It stays on to guard against close-to-camera spikes live.
 - **The overlay shows which guard blocked** an alarm-level score.
 
-## V5.4 Limits
+## V5.6 How to run and what to change
 
-- **Not tested in our own room yet.** No session has been recorded with `--save-keypoints`, so the synthetic negatives stand in for real footage of our room.
-- **Lower full-body recall than v4** on dataset clips.
+```
+venv\Scripts\python live_detector.py                                   # demo (webcam)
+venv\Scripts\python live_detector.py --log s.csv --save-keypoints s_kp.csv   # record a session for training
+venv\Scripts\python live_detector.py --camera clip.mp4 --seconds 30        # timed test on a video
+```
+
+**Settings at the top of `live_detector.py`:**
+
+| Setting | Default | Effect |
+|---|---|---|
+| `SENSITIVITY` | `"strict"` | `"sensitive"` uses FIGHT_AT 0.541: more fights caught (hold-out 75.6%), more false alarms (normal 9.5%, hugs 22%) |
+| `GUARD_K_OF_N` | `False` | `True` makes FIGHT need about 2 s instead of 1 s. Best switch against false alarms (hugs 0%, normal 1.9%), at about 20 points of recall. |
+| `GUARD_PROX`, `GUARD_TWO_KEY`, `GUARD_MIN_TRACK` | `False` | Cost more recall than they save (V5.5) |
+| `CLIP_FEATURES` | `True` | Clips features to the training range |
+| `predict.MODE` | `"ensemble"` | `"lgbm"` = LightGBM alone (fallback) |
+
+The overlay shows `blocked: <guard>` when a guard stops an alarm-level score.
+
+**Live speed:** pose about 31 fps on a 720p clip (v5 smoke test). Scoring takes an estimated ~17 ms every 0.5 s (13 ms measured for v4 inputs + ~3 ms for the duplicate check + ~1 ms for both models), on the pose thread, not the display thread.
+
+**Scripts for this round:** `train_halfbody.py` (`--step oof | report | holdout | proof | final`), `evaluate_guards.py`, plus `seq_dataset.py`, `seq_train.py` and `seq_final.py` on the GPU server. Results: `halfbody_cv.json`, `halfbody_holdout.json`, `guards_results.json`.
+
+## V5.7 Limits and next steps
+
+- **Not tested in our own room yet.** No session has been recorded with `--save-keypoints`, so the synthetic one-person and close-to-camera negatives stand in for real footage of our room. **The next step is a 5-minute labelled session with `--save-keypoints`** (hold F for fights, H for hugs). It can go straight into training and give live precision, recall and false alarms per hour.
+- **Lower full-body recall than v4** on dataset clips: 64.5% vs 78.9% of fights at the strict threshold. `sensitive` gets back to 75.6%, at more false alarms.
+- **The hold-out has been used twice** (v4, then v5 and the guards). Its numbers are a "second look", not a pristine test.
+- **`K_OF_N` behaves as longer persistence.** Read literally ("3 of the last 4 windows hot at the moment FIGHT fires"), it would add nothing to the 1 s `MIN_DURATION`. As built, it blocks the persistence count, so FIGHT needs about 2 s.
+- **Hugs:** 2 of 18 hold-out hug/clap clips still alarm (11%).
+- **CCTV recall is lower** (0.48 on hold-out CCTV clips): people are small and far away.
+- **Outside the model:** the edge app (`edge/earlyeye_edge.py`) calls `predict(feats)` without the sequence input and copies the old alarm logic, so it does not use v5 or the guards until it switches to `window_inputs` and `guards.LevelLogic`.
 
 ---
 
