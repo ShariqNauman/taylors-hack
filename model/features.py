@@ -40,6 +40,8 @@ ARM_PAIR_MAX_DIST = 3.0  # only count arm reach toward people within this many t
 PEAK_MIN_SPEED = 3.0     # a wrist-speed peak counts as a "strike" above this speed
 CLOSE_DIST = 1.5         # torsos closer than this (torso lengths) count as "close"
 MIN_ARM_SPEED = 0.5      # arm symmetry is only measured when the arms move faster than this
+DUP_IOU = 0.7            # two boxes overlapping this much in one frame = one person detected twice
+ZOOM = 2.0               # "close to camera" variant: person scaled up this much around the shoulders
 # ---------------------------------------------------
 
 FEATURE_NAMES = [
@@ -97,14 +99,48 @@ def _nanmax(values):
     return max(values) if values else np.nan
 
 
-CROPS = ("waist-up", "chest-up")
+CROPS = ("waist-up", "chest-up")          # half-body copies of every clip
+SYNTHETIC = ("single", "close")            # own-room negatives, made from non-violent clips only
+
+
+def single_person(kp: pd.DataFrame) -> pd.DataFrame:
+    """Keep only the most-tracked person (one person alone in the room)."""
+    ids = kp.loc[kp["person_id"] >= 0, "person_id"]
+    return kp[kp["person_id"] == ids.value_counts().index[0]] if len(ids) else kp.iloc[0:0]
+
+
+def close_to_camera(kp: pd.DataFrame) -> pd.DataFrame:
+    """One person standing close to the camera: the most-tracked person scaled up ZOOM x around their
+    shoulders, so the lower body leaves the frame. Points outside the frame are dropped, boxes clipped."""
+    out = single_person(kp).copy()
+    if out.empty:
+        return out
+    ax = out[["l_shoulder_x", "r_shoulder_x"]].mean(axis=1).median()
+    ay = out[["l_shoulder_y", "r_shoulder_y"]].mean(axis=1).median()
+    w, h = out["frame_w"].iloc[0], out["frame_h"].iloc[0]
+    for c in [c[:-2] for c in out.columns if c.endswith("_x")]:
+        out[f"{c}_x"] = ax + (out[f"{c}_x"] - ax) * ZOOM
+        out[f"{c}_y"] = ay + (out[f"{c}_y"] - ay) * ZOOM
+        if f"{c}_conf" in out:
+            gone = (out[f"{c}_x"] < 0) | (out[f"{c}_x"] > w) | (out[f"{c}_y"] < 0) | (out[f"{c}_y"] > h)
+            out.loc[gone, f"{c}_conf"] = 0.0
+    for c in ("box_x1", "box_x2"):
+        out[c] = (ax + (out[c] - ax) * ZOOM).clip(0, w)
+    for c in ("box_y1", "box_y2"):
+        out[c] = (ay + (out[c] - ay) * ZOOM).clip(0, h)
+    return out
 
 
 def crop_keypoints(kp: pd.DataFrame, level: str) -> pd.DataFrame:
-    """Half-body augmentation: pretend the camera only sees the upper body.
+    """Augmented / test variants of a clip: "single" and "close" (see above), or half-body framing.
+    Half-body: pretend the camera only sees the upper body.
     waist-up: hips, knees and ankles removed; box bottom clipped at the hip line.
     chest-up: also everything below the chest line (halfway shoulders -> hips), e.g. low elbows and wrists;
               box bottom clipped at the chest line. Per person and frame, so it follows each body."""
+    if level == "single":
+        return single_person(kp)
+    if level == "close":
+        return close_to_camera(kp)
     out = kp.copy()
     sh_y = out[["l_shoulder_y", "r_shoulder_y"]].mean(axis=1)
     hip_y = out[["l_hip_y", "r_hip_y"]].mean(axis=1)
@@ -129,7 +165,32 @@ def resample_window(kp: pd.DataFrame, t_end: float, frame_times=None) -> pd.Data
     grid = t_end - np.arange(int(round(FEATURE_FPS * LONG_S))) / FEATURE_FPS
     nearest = ft[np.abs(ft[None, :] - grid[:, None]).argmin(axis=1)]  # nearest frame per grid point
     chosen = nearest[np.abs(nearest - grid) <= 0.5 / FEATURE_FPS]     # skip grid points with no frame
-    return kp[kp["time_s"].isin(chosen)]
+    return drop_duplicate_people(kp[kp["time_s"].isin(chosen)])
+
+
+def drop_duplicate_people(win: pd.DataFrame) -> pd.DataFrame:
+    """YOLO sometimes detects one person twice (two boxes, two track IDs). In each frame, drop the
+    lower-confidence box of any pair overlapping by IoU >= DUP_IOU, so one body never forms a 'pair'."""
+    if "box_x1" not in win or win.empty:
+        return win
+    t = win["time_s"].to_numpy(float)
+    b = win[["box_x1", "box_y1", "box_x2", "box_y2"]].to_numpy(float)
+    conf, area = win["box_conf"].to_numpy(float), (b[:, 2] - b[:, 0]) * (b[:, 3] - b[:, 1])
+    keep = np.ones(len(win), bool)
+    order = np.argsort(t, kind="stable")
+    starts = np.flatnonzero(np.r_[True, np.diff(t[order]) != 0, True])
+    for s, e in zip(starts[:-1], starts[1:]):
+        idx = order[s:e]
+        if len(idx) < 2:
+            continue
+        bb = b[idx]
+        iw = np.clip(np.minimum(bb[:, None, 2], bb[None, :, 2]) - np.maximum(bb[:, None, 0], bb[None, :, 0]), 0, None)
+        ih = np.clip(np.minimum(bb[:, None, 3], bb[None, :, 3]) - np.maximum(bb[:, None, 1], bb[None, :, 1]), 0, None)
+        inter = iw * ih
+        iou = inter / np.maximum(area[idx][:, None] + area[idx][None, :] - inter, 1e-6)
+        for i, j in zip(*np.nonzero(np.triu(iou >= DUP_IOU, k=1))):
+            keep[idx[j] if conf[idx[i]] >= conf[idx[j]] else idx[i]] = False
+    return win if keep.all() else win[keep]
 
 
 def window_features(kp: pd.DataFrame, t_end: float, frame_times=None) -> dict:
@@ -282,12 +343,14 @@ def compute_features(win: pd.DataFrame, t_end: float = None, people: dict = None
     """win: keypoint rows from the last LONG_S seconds. t_end: window end (default: last row time).
     people: _people(win) if the caller already has it (seq_features.window_inputs shares it)."""
     feats = dict.fromkeys(FEATURE_NAMES, np.nan)
+    feats["n_people"] = 0        # tracked people in the window (single-person rule; not a model feature)
     if win is None or win.empty:
         return feats
     if t_end is None:
         t_end = float(win["time_s"].max())
     t_short = t_end - SHORT_S
     people = _people(win) if people is None else people
+    feats["n_people"] = len(people)
     if not people:
         return feats
 

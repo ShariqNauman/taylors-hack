@@ -52,8 +52,8 @@ SMOOTH_ALPHA = 0.6       # exponential smoothing: higher = reacts faster, lower 
 # 11.1% of AIRTLab hugs/claps, 68.4% of weapon clips reach FIGHT (REPORT.md Part A0).
 # Not yet tuned on our own webcam footage: record a labelled session, then tune_live.py.
 TENSE_AT = 0.5          # smoothed score >= this -> TENSE
-FIGHT_AT = 0.658        # ensemble: smoothed score >= this ...
-FIGHT_AT_LGBM = 0.695   # used instead when predict.MODE == "lgbm"
+FIGHT_AT = 0.656        # ensemble: smoothed score >= this ...
+FIGHT_AT_LGBM = 0.67    # used instead when predict.MODE == "lgbm"
 MIN_DURATION = 1.0       # ... for at least this many seconds -> FIGHT
 FIGHT_HOLD = 2.0         # keep showing FIGHT this many seconds after it triggers
 LOG_CSV = "live_features.csv"
@@ -203,10 +203,12 @@ def pose_loop(model, device, s, log):
             feats, seq = window_features(kp, t, frame_times), None
         raw = predict(feats, seq)
         smooth = SMOOTH_ALPHA * raw + (1 - SMOOTH_ALPHA) * smooth
-        high_since = (high_since if high_since is not None else t) if smooth >= ACTIVE_FIGHT_AT else None
+        # Single-person rule: with fewer than 2 tracked people the level is capped at TENSE (never FIGHT).
+        pair_seen = feats.get("n_people", 2) >= 2
+        high_since = (high_since if high_since is not None else t) if smooth >= ACTIVE_FIGHT_AT and pair_seen else None
         if high_since is not None and t - high_since >= MIN_DURATION:
             fight_until = t + FIGHT_HOLD
-        level = "FIGHT" if t <= fight_until else "TENSE" if smooth >= TENSE_AT else "CALM"
+        level = "FIGHT" if t <= fight_until and pair_seen else "TENSE" if smooth >= TENSE_AT else "CALM"
         with s.lock:
             s.score, s.level = smooth, level
         log.writerow([round(t, 2), *[round(feats[f], 3) for f in FEATURE_NAMES],

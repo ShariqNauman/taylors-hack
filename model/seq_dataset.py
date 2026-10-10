@@ -37,7 +37,7 @@ def video_sequences(path):
 
 
 def main():
-    videos = with_crops(pd.read_csv(VIDEOS_CSV))   # full clips + waist-up and chest-up copies
+    videos = with_crops(pd.read_csv(VIDEOS_CSV), synthetic=True)   # full + half-body + single / close copies
     hold = set(pd.read_csv(HOLDOUT_CSV)["path"])
     with ProcessPoolExecutor(max_workers=N_JOBS) as pool:
         results = list(tqdm(pool.map(video_sequences, videos["path"], chunksize=8),
