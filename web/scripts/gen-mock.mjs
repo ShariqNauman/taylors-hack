@@ -164,6 +164,8 @@ for (const [mo, d] of [[9, 15], [9, 24], [10, 8]]) {
 events.sort((a, b) => a.start_time.localeCompare(b.start_time));
 // Renumber in time order so IDs read naturally.
 events.forEach((e, i) => { e.incident_id = `INC-2026-${String(80 + i).padStart(5, "0")}`; });
+// Our own footage (10 Oct, staged on campus): fixed IDs, because the edge serves edge/clips/<incident_id>.mp4.
+events.push(...JSON.parse(readFileSync(path.join(WEB, "scripts/recorded-incidents.json"), "utf8")));
 
 // ── replay.json: timestamp-based (tense at t=0, fight_likely at +4 s with eta 6, fight at +10 s). ──
 const T0 = NOW + 60e3;

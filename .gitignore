@@ -24,6 +24,11 @@ keypoints/
 windows*.csv
 live_features*.csv
 
+# Video stays on the site laptop: incident clips and camera recordings are never committed
+edge/clips/
+edge/recordings/
+*.mp4
+
 # Environment Variables & Secrets
 .env
 .env*
