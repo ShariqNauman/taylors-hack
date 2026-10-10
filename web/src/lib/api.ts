@@ -7,6 +7,7 @@ import type {
   Site,
   StatusPatch,
 } from "./types";
+import { useAppStore } from "./store/app-store";
 
 /**
  * Base URL of the FastAPI service. When unset, every call goes to
@@ -29,10 +30,14 @@ async function getJson<T>(path: string, mock: MockName): Promise<T> {
   if (!usingMock) {
     try {
       const r = await fetch(`${API_URL}${path}`, { cache: "no-store" });
-      if (r.ok) return (await r.json()) as T;
+      if (r.ok) {
+        useAppStore.getState().setApiDown(false);
+        return (await r.json()) as T;
+      }
     } catch {
       // fall through to mock
     }
+    useAppStore.getState().setApiDown(true);
   }
   const r = await fetch(mockUrl(mock), { cache: "no-store" });
   if (!r.ok) throw new Error(`mock ${mock} failed: ${r.status}`);
@@ -46,50 +51,55 @@ export const getPatrolPlan = () => getJson<PatrolPlan>("/plan", "plan");
 export const getProof = () => getJson<Proof>("/proof", "proof");
 export const getReplay = () => getJson<Event[]>("/replay", "replay");
 
+/** GET /events?since=. The API filters by start_time only (brief §11), so callers also poll without `since`. */
 export function getEvents(since?: string): Promise<Event[]> {
   const q = since ? `?since=${encodeURIComponent(since)}` : "";
   return getJson<Event[]>(`/events${q}`, "events");
 }
 
-/** PATCH /events/:id. On mock the route just echoes the patch back. */
-export async function patchStatus(
+export class PatchError extends Error {
+  constructor(
+    public status: number,
+    message: string,
+  ) {
+    super(message);
+  }
+}
+
+/**
+ * PATCH /events/:id. On mock the route echoes the patch. With the API down the
+ * patch is kept locally (resolves). A 4xx from a live API rejects with PatchError
+ * so the caller can say "saved on this phone only".
+ */
+export async function patchEvent(
   incident_id: string,
   patch: StatusPatch,
 ): Promise<StatusPatch> {
   const url = usingMock
     ? `${mockUrl("events")}/${encodeURIComponent(incident_id)}`
     : `${API_URL}/events/${encodeURIComponent(incident_id)}`;
+  let r: Response;
   try {
-    const r = await fetch(url, {
+    r = await fetch(url, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(patch),
     });
-    if (r.ok) return (await r.json()) as StatusPatch;
   } catch {
-    // API down: treat as applied locally
+    if (!usingMock) useAppStore.getState().setApiDown(true);
+    return patch; // API down: treat as applied locally
   }
-  return patch;
+  if (r.ok) return (await r.json()) as StatusPatch;
+  throw new PatchError(r.status, `PATCH ${incident_id} failed: ${r.status}`);
 }
 
-/** SWR keys + fetchers for client components. */
-export const swrKeys = {
-  site: "site",
-  cameras: "cameras",
-  events: "events",
-  replay: "replay",
-  hotspots: "hotspots",
-  plan: "plan",
-  proof: "proof",
-} as const;
+/** Back-compat alias. */
+export const patchStatus = patchEvent;
 
-export const swrFetchers: Record<keyof typeof swrKeys, () => Promise<unknown>> =
-  {
-    site: getSite,
-    cameras: getCameras,
-    events: () => getEvents(),
-    replay: getReplay,
-    hotspots: getHotspots,
-    plan: getPatrolPlan,
-    proof: getProof,
-  };
+/** Merge a fresh list over a known list by incident_id (newer wins). */
+export function mergeEvents(base: Event[], incoming: Event[]): Event[] {
+  const map = new Map(base.map((e) => [e.incident_id, e]));
+  for (const e of incoming)
+    map.set(e.incident_id, { ...map.get(e.incident_id), ...e });
+  return [...map.values()];
+}

@@ -1,12 +1,14 @@
-import { PageShell } from "@/components/page-shell";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = { title: "Push" };
 
 export default function PushPage() {
   return (
-    <PageShell
-      title="Push"
-      subtitle="Mock phone view of the push card. Open with ?incident=INC-…"
-    >
-      <p className="text-sm text-slate-400">Stub. Renders with the API down.</p>
-    </PageShell>
+    <main className="mx-auto flex min-h-screen max-w-[430px] flex-col items-center justify-center gap-4 p-6 text-center">
+      <span className="ee-display text-[40px]">Start your shift</span>
+      <p className="text-[16px] text-ink-2">
+        The duty-phone screen is built on its own branch.
+      </p>
+    </main>
   );
 }

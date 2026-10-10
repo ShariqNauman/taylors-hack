@@ -1,54 +1,37 @@
 {
   "datasets": [
-    "RLVS",
-    "AIRTLab",
-    "Surveillance Camera Fight"
+    "RLVS (300 fight, 300 calm)"
   ],
-  "n_clips": 0,
-  "clip_auc": 0,
-  "clip_precision": 0,
-  "clip_recall": 0,
-  "cctv_domain": {
-    "datasets": [
-      "Surveillance Camera Fight (held out)"
-    ],
-    "auc": 0,
-    "precision": 0,
-    "recall": 0
-  },
-  "live_precision": 0,
-  "live_recall": 0,
+  "n_clips": 600,
+  "clip_auc": 0.876,
+  "clip_precision": 0.8,
+  "clip_recall": 0.82,
   "fa_per_camera_hour": 0,
   "own_footage_minutes": 0,
   "airtlab_fp_rate": 0,
-  "lead_time_s": [
-    0,
-    0,
-    0,
-    0,
-    0
-  ],
+  "lead_time_s": [],
   "pushes_per_shift_target": 3,
   "latency_ms": 0,
   "ir_check": {
     "frames": 0,
     "skeletons_detected": 0,
-    "note": "Placeholder. One real IR frame to be captured; night/IR is untested and not claimed.",
-    "image": "/ir-frame.jpg"
+    "note": "Night and IR not measured.",
+    "image": ""
   },
   "model_card": {
-    "inputs": "17 COCO keypoints per person from YOLO26n-pose, torso-scaled; no faces, no identities",
-    "windows": "1 s windows, stride 0.5 s; pairwise person features (distance, approach speed, wrist speed, arm height)",
-    "classifier": "Random forest / LightGBM on window features; types are rules on top of the score",
-    "split": "GroupKFold by video; clip-level precision / recall / AUC; calibrated",
-    "threshold": "Tuned on own venue footage for ≤1 false alarm per camera-hour; 1 s persistence; tense is silent",
+    "inputs": "12 body keypoints per person from YOLO26n-pose (no face points), 10 fps, torso-scaled",
+    "windows": "One window every 0.5 s; 1 s features over the last 1 s, 2 s features over the last 2 s; active pair = the two people whose wrists move fastest",
+    "classifier": "LightGBM, 10 features, num_leaves 15, learning_rate 0.02, n_estimators 400, min_child_samples 50 (best of 20 settings)",
+    "split": "5-fold GroupKFold by video on 600 RLVS clips; clip score = highest window score",
+    "threshold": "Live: smoothing alpha 0.4, TENSE 0.5, FIGHT 0.55, 1.0 s minimum, 2.0 s hold; tuned in simulation on RLVS clips (tune_live.py --rlvs), not on webcam footage",
     "failure_modes": [
-      "Occlusion of one person",
-      "Low light / IR (untested)",
-      "Sports play in non-sports zones",
-      "Tracker ID swaps mid-fight (we score pairs, not IDs)"
+      "One feature dominates (pair_motion_energy, 47% of gain); arm-only fights like V_1 are missed",
+      "Pair features missing 24–77% of the time when only one person is tracked",
+      "No own or CCTV footage; all numbers are on YouTube-style RLVS clips",
+      "Live thresholds tuned in simulation, not on the webcam",
+      "Tuned AUC is slightly optimistic (best of 20 on the same folds)"
     ]
   },
-  "disclosure": "Placeholder. Dataset numbers come from public phone-video clips on a video-level split; live-room numbers come from our own venue footage and are lower. We detect physical aggression and crowding only; we do not claim verbal or online bullying, and night/IR is untested.",
-  "note": "placeholder"
+  "disclosure": "Dataset numbers are real, from 600 public RLVS clips. Live room, CCTV angle, lead time and night are not measured yet, and this page says so.",
+  "note": "report-v2"
 }

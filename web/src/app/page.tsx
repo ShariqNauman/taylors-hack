@@ -1,10 +1,10 @@
 import { Suspense } from "react";
-import { LiveScreen } from "@/components/live/live-screen";
+import { ShellPreview } from "@/components/shell-preview";
 
 export default function Home() {
   return (
     <Suspense fallback={null}>
-      <LiveScreen />
+      <ShellPreview />
     </Suspense>
   );
 }

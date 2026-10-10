@@ -6,25 +6,28 @@
       "days": "Mon–Thu",
       "hours": "13:00–14:00",
       "incidents_4w": 5,
-      "expected_avoided_per_week": 3,
-      "rationale": "5 incidents in the same hour-of-week window in 4 weeks; highest-risk indoor zone after the hostel; one person at the landing covers both flights."
+      "expected_avoided_per_week": 0.75,
+      "avoided_per_patrol_hour": 0.19,
+      "rationale": "5 incidents in the same lunch hour, Monday to Thursday, in 4 weeks. One person at the level 1 landing covers both flights."
     },
     {
-      "location": "Hostel U Block, corridor L3",
+      "location": "DK Senza, corridor L3",
       "days": "Sun–Thu",
       "hours": "22:00–23:00",
       "incidents_4w": 4,
-      "expected_avoided_per_week": 2,
-      "rationale": "4 incidents after lights-out in 4 weeks; corridor camera L5 is black so this is the only eye on the block."
+      "expected_avoided_per_week": 0.6,
+      "avoided_per_patrol_hour": 0.12,
+      "rationale": "4 incidents after 22:00 in 4 weeks. The L5 camera is black, so L3 is the only eye on the block."
     },
     {
-      "location": "Canteen, east entrance",
+      "location": "Syopz Mall food court",
       "days": "Fri",
       "hours": "12:00–13:00",
       "incidents_4w": 3,
-      "expected_avoided_per_week": 1,
-      "rationale": "3 crowd gatherings at Friday lunch in 4 weeks; one person at the entrance thins the queue."
+      "expected_avoided_per_week": 0.45,
+      "avoided_per_patrol_hour": 0.45,
+      "rationale": "3 crowd gatherings at Friday lunch in 4 weeks. One hour a week, so the best return per patrol hour."
     }
   ],
-  "assumption": "60% of hotspot incidents avoided when a person is present (stated, not measured)"
+  "assumption": "60% of hotspot incidents are avoided when a person is present. Stated, not measured. Avoided = incidents in 4 weeks × 0.6."
 }

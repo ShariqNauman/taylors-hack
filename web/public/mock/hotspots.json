@@ -1,178 +1,154 @@
 [
   {
-    "location": "Block C stairwell",
-    "zone_type": "stairwell",
-    "weekday": 0,
-    "hour": 13,
-    "count": 3,
-    "last_seen": "2026-09-28T13:18:00+08:00"
-  },
-  {
-    "location": "Canteen, east entrance",
+    "location": "Syopz Mall food court",
     "zone_type": "canteen",
     "weekday": 4,
     "hour": 12,
     "count": 3,
-    "last_seen": "2026-10-09T12:44:00+08:00"
-  },
-  {
-    "location": "Hostel U Block, corridor L3",
-    "zone_type": "hostel_corridor",
-    "weekday": 0,
-    "hour": 22,
-    "count": 2,
-    "last_seen": "2026-09-21T22:08:00+08:00"
+    "last_seen": "2026-10-09T12:45:00+08:00"
   },
   {
     "location": "Block C stairwell",
     "zone_type": "stairwell",
-    "weekday": 2,
+    "weekday": 0,
     "hour": 13,
     "count": 2,
-    "last_seen": "2026-10-07T13:47:00+08:00"
+    "last_seen": "2026-10-05T13:48:00+08:00"
   },
   {
-    "location": "Sports court, north",
-    "zone_type": "sports_court",
-    "weekday": 1,
-    "hour": 17,
-    "count": 1,
-    "last_seen": "2026-09-15T17:58:00+08:00"
-  },
-  {
-    "location": "Hostel U Block, corridor L3",
+    "location": "DK Senza, corridor L3",
     "zone_type": "hostel_corridor",
     "weekday": 1,
     "hour": 22,
-    "count": 1,
-    "last_seen": "2026-09-15T22:43:00+08:00"
+    "count": 2,
+    "last_seen": "2026-09-29T22:01:00+08:00"
   },
   {
-    "location": "Hostel U Block, corridor L5",
-    "zone_type": "hostel_corridor",
-    "weekday": 2,
-    "hour": 18,
-    "count": 1,
-    "last_seen": "2026-09-16T18:14:00+08:00"
-  },
-  {
-    "location": "Hostel U Block, corridor L3",
-    "zone_type": "hostel_corridor",
-    "weekday": 2,
-    "hour": 22,
-    "count": 1,
-    "last_seen": "2026-09-16T22:38:00+08:00"
-  },
-  {
-    "location": "Canteen, east entrance",
-    "zone_type": "canteen",
-    "weekday": 3,
-    "hour": 10,
-    "count": 1,
-    "last_seen": "2026-09-17T10:21:00+08:00"
-  },
-  {
-    "location": "Car park B, level 2",
-    "zone_type": "car_park",
-    "weekday": 5,
-    "hour": 12,
-    "count": 1,
-    "last_seen": "2026-09-19T12:01:00+08:00"
-  },
-  {
-    "location": "Canteen, east entrance",
-    "zone_type": "canteen",
+    "location": "Auditorium, Block A and B",
+    "zone_type": "auditorium",
     "weekday": 6,
     "hour": 18,
     "count": 1,
-    "last_seen": "2026-09-20T18:33:00+08:00"
+    "last_seen": "2026-09-13T18:53:00+08:00"
   },
   {
-    "location": "Car park B, level 2",
-    "zone_type": "car_park",
-    "weekday": 0,
-    "hour": 9,
-    "count": 1,
-    "last_seen": "2026-09-21T09:07:00+08:00"
-  },
-  {
-    "location": "Block C stairwell",
-    "zone_type": "stairwell",
-    "weekday": 0,
-    "hour": 14,
-    "count": 1,
-    "last_seen": "2026-09-21T14:07:00+08:00"
-  },
-  {
-    "location": "Hostel U Block, corridor L3",
-    "zone_type": "hostel_corridor",
-    "weekday": 4,
-    "hour": 9,
-    "count": 1,
-    "last_seen": "2026-09-25T09:45:00+08:00"
-  },
-  {
-    "location": "Hostel U Block, corridor L5",
-    "zone_type": "hostel_corridor",
-    "weekday": 4,
-    "hour": 16,
-    "count": 1,
-    "last_seen": "2026-09-25T16:44:00+08:00"
-  },
-  {
-    "location": "Sports court, north",
-    "zone_type": "sports_court",
+    "location": "Auditorium, Block A and B",
+    "zone_type": "auditorium",
     "weekday": 3,
     "hour": 11,
     "count": 1,
-    "last_seen": "2026-10-01T11:42:00+08:00"
-  },
-  {
-    "location": "Hostel U Block, corridor L3",
-    "zone_type": "hostel_corridor",
-    "weekday": 3,
-    "hour": 12,
-    "count": 1,
-    "last_seen": "2026-10-01T12:06:00+08:00"
-  },
-  {
-    "location": "Hostel U Block, corridor L5",
-    "zone_type": "hostel_corridor",
-    "weekday": 5,
-    "hour": 16,
-    "count": 1,
-    "last_seen": "2026-10-03T16:50:00+08:00"
+    "last_seen": "2026-09-17T11:43:00+08:00"
   },
   {
     "location": "Block C stairwell",
     "zone_type": "stairwell",
-    "weekday": 0,
-    "hour": 7,
+    "weekday": 3,
+    "hour": 13,
     "count": 1,
-    "last_seen": "2026-10-05T07:47:00+08:00"
+    "last_seen": "2026-09-17T13:34:00+08:00"
   },
   {
-    "location": "Car park B, level 2",
-    "zone_type": "car_park",
+    "location": "Block C stairwell",
+    "zone_type": "stairwell",
+    "weekday": 2,
+    "hour": 13,
+    "count": 1,
+    "last_seen": "2026-09-23T13:12:00+08:00"
+  },
+  {
+    "location": "Block C stairwell",
+    "zone_type": "stairwell",
+    "weekday": 1,
+    "hour": 13,
+    "count": 1,
+    "last_seen": "2026-09-29T13:39:00+08:00"
+  },
+  {
+    "location": "Block C stairwell",
+    "zone_type": "stairwell",
+    "weekday": 5,
+    "hour": 12,
+    "count": 1,
+    "last_seen": "2026-10-10T12:58:00+08:00"
+  },
+  {
+    "location": "DK Senza, corridor L3",
+    "zone_type": "hostel_corridor",
+    "weekday": 4,
+    "hour": 19,
+    "count": 1,
+    "last_seen": "2026-09-25T19:06:00+08:00"
+  },
+  {
+    "location": "DK Senza, corridor L3",
+    "zone_type": "hostel_corridor",
+    "weekday": 2,
+    "hour": 22,
+    "count": 1,
+    "last_seen": "2026-10-07T22:08:00+08:00"
+  },
+  {
+    "location": "DK Senza, corridor L3",
+    "zone_type": "hostel_corridor",
     "weekday": 3,
+    "hour": 22,
+    "count": 1,
+    "last_seen": "2026-10-08T22:25:00+08:00"
+  },
+  {
+    "location": "Sports pitch",
+    "zone_type": "sports_court",
+    "weekday": 6,
+    "hour": 12,
+    "count": 1,
+    "last_seen": "2026-09-20T12:50:00+08:00"
+  },
+  {
+    "location": "Sports pitch",
+    "zone_type": "sports_court",
+    "weekday": 0,
+    "hour": 16,
+    "count": 1,
+    "last_seen": "2026-09-21T16:12:00+08:00"
+  },
+  {
+    "location": "Sports pitch",
+    "zone_type": "sports_court",
+    "weekday": 5,
     "hour": 14,
     "count": 1,
-    "last_seen": "2026-10-08T14:16:00+08:00"
+    "last_seen": "2026-10-10T14:27:40+08:00"
   },
   {
-    "location": "Canteen, east entrance",
+    "location": "Syopz Mall food court",
+    "zone_type": "canteen",
+    "weekday": 5,
+    "hour": 15,
+    "count": 1,
+    "last_seen": "2026-09-26T15:31:00+08:00"
+  },
+  {
+    "location": "Syopz Mall food court",
+    "zone_type": "canteen",
+    "weekday": 6,
+    "hour": 16,
+    "count": 1,
+    "last_seen": "2026-09-27T16:56:00+08:00"
+  },
+  {
+    "location": "Syopz Mall food court",
+    "zone_type": "canteen",
+    "weekday": 5,
+    "hour": 17,
+    "count": 1,
+    "last_seen": "2026-10-03T17:29:00+08:00"
+  },
+  {
+    "location": "Syopz Mall food court",
     "zone_type": "canteen",
     "weekday": 5,
     "hour": 14,
     "count": 1,
-    "last_seen": "2026-10-10T14:28:25+08:00"
-  },
-  {
-    "location": "Car park B, level 2",
-    "zone_type": "car_park",
-    "weekday": 5,
-    "hour": 14,
-    "count": 1,
-    "last_seen": "2026-10-10T14:29:20+08:00"
+    "last_seen": "2026-10-10T14:29:22+08:00"
   }
 ]
