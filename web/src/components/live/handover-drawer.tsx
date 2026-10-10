@@ -62,7 +62,10 @@ export function HandoverDrawer({
     setBriefError(false);
     try {
       const b = await postHandover(facts, c.signal);
-      if (!c.signal.aborted) setBrief(b);
+      if (!c.signal.aborted) {
+        setBrief(b);
+        setCopied(false); // what is shown changed, so "copied" no longer applies
+      }
     } catch {
       if (!c.signal.aborted) setBriefError(true);
     } finally {
