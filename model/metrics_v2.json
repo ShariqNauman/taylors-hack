@@ -1,147 +1,336 @@
 {
-  "official": "hold-out, second look (v5)",
-  "holdout_v5_vs_v4": {
-    "v4 (as shipped)": {
-      "full": {
-        "clips": 470,
-        "auc": 0.9807,
-        "fights%": 83.9,
-        "normal%": 3.3,
-        "hugs%": 0.0,
-        "weapon%": 68.4,
-        "any FIGHT%": 44.7
-      },
-      "waist-up": {
-        "clips": 470,
-        "auc": 0.8896,
-        "fights%": 14.0,
-        "normal%": 0.0,
-        "hugs%": 0.0,
-        "weapon%": 10.5,
-        "any FIGHT%": 7.2
-      },
-      "chest-up": {
-        "clips": 470,
-        "auc": 0.8636,
-        "fights%": 51.2,
-        "normal%": 4.8,
-        "hugs%": 44.4,
-        "weapon%": 31.6,
-        "any FIGHT%": 30.2
-      },
-      "single": {
-        "clips": 470,
-        "auc": 0.8226,
-        "fights%": 21.1,
-        "normal%": 1.0,
-        "hugs%": 0.0,
-        "weapon%": 36.8,
-        "any FIGHT%": 11.3
-      },
-      "close": {
-        "clips": 470,
-        "auc": 0.7702,
-        "fights%": 22.7,
-        "normal%": 2.9,
-        "hugs%": 5.6,
-        "weapon%": 31.6,
-        "any FIGHT%": 13.2
-      }
+  "official": "hold-out, third look (v6)",
+  "step6": {
+    "thresholds": {
+      "v6": [
+        0.5054,
+        0.385
+      ],
+      "v5": [
+        0.656,
+        0.5
+      ]
     },
-    "v5": {
-      "full": {
-        "clips": 470,
-        "auc": 0.9168,
+    "holdout_third_look": {
+      "v5": {
+        "FIGHT_AT": 0.656,
+        "clip AUC": 0.9168,
         "fights%": 64.5,
         "normal%": 5.2,
         "hugs%": 11.1,
         "weapon%": 47.4,
-        "any FIGHT%": 36.0
+        "waist fights%": 64.9,
+        "chest fights%": 62.8,
+        "fast non-violent FIGHT% (windows)": 11.3,
+        "normal FIGHT% (windows)": 2.7,
+        "single any%": 0.0,
+        "close any%": 0.0
       },
-      "waist-up": {
-        "clips": 470,
-        "auc": 0.9221,
-        "fights%": 64.9,
-        "normal%": 4.3,
-        "hugs%": 5.6,
-        "weapon%": 52.6,
-        "any FIGHT%": 35.5
-      },
-      "chest-up": {
-        "clips": 470,
-        "auc": 0.9276,
-        "fights%": 62.4,
-        "normal%": 5.2,
-        "hugs%": 11.1,
+      "v6": {
+        "FIGHT_AT": 0.5054,
+        "clip AUC": 0.9354,
+        "fights%": 72.3,
+        "normal%": 6.7,
+        "hugs%": 16.7,
         "weapon%": 47.4,
-        "any FIGHT%": 34.9
-      },
-      "single": {
-        "clips": 470,
-        "auc": 0.7167,
-        "fights%": 0.0,
-        "normal%": 0.0,
-        "hugs%": 0.0,
-        "weapon%": 0.0,
-        "any FIGHT%": 0.0
-      },
-      "close": {
-        "clips": 470,
-        "auc": 0.7103,
-        "fights%": 0.0,
-        "normal%": 0.0,
-        "hugs%": 0.0,
-        "weapon%": 0.0,
-        "any FIGHT%": 0.0
+        "waist fights%": 67.8,
+        "chest fights%": 73.6,
+        "fast non-violent FIGHT% (windows)": 7.5,
+        "normal FIGHT% (windows)": 3.8,
+        "single any%": 0.0,
+        "close any%": 0.0
       }
     },
-    "v5_fight_at": 0.6562,
-    "v4 (training part, fair)": {
-      "full": {
-        "clips": 470,
-        "auc": 0.9291,
-        "fights%": 78.9,
-        "normal%": 10.5,
-        "hugs%": 11.1,
-        "weapon%": 68.4,
-        "any FIGHT%": 45.7
+    "own": {
+      "v5": [
+        {
+          "video": "WIN_20261010_20_00_43_Pro.mp4",
+          "duration_s": 58.5,
+          "max_score": 0.838,
+          "max_raw": 0.893,
+          "FIGHT_starts_s": [
+            29.0,
+            31.0
+          ],
+          "FIGHT_seconds": 2.5,
+          "false_alarms": 2,
+          "false_alarms_per_min": 2.05
+        },
+        {
+          "video": "WhatsApp Video 2026-10-10 at 9.13.57 PM.mp4",
+          "duration_s": 30.0,
+          "max_score": 0.86,
+          "max_raw": 0.915,
+          "FIGHT_starts_s": [
+            22.5
+          ],
+          "FIGHT_seconds": 2.5,
+          "false_alarms": 1,
+          "false_alarms_per_min": 2.0
+        },
+        {
+          "video": "WhatsApp Video 2026-10-10 at 9.14.53 PM.mp4",
+          "duration_s": 24.0,
+          "max_score": 0.581,
+          "max_raw": 0.64,
+          "FIGHT_starts_s": [],
+          "FIGHT_seconds": 0.0,
+          "false_alarms": 0,
+          "false_alarms_per_min": 0.0
+        },
+        {
+          "video": "WIN_20261010_19_59_33_Pro.mp4",
+          "duration_s": 36.5,
+          "max_score": 0.9,
+          "max_raw": 0.938,
+          "FIGHT_starts_s": [
+            19.0,
+            26.5,
+            33.0
+          ],
+          "FIGHT_seconds": 10.5,
+          "false_alarms": 0,
+          "false_alarms_per_min": 0.0,
+          "fights": 1,
+          "fights_caught": 1,
+          "lead_time_s": [
+            -1.0
+          ]
+        },
+        {
+          "video": "WhatsApp Video 2026-10-10 at 9.13.44 PM.mp4",
+          "duration_s": 71.0,
+          "max_score": 0.866,
+          "max_raw": 0.907,
+          "FIGHT_starts_s": [
+            10.5,
+            17.5,
+            51.5,
+            64.5
+          ],
+          "FIGHT_seconds": 22.0,
+          "false_alarms": 0,
+          "false_alarms_per_min": 0.0,
+          "fights": 2,
+          "fights_caught": 2,
+          "lead_time_s": [
+            3.5,
+            15.0
+          ]
+        },
+        {
+          "video": "WhatsApp Video 2026-10-10 at 9.14.17 PM.mp4",
+          "duration_s": 53.5,
+          "max_score": 0.903,
+          "max_raw": 0.959,
+          "FIGHT_starts_s": [
+            7.5,
+            23.0,
+            27.0,
+            30.5
+          ],
+          "FIGHT_seconds": 25.5,
+          "false_alarms": 0,
+          "false_alarms_per_min": 0.0,
+          "fights": 2,
+          "fights_caught": 2,
+          "lead_time_s": [
+            0.0,
+            15.0
+          ]
+        },
+        {
+          "video": "WhatsApp Video 2026-10-10 at 9.15.28 PM.mp4",
+          "duration_s": 86.0,
+          "max_score": 0.666,
+          "max_raw": 0.723,
+          "FIGHT_starts_s": [],
+          "FIGHT_seconds": 0.0,
+          "false_alarms": 0,
+          "false_alarms_per_min": 0.0,
+          "fights": 1,
+          "fights_caught": 0,
+          "lead_time_s": [
+            -9.0
+          ]
+        }
+      ],
+      "v6_lovo": [
+        {
+          "video": "WIN_20261010_20_00_43_Pro.mp4",
+          "duration_s": 58.5,
+          "max_score": 0.716,
+          "max_raw": 0.827,
+          "FIGHT_starts_s": [
+            34.0
+          ],
+          "FIGHT_seconds": 5.0,
+          "false_alarms": 1,
+          "false_alarms_per_min": 1.03
+        },
+        {
+          "video": "WhatsApp Video 2026-10-10 at 9.13.57 PM.mp4",
+          "duration_s": 30.0,
+          "max_score": 0.296,
+          "max_raw": 0.379,
+          "FIGHT_starts_s": [],
+          "FIGHT_seconds": 0.0,
+          "false_alarms": 0,
+          "false_alarms_per_min": 0.0
+        },
+        {
+          "video": "WhatsApp Video 2026-10-10 at 9.14.53 PM.mp4",
+          "duration_s": 24.0,
+          "max_score": 0.528,
+          "max_raw": 0.578,
+          "FIGHT_starts_s": [],
+          "FIGHT_seconds": 0.0,
+          "false_alarms": 0,
+          "false_alarms_per_min": 0.0
+        },
+        {
+          "video": "WIN_20261010_19_59_33_Pro.mp4",
+          "duration_s": 36.5,
+          "max_score": 0.889,
+          "max_raw": 0.953,
+          "FIGHT_starts_s": [
+            7.0,
+            24.0
+          ],
+          "FIGHT_seconds": 27.5,
+          "false_alarms": 0,
+          "false_alarms_per_min": 0.0,
+          "fights": 1,
+          "fights_caught": 1,
+          "lead_time_s": [
+            -2.5
+          ]
+        },
+        {
+          "video": "WhatsApp Video 2026-10-10 at 9.13.44 PM.mp4",
+          "duration_s": 71.0,
+          "max_score": 0.772,
+          "max_raw": 0.831,
+          "FIGHT_starts_s": [
+            8.5,
+            17.5,
+            29.5,
+            32.5,
+            53.5,
+            64.0
+          ],
+          "FIGHT_seconds": 28.5,
+          "false_alarms": 0,
+          "false_alarms_per_min": 0.0,
+          "fights": 2,
+          "fights_caught": 2,
+          "lead_time_s": [
+            -1.5,
+            15.0
+          ]
+        },
+        {
+          "video": "WhatsApp Video 2026-10-10 at 9.14.17 PM.mp4",
+          "duration_s": 53.5,
+          "max_score": 0.888,
+          "max_raw": 0.938,
+          "FIGHT_starts_s": [
+            6.5,
+            20.0,
+            43.5
+          ],
+          "FIGHT_seconds": 31.5,
+          "false_alarms": 1,
+          "false_alarms_per_min": 2.11,
+          "fights": 2,
+          "fights_caught": 2,
+          "lead_time_s": [
+            -2.0,
+            15.0
+          ]
+        },
+        {
+          "video": "WhatsApp Video 2026-10-10 at 9.15.28 PM.mp4",
+          "duration_s": 86.0,
+          "max_score": 0.801,
+          "max_raw": 0.906,
+          "FIGHT_starts_s": [
+            22.5,
+            36.5,
+            69.0
+          ],
+          "FIGHT_seconds": 9.0,
+          "false_alarms": 0,
+          "false_alarms_per_min": 0.0,
+          "fights": 1,
+          "fights_caught": 1,
+          "lead_time_s": [
+            10.0
+          ]
+        }
+      ]
+    },
+    "keep_v6": true,
+    "fight_drop": -7.799999999999997,
+    "own_extra": {
+      "v5": {
+        "false alarms outside fights": 5,
+        "minutes outside fights": 2.7,
+        "false alarms / min": 1.85,
+        "running segments -> FIGHT": "1/4",
+        "plaza max score before 0:12": 0.441,
+        "plaza FIGHT before 0:12": false,
+        "first-fight lead times (s)": [
+          [
+            "WIN_20261010_19_59_33_Pro.mp",
+            -1.0
+          ],
+          [
+            "WhatsApp Video 2026-10-10 at",
+            3.5
+          ],
+          [
+            "WhatsApp Video 2026-10-10 at",
+            0.0
+          ],
+          [
+            "WhatsApp Video 2026-10-10 at",
+            -9.0
+          ]
+        ]
       },
-      "waist-up": {
-        "clips": 470,
-        "auc": 0.8805,
-        "fights%": 36.4,
-        "normal%": 1.9,
-        "hugs%": 33.3,
-        "weapon%": 10.5,
-        "any FIGHT%": 20.9
-      },
-      "chest-up": {
-        "clips": 470,
-        "auc": 0.8574,
-        "fights%": 69.8,
-        "normal%": 10.5,
-        "hugs%": 66.7,
-        "weapon%": 36.8,
-        "any FIGHT%": 43.2
-      },
-      "single": {
-        "clips": 470,
-        "auc": 0.7951,
-        "fights%": 22.7,
-        "normal%": 1.0,
-        "hugs%": 0.0,
-        "weapon%": 21.1,
-        "any FIGHT%": 12.1
-      },
-      "close": {
-        "clips": 470,
-        "auc": 0.7464,
-        "fights%": 26.9,
-        "normal%": 5.2,
-        "hugs%": 5.6,
-        "weapon%": 26.3,
-        "any FIGHT%": 16.4
+      "v6": {
+        "false alarms outside fights": 4,
+        "minutes outside fights": 2.7,
+        "false alarms / min": 1.48,
+        "running segments -> FIGHT": "0/4",
+        "plaza max score before 0:12": 0.437,
+        "plaza FIGHT before 0:12": false,
+        "first-fight lead times (s)": [
+          [
+            "WIN_20261010_19_59_33_Pro.mp",
+            -2.5
+          ],
+          [
+            "WhatsApp Video 2026-10-10 at",
+            -1.5
+          ],
+          [
+            "WhatsApp Video 2026-10-10 at",
+            -2.0
+          ],
+          [
+            "WhatsApp Video 2026-10-10 at",
+            10.0
+          ]
+        ]
       }
+    },
+    "live_thresholds": {
+      "strict": 0.5054,
+      "sensitive": 0.4389,
+      "lgbm": 0.5806,
+      "tense": 0.385
     }
   },
   "holdout_rows": {
@@ -151,9 +340,9 @@
         "RLVS"
       ],
       "n_clips": 352,
-      "auc": 0.942,
-      "precision": 0.928,
-      "recall": 0.696
+      "auc": 0.95,
+      "precision": 0.911,
+      "recall": 0.777
     },
     "cctv": {
       "datasets": [
@@ -161,180 +350,17 @@
         "SCVD"
       ],
       "n_clips": 118,
-      "auc": 0.813,
-      "precision": 0.903,
-      "recall": 0.483
+      "auc": 0.88,
+      "precision": 0.914,
+      "recall": 0.552
     }
   },
-  "cross_validation_training_part": {
-    "thresholds": {
-      "LightGBM": 0.67,
-      "CNN": 0.7072,
-      "ensemble": 0.6562
+  "speed_correlation": {
+    "v5": {
+      "non-violent windows, all": 0.706,
+      "non-violent, within clip (median)": 0.426,
+      "fight windows, all (for comparison)": 0.53
     },
-    "results": {
-      "LightGBM": {
-        "full": {
-          "clips": 2661,
-          "auc": 0.8742,
-          "fights%": 61.3,
-          "normal%": 9.0,
-          "hugs%": 10.8,
-          "weapon%": 43.8,
-          "any FIGHT%": 36.1
-        },
-        "waist-up": {
-          "clips": 2661,
-          "auc": 0.8662,
-          "fights%": 59.1,
-          "normal%": 8.0,
-          "hugs%": 12.7,
-          "weapon%": 43.8,
-          "any FIGHT%": 34.6
-        },
-        "chest-up": {
-          "clips": 2661,
-          "auc": 0.8586,
-          "fights%": 61.4,
-          "normal%": 10.0,
-          "hugs%": 12.7,
-          "weapon%": 41.0,
-          "any FIGHT%": 36.6
-        },
-        "single": {
-          "clips": 1288,
-          "auc": null,
-          "fights%": null,
-          "normal%": 0.0,
-          "hugs%": 0.0,
-          "weapon%": null,
-          "any FIGHT%": 0.0
-        },
-        "close": {
-          "clips": 1288,
-          "auc": null,
-          "fights%": null,
-          "normal%": 0.0,
-          "hugs%": 0.0,
-          "weapon%": null,
-          "any FIGHT%": 0.0
-        }
-      },
-      "CNN": {
-        "full": {
-          "clips": 2661,
-          "auc": 0.8797,
-          "fights%": 63.7,
-          "normal%": 9.0,
-          "hugs%": 11.8,
-          "weapon%": 56.2,
-          "any FIGHT%": 37.3
-        },
-        "waist-up": {
-          "clips": 2661,
-          "auc": 0.881,
-          "fights%": 66.5,
-          "normal%": 9.7,
-          "hugs%": 10.8,
-          "weapon%": 63.8,
-          "any FIGHT%": 39.0
-        },
-        "chest-up": {
-          "clips": 2661,
-          "auc": 0.8838,
-          "fights%": 65.6,
-          "normal%": 10.5,
-          "hugs%": 5.9,
-          "weapon%": 66.7,
-          "any FIGHT%": 38.8
-        },
-        "single": {
-          "clips": 1288,
-          "auc": null,
-          "fights%": null,
-          "normal%": 0.0,
-          "hugs%": 0.0,
-          "weapon%": null,
-          "any FIGHT%": 0.0
-        },
-        "close": {
-          "clips": 1288,
-          "auc": null,
-          "fights%": null,
-          "normal%": 0.0,
-          "hugs%": 0.0,
-          "weapon%": null,
-          "any FIGHT%": 0.0
-        }
-      },
-      "ensemble": {
-        "full": {
-          "clips": 2661,
-          "auc": 0.8946,
-          "fights%": 64.5,
-          "normal%": 8.9,
-          "hugs%": 6.9,
-          "weapon%": 51.4,
-          "any FIGHT%": 37.5
-        },
-        "waist-up": {
-          "clips": 2661,
-          "auc": 0.8986,
-          "fights%": 66.4,
-          "normal%": 8.1,
-          "hugs%": 8.8,
-          "weapon%": 52.4,
-          "any FIGHT%": 38.2
-        },
-        "chest-up": {
-          "clips": 2661,
-          "auc": 0.8929,
-          "fights%": 65.6,
-          "normal%": 9.1,
-          "hugs%": 6.9,
-          "weapon%": 55.2,
-          "any FIGHT%": 38.2
-        },
-        "single": {
-          "clips": 1288,
-          "auc": null,
-          "fights%": null,
-          "normal%": 0.0,
-          "hugs%": 0.0,
-          "weapon%": null,
-          "any FIGHT%": 0.0
-        },
-        "close": {
-          "clips": 1288,
-          "auc": null,
-          "fights%": null,
-          "normal%": 0.0,
-          "hugs%": 0.0,
-          "weapon%": null,
-          "any FIGHT%": 0.0
-        }
-      }
-    },
-    "single_person_cost": {
-      "fight windows with < 2 people %": 6.1,
-      "fight clips with < 2 people in every window %": 1.7
-    }
-  },
-  "lgbm_settings": {
-    "num_leaves": 31,
-    "learning_rate": 0.05,
-    "n_estimators": 400,
-    "min_child_samples": 100,
-    "subsample": 0.8,
-    "colsample_bytree": 1.0,
-    "reg_lambda": 0.0,
-    "w_airtlab": 2.0,
-    "w_cctv": 2.0,
-    "hug_mult": 5.0
-  },
-  "fight_at": {
-    "LightGBM": 0.67,
-    "CNN": 0.7072,
-    "ensemble": 0.6562
+    "v6": 0.538
   }
 }

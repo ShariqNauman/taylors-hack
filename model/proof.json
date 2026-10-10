@@ -6,23 +6,23 @@
     "SCVD"
   ],
   "n_clips": 470,
-  "clip_auc": 0.942,
-  "clip_precision": 0.928,
-  "clip_recall": 0.696,
+  "clip_auc": 0.95,
+  "clip_precision": 0.911,
+  "clip_recall": 0.777,
   "cctv_domain": {
     "datasets": [
       "SCF",
       "SCVD"
     ],
-    "auc": 0.813,
-    "precision": 0.903,
-    "recall": 0.483
+    "auc": 0.88,
+    "precision": 0.914,
+    "recall": 0.552
   },
   "live_precision": null,
-  "live_recall": null,
+  "live_recall": 1.0,
   "fa_per_camera_hour": null,
-  "own_footage_minutes": 0,
-  "airtlab_fp_rate": 0.111,
+  "own_footage_minutes": 6.0,
+  "airtlab_fp_rate": 0.167,
   "lead_time_s": [],
   "pushes_per_shift_target": 3,
   "latency_ms": 39,
@@ -35,56 +35,63 @@
   "model_card": {
     "inputs": "17 keypoints + person box from YOLO26n-pose + ByteTrack (no video stored; face points only as head position)",
     "windows": "last 2 s at 10 fps, scored every 0.5 s; torso-scaled, pair-centred",
-    "classifier": "ensemble: average of LightGBM (24 features, clipped to the training 1st-99th percentile) and a 51k-parameter 1D-CNN over the active pair's keypoint sequence; trained on full, waist-up and chest-up copies of every clip plus one-person / close-to-camera negatives",
+    "classifier": "ensemble: average of LightGBM (36 features incl. body-relative limb speed, path straightness, rhythm, impacts) and a 78k-parameter 1D-CNN over the active pair's keypoints (pair-centred and body-centred); fast non-violent windows weighted 4x as hard negatives",
     "split": "15% of groups locked as a hold-out (stratified by dataset and kind) and evaluated once; tuning by GroupKFold on the other 85%; AIRTLab camera pairs kept together",
-    "threshold": "alarm when the smoothed score (alpha 0.6) stays >= 0.6562 for 1.0 s with at least 2 people tracked; FIGHT_AT fixed on the training part at 9% normal-clip false alarms",
+    "threshold": "alarm when the smoothed score (alpha 0.6) stays >= 0.5054 for 1 s with 2+ people tracked; FIGHT_AT fixed on the training part at 9% normal-clip false alarms",
     "failure_modes": [
-      "hugs and close contact: 2 of 18 hold-out hug/clap clips raised an alarm",
-      "very short clips (SCF, ~2 s) can't hold the 1 s alarm persistence",
-      "small or distant people on CCTV: pair features often missing",
-      "weapons are not recognised as objects; only the body motion is scored",
-      "night / IR footage untested",
-      "a fight where only one person is tracked can't raise FIGHT (1.7% of fight clips in training)"
+      "hugs and close contact: 3 of 18 hold-out hug/clap clips raised an alarm",
+      "fast group movement with contact (sports, play) still alarms more often than calm scenes",
+      "alarms usually come 1.5-2.5 s after a fight starts on our own videos: early warning is not shown yet",
+      "impacts are rarely detected at 10 fps (collision features are weak)",
+      "operating range: camera about one floor up, people at least ~60 px tall, not wide crowd views",
+      "a fight with only one person tracked can't raise FIGHT",
+      "night / IR footage untested"
     ]
   },
-  "disclosure": "Official numbers are from a second look at a hold-out set of 470 clips that no tuning, threshold or model choice ever saw. clip_* = RLVS + AIRTLab hold-out clips; cctv_domain = SCF + SCVD hold-out clips. The final model also trains on other SCF/SCVD clips, so that row is not a pure domain test: the earlier model trained without any CCTV scored AUC 0.709 on CCTV. Dataset clips are 2-5 s long, so false alarms per camera-hour are not measured yet; live-room numbers come from our own labelled footage. Practice-run lesson: 100% on KTH, zero live until retuned. We detect physical aggression from body motion only; we do not claim verbal or online bullying, weapon recognition, or night vision.",
-  "note": "partly placeholder: dataset numbers are real (hold-out); live_precision/recall, fa_per_camera_hour, lead_time_s and ir_check need own-venue footage",
+  "disclosure": "Official numbers are from a third look at a hold-out of 470 clips (also used for v4 and v5). Own-camera numbers come from 7 short videos (leave one video out). Dataset clips are 2-5 s long, so false alarms per camera-hour are not measured yet; live-room numbers come from our own labelled footage. Practice-run lesson: 100% on KTH, zero live until retuned. We detect physical aggression from body motion only; we do not claim verbal or online bullying, weapon recognition, or night vision.",
+  "note": "partly placeholder: dataset and own-video numbers are real; fa_per_camera_hour, lead_time_s and ir_check need longer own footage",
   "robustness": {
-    "full": {
-      "auc": 0.9168,
-      "fights%": 64.5,
-      "normal%": 5.2,
-      "hugs%": 11.1,
-      "any FIGHT%": 36.0
-    },
-    "waist-up": {
-      "auc": 0.9221,
-      "fights%": 64.9,
-      "normal%": 4.3,
-      "hugs%": 5.6,
-      "any FIGHT%": 35.5
-    },
-    "chest-up": {
-      "auc": 0.9276,
-      "fights%": 62.4,
-      "normal%": 5.2,
-      "hugs%": 11.1,
-      "any FIGHT%": 34.9
-    },
-    "single": {
-      "auc": 0.7167,
-      "fights%": 0.0,
-      "normal%": 0.0,
-      "hugs%": 0.0,
-      "any FIGHT%": 0.0
-    },
-    "close": {
-      "auc": 0.7103,
-      "fights%": 0.0,
-      "normal%": 0.0,
-      "hugs%": 0.0,
-      "any FIGHT%": 0.0
-    }
+    "waist-up fights%": 67.8,
+    "chest-up fights%": 73.6,
+    "one person -> FIGHT%": 0.0,
+    "close to camera -> FIGHT%": 0.0
   },
-  "holdout_use": "second look: this hold-out was also used once for the v4 model"
+  "holdout_use": "third look: this hold-out was also used for the v4 and v5 models",
+  "own_camera": {
+    "label": "7 own videos (leave one video out)",
+    "videos": 7,
+    "fights": 6,
+    "fights_caught": 6,
+    "false_alarms_outside_fights": 2,
+    "minutes_outside_fights": 2.9,
+    "false_alarms_per_min": 0.69,
+    "running_segments_to_fight": "0/4",
+    "first_fight_lead_time_s": [
+      -2.5,
+      -1.5,
+      -2.0,
+      10.0
+    ],
+    "note": "7 short videos from our own camera; too few for a false-alarm rate per camera-hour"
+  },
+  "speed_bias": {
+    "score_vs_body_speed_spearman": {
+      "v5": 0.706,
+      "v6": 0.538
+    },
+    "fast_non_violent_to_fight_windows": {
+      "training part, same windows": {
+        "v5": 19.4,
+        "v6": 13.0
+      },
+      "hold-out (third look)": {
+        "v5": 11.3,
+        "v6": 7.5
+      }
+    },
+    "own_running_segments_to_fight": {
+      "v5": "1/4",
+      "v6": "0/4"
+    }
+  }
 }
