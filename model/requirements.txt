@@ -1,10 +1,12 @@
-ultralytics
-opencv-python
-numpy
-pandas
-scikit-learn
-lightgbm
-joblib
-tqdm
-lap
-openvino
+# Tested with Python 3.11.9 on Windows 11 (Intel Core Ultra 7, OpenVINO on the Intel GPU).
+# lightgbm and scikit-learn must match the versions that saved violence_model.joblib.
+ultralytics==8.4.175
+opencv-python==5.0.0.93
+numpy==2.4.6
+pandas==3.0.6
+scikit-learn==1.9.1
+lightgbm==4.7.0
+joblib==1.6.0
+tqdm==4.70.1
+lap==0.5.13
+openvino==2026.4.1
