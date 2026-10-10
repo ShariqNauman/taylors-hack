@@ -60,3 +60,4 @@ backup_*/
 oof_*.csv
 seq_windows.npz
 *.onnx
+!model/seq_model.onnx

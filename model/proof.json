@@ -5,27 +5,27 @@
     "SCF",
     "SCVD"
   ],
-  "n_clips": 3131,
-  "clip_auc": 0.887,
-  "clip_precision": 0.88,
-  "clip_recall": 0.682,
+  "n_clips": 470,
+  "clip_auc": 0.944,
+  "clip_precision": 0.882,
+  "clip_recall": 0.853,
   "cctv_domain": {
     "datasets": [
       "SCF",
       "SCVD"
     ],
-    "auc": 0.709,
-    "precision": 0.803,
-    "recall": 0.317
+    "auc": 0.865,
+    "precision": 0.892,
+    "recall": 0.569
   },
   "live_precision": null,
   "live_recall": null,
   "fa_per_camera_hour": null,
   "own_footage_minutes": 0,
-  "airtlab_fp_rate": 0.192,
+  "airtlab_fp_rate": 0.111,
   "lead_time_s": [],
   "pushes_per_shift_target": 3,
-  "latency_ms": 38,
+  "latency_ms": 36,
   "ir_check": {
     "frames": 0,
     "skeletons_detected": 0,
@@ -33,19 +33,19 @@
     "image": ""
   },
   "model_card": {
-    "inputs": "12 body keypoints per person from YOLO26n-pose + ByteTrack (no faces, no video stored)",
-    "windows": "last 2 s resampled to 10 fps, scored every 0.5 s; distances scaled by torso length",
-    "classifier": "LightGBM {'num_leaves': 31, 'learning_rate': 0.02, 'n_estimators': 800, 'min_child_samples': 20}, sample weights {'AIRTLab': 3.0, 'SCF': 2.0, 'SCVD': 2.0, 'RLVS': 1.0, 'Own': 3.0}",
-    "split": "GroupKFold by video (AIRTLab cam1/cam2 of one scene kept together); clip score = max window",
-    "threshold": "alarm when the smoothed score (alpha 0.6) stays >= 0.75 for 1.0 s; tuned on dataset clips, not yet on own footage",
+    "inputs": "17 keypoints + person box from YOLO26n-pose + ByteTrack (no video stored; face points only as head position)",
+    "windows": "last 2 s at 10 fps, scored every 0.5 s; torso-scaled, pair-centred",
+    "classifier": "ensemble: average of LightGBM (23 hand-made features) and a 51k-parameter 1D-CNN over the active pair's keypoint sequence; weights {'num_leaves': 31, 'learning_rate': 0.05, 'n_estimators': 400, 'min_child_samples': 100, 'subsample': 0.8, 'colsample_bytree': 1.0, 'reg_lambda': 0.0, 'w_airtlab': 2.0, 'w_cctv': 2.0, 'hug_mult': 5.0}",
+    "split": "15% of groups locked as a hold-out (stratified by dataset and kind) and evaluated once; tuning by GroupKFold on the other 85%; AIRTLab camera pairs kept together",
+    "threshold": "alarm when the smoothed score (alpha 0.6) stays >= 0.6579 for 1.0 s; FIGHT_AT fixed on the training part at 9% normal-clip false alarms, not yet tuned on own footage",
     "failure_modes": [
-      "hugs and close contact: 19% of AIRTLab hugs/claps raise an alarm",
+      "hugs and close contact: 18 hold-out hug/clap clips, 2 raised an alarm",
+      "very short clips (SCF, ~2 s) can't hold the 1 s alarm persistence",
       "small or distant people on CCTV: pair features often missing",
-      "only one person tracked: pair features unavailable",
-      "weapons are not detected as objects; only the body motion is scored",
+      "weapons are not recognised as objects; only the body motion is scored",
       "night / IR footage untested"
     ]
   },
-  "disclosure": "Dataset numbers: phone-video sets (RLVS + AIRTLab, 2350 clips, out-of-fold) and a held-out CCTV row (SCF + SCVD, 781 clips, model trained without them). The shipped model also trains on SCF + SCVD; their out-of-fold AUC with CCTV in training is 0.745. Dataset clips are 2-5 s long, so false alarms per camera-hour are not measured yet; live-room numbers come from our own labelled footage. Practice-run lesson: 100% on KTH, zero live until retuned, so we report dataset and live numbers side by side. We detect physical aggression from body motion only; we do not claim verbal or online bullying, weapon recognition, or night vision.",
-  "note": "partly placeholder: dataset numbers are real; live_precision/recall, fa_per_camera_hour, lead_time_s and ir_check need own-venue footage"
+  "disclosure": "Official numbers are from a hold-out set of 470 clips that no tuning, threshold or model choice ever saw. clip_* = RLVS + AIRTLab hold-out clips; cctv_domain = SCF + SCVD hold-out clips. The final model also trains on other SCF/SCVD clips, so that row is not a pure domain test: the earlier model trained without any CCTV scored AUC 0.709 on CCTV. Dataset clips are 2-5 s long, so false alarms per camera-hour are not measured yet; live-room numbers come from our own labelled footage. Practice-run lesson: 100% on KTH, zero live until retuned. We detect physical aggression from body motion only; we do not claim verbal or online bullying, weapon recognition, or night vision.",
+  "note": "partly placeholder: dataset numbers are real (hold-out); live_precision/recall, fa_per_camera_hour, lead_time_s and ir_check need own-venue footage"
 }
