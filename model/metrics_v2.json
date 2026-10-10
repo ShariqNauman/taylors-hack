@@ -1,0 +1,351 @@
+{
+  "n_videos": 3131,
+  "params": {
+    "num_leaves": 31,
+    "learning_rate": 0.02,
+    "n_estimators": 800,
+    "min_child_samples": 20
+  },
+  "weights": {
+    "AIRTLab": 3.0,
+    "SCF": 2.0,
+    "SCVD": 2.0,
+    "RLVS": 1.0,
+    "Own": 3.0
+  },
+  "live": {
+    "SMOOTH_ALPHA": 0.6,
+    "TENSE_AT": 0.5,
+    "FIGHT_AT": 0.75,
+    "MIN_DURATION": 1.0
+  },
+  "new_oof": {
+    "auc_all": 0.8565587295882108,
+    "auc": {
+      "AIRTLab": 0.8296014492753624,
+      "RLVS": 0.8964485000000001,
+      "SCF": 0.7913777777777777,
+      "SCVD": 0.7208354955889984
+    },
+    "by_kind": [
+      {
+        "dataset": "AIRTLab",
+        "kind": "acted_nonviolent",
+        "label": 0,
+        "clips": 120,
+        "peak_over": 71,
+        "live_fight": 17
+      },
+      {
+        "dataset": "AIRTLab",
+        "kind": "fight",
+        "label": 1,
+        "clips": 230,
+        "peak_over": 216,
+        "live_fight": 146
+      },
+      {
+        "dataset": "RLVS",
+        "kind": "fight",
+        "label": 1,
+        "clips": 1000,
+        "peak_over": 933,
+        "live_fight": 701
+      },
+      {
+        "dataset": "RLVS",
+        "kind": "normal",
+        "label": 0,
+        "clips": 1000,
+        "peak_over": 323,
+        "live_fight": 97
+      },
+      {
+        "dataset": "SCF",
+        "kind": "fight",
+        "label": 1,
+        "clips": 150,
+        "peak_over": 104,
+        "live_fight": 8
+      },
+      {
+        "dataset": "SCF",
+        "kind": "normal",
+        "label": 0,
+        "clips": 150,
+        "peak_over": 39,
+        "live_fight": 0
+      },
+      {
+        "dataset": "SCVD",
+        "kind": "fight",
+        "label": 1,
+        "clips": 111,
+        "peak_over": 99,
+        "live_fight": 63
+      },
+      {
+        "dataset": "SCVD",
+        "kind": "normal",
+        "label": 0,
+        "clips": 246,
+        "peak_over": 107,
+        "live_fight": 27
+      },
+      {
+        "dataset": "SCVD",
+        "kind": "weapon",
+        "label": 1,
+        "clips": 124,
+        "peak_over": 81,
+        "live_fight": 45
+      }
+    ]
+  },
+  "lodo": {
+    "AIRTLab": {
+      "auc_all": 0.7251449275362319,
+      "auc": {
+        "AIRTLab": 0.7251449275362319
+      },
+      "by_kind": [
+        {
+          "dataset": "AIRTLab",
+          "kind": "acted_nonviolent",
+          "label": 0,
+          "clips": 120,
+          "peak_over": 61,
+          "live_fight": 23
+        },
+        {
+          "dataset": "AIRTLab",
+          "kind": "fight",
+          "label": 1,
+          "clips": 230,
+          "peak_over": 195,
+          "live_fight": 95
+        }
+      ]
+    },
+    "RLVS": {
+      "auc_all": 0.828884,
+      "auc": {
+        "RLVS": 0.828884
+      },
+      "by_kind": [
+        {
+          "dataset": "RLVS",
+          "kind": "fight",
+          "label": 1,
+          "clips": 1000,
+          "peak_over": 989,
+          "live_fight": 764
+        },
+        {
+          "dataset": "RLVS",
+          "kind": "normal",
+          "label": 0,
+          "clips": 1000,
+          "peak_over": 657,
+          "live_fight": 242
+        }
+      ]
+    },
+    "SCF": {
+      "auc_all": 0.7952666666666667,
+      "auc": {
+        "SCF": 0.7952666666666667
+      },
+      "by_kind": [
+        {
+          "dataset": "SCF",
+          "kind": "fight",
+          "label": 1,
+          "clips": 150,
+          "peak_over": 104,
+          "live_fight": 9
+        },
+        {
+          "dataset": "SCF",
+          "kind": "normal",
+          "label": 0,
+          "clips": 150,
+          "peak_over": 37,
+          "live_fight": 0
+        }
+      ]
+    },
+    "SCVD": {
+      "auc_all": 0.6669953295277634,
+      "auc": {
+        "SCVD": 0.6669953295277634
+      },
+      "by_kind": [
+        {
+          "dataset": "SCVD",
+          "kind": "fight",
+          "label": 1,
+          "clips": 111,
+          "peak_over": 94,
+          "live_fight": 63
+        },
+        {
+          "dataset": "SCVD",
+          "kind": "normal",
+          "label": 0,
+          "clips": 246,
+          "peak_over": 124,
+          "live_fight": 26
+        },
+        {
+          "dataset": "SCVD",
+          "kind": "weapon",
+          "label": 1,
+          "clips": 124,
+          "peak_over": 76,
+          "live_fight": 48
+        }
+      ]
+    }
+  },
+  "old": {
+    "auc_all": 0.8406816455230892,
+    "auc": {
+      "AIRTLab": 0.6625,
+      "RLVS": 0.899283,
+      "SCF": 0.7726888888888889,
+      "SCVD": 0.7154385054488842
+    },
+    "by_kind": [
+      {
+        "dataset": "AIRTLab",
+        "kind": "acted_nonviolent",
+        "label": 0,
+        "clips": 120,
+        "peak_over": 64,
+        "live_fight": 21
+      },
+      {
+        "dataset": "AIRTLab",
+        "kind": "fight",
+        "label": 1,
+        "clips": 230,
+        "peak_over": 185,
+        "live_fight": 72
+      },
+      {
+        "dataset": "RLVS",
+        "kind": "fight",
+        "label": 1,
+        "clips": 1000,
+        "peak_over": 874,
+        "live_fight": 669
+      },
+      {
+        "dataset": "RLVS",
+        "kind": "normal",
+        "label": 0,
+        "clips": 1000,
+        "peak_over": 249,
+        "live_fight": 76
+      },
+      {
+        "dataset": "SCF",
+        "kind": "fight",
+        "label": 1,
+        "clips": 150,
+        "peak_over": 85,
+        "live_fight": 4
+      },
+      {
+        "dataset": "SCF",
+        "kind": "normal",
+        "label": 0,
+        "clips": 150,
+        "peak_over": 31,
+        "live_fight": 0
+      },
+      {
+        "dataset": "SCVD",
+        "kind": "fight",
+        "label": 1,
+        "clips": 111,
+        "peak_over": 89,
+        "live_fight": 48
+      },
+      {
+        "dataset": "SCVD",
+        "kind": "normal",
+        "label": 0,
+        "clips": 246,
+        "peak_over": 101,
+        "live_fight": 19
+      },
+      {
+        "dataset": "SCVD",
+        "kind": "weapon",
+        "label": 1,
+        "clips": 124,
+        "peak_over": 71,
+        "live_fight": 40
+      }
+    ]
+  },
+  "kept": "new",
+  "importance": {
+    "max_wrist_speed": 0.1002,
+    "max_wrist_accel": 0.0774,
+    "min_torso_dist": 0.091,
+    "closing_speed": 0.0618,
+    "max_arm_extension": 0.0598,
+    "wrist_peaks_per_s": 0.0351,
+    "wrist_toward_speed": 0.0844,
+    "pair_motion_energy": 0.3494,
+    "close_motion": 0.0618,
+    "pair_dist_var": 0.0791
+  },
+  "proof_rows": {
+    "phone-video sets, out-of-fold": {
+      "datasets": [
+        "AIRTLab",
+        "RLVS"
+      ],
+      "n_clips": 2350,
+      "auc": 0.887,
+      "precision": 0.88,
+      "recall": 0.682
+    },
+    "CCTV domain, held out (trained on RLVS + AIRTLab only)": {
+      "datasets": [
+        "SCF",
+        "SCVD"
+      ],
+      "n_clips": 781,
+      "auc": 0.709,
+      "precision": 0.803,
+      "recall": 0.317
+    },
+    "CCTV, out-of-fold with CCTV in training (shipped model)": {
+      "datasets": [
+        "SCF",
+        "SCVD"
+      ],
+      "n_clips": 781,
+      "auc": 0.745,
+      "precision": 0.811,
+      "recall": 0.301
+    },
+    "all datasets, out-of-fold (shipped model)": {
+      "datasets": [
+        "AIRTLab",
+        "RLVS",
+        "SCF",
+        "SCVD"
+      ],
+      "n_clips": 3131,
+      "auc": 0.857,
+      "precision": 0.872,
+      "recall": 0.596
+    }
+  }
+}
