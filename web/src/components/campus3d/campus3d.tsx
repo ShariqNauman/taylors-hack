@@ -282,7 +282,7 @@ export default function Campus3D({
   const columns = useMemo(
     () =>
       !compact && layer === "plan"
-        ? posts.map((p) => ({ id: p.id, at: geoToLocal(p.geo), base: columnBase(p), height: p.incidents4w * 9, selected: selPost?.id === p.id, onPick: () => setSel({ kind: "post", id: p.id }) }))
+        ? posts.map((p) => ({ id: p.id, at: geoToLocal(p.geo), base: columnBase(p), height: p.incidents4w * 9, count: p.incidents4w, selected: selPost?.id === p.id, onPick: () => setSel({ kind: "post", id: p.id }) }))
         : [],
     [compact, layer, posts, selPost?.id, columnBase],
   );
@@ -378,7 +378,7 @@ export default function Campus3D({
           {!compact &&
             layer === "plan" &&
             posts.map((p) => (
-              <Html key={p.id} position={anchor(p.geo, columnBase(p) + p.incidents4w * 9 + 4)} zIndexRange={[20, 15]} style={{ pointerEvents: "none" }}>
+              <Html key={p.id} position={anchor(p.geo, columnBase(p) + p.incidents4w * 9 + 6)} zIndexRange={[20, 15]} style={{ pointerEvents: "none" }}>
                 <PostPin post={p} pos={ZERO} selected={sel?.kind === "post" && sel.id === p.id} onClick={() => setSel({ kind: "post", id: p.id })} />
               </Html>
             ))}
