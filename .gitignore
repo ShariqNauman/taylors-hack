@@ -1,12 +1,50 @@
+# Python & Virtual Environments
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
 venv/
+.venv/
+ENV/
+build/
+dist/
+*.egg-info/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# ML Artifacts & Datasets
 data/
 keypoints/
 *.pt
 *.joblib
-__pycache__/
 *_openvino_*/
 windows*.csv
 live_features*.csv
+
+# Environment Variables & Secrets
+.env
+.env*
+*.pem
+*.key
+
+# Node / Frontend
+node_modules/
+.next/
+out/
+
+# IDE & OS
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+.Rhistory
+
+# Model v2 pipeline (model/)
 keypoints_v2/
 *.log
 *.tmp
@@ -14,4 +52,5 @@ failed_videos*.txt
 *.tgz
 *.csv.gz
 session*.csv
+# ship the trained model so the live demo runs from a fresh clone
 !model/violence_model.joblib
