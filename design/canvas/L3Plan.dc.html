@@ -77,6 +77,13 @@ button{font-family:inherit}
 <div style="display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-start">
 
 <section aria-label="This week's posts" style="flex: 1 1 520px; min-width: 0; display: flex; flex-direction: column; gap: 10px">
+<div role="group" aria-label="Sort posts" style="display: flex; flex-wrap: wrap; align-items: center; gap: 6px">
+<span style="font-size: 14px; font-weight: 800; margin-right: 4px">Sort posts</span>
+<sc-for list="{{sorts}}" as="so" hint-placeholder-count="3">
+<button type="button" onClick="{{so.pick}}" aria-pressed="{{so.pressed}}" style="min-height: 36px; padding: 0 12px; border-radius: 2px; border: 1px solid {{so.border}}; background: {{so.bg}}; color: {{so.fg}}; font-size: 14px; font-weight: 700; cursor: pointer">{{so.label}}</button>
+</sc-for>
+<span style="flex-basis: 100%; font-size: 13px; color: #5D6672">{{sortHint}}</span>
+</div>
 <sc-for list="{{posts}}" as="p" hint-placeholder-count="3">
 <article style="background: #FFFFFF; border: {{p.border}}; border-radius: 2px; padding: 16px; display: flex; flex-direction: column; gap: 10px">
 <div style="display: flex; align-items: flex-start; gap: 12px">
@@ -89,6 +96,20 @@ button{font-family:inherit}
 </div>
 <p style="margin: 0; font-size: 16px; line-height: 1.45">{{p.why}}</p>
 <p style="margin: 0; font-size: 15px; line-height: 1.45; color: #1F35B3; font-weight: 700">{{p.expected}}</p>
+<div style="display: flex; flex-direction: column; gap: 6px; border-top: 1px solid #F1F2F4; padding-top: 10px">
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; color: #5D6672">WHEN IT HAPPENED</span>
+<span style="display: flex; flex-wrap: wrap; gap: 6px">
+<sc-for list="{{p.dates}}" as="dt" hint-placeholder-count="5">
+<a href="L3Incidents.dc.html" title="{{dt.title}}" style="display: inline-flex; align-items: center; min-height: 30px; padding: 0 8px; border: 1px solid #DCDFE4; border-radius: 2px; background: #FFFFFF; color: #0B0D10; text-decoration: none; font-size: 13px; font-weight: 700">{{dt.label}}</a>
+</sc-for>
+</span>
+<span style="display: flex; flex-wrap: wrap; align-items: center; gap: 4px 12px; font-size: 13px; color: #3A414B"><span style="font-weight: 800; color: #0B0D10">By weekday</span>
+<sc-for list="{{p.byDay}}" as="bd" hint-placeholder-count="4">
+<span>{{bd.day}} <span style="font-weight: 800; color: #0B0D10">{{bd.n}}</span></span>
+</sc-for>
+</span>
+<span style="font-size: 14px; font-weight: 700">{{p.thisWeek}}</span>
+</div>
 
 <div style="background: #F7F8FA; border: 1px solid #DCDFE4; border-radius: 2px; padding: 12px; display: flex; flex-direction: column; gap: 10px">
 <span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; color: #5D6672">WHO GOES</span>
@@ -137,12 +158,43 @@ button{font-family:inherit}
 <button type="button" onClick="{{z.pick}}" aria-pressed="{{z.pressed}}" style="min-height: 38px; padding: 0 12px; border-radius: 2px; border: 1px solid {{z.border}}; background: {{z.bg}}; color: {{z.fg}}; font-size: 14px; font-weight: 700; cursor: pointer">{{z.label}}</button>
 </sc-for>
 </div>
+<div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; border-top: 1px solid #F1F2F4; padding-top: 12px">
+<span style="font-size: 18px; font-weight: 800">By weekday <span style="font-size: 14px; font-weight: 500; color: #3A414B">· incidents in the last 4 weeks · pick a day</span></span>
+<div role="group" aria-label="Order the days" style="display: inline-flex; border: 1px solid #B4BAC3; border-radius: 2px; overflow: hidden">
+<sc-for list="{{dayOrders}}" as="dor" hint-placeholder-count="2">
+<button type="button" onClick="{{dor.pick}}" aria-pressed="{{dor.pressed}}" style="min-height: 36px; padding: 0 12px; border: none; background: {{dor.bg}}; color: {{dor.fg}}; font-size: 13px; font-weight: 700; cursor: pointer">{{dor.label}}</button>
+</sc-for>
+</div>
+</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 6px">
+<sc-for list="{{dayTiles}}" as="dtl" hint-placeholder-count="7">
+<button type="button" onClick="{{dtl.pick}}" aria-pressed="{{dtl.pressed}}" style="text-align: left; display: flex; flex-direction: column; gap: 3px; padding: 10px; border-radius: 2px; border: {{dtl.border}}; background: {{dtl.bg}}; color: {{dtl.fg}}; cursor: pointer">
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; font-weight: 700">{{dtl.date}}</span>
+<span style="font-family: 'Saira Condensed', sans-serif; font-size: 32px; font-weight: 800; line-height: 1">{{dtl.n}}</span>
+<span style="font-size: 12px; line-height: 1.35">{{dtl.sub}}</span>
+</button>
+</sc-for>
+</div>
+<div style="background: #F7F8FA; border: 1px solid #DCDFE4; border-radius: 2px; padding: 12px 14px; display: flex; flex-direction: column; gap: 8px">
+<span style="font-size: 18px; font-weight: 800">{{dayPanel.title}}</span>
+<span style="display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 15px"><span><span style="font-weight: 800">Busiest hour:</span> {{dayPanel.hour}}</span><span><span style="font-weight: 800">Busiest place:</span> {{dayPanel.place}}</span></span>
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; color: #5D6672">DATES</span>
+<span style="display: flex; flex-wrap: wrap; gap: 6px">
+<sc-for list="{{dayPanel.dates}}" as="dd" hint-placeholder-count="4">
+<span style="display: inline-flex; align-items: center; min-height: 30px; padding: 0 8px; border: 1px solid #DCDFE4; border-radius: 2px; background: #FFFFFF; font-size: 13px; font-weight: 700">{{dd.label}}</span>
+</sc-for>
+</span>
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; color: #5D6672">{{dayPanel.thisHead}}</span>
+<sc-for list="{{dayPanel.posts}}" as="dp" hint-placeholder-count="2">
+<span style="font-size: 15px; line-height: 1.45">{{dp.text}}</span>
+</sc-for>
+</div>
 <div style="overflow-x: auto">
 <div style="min-width: 760px; display: flex; flex-direction: column; gap: 2px">
 <div style="display: grid; grid-template-columns: 64px repeat(7, minmax(0, 1fr)); gap: 2px">
 <span></span>
 <sc-for list="{{dayHead}}" as="d" hint-placeholder-count="7">
-<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; font-weight: 700; color: #3A414B; padding: 4px 6px">{{d}}</span>
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; font-weight: 700; padding: 4px 6px; border-radius: 1px; background: {{d.bg}}; color: {{d.fg}}">{{d.label}}</span>
 </sc-for>
 </div>
 <sc-for list="{{week}}" as="row" hint-placeholder-count="17">
@@ -182,7 +234,7 @@ button{font-family:inherit}
 
 <section aria-labelledby="last-h" style="flex: 1 1 520px; min-width: 0; background: #FFFFFF; border: 1px solid #DCDFE4; border-radius: 2px; padding: 16px; display: flex; flex-direction: column; gap: 10px">
 <h2 id="last-h" style="margin: 0; font-family: 'Saira Condensed', sans-serif; font-size: 30px; font-weight: 800; text-transform: uppercase">Did last week's plan work?</h2>
-<p style="margin: 0; font-size: 17px; line-height: 1.45; font-weight: 700">1 incident at these places during post hours last week, down from about 3 a week before the plan.</p>
+<p style="margin: 0; font-size: 17px; line-height: 1.45; font-weight: 700">{{lastWeekLine}}</p>
 <sc-for list="{{results}}" as="r" hint-placeholder-count="3">
 <div style="border: 1px solid #DCDFE4; border-radius: 2px; padding: 10px 12px; display: flex; flex-direction: column; gap: 4px">
 <span style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 10px"><span style="font-size: 16px; font-weight: 800">{{r.place}}</span><span style="font-size: 13px; color: #5D6672">{{r.covered}}</span></span>
@@ -196,32 +248,49 @@ button{font-family:inherit}
 </main>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2700}}'>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":3200}}'>
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    this.state = { zone: 'all', focus: 'P1', assign: { P1: 'Guard B' }, choosing: null, roster: false, copied: false };
+    this.state = { zone: 'all', focus: 'P1', assign: { P1: 'Guard B' }, choosing: null, roster: false, copied: false, sort: 'incidents', day: 0, dayOrder: 'week' };
   }
   renderVals() {
     const s = this.state;
-    const DAYS = ['MON 12', 'TUE 13', 'WED 14', 'THU 15', 'FRI 16', 'SAT 17', 'SUN 18'];
     const DAYN = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    const DAYFULL = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    const DAYPL = ['Mondays', 'Tuesdays', 'Wednesdays', 'Thursdays', 'Fridays', 'Saturdays', 'Sundays'];
+    const THISWEEK = ['12 Oct', '13 Oct', '14 Oct', '15 Oct', '16 Oct', '17 Oct', '18 Oct'];
     const hh = (h) => String(h % 24).padStart(2, '0') + ':00';
-    // the team: name, shift and duty phone only, no profiles
+    const PLACE = { stairwell: 'Block C stairwell', hostel: 'U Residence corridors', canteen: 'Syopz Mall food court', sports: 'Sports pitch', hall: 'Grand Hall' };
+    // real incidents in the last 4 weeks (Sun 13 Sep to Sat 10 Oct): date, weekday (0 = Mon), time, zone
+    const INC = [
+      ['14 Sep', 0, '16:20', 'stairwell'], ['16 Sep', 2, '10:05', 'stairwell'], ['22 Sep', 1, '13:10', 'stairwell'], ['28 Sep', 0, '13:15', 'stairwell'],
+      ['30 Sep', 2, '13:24', 'stairwell'], ['1 Oct', 3, '13:40', 'stairwell'], ['7 Oct', 2, '13:47', 'stairwell'],
+      ['18 Sep', 4, '20:30', 'hostel'], ['21 Sep', 0, '22:08', 'hostel'], ['23 Sep', 2, '18:40', 'hostel'], ['27 Sep', 6, '22:30', 'hostel'],
+      ['29 Sep', 1, '22:15', 'hostel'], ['3 Oct', 5, '23:10', 'hostel'], ['8 Oct', 3, '22:25', 'hostel'],
+      ['14 Sep', 0, '12:10', 'canteen'], ['18 Sep', 4, '12:20', 'canteen'], ['24 Sep', 3, '19:05', 'canteen'], ['25 Sep', 4, '12:35', 'canteen'],
+      ['30 Sep', 2, '12:50', 'canteen'], ['9 Oct', 4, '12:44', 'canteen'],
+      ['15 Sep', 1, '17:20', 'sports'], ['24 Sep', 3, '17:40', 'sports'], ['5 Oct', 0, '10:30', 'sports'],
+      ['10 Oct', 5, '14:31', 'hall']
+    ].map((r) => ({ date: r[0], d: r[1], time: r[2], hour: Number(r[2].slice(0, 2)), zone: r[3], key: (r[0].indexOf('Oct') > 0 ? 1000 : 0) + Number(r[0].split(' ')[0]) * 10 + Number(r[2].slice(0, 2)) / 100 }));
+    INC.sort((a, b) => a.key - b.key);
     const TEAM = [
-      { name: 'Guard A', role: 'Security guard', shift: 'Day shift · Mon–Sat 07:00–15:00', days: [0, 1, 2, 3, 4, 5], from: 7, to: 15, onNow: true, base: 'syopz' },
-      { name: 'Guard B', role: 'Security guard', shift: 'Day shift · Mon–Sat 10:00–18:00', days: [0, 1, 2, 3, 4, 5], from: 10, to: 18, onNow: true, base: 'blockc' },
-      { name: 'Guard C', role: 'Security guard', shift: 'Evening shift · every day 14:00–23:00', days: [0, 1, 2, 3, 4, 5, 6], from: 14, to: 23, onNow: true, base: 'ures' },
-      { name: 'Warden D', role: 'Hostel warden', shift: 'Nights · Fri–Sat 21:00–02:00', days: [4, 5], from: 21, to: 26, onNow: false, base: 'ures' }
+      { name: 'Guard A', role: 'Security guard', shift: 'Day shift · Mon–Sat 07:00–15:00', days: [0, 1, 2, 3, 4, 5], from: 7, to: 15, onNow: true, base: 'canteen' },
+      { name: 'Guard B', role: 'Security guard', shift: 'Day shift · Mon–Sat 10:00–18:00', days: [0, 1, 2, 3, 4, 5], from: 10, to: 18, onNow: true, base: 'stairwell' },
+      { name: 'Guard C', role: 'Security guard', shift: 'Evening shift · every day 14:00–23:00', days: [0, 1, 2, 3, 4, 5, 6], from: 14, to: 23, onNow: true, base: 'hostel' },
+      { name: 'Warden D', role: 'Hostel warden', shift: 'Nights · Fri–Sat 21:00–02:00', days: [4, 5], from: 21, to: 26, onNow: false, base: 'hostel' }
     ];
     const SLOTS = [
-      { id: 'P1', rank: '1', zone: 'stairwell', base: 'blockc', place: 'Block C stairwell', days: [0, 1, 2, 3], hour: 13, daysLabel: 'Mon–Thu', hours: '13:00–14:00', hoursWeek: 4, incidents: 5,
-        why: '5 incidents here in the last 4 weeks, all on weekdays at lunch.', tip: 'Stand on the level 1 landing. You can see both flights of stairs from there.' },
-      { id: 'P2', rank: '2', zone: 'hostel', base: 'ures', place: 'U Residence, corridor L3', days: [6, 0, 1, 2, 3], hour: 22, daysLabel: 'Sun–Thu', hours: '22:00–23:00', hoursWeek: 5, incidents: 4,
-        why: '4 incidents here in the last 4 weeks, all late at night.', tip: 'Walk the level 3 corridor. The level 5 camera is off, so check level 5 once as well.' },
-      { id: 'P3', rank: '3', zone: 'canteen', base: 'syopz', place: 'Syopz Mall food court', days: [4], hour: 12, daysLabel: 'Fri', hours: '12:00–13:00', hoursWeek: 1, incidents: 3,
-        why: '3 crowd gatherings here in the last 4 weeks, all at Friday lunch.', tip: 'Stand at the east entrance, where the queue builds up.' }
+      { id: 'P1', rank: '1', zone: 'stairwell', place: 'Block C stairwell', days: [0, 1, 2, 3], hour: 13, daysLabel: 'Mon–Thu', hours: '13:00–14:00', hoursWeek: 4,
+        why: 'incidents here at lunchtime in the last 4 weeks, all on weekdays.', tip: 'Stand on the level 1 landing. You can see both flights of stairs from there.' },
+      { id: 'P2', rank: '2', zone: 'hostel', place: 'U Residence, corridor L3', days: [6, 0, 1, 2, 3], hour: 22, daysLabel: 'Sun–Thu', hours: '22:00–23:00', hoursWeek: 5,
+        why: 'incidents here late at night in the last 4 weeks.', tip: 'Walk the level 3 corridor. The level 5 camera is off, so check level 5 once as well.' },
+      { id: 'P3', rank: '3', zone: 'canteen', place: 'Syopz Mall food court', days: [4], hour: 12, daysLabel: 'Fri', hours: '12:00–13:00', hoursWeek: 1,
+        why: 'crowd gatherings here at Friday lunch in the last 4 weeks.', tip: 'Stand at the east entrance, where the queue builds up.' }
     ];
+    const inSlot = (slot) => INC.filter((x) => x.zone === slot.zone && x.hour === slot.hour && slot.days.indexOf(x.d) >= 0);
+    SLOTS.forEach((o) => { o.hits = inSlot(o); o.incidents = o.hits.length; o.prevent = Math.round(o.incidents * 0.6); o.perHour = o.incidents * 0.6 / o.hoursWeek; });
+
     const assign = s.assign;
     const busyAt = (name, slot) => SLOTS.find((o) => o.id !== slot.id && assign[o.id] === name && o.hour === slot.hour && o.days.some((d) => slot.days.indexOf(d) >= 0));
     const fit = (g, slot) => {
@@ -236,28 +305,44 @@ class Component extends DCLogic {
     const hoursOf = (name) => SLOTS.filter((o) => assign[o.id] === name).reduce((a, o) => a + o.hoursWeek, 0);
     const suggest = (slot) => {
       const ok = TEAM.filter((g) => fit(g, slot).ok);
-      ok.sort((a, b) => (a.base === slot.base ? -1 : 0) - (b.base === slot.base ? -1 : 0) || hoursOf(a.name) - hoursOf(b.name));
+      ok.sort((a, b) => (a.base === slot.zone ? -1 : 0) - (b.base === slot.zone ? -1 : 0) || hoursOf(a.name) - hoursOf(b.name));
       return ok[0] || null;
     };
     const setAssign = (id, name) => { const a = Object.assign({}, assign); if (name) a[id] = name; else delete a[id]; this.setState({ assign: a, choosing: null, focus: id, copied: false }); };
     const covered = SLOTS.filter((o) => assign[o.id]).length;
 
-    const posts = SLOTS.map((slot) => {
+    const SORTS = [
+      ['incidents', 'Most incidents', 'Posts with the most incidents in the last 4 weeks come first.'],
+      ['quick', 'Quick wins first', 'Posts that prevent the most for each hour a guard spends there come first.'],
+      ['open', 'Nobody yet first', 'Posts that still need someone come first.']
+    ];
+    const ordered = SLOTS.slice().sort((a, b) => {
+      if (s.sort === 'quick') return b.perHour - a.perHour;
+      if (s.sort === 'open') return (assign[a.id] ? 1 : 0) - (assign[b.id] ? 1 : 0) || b.incidents - a.incidents;
+      return b.incidents - a.incidents;
+    });
+    const sorts = SORTS.map((o) => { const on = s.sort === o[0]; return { label: o[1], pressed: on ? 'true' : 'false', bg: on ? '#0B0D10' : '#FFFFFF', fg: on ? '#FFFFFF' : '#0B0D10', border: on ? '#0B0D10' : '#B4BAC3', pick: () => this.setState({ sort: o[0] }) }; });
+    const sortHint = SORTS.find((o) => o[0] === s.sort)[2];
+
+    const posts = ordered.map((slot) => {
       const who = assign[slot.id];
       const g = who ? TEAM.find((t) => t.name === who) : null;
       const sug = suggest(slot);
       const choosing = s.choosing === slot.id;
-      const prevent = Math.round(slot.incidents * 0.6);
       const on = s.focus === slot.id;
+      const byDay = slot.days.slice().sort((a, b) => a - b).map((d) => ({ day: DAYN[d], n: String(slot.hits.filter((x) => x.d === d).length) }));
+      const thisWeek = 'This week: ' + slot.days.slice().sort((a, b) => a - b).map((d) => DAYN[d] + ' ' + THISWEEK[d].split(' ')[0]).join(', ') + ' Oct';
       return {
         rank: slot.rank, place: slot.place, when: slot.daysLabel + ' · ' + slot.hours + ' · ' + slot.hoursWeek + ' hour' + (slot.hoursWeek === 1 ? '' : 's') + ' this week',
-        why: slot.why, expected: 'Should prevent about ' + prevent + ' incident' + (prevent === 1 ? '' : 's') + ' a month.', tip: slot.tip, incidents: slot.incidents,
+        why: slot.incidents + ' ' + slot.why, expected: 'Should prevent about ' + slot.prevent + ' incident' + (slot.prevent === 1 ? '' : 's') + ' a month.', tip: slot.tip, incidents: slot.incidents,
+        dates: slot.hits.map((x) => ({ label: DAYN[x.d] + ' ' + x.date, title: DAYFULL[x.d] + ' ' + x.date + ', ' + x.time })),
+        byDay: byDay, thisWeek: thisWeek,
         border: on ? '2px solid #0B0D10' : '1px solid #DCDFE4',
         statusText: who ? 'Covered' : 'Nobody yet', stBg: who ? '#0B0D10' : '#FFFFFF', stFg: who ? '#FFFFFF' : '#0B0D10', stBorder: who ? '1px solid #0B0D10' : '2px dashed #0B0D10',
         assignedDisplay: who && !choosing ? 'flex' : 'none', unassignedDisplay: !who && !choosing ? 'flex' : 'none', chooserDisplay: choosing ? 'flex' : 'none',
         assigned: who || '', initial: who ? who.split(' ')[1] : '', fitText: g ? fit(g, slot).note + '. ' + g.shift + '.' : '',
         suggestLabel: sug ? 'Send ' + sug.name : 'Nobody is free',
-        suggestWhy: sug ? 'Suggested: on shift then' + (sug.base === slot.base ? ', and already works nearby.' : '.') : 'Nobody on the team is working then. Change a shift or skip this post.',
+        suggestWhy: sug ? 'Suggested: on shift then' + (sug.base === slot.zone ? ', and already works nearby.' : '.') : 'Nobody on the team is working then. Change a shift or skip this post.',
         useSuggestion: () => { if (sug) setAssign(slot.id, sug.name); },
         changeLabel: choosing ? 'Cancel' : (who ? 'Change' : 'Choose someone else'),
         change: () => this.setState({ choosing: choosing ? null : slot.id, focus: slot.id }),
@@ -269,58 +354,76 @@ class Component extends DCLogic {
       };
     });
 
-    // incidents per hour of the week, last 4 weeks
-    const DATA = {
-      stairwell: [[0, 13, 3], [1, 13, 2], [2, 13, 2], [3, 13, 2], [4, 13, 1], [0, 16, 1], [2, 10, 1]],
-      hostel: [[6, 22, 2], [0, 22, 3], [1, 22, 2], [2, 22, 2], [3, 22, 1], [2, 18, 1], [5, 23, 1], [4, 20, 1]],
-      canteen: [[4, 12, 4], [0, 12, 1], [2, 12, 1], [3, 19, 1]],
-      sports: [[1, 17, 1], [3, 17, 1], [0, 10, 1]]
-    };
+    // shading for the week calendar
     const ZONES = [['all', 'All places'], ['stairwell', 'Block C stairwell'], ['hostel', 'U Residence'], ['canteen', 'Food court'], ['sports', 'Sports pitch']];
-    const grid = DAYS.map(() => new Array(24).fill(0));
-    (s.zone === 'all' ? Object.keys(DATA) : [s.zone]).forEach((k) => DATA[k].forEach((d) => { grid[d[0]][d[1]] += d[2]; }));
+    const shown = INC.filter((x) => s.zone === 'all' || x.zone === s.zone);
+    const grid = DAYN.map(() => new Array(24).fill(0));
+    shown.forEach((x) => { grid[x.d][x.hour] += 1; });
     const ramp = ['#FFFFFF', '#E7EBFD', '#C4CEF6', '#93A6EE', '#93A6EE', '#93A6EE'];
     const week = [];
     for (let h = 7; h < 24; h++) {
-      week.push({
-        label: hh(h),
-        cells: DAYS.map((d, di) => {
-          const c = grid[di][h];
-          const slot = SLOTS.find((o) => o.hour === h && o.days.indexOf(di) >= 0);
-          const who = slot ? assign[slot.id] : null;
-          return {
-            text: slot ? slot.rank + ' · ' + (who || 'Nobody yet') : '',
-            bg: ramp[Math.min(c, 5)], fg: '#0B0D10',
-            border: slot ? (who ? '2px solid #0B0D10' : '2px dashed #0B0D10') : '1px solid #EEF0F3',
-            cursor: slot ? 'pointer' : 'default',
-            title: DAYN[di] + ' ' + hh(h) + ': ' + (c ? c + ' incident' + (c === 1 ? '' : 's') + ' in the last 4 weeks' : 'no incidents in the last 4 weeks') + (slot ? '. Post ' + slot.rank + ', ' + slot.place + ': ' + (who || 'nobody yet') : ''),
-            pick: () => { if (slot) this.setState({ focus: slot.id }); }
-          };
-        })
-      });
+      week.push({ label: hh(h), cells: DAYN.map((d, di) => {
+        const c = grid[di][h];
+        const slot = SLOTS.find((o) => o.hour === h && o.days.indexOf(di) >= 0);
+        const who = slot ? assign[slot.id] : null;
+        const picked = di === s.day;
+        return {
+          text: slot ? slot.rank + ' · ' + (who || 'Nobody yet') : '', bg: ramp[Math.min(c, 5)], fg: '#0B0D10',
+          border: slot ? (who ? '2px solid #0B0D10' : '2px dashed #0B0D10') : (picked ? '1px solid #93A6EE' : '1px solid #EEF0F3'),
+          cursor: 'pointer',
+          title: DAYN[di] + ' ' + hh(h) + ': ' + (c ? c + ' incident' + (c === 1 ? '' : 's') + ' in the last 4 weeks' : 'no incidents in the last 4 weeks') + (slot ? '. Post ' + slot.rank + ', ' + slot.place + ': ' + (who || 'nobody yet') : ''),
+          pick: () => this.setState(slot ? { focus: slot.id, day: di } : { day: di })
+        };
+      }) });
     }
     const zones = ZONES.map((z) => { const on = s.zone === z[0]; return { label: z[1], pressed: on ? 'true' : 'false', bg: on ? '#0B0D10' : '#FFFFFF', fg: on ? '#FFFFFF' : '#0B0D10', border: on ? '#0B0D10' : '#B4BAC3', pick: () => this.setState({ zone: z[0] }) }; });
+    const dayHead = DAYN.map((d, di) => ({ label: d.toUpperCase() + ' ' + THISWEEK[di].split(' ')[0], bg: di === s.day ? '#0B0D10' : 'transparent', fg: di === s.day ? '#FFFFFF' : '#3A414B' }));
+
+    // by weekday
+    const mode = (arr) => { const m = {}; arr.forEach((v) => { m[v] = (m[v] || 0) + 1; }); const k = Object.keys(m).sort((a, b) => m[b] - m[a])[0]; return k == null ? null : { k: k, n: m[k] }; };
+    const dayStats = DAYN.map((d, di) => {
+      const list = shown.filter((x) => x.d === di);
+      const hr = mode(list.map((x) => x.hour)); const pl = mode(list.map((x) => x.zone));
+      const plural = (n) => n + ' incident' + (n === 1 ? '' : 's');
+      const hour = !hr ? 'none' : (hr.n >= 2 || list.length === 1 ? hh(Number(hr.k)) + ', ' + plural(hr.n) : 'no repeat hour');
+      const place = !pl ? 'none' : (pl.n >= 2 || list.length === 1 ? PLACE[pl.k] + ', ' + plural(pl.n) : 'spread out');
+      const tile = !hr ? 'Quiet' : (hr.n >= 2 ? 'Busiest ' + hh(Number(hr.k)) : (list.length === 1 ? 'One, at ' + hh(Number(hr.k)) : 'Spread out'));
+      return { di: di, n: list.length, list: list, hour: hour, place: place, tile: tile };
+    });
+    const dayOrdered = s.dayOrder === 'busy' ? dayStats.slice().sort((a, b) => b.n - a.n || a.di - b.di) : dayStats;
+    const dayTiles = dayOrdered.map((t) => {
+      const on = t.di === s.day;
+      return { date: DAYN[t.di].toUpperCase() + ' ' + THISWEEK[t.di], n: String(t.n), sub: t.tile, pressed: on ? 'true' : 'false',
+        bg: on ? '#0B0D10' : '#FFFFFF', fg: on ? '#FFFFFF' : '#0B0D10', border: on ? '2px solid #0B0D10' : '1px solid #DCDFE4', pick: () => this.setState({ day: t.di }) };
+    });
+    const dayOrders = [['week', 'Mon to Sun'], ['busy', 'Busiest first']].map((o) => { const on = s.dayOrder === o[0]; return { label: o[1], pressed: on ? 'true' : 'false', bg: on ? '#0B0D10' : '#FFFFFF', fg: on ? '#FFFFFF' : '#0B0D10', pick: () => this.setState({ dayOrder: o[0] }) }; });
+    const sel = dayStats[s.day];
+    const byDate = {};
+    sel.list.forEach((x) => { byDate[x.date] = (byDate[x.date] || 0) + 1; });
+    const daySlots = SLOTS.filter((o) => o.days.indexOf(s.day) >= 0);
+    const dayPanel = {
+      title: DAYPL[s.day] + ': ' + sel.n + ' incident' + (sel.n === 1 ? '' : 's') + ' in the last 4 weeks' + (s.zone === 'all' ? '' : ' at the ' + ZONES.find((z) => z[0] === s.zone)[1]),
+      hour: sel.hour, place: sel.place,
+      dates: Object.keys(byDate).length ? Object.keys(byDate).map((k) => ({ label: DAYN[s.day] + ' ' + k + (byDate[k] > 1 ? ' (' + byDate[k] + ')' : '') })) : [{ label: 'No incidents on ' + DAYPL[s.day] }],
+      thisHead: 'THIS ' + DAYFULL[s.day].toUpperCase() + ', ' + THISWEEK[s.day].toUpperCase(),
+      posts: daySlots.length ? daySlots.map((o) => ({ text: 'Post ' + o.rank + ', ' + o.place + ', ' + o.hours + ': ' + (assign[o.id] || 'nobody yet') })) : [{ text: 'No posts planned. EarlyEye found no repeat pattern on ' + DAYPL[s.day] + '.' }]
+    };
 
     const team = TEAM.map((t) => {
       const mine = SLOTS.filter((o) => assign[o.id] === t.name);
       const hrs = hoursOf(t.name);
-      return {
-        name: t.name, initial: t.name.split(' ')[1], role: t.role, shift: t.shift,
+      return { name: t.name, initial: t.name.split(' ')[1], role: t.role, shift: t.shift,
         now: t.onNow ? 'On duty now' : 'Off duty', nowDot: t.onNow ? '#2742D9' : '#B4BAC3', nowFg: t.onNow ? '#1F35B3' : '#5D6672',
         avBg: t.onNow ? '#2742D9' : '#F1F2F4', avFg: t.onNow ? '#FFFFFF' : '#3A414B',
-        posts: mine.length ? mine.map((o) => 'Post ' + o.rank + ', ' + o.place + ', ' + o.daysLabel + ' ' + o.hours).join(' · ') : 'No posts this week',
-        hours: hrs ? hrs + ' h' : '—'
-      };
+        posts: mine.length ? mine.map((o) => 'Post ' + o.rank + ', ' + o.place + ', ' + o.daysLabel + ' ' + o.hours).join(' · ') : 'No posts this week', hours: hrs ? hrs + ' h' : '—' };
     });
-
     const results = [
-      { place: 'Block C stairwell', covered: 'Guard B · covered 4 of 4 days', result: 'No incidents during the post hour. Before the plan: about 1 a week.', verdict: 'Working. Keep it.' },
-      { place: 'U Residence, corridor L3', covered: 'Guard C · covered 3 of 5 nights', result: 'One fight, on Thursday night, when nobody was posted. None on the covered nights.', verdict: 'Cover every night this week.' },
-      { place: 'Syopz Mall food court', covered: 'Guard A · covered 1 of 1 day', result: 'One crowd gathering. The guard was there and it cleared within a minute.', verdict: 'Working. Keep it.' }
+      { place: 'Block C stairwell', covered: 'Guard B · covered 4 of 4 days', result: 'One incident, on Wed 7 Oct. Guard B was already on the landing, and it was over within a minute.', verdict: 'Working. Keep it.' },
+      { place: 'U Residence, corridor L3', covered: 'Guard C · covered 3 of 5 nights', result: 'One fight, on Thu 8 Oct, a night when nobody was posted. None on the covered nights.', verdict: 'Cover every night this week.' },
+      { place: 'Syopz Mall food court', covered: 'Guard A · covered 1 of 1 day', result: 'One crowd gathering, on Fri 9 Oct. Guard A was there, and it cleared within a minute.', verdict: 'Working. Keep it.' }
     ];
-
     const rosterLines = [{ text: "Patrol roster · week of Mon 12 Oct · Taylor's Lakeside", weight: 800 }].concat(SLOTS.map((o) => ({
-      text: o.rank + '. ' + o.place + ' · ' + o.daysLabel + ' ' + o.hours + ' · ' + (assign[o.id] || 'NOBODY YET') + '. ' + o.tip, weight: 500 })));
+      text: o.rank + '. ' + o.place + ' · ' + o.daysLabel + ' ' + o.hours + ' (' + o.days.slice().sort((a, b) => a - b).map((d) => THISWEEK[d].split(' ')[0]).join(', ') + ' Oct) · ' + (assign[o.id] || 'NOBODY YET') + '. ' + o.tip, weight: 500 })));
     const rosterText = rosterLines.map((l) => l.text).join('\n');
     const steps = [
       { mark: '1', title: 'Check the 3 posts', sub: 'Where and when trouble keeps happening', bg: '#FFFFFF', fg: '#0B0D10' },
@@ -334,7 +437,9 @@ class Component extends DCLogic {
       copyRoster: () => { try { if (navigator && navigator.clipboard) navigator.clipboard.writeText(rosterText); } catch (err) {} this.setState({ copied: true }); },
       printRoster: () => { try { window.print(); } catch (err) {} },
       copiedText: s.copied ? 'Copied. Paste it into your team chat.' : '',
-      rosterLines: rosterLines, steps: steps, posts: posts, zones: zones, dayHead: DAYS, week: week, team: team, results: results
+      rosterLines: rosterLines, steps: steps, sorts: sorts, sortHint: sortHint, posts: posts, zones: zones, dayHead: dayHead, week: week,
+      dayTiles: dayTiles, dayOrders: dayOrders, dayPanel: dayPanel, team: team, results: results,
+      lastWeekLine: 'Last week, 2 incidents happened during post hours, and a guard was already there for both. The only fight came on a night with nobody posted.'
     };
   }
 }

@@ -10,6 +10,14 @@
       "x": 1520,
       "y": 0
     },
+    "Campus3D.dc.html": {
+      "h": 640,
+      "is_interactive": true,
+      "title": "7h · 3D campus component: Taylor's Lakeside",
+      "w": 1200,
+      "x": 9590,
+      "y": 14500
+    },
     "Components.dc.html": {
       "expand": "fill",
       "h": 2700,
@@ -67,6 +75,15 @@
       "x": 1520,
       "y": 2920
     },
+    "L3Cameras.dc.html": {
+      "expand": "fill",
+      "h": 2000,
+      "is_interactive": true,
+      "title": "7g · v3 Cameras with 3D campus",
+      "w": 1440,
+      "x": 8070,
+      "y": 14500
+    },
     "L3Incidents.dc.html": {
       "expand": "fill",
       "h": 1900,
@@ -87,12 +104,21 @@
     },
     "L3Plan.dc.html": {
       "expand": "fill",
-      "h": 2700,
+      "h": 3300,
       "is_interactive": true,
       "title": "7d · v3 Plan: weekly deployment board",
       "w": 1440,
       "x": 4560,
       "y": 14500
+    },
+    "L3PlanStory.dc.html": {
+      "expand": "fill",
+      "h": 1250,
+      "is_interactive": true,
+      "title": "7i · Use case: one real week with the patrol plan",
+      "w": 1440,
+      "x": 4560,
+      "y": 17900
     },
     "L3Proof.dc.html": {
       "expand": "fill",
@@ -109,23 +135,6 @@
       "title": "7f · v3 Push (phone)",
       "w": 390,
       "x": 7600,
-      "y": 14500
-    },
-    "L3Cameras.dc.html": {
-      "expand": "fill",
-      "h": 2000,
-      "is_interactive": true,
-      "title": "7g · v3 Cameras with 3D campus",
-      "w": 1440,
-      "x": 8070,
-      "y": 14500
-    },
-    "Campus3D.dc.html": {
-      "h": 640,
-      "is_interactive": true,
-      "title": "7h · 3D campus component: Taylor's Lakeside",
-      "w": 1200,
-      "x": 9590,
       "y": 14500
     },
     "L3Tokens.dc.html": {
@@ -231,14 +240,14 @@
       "x": 7600,
       "y": 10780
     },
-    "L3PlanStory.dc.html": {
+    "AIBriefingDraft.dc.html": {
       "expand": "fill",
-      "h": 1250,
+      "h": 1900,
       "is_interactive": true,
-      "title": "7i · Use case: one real week with the patrol plan",
+      "title": "7j · Draft: AI Monday briefing (for review)",
       "w": 1440,
-      "x": 4560,
-      "y": 17300
+      "x": 6080,
+      "y": 17900
     }
   },
   "createdOnFiles": {
@@ -292,7 +301,7 @@
     },
     "rowV3": {
       "kind": "title1",
-      "maxW": 10790,
+      "maxW": 8000,
       "text": "v3 Light Console (build target): 3D Taylor's campus, 1 live webcam + recordings, real model numbers",
       "w": 240,
       "x": 0,
@@ -324,6 +333,7 @@
     "L3Incidents.dc.html",
     "L3Plan.dc.html",
     "L3PlanStory.dc.html",
+    "AIBriefingDraft.dc.html",
     "L3Proof.dc.html",
     "L3Push.dc.html",
     "L3Cameras.dc.html",

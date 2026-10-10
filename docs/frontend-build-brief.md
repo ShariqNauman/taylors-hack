@@ -348,9 +348,11 @@ Never show: `peak_score`, priority, zone risk, keypoint or skeleton jargon, rule
    - On the right: "N of 3 posts covered" and **Share the roster**.
 2. **Three steps:** "Check the 3 posts", "Pick who goes (N of 3)", "Share the roster". Each gets a tick when done.
 3. **Post cards (left) and map (right):**
+   - **Sort posts:** Most incidents (default) · Quick wins first (most prevented for each hour a guard spends there, `incidents_4w × 0.6 ÷ hours a week`) · Nobody yet first. One plain line under the buttons says what the order means.
    - Each card shows the rank, the place in Saira, and "Mon–Thu · 13:00–14:00 · 4 hours this week".
    - The why, in one sentence: "5 incidents here in the last 4 weeks, all on weekdays at lunch."
    - "Should prevent about N incidents a month", where N = round(incidents_4w × 0.6).
+   - **When it happened:** one chip per past incident in the post's window, with its date ("Wed 7 Oct"), oldest first, linking to `/incidents`. Below: the count per weekday ("Mon 1 · Tue 1 · Wed 2 · Thu 1") and this week's dates ("This week: Mon 12, Tue 13, Wed 14, Thu 15 Oct").
    - **Who goes:**
      - Assigned: a guard chip, "On shift for all 4 hours", and **Change**.
      - Unassigned: **Send Guard C**, suggested because that guard is on shift then and works nearby, plus **Choose someone else**.
@@ -360,6 +362,9 @@ Never show: `peak_score`, priority, zone risk, keypoint or skeleton jargon, rule
    - The map is `<Campus3D mode="plan">`, with guard names on the post pins once they are assigned.
    - Under the map, the black-camera note in plain words, with **Report the repair**.
 4. **Your week at a glance:** this replaces the heatmap.
+   - **By weekday** first: 7 tiles, one per day, with this week's date ("WED 14 Oct"), the number of incidents on that weekday in the last 4 weeks, and "Busiest 13:00", "Spread out" when no hour repeats, or "One, at 22:00". Order: Mon to Sun or Busiest first.
+   - Picking a day opens a panel: "Wednesdays: 5 incidents in the last 4 weeks", the busiest hour and place (only when one repeats), the dates ("Wed 30 Sep (2)"), and "This Wednesday, 14 Oct" with that day's posts and who covers them. The day's column is highlighted in the calendar, and clicking any calendar cell picks its day.
+   - Everything follows the place chips.
    - Columns are Mon to Sun and rows are 07:00 to 23:00.
    - Cell shading is the incidents at that hour in the last 4 weeks, light to darker blue, with no numbers in the cells. Counts go in the tooltip.
    - Posts are drawn on top: "1 · Guard B" with a solid ink border, or "2 · Nobody yet" with a dashed border. Clicking one focuses its card.
@@ -374,6 +379,7 @@ Never show: `peak_score`, priority, zone risk, keypoint or skeleton jargon, rule
 7. **Share the roster** opens a plain-text roster (place, days, hours, person, tip) with **Copy roster** and **Print**. Nothing is sent from the app. Each guard also sees their own post on the `/push` idle screen ("Your post this week").
 
 **Data:**
+- All counts and dates come from real incidents (status `confirmed` or `resolved`) in the last 28 days: `GET /events?since=`, or the mock 8-week history. Never count false alarms.
 - Shifts and roles come from `site.staff[].role` and `site.staff[].shift`.
 - Assignments come from `plan.slots[].assigned_to` if the API has it. Otherwise keep them in `localStorage`, keyed by week and slot, and show "Saved on this computer".
 - "Did last week's plan work?" uses `plan.review` if present. Otherwise use mock data, and keep the synthetic-history chip visible.
