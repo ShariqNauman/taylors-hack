@@ -126,10 +126,29 @@ async function getJson<T>(path: string, mock: MockName): Promise<T> {
   return (await r.json()) as T;
 }
 
+let localEdgeAvailable: boolean | null = null;
+
 export const getSite = () => getJson<Site>("/site", "site");
 export const getCameras = async () => {
   const list = await getJson<Camera[]>("/cameras", "cameras");
-  return list.map((c) => (c.source === "live" && EDGE_URL ? { ...c, edge_url: EDGE_URL } : c));
+  let activeUrl = EDGE_URL;
+  if (typeof window !== "undefined") {
+    if (localEdgeAvailable === null) {
+      try {
+        const r = await fetch("http://127.0.0.1:8765/health", {
+          signal: AbortSignal.timeout(300),
+          cache: "no-store",
+        });
+        localEdgeAvailable = r.ok;
+      } catch {
+        localEdgeAvailable = false;
+      }
+    }
+    if (localEdgeAvailable) {
+      activeUrl = "http://127.0.0.1:8765";
+    }
+  }
+  return list.map((c) => (c.source === "live" && activeUrl ? { ...c, edge_url: activeUrl } : c));
 };
 export const getHotspots = () => getJson<Hotspot[]>("/hotspots", "hotspots");
 export const getPatrolPlan = () => getJson<PatrolPlan>("/plan", "plan");
