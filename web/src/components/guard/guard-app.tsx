@@ -105,6 +105,7 @@ export function GuardApp() {
   const { mutate } = useSWRConfig();
   const dev = useGuardDevice();
   const [ready, setReady] = useState(false);
+  const [embed, setEmbed] = useState(false);
   const [me, setMe] = useState<string | null>(null);
   const [shift, setShift] = useState(false);
   const [tab, setTab] = useState<Tab>("today");
@@ -116,6 +117,14 @@ export function GuardApp() {
   // Who is this phone? ?staff= (the old /push link) wins and is remembered.
   useEffect(() => {
     const fromLink = params.get("staff");
+    // Demo frame beside the desk (?embed=1): this guard, already on shift; nothing saved on the device.
+    if (params.get("embed") === "1" && fromLink) {
+      setEmbed(true);
+      setMe(fromLink);
+      setShift(true);
+      setReady(true);
+      return;
+    }
     const saved = fromLink || store.get(ME_KEY);
     if (fromLink) store.set(ME_KEY, fromLink);
     setMe(saved);
@@ -451,7 +460,7 @@ export function GuardApp() {
   // ── Tabs ──
   return (
     <Frame header={header} tabs={<Tabs tab={tab} onTab={setTab} />}>
-      {!dev.soundOn && (
+      {!dev.soundOn && !embed && (
         <button type="button" onClick={() => void dev.unlock()} className="mx-4 mt-3 min-h-11 rounded-[4px] border-2 border-dashed border-ink bg-white px-3 text-left text-[14px] font-extrabold">
           Sound is off after a reload. Tap here to turn alerts back on.
         </button>

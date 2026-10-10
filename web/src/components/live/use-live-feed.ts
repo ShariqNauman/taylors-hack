@@ -13,7 +13,7 @@ import {
   usingMock,
   type EdgeLive,
 } from "@/lib/api";
-import { useAppStore } from "@/lib/store/app-store";
+import { showPhoneBeside, useAppStore } from "@/lib/store/app-store";
 import { useReplay } from "@/hooks/use-replay";
 import { isAlarmLevel, LEVEL_ORDER, normaliseStatus } from "@/lib/format";
 import { useAlarmStore } from "@/lib/store/alarm-store";
@@ -413,8 +413,10 @@ export function useLiveFeed(
         const fresh = e.pushed_at
           ? now - Date.parse(e.pushed_at) < FRESH_MS
           : true;
-        if (fresh)
+        if (fresh) {
           pushToast(e.pushed_to, e.pushed_at ?? new Date(), e.location);
+          showPhoneBeside(e.pushed_to);
+        }
         // Without the API, copy the push to the shared store so the guard's phone rings.
         if (fresh && usingMock && (e.isReplay || e.isEdge)) {
           mirrored.current.set(e.incident_id, `${e.level}|${e.end_time}`);
@@ -468,6 +470,7 @@ export function useLiveFeed(
       await act(e, "pushed", { pushed_to: name, pushed_at: at });
       toasted.current.add(e.incident_id);
       pushToast(name, at, e.location);
+      showPhoneBeside(name);
       if (usingMock) {
         mirrored.current.set(e.incident_id, `${e.level}|${e.end_time}`);
         void mirrorEvent({ ...forStore(e), pushed_to: name, pushed_at: at });
@@ -495,6 +498,7 @@ export function useLiveFeed(
       const at = new Date().toISOString();
       const id = `${e.incident_id}-B`;
       pushToast(name, at, e.location);
+      showPhoneBeside(name);
       if (!usingMock) {
         try {
           await sendBackup(e.incident_id, name, e.outcome === "backup" ? "need_backup" : "no_answer");

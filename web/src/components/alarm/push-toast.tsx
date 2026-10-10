@@ -4,6 +4,7 @@ import Link from "next/link";
 import { toast } from "sonner";
 import { fmtTime } from "@/lib/format";
 import { PersonByCall } from "@/components/chrome/person-tag";
+import { useAppStore } from "@/lib/store/app-store";
 
 /** "Pushed to Guard B · 14:31:06" with the two-tier subline and a phone link. */
 export function pushToast(name: string, at: string | Date, location?: string) {
@@ -22,7 +23,14 @@ export function pushToast(name: string, at: string | Date, location?: string) {
           <Link
             href={`/guard?staff=${encodeURIComponent(name)}`}
             className="text-[14px] font-bold text-[#B7C4FF]"
-            onClick={() => toast.dismiss(id)}
+            onClick={(ev) => {
+              toast.dismiss(id);
+              // On the desk, open the phone beside it instead of leaving the page.
+              if (window.innerWidth >= 1100) {
+                ev.preventDefault();
+                useAppStore.getState().openPhone(name);
+              }
+            }}
           >
             Open their phone screen
           </Link>
