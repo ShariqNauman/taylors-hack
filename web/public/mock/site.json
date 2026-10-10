@@ -1,0 +1,32 @@
+{
+  "site_id": "taylors-lakeside",
+  "name": "Taylor's Lakeside campus",
+  "site_type": "campus",
+  "zones": [
+    {
+      "zone_type": "hostel_corridor",
+      "label": "Hostel corridor",
+      "risk": 1
+    },
+    {
+      "zone_type": "stairwell",
+      "label": "Block C stairwell",
+      "risk": 0.8
+    },
+    {
+      "zone_type": "canteen",
+      "label": "Canteen",
+      "risk": 0.7
+    },
+    {
+      "zone_type": "car_park",
+      "label": "Car park",
+      "risk": 0.6
+    },
+    {
+      "zone_type": "sports_court",
+      "label": "Sports court",
+      "risk": 0.3
+    }
+  ]
+}
