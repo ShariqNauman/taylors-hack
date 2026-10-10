@@ -284,10 +284,10 @@ export function SkeletonView({
         <>
           <text
             x={W / 2}
-            y={H / 2 - 4}
+            y={H / 2 + 6}
             textAnchor="middle"
             fontFamily="var(--font-atkinson-mono), ui-monospace, monospace"
-            fontSize="26"
+            fontSize="56"
             fontWeight="700"
             fill="#ECEFF3"
           >
@@ -296,10 +296,10 @@ export function SkeletonView({
           {idleSub && (
             <text
               x={W / 2}
-              y={H / 2 + 22}
+              y={H / 2 + 46}
               textAnchor="middle"
               fontFamily="var(--font-atkinson), system-ui, sans-serif"
-              fontSize="14"
+              fontSize="24"
               fill="#AEB7C2"
             >
               {idleSub}
