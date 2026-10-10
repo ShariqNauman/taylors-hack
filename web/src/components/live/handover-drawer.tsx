@@ -138,12 +138,14 @@ export function HandoverDrawer({
           >
             {writing
               ? "Writing the brief…"
-              : brief
-                ? "Write it again"
-                : "Write the brief"}
+              : briefError
+                ? "Couldn't write it. Try again"
+                : brief
+                  ? "Write it again"
+                  : "Write the brief"}
           </button>
           {briefError && (
-            <span className="text-[13px] text-ink-2">
+            <span className="sr-only">
               The brief could not be written just now. The facts below are
               complete; copy them instead.
             </span>
