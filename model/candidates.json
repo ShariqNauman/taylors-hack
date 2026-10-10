@@ -1,0 +1,65 @@
+{
+  "candidates": {
+    "LightGBM alone": {
+      "clip_auc": 0.8888,
+      "auc_AIRTLab": 0.8351,
+      "auc_RLVS": 0.9293,
+      "auc_SCF": 0.8061,
+      "auc_SCVD": 0.7761,
+      "FIGHT_AT": 0.6948,
+      "normal%": 8.9,
+      "fights%": 65.4,
+      "hugs%": 17.6,
+      "weapon%": 42.9,
+      "fights_AIRTLab%": 67.3,
+      "fights_RLVS%": 76.4,
+      "fights_SCF%": 4.7,
+      "fights_SCVD%": 55.8,
+      "ms_per_window": 12.963471999682952
+    },
+    "sequence alone": {
+      "clip_auc": 0.8795,
+      "auc_AIRTLab": 0.8264,
+      "auc_RLVS": 0.9284,
+      "auc_SCF": 0.7469,
+      "auc_SCVD": 0.789,
+      "FIGHT_AT": 0.7267,
+      "normal%": 8.9,
+      "fights%": 58.8,
+      "hugs%": 7.8,
+      "weapon%": 52.4,
+      "fights_AIRTLab%": 42.9,
+      "fights_RLVS%": 70.1,
+      "fights_SCF%": 2.3,
+      "fights_SCVD%": 62.3,
+      "ms_per_window": 12.511561666615307
+    },
+    "ensemble (mean)": {
+      "clip_auc": 0.9144,
+      "auc_AIRTLab": 0.8636,
+      "auc_RLVS": 0.9537,
+      "auc_SCF": 0.822,
+      "auc_SCVD": 0.8056,
+      "FIGHT_AT": 0.6579,
+      "normal%": 8.9,
+      "fights%": 69.0,
+      "hugs%": 8.8,
+      "weapon%": 55.2,
+      "fights_AIRTLab%": 60.7,
+      "fights_RLVS%": 81.6,
+      "fights_SCF%": 4.7,
+      "fights_SCVD%": 64.8,
+      "ms_per_window": 25.47503366629826
+    }
+  },
+  "timing": {
+    "features_ms": 12.362079999875277,
+    "sequence_input_ms": 12.32326400000602,
+    "lgbm_predict_ms": 0.6013919998076744,
+    "seq_openvino": {
+      "GPU": 0.18829766660928726,
+      "CPU": 0.0792646666135018
+    }
+  },
+  "choice": "LightGBM alone"
+}
