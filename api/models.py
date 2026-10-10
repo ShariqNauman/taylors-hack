@@ -489,3 +489,39 @@ class TokenResponse(BaseModel):
     access_token: str
     token_type: str = "bearer"
     user: UserProfile
+
+
+# ── Shift handover (POST /handover) ───────────────────────────────────────────
+
+class OpenIncident(BaseModel):
+    incident_id: str
+    location: str
+    level: str
+    priority: float = 0
+    status: str = ""
+
+
+class BlackCamera(BaseModel):
+    camera_id: str
+    location: str
+    black_since: str
+
+
+class HandoverFacts(BaseModel):
+    """What the end-of-shift drawer counted. Posted as-is; nothing is recomputed."""
+
+    shift_start: str
+    now: str
+    pushes: int
+    budget: int
+    open: list[OpenIncident] = Field(default_factory=list)
+    confirmed: int = 0
+    dismissed: int = 0
+    black_cameras: list[BlackCamera] = Field(default_factory=list)
+    patrol_today: Optional[str] = None
+
+
+class HandoverBrief(BaseModel):
+    text: str
+    model: str  # ANTHROPIC_MODEL, or "offline-template"
+    generated_at: str
