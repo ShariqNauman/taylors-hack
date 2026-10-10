@@ -2,44 +2,293 @@
   "v": 3,
   "attachments": {},
   "boards": {
-    "Blueprint.dc.html": {"expand": "fill", "h": 1500, "title": "2 · One incident, end to end", "w": 1440, "x": 1520, "y": 0},
-    "Components.dc.html": {"expand": "fill", "h": 2700, "title": "5b · Design system: components", "w": 1440, "x": 1520, "y": 7460},
-    "DesignSystem.dc.html": {"expand": "fill", "h": 2900, "title": "5a · Design system: foundations", "w": 1440, "x": 0, "y": 7460},
-    "Incidents.dc.html": {"expand": "fill", "h": 1300, "is_interactive": true, "title": "4c · Incidents", "w": 1440, "x": 3040, "y": 4840},
-    "JourneyBuyer.dc.html": {"expand": "fill", "h": 1500, "title": "3d · Journey: buyer", "w": 1440, "x": 4560, "y": 2920},
-    "JourneyManager.dc.html": {"expand": "fill", "h": 1500, "title": "3c · Journey: security manager", "w": 1440, "x": 3040, "y": 2920},
-    "JourneyOperator.dc.html": {"expand": "fill", "h": 1500, "title": "3a · Journey: desk operator", "w": 1440, "x": 0, "y": 2920},
-    "JourneyResponder.dc.html": {"expand": "fill", "h": 1500, "title": "3b · Journey: person on duty", "w": 1440, "x": 1520, "y": 2920},
-    "L3Incidents.dc.html": {"expand": "fill", "h": 1250, "is_interactive": true, "title": "7c · v3 Incidents and review", "w": 1440, "x": 3040, "y": 14500},
-    "L3Live.dc.html": {"expand": "fill", "h": 1440, "is_interactive": true, "title": "7b · v3 Live, real-time view", "w": 1440, "x": 1520, "y": 14500},
-    "L3Plan.dc.html": {"expand": "fill", "h": 2250, "is_interactive": true, "title": "7d · v3 Plan with 3D campus", "w": 1440, "x": 4560, "y": 14500},
-    "L3Proof.dc.html": {"expand": "fill", "h": 2200, "is_interactive": true, "title": "7e · v3 Proof, real model numbers", "w": 1440, "x": 6080, "y": 14500},
-    "L3Push.dc.html": {"h": 844, "is_interactive": true, "title": "7f · v3 Push (phone)", "w": 390, "x": 7600, "y": 14500},
-    "L3Cameras.dc.html": {"expand": "fill", "h": 2000, "is_interactive": true, "title": "7g · v3 Cameras with 3D campus", "w": 1440, "x": 8070, "y": 14500},
-    "Campus3D.dc.html": {"h": 640, "is_interactive": true, "title": "7h · 3D campus component: Taylor's Lakeside", "w": 1200, "x": 9590, "y": 14500},
-    "L3Tokens.dc.html": {"expand": "fill", "h": 1900, "title": "7a · v3 Light Console: tokens", "w": 1440, "x": 0, "y": 14500},
-    "Live.dc.html": {"expand": "fill", "h": 1240, "is_interactive": true, "title": "4a · Live (home)", "w": 1440, "x": 0, "y": 4840},
-    "Main.dc.html": {"expand": "fill", "h": 2500, "title": "1 · User segmentation", "w": 1440, "x": 0, "y": 0},
-    "Plan.dc.html": {"expand": "fill", "h": 1700, "is_interactive": true, "title": "4b · Plan", "w": 1440, "x": 1520, "y": 4840},
-    "Proof.dc.html": {"expand": "fill", "h": 2200, "is_interactive": true, "title": "4d · Proof", "w": 1440, "x": 4560, "y": 4840},
-    "Push.dc.html": {"h": 844, "is_interactive": true, "title": "4e · Push (phone)", "w": 390, "x": 6080, "y": 4840},
-    "V2Incidents.dc.html": {"expand": "fill", "h": 1250, "is_interactive": true, "title": "6c · v2 Incidents and review", "w": 1440, "x": 3040, "y": 10780},
-    "V2Live.dc.html": {"expand": "fill", "h": 1180, "is_interactive": true, "title": "6b · v2 Live with evidence player", "w": 1440, "x": 1520, "y": 10780},
-    "V2Plan.dc.html": {"expand": "fill", "h": 1500, "is_interactive": true, "title": "6d · v2 Plan", "w": 1440, "x": 4560, "y": 10780},
-    "V2Proof.dc.html": {"expand": "fill", "h": 2100, "is_interactive": true, "title": "6e · v2 Proof with model replays", "w": 1440, "x": 6080, "y": 10780},
-    "V2Proposal.dc.html": {"expand": "fill", "h": 3300, "title": "6a · v2 proposal: Ops Console", "w": 1440, "x": 0, "y": 10780},
-    "V2Push.dc.html": {"h": 844, "is_interactive": true, "title": "6f · v2 Push (phone)", "w": 390, "x": 7600, "y": 10780}
+    "Blueprint.dc.html": {
+      "expand": "fill",
+      "h": 1500,
+      "title": "2 · One incident, end to end",
+      "w": 1440,
+      "x": 1520,
+      "y": 0
+    },
+    "Components.dc.html": {
+      "expand": "fill",
+      "h": 2700,
+      "title": "5b · Design system: components",
+      "w": 1440,
+      "x": 1520,
+      "y": 7460
+    },
+    "DesignSystem.dc.html": {
+      "expand": "fill",
+      "h": 2900,
+      "title": "5a · Design system: foundations",
+      "w": 1440,
+      "x": 0,
+      "y": 7460
+    },
+    "Incidents.dc.html": {
+      "expand": "fill",
+      "h": 1300,
+      "is_interactive": true,
+      "title": "4c · Incidents",
+      "w": 1440,
+      "x": 3040,
+      "y": 4840
+    },
+    "JourneyBuyer.dc.html": {
+      "expand": "fill",
+      "h": 1500,
+      "title": "3d · Journey: buyer",
+      "w": 1440,
+      "x": 4560,
+      "y": 2920
+    },
+    "JourneyManager.dc.html": {
+      "expand": "fill",
+      "h": 1500,
+      "title": "3c · Journey: security manager",
+      "w": 1440,
+      "x": 3040,
+      "y": 2920
+    },
+    "JourneyOperator.dc.html": {
+      "expand": "fill",
+      "h": 1500,
+      "title": "3a · Journey: desk operator",
+      "w": 1440,
+      "x": 0,
+      "y": 2920
+    },
+    "JourneyResponder.dc.html": {
+      "expand": "fill",
+      "h": 1500,
+      "title": "3b · Journey: person on duty",
+      "w": 1440,
+      "x": 1520,
+      "y": 2920
+    },
+    "L3Incidents.dc.html": {
+      "expand": "fill",
+      "h": 1900,
+      "is_interactive": true,
+      "title": "7c · v3 Incidents: plain-language case review",
+      "w": 1440,
+      "x": 3040,
+      "y": 14500
+    },
+    "L3Live.dc.html": {
+      "expand": "fill",
+      "h": 1440,
+      "is_interactive": true,
+      "title": "7b · v3 Live, real-time view",
+      "w": 1440,
+      "x": 1520,
+      "y": 14500
+    },
+    "L3Plan.dc.html": {
+      "expand": "fill",
+      "h": 2250,
+      "is_interactive": true,
+      "title": "7d · v3 Plan with 3D campus",
+      "w": 1440,
+      "x": 4560,
+      "y": 14500
+    },
+    "L3Proof.dc.html": {
+      "expand": "fill",
+      "h": 2200,
+      "is_interactive": true,
+      "title": "7e · v3 Proof, real model numbers",
+      "w": 1440,
+      "x": 6080,
+      "y": 14500
+    },
+    "L3Push.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "title": "7f · v3 Push (phone)",
+      "w": 390,
+      "x": 7600,
+      "y": 14500
+    },
+    "L3Cameras.dc.html": {
+      "expand": "fill",
+      "h": 2000,
+      "is_interactive": true,
+      "title": "7g · v3 Cameras with 3D campus",
+      "w": 1440,
+      "x": 8070,
+      "y": 14500
+    },
+    "Campus3D.dc.html": {
+      "h": 640,
+      "is_interactive": true,
+      "title": "7h · 3D campus component: Taylor's Lakeside",
+      "w": 1200,
+      "x": 9590,
+      "y": 14500
+    },
+    "L3Tokens.dc.html": {
+      "expand": "fill",
+      "h": 1900,
+      "title": "7a · v3 Light Console: tokens",
+      "w": 1440,
+      "x": 0,
+      "y": 14500
+    },
+    "Live.dc.html": {
+      "expand": "fill",
+      "h": 1240,
+      "is_interactive": true,
+      "title": "4a · Live (home)",
+      "w": 1440,
+      "x": 0,
+      "y": 4840
+    },
+    "Main.dc.html": {
+      "expand": "fill",
+      "h": 2500,
+      "title": "1 · User segmentation",
+      "w": 1440,
+      "x": 0,
+      "y": 0
+    },
+    "Plan.dc.html": {
+      "expand": "fill",
+      "h": 1700,
+      "is_interactive": true,
+      "title": "4b · Plan",
+      "w": 1440,
+      "x": 1520,
+      "y": 4840
+    },
+    "Proof.dc.html": {
+      "expand": "fill",
+      "h": 2200,
+      "is_interactive": true,
+      "title": "4d · Proof",
+      "w": 1440,
+      "x": 4560,
+      "y": 4840
+    },
+    "Push.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "title": "4e · Push (phone)",
+      "w": 390,
+      "x": 6080,
+      "y": 4840
+    },
+    "V2Incidents.dc.html": {
+      "expand": "fill",
+      "h": 1250,
+      "is_interactive": true,
+      "title": "6c · v2 Incidents and review",
+      "w": 1440,
+      "x": 3040,
+      "y": 10780
+    },
+    "V2Live.dc.html": {
+      "expand": "fill",
+      "h": 1180,
+      "is_interactive": true,
+      "title": "6b · v2 Live with evidence player",
+      "w": 1440,
+      "x": 1520,
+      "y": 10780
+    },
+    "V2Plan.dc.html": {
+      "expand": "fill",
+      "h": 1500,
+      "is_interactive": true,
+      "title": "6d · v2 Plan",
+      "w": 1440,
+      "x": 4560,
+      "y": 10780
+    },
+    "V2Proof.dc.html": {
+      "expand": "fill",
+      "h": 2100,
+      "is_interactive": true,
+      "title": "6e · v2 Proof with model replays",
+      "w": 1440,
+      "x": 6080,
+      "y": 10780
+    },
+    "V2Proposal.dc.html": {
+      "expand": "fill",
+      "h": 3300,
+      "title": "6a · v2 proposal: Ops Console",
+      "w": 1440,
+      "x": 0,
+      "y": 10780
+    },
+    "V2Push.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "title": "6f · v2 Push (phone)",
+      "w": 390,
+      "x": 7600,
+      "y": 10780
+    }
   },
-  "createdOnFiles": {"at": "2026-10-10T08:00:00Z", "v": 1},
+  "createdOnFiles": {
+    "at": "2026-10-10T08:00:00Z",
+    "v": 1
+  },
   "designSystems": [],
-  "launch": {"view": "canvas"},
+  "launch": {
+    "view": "canvas"
+  },
   "notes": {
-    "rowJourneys": {"kind": "title1", "maxW": 6000, "text": "Journeys: one per role", "w": 240, "x": 0, "y": 2620},
-    "rowPrototype": {"kind": "title1", "maxW": 6470, "text": "Prototype: Live → Plan → Incidents → Proof → Push", "w": 240, "x": 0, "y": 4540},
-    "rowSystem": {"kind": "title1", "maxW": 2960, "text": "Design system proposal: Daylight Desk", "w": 240, "x": 0, "y": 7160},
-    "rowUsers": {"kind": "title1", "maxW": 2960, "text": "Users: segments, roles, the incident lifecycle", "w": 240, "x": 0, "y": -300},
-    "rowV2": {"kind": "title1", "maxW": 7990, "text": "v2 proposal: Ops Console, video-first, after Ambient.ai, Volt, ZeroEyes", "w": 240, "x": 0, "y": 10480},
-    "rowV3": {"kind": "title1", "maxW": 10790, "text": "v3 Light Console (build target): 3D Taylor's campus, 1 live webcam + recordings, real model numbers", "w": 240, "x": 0, "y": 14200}
+    "rowJourneys": {
+      "kind": "title1",
+      "maxW": 6000,
+      "text": "Journeys: one per role",
+      "w": 240,
+      "x": 0,
+      "y": 2620
+    },
+    "rowPrototype": {
+      "kind": "title1",
+      "maxW": 6470,
+      "text": "Prototype: Live → Plan → Incidents → Proof → Push",
+      "w": 240,
+      "x": 0,
+      "y": 4540
+    },
+    "rowSystem": {
+      "kind": "title1",
+      "maxW": 2960,
+      "text": "Design system proposal: Daylight Desk",
+      "w": 240,
+      "x": 0,
+      "y": 7160
+    },
+    "rowUsers": {
+      "kind": "title1",
+      "maxW": 2960,
+      "text": "Users: segments, roles, the incident lifecycle",
+      "w": 240,
+      "x": 0,
+      "y": -300
+    },
+    "rowV2": {
+      "kind": "title1",
+      "maxW": 7990,
+      "text": "v2 proposal: Ops Console, video-first, after Ambient.ai, Volt, ZeroEyes",
+      "w": 240,
+      "x": 0,
+      "y": 10480
+    },
+    "rowV3": {
+      "kind": "title1",
+      "maxW": 10790,
+      "text": "v3 Light Console (build target): 3D Taylor's campus, 1 live webcam + recordings, real model numbers",
+      "w": 240,
+      "x": 0,
+      "y": 14200
+    }
   },
   "order": [
     "Main.dc.html",

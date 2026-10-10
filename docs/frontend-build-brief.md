@@ -29,7 +29,7 @@ A light, video-first security console. It feels like Ambient.ai or ZeroEyes, but
 |---|---|---|---|
 | `/` | **Live** | Desk operator | See the build-up, get the alarm, send one person, label it |
 | `/cameras` | **Cameras** | Operator, manager | 3D campus: click a building or pin to open its feed. Then all cameras, health and activity. |
-| `/incidents` | **Incidents** | Operator, manager | Case review: evidence, why this type, audit trail, label, note |
+| `/incidents` | **Incidents** | Operator, manager | What needs you, was it real, what happened, what to do next. Plain language. |
 | `/plan` | **Plan** | Manager | 3D campus with patrol posts and hotspot columns, then three patrol slots, assumption, heatmap, hotspots |
 | `/proof` | **Proof** | Judges, buyer | Proven numbers, honest gaps, watch the model |
 | `/push?staff=Guard%20B` | **Push** | Person on duty | Phone: on duty, red takeover, "On my way" |
@@ -227,10 +227,12 @@ Load with `next/font/google`: `Saira_Condensed` (600, 700, 800), `Atkinson_Hyper
 | Grid tile | Cameras | Selects that camera |
 | Report repair (black camera only) | Cameras detail | Local state "Repair reported · HH:MM". No backend in v3. |
 | Open in Live / See its incidents / Patrol plan | Cameras detail | `/?cam=`, `/incidents?cam=`, `/plan` |
-| Status filter chips, list rows | Incidents | Filter the list, open a case |
-| Play 10 s clip on site | Incidents case, on site only | Plays `${camera.edge_url}/clips/<incident_id>.mp4` in a `<video>` inside the frame. Hidden on the remote link. |
-| Open this camera on the 3D campus | Incidents case | `/cameras?cam=` |
-| Mark resolved, staff note | Incidents case | `PATCH {status: "resolved", staff_note}` |
+| Needs-you cards, tabs, list rows, earlier cases | Incidents | Filter the list and open a case |
+| Watch the 10-second clip | Incidents case, on site only | Plays `${camera.edge_url}/clips/<incident_id>.mp4` in a `<video>` inside the frame. Hidden on the remote link. |
+| Yes, it was real / No, false alarm / Undo | Incidents case | `PATCH {status: "confirmed" or "dismissed"}`; Undo sends `PATCH {status: "new"}` |
+| See it on the campus map / How EarlyEye decides / See the patrol plan | Incidents | `/cameras?cam=`, `/proof`, `/plan` |
+| Write a summary for your report, Copy summary | Incidents case, real incidents | Local only. Copies a plain paragraph to the clipboard. |
+| Mark as closed, Reopen, note | Incidents case | `PATCH {status: "resolved"}`, `PATCH {status: "confirmed"}`, `PATCH {staff_note}` |
 | Show on the heatmap | Plan slot | Selects the zone and outlines that slot's cells |
 | See the incidents behind this slot | Plan slot | `/incidents?cam=<camera>` |
 | Open the camera | Plan, black-camera strip | `/cameras?cam=CAM-HC-02` |
@@ -293,18 +295,47 @@ The canvas files are exact references for layout, sizes and copy. This section l
 
 ### 6.3 Incidents (`/incidents`), design file `L3Incidents.dc.html`
 
-**KPIs:** labels collected (ink tile), confirmed, dismissed, and median response, which is the median of `acked_at − pushed_at`. Show "—" when no `acked_at` exists.
+**Who uses it and why.** The desk operator needs to clear alerts still waiting for a decision. The security manager needs to see what really happened, follow up, and spot places where it keeps happening. Write every word for them: plain English, no scores, no camera codes in the main text, no model or rule vocabulary. The technical "why" lives on Proof, linked as "How EarlyEye decides".
 
-**List** (left, about 420 px): status chips All · Open · Confirmed · Dismissed · Resolved. Each row has a 104 px skeleton thumbnail from `peak_snapshot` (a dark tile if absent), level pill, type, status chip, location, and a mono line `DAY HH:MM · CAM · P 0.40 · ACK 4 S`.
+**Words to use:**
 
-**Case** (right):
-- Header: level pill, type, status, ID, location, and `when · cam · zone · priority`, plus the camera and Live links.
-- Evidence frame: peak frame with box and label. On site, add **Play 10 s clip on site**. Remote shows "Video stays on site…".
-- **Why this type:** a four-rule checklist with met or not met (tick or cross, green or grey). The rules are the type rules from team plan §5: two parties with strike pattern; 1 against 3 or more for over 5 s; 5 or more close with low motion; sports zone or rhythmic motion. Under it: "Types are rules on top of the model's score, not a separate model."
-- **Why the model flagged it:** the reason at 20 px.
-- **Audit trail**, built from the timestamps: start (tense, silent) · fight likely, pushed · tapped "On my way", response N s · fight · confirmed or dismissed · resolved.
-- **Staff note** textarea, Confirm, Dismiss, Mark resolved, and the line "The desk's Confirm or Dismiss is the label. The phone tap only records 'on my way'."
-- `?status=`, `?cam=` and `?id=` deep links.
+| Data | Show as |
+|---|---|
+| status `new`, `pushed` | Needs a decision |
+| status `confirmed` | Real · open |
+| status `resolved` | Real · closed |
+| status `dismissed` (or `false_alarm`) | False alarm |
+| type `fight`, `cornering`, `crowd`, `play` | Fight, Someone cornered, Crowd gathering, Rough play |
+| level | Tense, Fight likely, Fight, as everywhere else |
+| `pushed_to` + `acked_at − pushed_at` | "Guard B replied in 4 s" |
+| no push | "Desk screen only, no alarm" |
+
+Never show: `peak_score`, priority, zone risk, keypoint or skeleton jargon, rule checklists, "labels", "pushed", "ack", the camera code in headings.
+
+**Layout, top to bottom:**
+1. **Title block:** kicker "EVERY ALERT, SAVED AS A CASE", H1 "Incidents", one-line purpose.
+2. **Needs you now:** three cards computed from events.
+   - "N alerts need a decision", with **Review them**: filters to Needs a decision and opens the first.
+   - "N real incidents are still open", with **Open them**: filters to Real and opens the first `confirmed`.
+   - The top repeat place, "N real incidents at the Block C stairwell", with the hours and **See the patrol plan**. Use `GET /hotspots`, or the hotspot rule client-side.
+   - Each card has a calm empty state ("Every alert has a decision").
+3. **Last 4 weeks:** real incidents, false alarms, typical guard reply (median of `acked_at − pushed_at`, "—" when none), busiest place.
+4. **List (left):** tabs Needs a decision · Real · False alarms · All, with counts. Rows are grouped by day ("TODAY · SAT 10 OCT"). Each row shows time, "Type at place" as the title, level pill, status chip and the guard line. No thumbnails.
+5. **Case (right):**
+   - Level pill with "Highest level reached…", the title "Fight at the Grand Hall", and the full date with the building and floor.
+   - **Decision box** by status:
+     - Needs a decision: "Was this a real incident?", **Yes, it was real** / **No, false alarm** at 56 px, and "Not sure? Watch the clip below first."
+     - Real · open: **Mark as closed** and Undo.
+     - Real · closed: Reopen.
+     - False alarm: Undo, plus "Each false alarm you mark helps EarlyEye raise fewer at this spot."
+   - **What EarlyEye saw:** the `reason` at 20 px, in plain words.
+   - **The worst moment:** the peak frame with stick figures and the level word only, no score. On site: **Watch the 10-second clip** and "The clip stays on this computer." Remote: "People appear as stick figures. The video never leaves campus."
+   - **How it unfolded:** a plain timeline from the timestamps that exist. `ts`: noticed tension. `pushed_at`: alarm, guard alerted. `acked_at`: guard replied. Then the desk decision and closure. Skip a step if its time is missing, and never invent one.
+   - **What to do next:** a checklist by type. When `status` is `resolved`, the heading becomes "What was done" and the boxes are filled. Real incidents get **Write a summary for your report**, which opens a plain paragraph (what, where, when, what EarlyEye saw, guard reply, decision, note, reference) with **Copy summary**.
+   - **What happened, in your words:** the `staff_note` textarea, with "EarlyEye never knows who people are, so names go in your own records, not here."
+   - **Earlier at this place:** a pattern callout when the hotspot rule fires, plus up to 4 earlier cases, each clickable.
+   - **Footer:** "Reference INC-…", the camera's plain name, **See it on the campus map**, **How EarlyEye decides** (to `/proof`).
+6. Deep links: `?status=`, `?cam=`, `?id=`.
 
 ### 6.4 Plan (`/plan`), design file `L3Plan.dc.html`
 
