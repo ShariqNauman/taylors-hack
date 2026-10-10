@@ -2,14 +2,95 @@
 
 Fight detection from video using body keypoints (no faces). Model only, no backend or website.
 
-- **Part A** (below): v3, multi-dataset model on v2 keypoints. **Current model.**
-- **Part B** (further down): the previous model (RLVS only, v1 keypoints), kept for comparison.
+- **Part A0** (below): v4, the final training round. LightGBM + 1D-CNN ensemble, tested on a locked hold-out. **Current model.**
+- **Part A**: v3, multi-dataset LightGBM on v2 keypoints (the previous model, backed up in `backup_v3/`).
+- **Part B**: the first model (RLVS only, v1 keypoints).
+
+---
+
+# Part A0 — v4: final training round (10–11 Oct 2026, branch `model-final`)
+
+Followed `TRAINING_PLAN.md` step by step, with an OK at every STOP.
+
+## A0.1 Verdict
+
+**The new ensemble is clearly better than v3.** It was evaluated once, on a locked hold-out of 470 clips that no feature, tuning, threshold or model choice ever saw.
+
+| Hold-out (470 clips) | Clip AUC | Precision | Recall | Fights caught | Normal → FIGHT | AIRTLab hugs/claps → FIGHT | Weapon caught |
+|---|---|---|---|---|---|---|---|
+| **v4 ensemble (shipped)** | **0.929** | 0.884 | **0.785** | **78.5%** | 11.0% | **11.1% (2/18)** | **68.4% (13/19)** |
+| LightGBM alone (fallback) | 0.895 | 0.909 | 0.702 | 70.2% | 6.2% | 22.2% (4/18) | 47.4% |
+| v3 recipe, retrained on the 85% (fair baseline) | 0.860 | 0.874 | 0.632 | 63.2% | 8.6% | 22.2% (4/18) | 36.8% |
+| v3 file as shipped (trained on these clips: **in-sample**) | 0.943 | 0.962 | 0.727 | 72.7% | 3.3% | 0.0% | 63.2% |
+
+**Per dataset (hold-out clip AUC):**
+
+| | AIRTLab | RLVS | SCF | SCVD |
+|---|---|---|---|---|
+| v4 ensemble | 0.904 | 0.947 | 0.834 | 0.888 |
+| v3 recipe | 0.897 | 0.878 | 0.735 | 0.834 |
+
+**How the thresholds were set:** every model's FIGHT_AT was fixed on the training part (out-of-fold) so that 9% of normal clips reach FIGHT, then applied to the hold-out unchanged. That is why the ensemble's hold-out normal rate is 11.0% rather than exactly 9%.
+
+**Reading the comparison:**
+
+- **vs the fair v3 baseline:** +0.069 AUC, +15 points of fights caught, +32 points of weapons caught, half the hug alarms. Only normal-clip alarms are a little higher (11.0% vs 8.6%).
+- **The shipped v3 file is not a fair comparison.** It was trained on all 3,131 clips, hold-out included; its AIRTLab AUC of 1.000 is memorisation.
+- **Hug and weapon counts are tiny** (18 and 19 hold-out clips), so one clip moves those rates by 5–6 points.
+
+**Proof-page rows (hold-out, ensemble):**
+
+| Row | Clips | AUC | Precision | Recall |
+|---|---|---|---|---|
+| Phone-video sets (RLVS + AIRTLab) | 352 | **0.944** | 0.882 | 0.853 |
+| CCTV clips (SCF + SCVD) | 118 | **0.865** | 0.892 | 0.569 |
+
+The final model also trains on other SCF/SCVD clips, so the CCTV row is not a pure domain test. The pure test (v3 recipe, trained with no CCTV at all) scored 0.709 (A7.8).
+
+## A0.2 What was done
+
+| Step | What | Result |
+|---|---|---|
+| 1. Hold-out | 15% of groups (444 groups, 470 clips), stratified by dataset and kind, seed 42 (`make_holdout.py`, `holdout_groups.csv`). AIRTLab camera pairs kept together. | Every kind at ~15%; 0 groups on both sides |
+| 2. Features | 13 new features: head (distance, snap, facing), legs (ankle toward, knee lift, height drop), arms (asymmetry, elbow extension), whole body (energy max/min, contact time/count, box overlap). `analyze_features.py`. | Training part, at matched 9% normal false alarms: AUC 0.855 → 0.888, fights 60 → 68%, weapon 37 → 45%, but **hugs 19 → 31%** |
+| 3. LightGBM search | 100 settings plus dataset weights plus a **3–8x hug/clap weight** (hard negatives); saved folds (`folds.csv`); hug guardrail: reject if hugs > 18.6% (old-10's rate) at matched 9% normal false alarms (`tune_lgbm.py`). | 67/100 pass. Pick: trial 94 (31 leaves, lr 0.05, 400 trees, min_child 100, AIRTLab 2x, CCTV 2x, hugs x5): AUC 0.889, hugs 17.6% |
+| 4. Sequence model | 51k-parameter dilated 1D-CNN over the active pair's 17 keypoints × 20 steps; flip/jitter/swap augmentation; same folds and weights; trained on the RTX 5090 (`seq_features.py`, `seq_dataset.py`, `seq_train.py`). | Out-of-fold: CNN 0.880 / hugs 7.8%; **ensemble 0.914 / hugs 8.8%** (`compare_candidates.py`) |
+| 5. Final | One hold-out evaluation (`evaluate_holdout.py`), then retrain on all clips (`finalize_model.py`, `seq_final.py`). | Table above |
+
+**The fair-comparison rule:** every candidate is judged at its own FIGHT_AT where 9% of normal clips reach FIGHT, using `train.sustained_scores`. That gives one number per clip, and it reproduces the live FIGHT logic exactly (checked: 100% agreement with the replay).
+
+## A0.3 Live
+
+- **`predict.py`:** `MODE = "ensemble"` (default) or `"lgbm"` (fallback, needs no CNN) or `"rules"`. Each mode has its own FIGHT_AT in `live_detector.py`: 0.658 for the ensemble, 0.695 for LightGBM. Other settings: alpha 0.6, TENSE 0.5, MIN_DURATION 1.0 s.
+- **One shared people-finding pass:** `seq_features.window_inputs()` builds both models' inputs from one pass, with identical outputs to the separate functions (46/46 windows). Input time drops from 18.7 to 13.1 ms per window. Model time: LightGBM 0.6 ms, CNN 0.1 ms (OpenVINO CPU). Total about 14 ms per window, scored every 0.5 s.
+- **Live test** (30 s of a 720p 30 fps fight clip, window shown):
+
+  | Mode | Display fps | Pose fps | Scoring interval |
+  |---|---|---|---|
+  | Ensemble | 29.9 | 30.2 | 0.53 s median |
+  | LightGBM | 29.9 | 30.2 | 0.53 s median |
+
+  The ensemble costs nothing visible; scoring runs on the pose thread, not the display thread.
+- **Bug found and fixed:** live recorded only the 12 body keypoints. The CNN crashed on the first window, and LightGBM's head features were always empty live (a train/live mismatch). Live now records all 17 keypoints, like extraction; only the body is drawn.
+
+## A0.4 Reproducibility note
+
+- **The first two hold-out runs differed slightly** for the models using trial-94 LightGBM (ensemble AUC 0.9276 vs 0.9287; LightGBM-alone weapon 57.9% vs 47.4% = 2 of 19 clips). Multithreaded LightGBM isn't bit-for-bit reproducible by default.
+- **The official numbers come from `deterministic=True`:** two runs give identical results.
+- **The conclusion is the same in every run.**
+
+## A0.5 Limits and next steps
+
+1. **No live-room numbers yet:** false alarms per camera-hour, live precision/recall and lead time are still placeholders in `proof.json`. `session1.csv` (87 s, all normal) was recorded with the v3 model, so it can't score v4. **Next:** record a labelled session with v4 (hold F for fights, H for hugs), then run `tune_live.py`.
+2. **Hugs:** 2 of 18 hold-out hug/clap clips still alarm. Close, energetic contact remains the hard case.
+3. **SCF clips** (~2 s) are too short for the 1 s persistence, which caps SCF recall.
+4. **CCTV:** CCTV recall is 0.57 at the shared threshold. A per-camera FIGHT_AT, tuned from operator labels, is the production answer.
 
 ---
 
 # Part A — v3: multi-dataset model on v2 keypoints (trained 10 Oct 2026; webcam tuning still to do)
 
-Branch: `model-dev`. Nothing in Part A is committed yet.
+Branch: `model-dev` (merged to `main` in PR #12). Superseded by Part A0; backed up in `backup_v3/`.
 
 **Files set aside (10 Oct):** these are no longer used by the v3 pipeline.
 
