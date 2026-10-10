@@ -66,6 +66,8 @@ const SIGNAL: Record<string, string> = {
 const label =
   "font-mono text-[12px] font-bold tracking-[0.08em] text-muted-ink";
 
+const LAPTOP_EDGE = "http://127.0.0.1:8765";
+
 export function IncidentsScreen() {
   const firstName = useFirstName();
   const params = useSearchParams();
@@ -113,10 +115,11 @@ export function IncidentsScreen() {
   // On site, cases with a recording on this laptop come first (the clip never leaves campus).
   const siteView = useAppStore((s) => s.view);
   // The live camera's edge (may be a GPU server) and this laptop's own edge: either may hold a clip.
+  // The laptop's is asked directly, since NEXT_PUBLIC_EDGE_URL may point at the GPU server.
   const liveEdge = cameras?.find((c) => c.source === "live" && c.edge_url)?.edge_url ?? null;
   const clipEdges =
     siteView === "onsite"
-      ? [...new Set([liveEdge, EDGE_URL].filter((u): u is string => !!u).map((u) => u.replace(/\/$/, "")))]
+      ? [...new Set([liveEdge, EDGE_URL, LAPTOP_EDGE].filter((u): u is string => !!u).map((u) => u.replace(/\/$/, "")))]
       : [];
   const { data: clipMap } = useSWR(
     clipEdges.length ? ["edge-clips", ...clipEdges] : null,
