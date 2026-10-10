@@ -62,4 +62,6 @@ seq_windows.npz
 *.onnx
 !model/seq_model.onnx
 holdout_v4*_scores.csv
+
+# Agent worktrees
 .claude/worktrees/
