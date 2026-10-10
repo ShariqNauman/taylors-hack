@@ -64,3 +64,7 @@ seq_windows.npz
 holdout_v4*_scores.csv
 model/weights_v6.csv
 model/oof_lgbm_v6.csv
+model/holdout_lgbm_v6.csv
+model/holdout_seq_v6*.csv
+model/own_lovo_*.csv
+model/seq_clip_v6*.json

@@ -34,6 +34,7 @@ from tune_lgbm import LGBM_KEYS, sample_weights
 
 # ---------------- Tunable constants ----------------
 FIGHT_TIMES = Path("data/recorded_data/fight_times.csv")
+FAST_TIMES = Path("data/recorded_data/fast_times.csv")   # running segments in our non-violence videos
 WEIGHTS_CSV = Path("weights_v6.csv")
 FOLDS_CSV = Path("folds.csv")
 OOF_LGBM, OOF_SEQ = Path("oof_lgbm_v6.csv"), Path("oof_seq_v6.csv")
@@ -61,11 +62,18 @@ def labelled_windows():
         w.loc[w["own"], "label"] = inside[w["own"].to_numpy()].astype(int)
     else:  # no fight seconds: our violence videos can't be labelled per window
         w.loc[w["own"] & (w["label"] == 1), "trainable"] = False
+    w["own_fast"] = False   # running segments of our own non-violence videos (fast non-violent, label 0)
+    if FAST_TIMES.exists():
+        name = w["base"].map(lambda p: Path(p).name)
+        for r in pd.read_csv(FAST_TIMES).itertuples():
+            w.loc[(name == r.file) & (w["end_s"] > r.fast_start_s) & (w["end_s"] - 1.0 <= r.fast_end_s), "own_fast"] = True
     return w
 
 
 def fast_negatives(w, cut):
-    return ((w["label"] == 0) & (w[SPEED] >= cut) & (w["n_people"] >= 2)).to_numpy()
+    """Hard negatives: fast non-violent windows with 2+ people, plus the running segments of our own videos."""
+    fast = (w["label"] == 0) & (w[SPEED] >= cut) & (w["n_people"] >= 2)
+    return (fast | (w["own_fast"] & (w["label"] == 0)) if "own_fast" in w else fast).to_numpy()
 
 
 def weights(w, hn, cut, best):
