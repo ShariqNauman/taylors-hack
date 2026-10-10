@@ -27,6 +27,12 @@ RULE_MAX_DIST = 2.5              # people further apart than this (torso lengths
 RULE_WRIST_WEIGHT = 0.7          # rest of the weight goes to closing speed
 # ---------------------------------------------------
 
+if MODE == "ensemble":  # the CNN runs on OpenVINO; without it (e.g. macOS) fall back to LightGBM alone
+    try:
+        import openvino  # noqa: F401
+    except ImportError:
+        print("predict.py: OpenVINO not installed, using MODE 'lgbm' (LightGBM alone, its own FIGHT_AT)")
+        MODE = "lgbm"
 NEEDS_SEQUENCE = MODE == "ensemble"   # live_detector builds the sequence input only when needed
 _bundle, _seq, _seq_clip = None, None, None
 
