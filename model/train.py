@@ -39,7 +39,7 @@ from sklearn.metrics import roc_auc_score
 from sklearn.model_selection import GroupKFold
 from tqdm import tqdm
 
-from features import FEATURE_NAMES, LONG_S, SHORT_S, window_features
+from features import CROPS, FEATURE_NAMES, LONG_S, SHORT_S, SYNTHETIC, crop_keypoints, window_features
 from tune_live import current_settings, replay
 
 # ---------------- Tunable constants ----------------
@@ -63,6 +63,7 @@ TUNE_GRID = dict(num_leaves=[7, 15, 31, 63], learning_rate=[0.02, 0.05, 0.1],
                  n_estimators=[100, 200, 400, 800], min_child_samples=[10, 20, 50, 100])
 N_TUNE = 12              # random LightGBM settings tried (best by out-of-fold clip ROC-AUC)
 N_JOBS = max(1, (os.cpu_count() or 2) - 2)  # feature workers (leave 2 cores free)
+SINGLE_PERSON_RULE = True   # a window with fewer than 2 tracked people is capped at TENSE (never FIGHT)
 TARGET_NORMAL_FA = 0.09  # fair comparison: every model judged at the FIGHT_AT where 9% of normal clips fire
 SUSPICIOUS_AUC = 0.97    # warn about possible leakage above this clip ROC-AUC
 # ---------------------------------------------------
@@ -78,13 +79,30 @@ def make_model(params):
 
 
 def kp_path(video_path):
-    """data/<...>/clip.mp4 -> keypoints_v2/<...>/clip.csv (same rule as extract_keypoints_v2.py)."""
-    return KEYPOINT_DIR / Path(video_path).relative_to("data").with_suffix(".csv")
+    """data/<...>/clip.mp4 -> keypoints_v2/<...>/clip.csv (same rule as extract_keypoints_v2.py).
+    A half-body copy "<path>#waist-up" uses the same file."""
+    return KEYPOINT_DIR / Path(video_path.split("#")[0]).relative_to("data").with_suffix(".csv")
+
+
+def load_kp(video_path):
+    """Keypoints of a clip; "<path>#waist-up" / "#chest-up" = the half-body augmented copy."""
+    kp = pd.read_csv(kp_path(video_path))
+    crop = video_path.partition("#")[2]
+    return crop_keypoints(kp, crop) if crop else kp
+
+
+def with_crops(videos, synthetic=False):
+    """Add a waist-up and a chest-up copy of every clip (and with synthetic=True a "single" and a "close"
+    copy: one person alone / close to the camera). Copies keep the clip's group_id, so GroupKFold and
+    the hold-out always keep a clip and its copies on the same side. Synthetic copies of violent clips
+    are only for testing (one person can't be in a fight); training uses those of non-violent clips."""
+    copies = [videos.assign(path=videos["path"] + "#" + c, crop=c) for c in CROPS + (SYNTHETIC if synthetic else ())]
+    return pd.concat([videos.assign(crop="full")] + copies, ignore_index=True)
 
 
 def video_windows(v):
     """Feature rows for one video: one window every STEP_S from SHORT_S to just past the last frame."""
-    kp = pd.read_csv(kp_path(v["path"]))
+    kp = load_kp(v["path"])
     tmax = kp["time_s"].max() if len(kp) else SHORT_S
     rows = []
     for end in np.arange(SHORT_S, max(tmax, SHORT_S) + 0.1 + 1e-6, STEP_S):
@@ -110,7 +128,7 @@ def load_windows(videos):
         new = pd.DataFrame(rows).assign(feat_hash=FEATURES_HASH)
         cache = pd.concat([cache, new], ignore_index=True)
         cache.to_csv(WINDOWS_CACHE, index=False)
-    meta = videos[["path", "dataset", "label", "kind", "domain", "group_id"]]
+    meta = videos[[c for c in ("path", "dataset", "label", "kind", "domain", "group_id", "crop") if c in videos]]
     return cache.drop(columns="feat_hash").merge(meta, on="path").sort_values(["path", "end_s"],
                                                                                  ignore_index=True)
 
@@ -148,6 +166,8 @@ def sustained_scores(win, p):
             s = LIVE["SMOOTH_ALPHA"] * raw + (1 - LIVE["SMOOTH_ALPHA"]) * s
             smooth.append(s)
         t, smooth, best = g["end_s"].to_numpy(), np.array(smooth), 0.0
+        if SINGLE_PERSON_RULE and "n_people" in g:  # < 2 people tracked: that window can't be FIGHT
+            smooth = np.where(g["n_people"].to_numpy() >= 2, smooth, 0.0)
         for j in range(len(t)):
             i = np.searchsorted(t, t[j] - LIVE["MIN_DURATION"], side="right") - 1  # latest start >= MIN_DURATION back
             if i >= 0:

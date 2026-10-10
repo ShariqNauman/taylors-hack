@@ -1,0 +1,696 @@
+{
+  "presets": {
+    "strict": 0.6562,
+    "sensitive": 0.5414
+  },
+  "results": {
+    "strict | all off": {
+      "full": {
+        "fights%": 64.5,
+        "normal%": 5.2,
+        "hugs%": 11.1,
+        "weapon%": 47.4,
+        "any%": 36.0
+      },
+      "waist-up": {
+        "fights%": 64.9,
+        "normal%": 4.3,
+        "hugs%": 5.6,
+        "weapon%": 52.6,
+        "any%": 35.5
+      },
+      "chest-up": {
+        "fights%": 62.4,
+        "normal%": 5.2,
+        "hugs%": 11.1,
+        "weapon%": 47.4,
+        "any%": 34.9
+      },
+      "single": {
+        "fights%": 0.0,
+        "normal%": 0.0,
+        "hugs%": 0.0,
+        "weapon%": 0.0,
+        "any%": 0.0
+      },
+      "close": {
+        "fights%": 0.0,
+        "normal%": 0.0,
+        "hugs%": 0.0,
+        "weapon%": 0.0,
+        "any%": 0.0
+      }
+    },
+    "strict | PROX only": {
+      "full": {
+        "fights%": 40.9,
+        "normal%": 1.9,
+        "hugs%": 5.6,
+        "weapon%": 5.3,
+        "any%": 22.1
+      },
+      "waist-up": {
+        "fights%": 32.6,
+        "normal%": 1.9,
+        "hugs%": 5.6,
+        "weapon%": 5.3,
+        "any%": 17.9
+      },
+      "chest-up": {
+        "fights%": 33.9,
+        "normal%": 2.4,
+        "hugs%": 11.1,
+        "weapon%": 5.3,
+        "any%": 18.9
+      },
+      "single": {
+        "fights%": 0.0,
+        "normal%": 0.0,
+        "hugs%": 0.0,
+        "weapon%": 0.0,
+        "any%": 0.0
+      },
+      "close": {
+        "fights%": 0.0,
+        "normal%": 0.0,
+        "hugs%": 0.0,
+        "weapon%": 0.0,
+        "any%": 0.0
+      }
+    },
+    "strict | TWO_KEY only": {
+      "full": {
+        "fights%": 54.5,
+        "normal%": 3.8,
+        "hugs%": 11.1,
+        "weapon%": 42.1,
+        "any%": 30.2
+      },
+      "waist-up": {
+        "fights%": 50.8,
+        "normal%": 2.9,
+        "hugs%": 5.6,
+        "weapon%": 21.1,
+        "any%": 27.7
+      },
+      "chest-up": {
+        "fights%": 43.4,
+        "normal%": 1.0,
+        "hugs%": 11.1,
+        "weapon%": 10.5,
+        "any%": 23.2
+      },
+      "single": {
+        "fights%": 0.0,
+        "normal%": 0.0,
+        "hugs%": 0.0,
+        "weapon%": 0.0,
+        "any%": 0.0
+      },
+      "close": {
+        "fights%": 0.0,
+        "normal%": 0.0,
+        "hugs%": 0.0,
+        "weapon%": 0.0,
+        "any%": 0.0
+      }
+    },
+    "strict | K_OF_N only": {
+      "full": {
+        "fights%": 44.6,
+        "normal%": 1.9,
+        "hugs%": 0.0,
+        "weapon%": 21.1,
+        "any%": 23.8
+      },
+      "waist-up": {
+        "fights%": 45.9,
+        "normal%": 2.9,
+        "hugs%": 0.0,
+        "weapon%": 31.6,
+        "any%": 24.9
+      },
+      "chest-up": {
+        "fights%": 42.1,
+        "normal%": 1.4,
+        "hugs%": 5.6,
+        "weapon%": 15.8,
+        "any%": 22.6
+      },
+      "single": {
+        "fights%": 0.0,
+        "normal%": 0.0,
+        "hugs%": 0.0,
+        "weapon%": 0.0,
+        "any%": 0.0
+      },
+      "close": {
+        "fights%": 0.0,
+        "normal%": 0.0,
+        "hugs%": 0.0,
+        "weapon%": 0.0,
+        "any%": 0.0
+      }
+    },
+    "strict | MIN_TRACK only": {
+      "full": {
+        "fights%": 47.9,
+        "normal%": 3.8,
+        "hugs%": 11.1,
+        "weapon%": 21.1,
+        "any%": 26.8
+      },
+      "waist-up": {
+        "fights%": 44.2,
+        "normal%": 2.9,
+        "hugs%": 5.6,
+        "weapon%": 15.8,
+        "any%": 24.3
+      },
+      "chest-up": {
+        "fights%": 44.2,
+        "normal%": 3.8,
+        "hugs%": 11.1,
+        "weapon%": 15.8,
+        "any%": 24.9
+      },
+      "single": {
+        "fights%": 0.0,
+        "normal%": 0.0,
+        "hugs%": 0.0,
+        "weapon%": 0.0,
+        "any%": 0.0
+      },
+      "close": {
+        "fights%": 0.0,
+        "normal%": 0.0,
+        "hugs%": 0.0,
+        "weapon%": 0.0,
+        "any%": 0.0
+      }
+    },
+    "strict | CLIP_FEATURES only": {
+      "full": {
+        "fights%": 64.5,
+        "normal%": 5.2,
+        "hugs%": 11.1,
+        "weapon%": 47.4,
+        "any%": 36.0
+      },
+      "waist-up": {
+        "fights%": 64.9,
+        "normal%": 4.3,
+        "hugs%": 5.6,
+        "weapon%": 52.6,
+        "any%": 35.5
+      },
+      "chest-up": {
+        "fights%": 62.4,
+        "normal%": 5.2,
+        "hugs%": 11.1,
+        "weapon%": 47.4,
+        "any%": 34.9
+      },
+      "single": {
+        "fights%": 0.0,
+        "normal%": 0.0,
+        "hugs%": 0.0,
+        "weapon%": 0.0,
+        "any%": 0.0
+      },
+      "close": {
+        "fights%": 0.0,
+        "normal%": 0.0,
+        "hugs%": 0.0,
+        "weapon%": 0.0,
+        "any%": 0.0
+      }
+    },
+    "strict | all on": {
+      "full": {
+        "fights%": 16.5,
+        "normal%": 0.5,
+        "hugs%": 0.0,
+        "weapon%": 0.0,
+        "any%": 8.7
+      },
+      "waist-up": {
+        "fights%": 12.0,
+        "normal%": 1.0,
+        "hugs%": 0.0,
+        "weapon%": 0.0,
+        "any%": 6.6
+      },
+      "chest-up": {
+        "fights%": 12.4,
+        "normal%": 0.0,
+        "hugs%": 5.6,
+        "weapon%": 0.0,
+        "any%": 6.6
+      },
+      "single": {
+        "fights%": 0.0,
+        "normal%": 0.0,
+        "hugs%": 0.0,
+        "weapon%": 0.0,
+        "any%": 0.0
+      },
+      "close": {
+        "fights%": 0.0,
+        "normal%": 0.0,
+        "hugs%": 0.0,
+        "weapon%": 0.0,
+        "any%": 0.0
+      }
+    },
+    "sensitive | all off": {
+      "full": {
+        "fights%": 75.6,
+        "normal%": 9.5,
+        "hugs%": 22.2,
+        "weapon%": 57.9,
+        "any%": 44.0
+      },
+      "waist-up": {
+        "fights%": 77.7,
+        "normal%": 13.8,
+        "hugs%": 16.7,
+        "weapon%": 63.2,
+        "any%": 46.8
+      },
+      "chest-up": {
+        "fights%": 78.5,
+        "normal%": 11.4,
+        "hugs%": 22.2,
+        "weapon%": 63.2,
+        "any%": 46.4
+      },
+      "single": {
+        "fights%": 0.0,
+        "normal%": 0.0,
+        "hugs%": 0.0,
+        "weapon%": 0.0,
+        "any%": 0.0
+      },
+      "close": {
+        "fights%": 0.0,
+        "normal%": 0.0,
+        "hugs%": 0.0,
+        "weapon%": 0.0,
+        "any%": 0.0
+      }
+    },
+    "sensitive | PROX only": {
+      "full": {
+        "fights%": 47.9,
+        "normal%": 4.8,
+        "hugs%": 22.2,
+        "weapon%": 5.3,
+        "any%": 27.7
+      },
+      "waist-up": {
+        "fights%": 39.7,
+        "normal%": 3.3,
+        "hugs%": 16.7,
+        "weapon%": 15.8,
+        "any%": 22.6
+      },
+      "chest-up": {
+        "fights%": 43.8,
+        "normal%": 4.3,
+        "hugs%": 22.2,
+        "weapon%": 10.5,
+        "any%": 25.3
+      },
+      "single": {
+        "fights%": 0.0,
+        "normal%": 0.0,
+        "hugs%": 0.0,
+        "weapon%": 0.0,
+        "any%": 0.0
+      },
+      "close": {
+        "fights%": 0.0,
+        "normal%": 0.0,
+        "hugs%": 0.0,
+        "weapon%": 0.0,
+        "any%": 0.0
+      }
+    },
+    "sensitive | TWO_KEY only": {
+      "full": {
+        "fights%": 63.6,
+        "normal%": 8.1,
+        "hugs%": 22.2,
+        "weapon%": 52.6,
+        "any%": 37.2
+      },
+      "waist-up": {
+        "fights%": 59.1,
+        "normal%": 9.5,
+        "hugs%": 16.7,
+        "weapon%": 47.4,
+        "any%": 35.3
+      },
+      "chest-up": {
+        "fights%": 53.3,
+        "normal%": 3.3,
+        "hugs%": 22.2,
+        "weapon%": 15.8,
+        "any%": 29.8
+      },
+      "single": {
+        "fights%": 0.0,
+        "normal%": 0.0,
+        "hugs%": 0.0,
+        "weapon%": 0.0,
+        "any%": 0.0
+      },
+      "close": {
+        "fights%": 0.0,
+        "normal%": 0.0,
+        "hugs%": 0.0,
+        "weapon%": 0.0,
+        "any%": 0.0
+      }
+    },
+    "sensitive | K_OF_N only": {
+      "full": {
+        "fights%": 57.0,
+        "normal%": 4.3,
+        "hugs%": 5.6,
+        "weapon%": 47.4,
+        "any%": 31.5
+      },
+      "waist-up": {
+        "fights%": 64.0,
+        "normal%": 5.2,
+        "hugs%": 11.1,
+        "weapon%": 57.9,
+        "any%": 35.7
+      },
+      "chest-up": {
+        "fights%": 62.0,
+        "normal%": 5.7,
+        "hugs%": 16.7,
+        "weapon%": 52.6,
+        "any%": 35.1
+      },
+      "single": {
+        "fights%": 0.0,
+        "normal%": 0.0,
+        "hugs%": 0.0,
+        "weapon%": 0.0,
+        "any%": 0.0
+      },
+      "close": {
+        "fights%": 0.0,
+        "normal%": 0.0,
+        "hugs%": 0.0,
+        "weapon%": 0.0,
+        "any%": 0.0
+      }
+    },
+    "sensitive | MIN_TRACK only": {
+      "full": {
+        "fights%": 57.0,
+        "normal%": 6.2,
+        "hugs%": 22.2,
+        "weapon%": 31.6,
+        "any%": 33.0
+      },
+      "waist-up": {
+        "fights%": 53.7,
+        "normal%": 8.1,
+        "hugs%": 16.7,
+        "weapon%": 26.3,
+        "any%": 31.9
+      },
+      "chest-up": {
+        "fights%": 57.4,
+        "normal%": 8.1,
+        "hugs%": 22.2,
+        "weapon%": 31.6,
+        "any%": 34.0
+      },
+      "single": {
+        "fights%": 0.0,
+        "normal%": 0.0,
+        "hugs%": 0.0,
+        "weapon%": 0.0,
+        "any%": 0.0
+      },
+      "close": {
+        "fights%": 0.0,
+        "normal%": 0.0,
+        "hugs%": 0.0,
+        "weapon%": 0.0,
+        "any%": 0.0
+      }
+    },
+    "sensitive | CLIP_FEATURES only": {
+      "full": {
+        "fights%": 75.6,
+        "normal%": 9.5,
+        "hugs%": 22.2,
+        "weapon%": 57.9,
+        "any%": 44.0
+      },
+      "waist-up": {
+        "fights%": 77.7,
+        "normal%": 13.8,
+        "hugs%": 16.7,
+        "weapon%": 63.2,
+        "any%": 46.8
+      },
+      "chest-up": {
+        "fights%": 78.5,
+        "normal%": 11.4,
+        "hugs%": 22.2,
+        "weapon%": 63.2,
+        "any%": 46.4
+      },
+      "single": {
+        "fights%": 0.0,
+        "normal%": 0.0,
+        "hugs%": 0.0,
+        "weapon%": 0.0,
+        "any%": 0.0
+      },
+      "close": {
+        "fights%": 0.0,
+        "normal%": 0.0,
+        "hugs%": 0.0,
+        "weapon%": 0.0,
+        "any%": 0.0
+      }
+    },
+    "sensitive | all on": {
+      "full": {
+        "fights%": 24.4,
+        "normal%": 1.4,
+        "hugs%": 5.6,
+        "weapon%": 5.3,
+        "any%": 13.4
+      },
+      "waist-up": {
+        "fights%": 17.8,
+        "normal%": 1.4,
+        "hugs%": 11.1,
+        "weapon%": 0.0,
+        "any%": 10.2
+      },
+      "chest-up": {
+        "fights%": 20.7,
+        "normal%": 0.5,
+        "hugs%": 16.7,
+        "weapon%": 0.0,
+        "any%": 11.5
+      },
+      "single": {
+        "fights%": 0.0,
+        "normal%": 0.0,
+        "hugs%": 0.0,
+        "weapon%": 0.0,
+        "any%": 0.0
+      },
+      "close": {
+        "fights%": 0.0,
+        "normal%": 0.0,
+        "hugs%": 0.0,
+        "weapon%": 0.0,
+        "any%": 0.0
+      }
+    }
+  },
+  "table": [
+    {
+      "setting": "strict | all off",
+      "full fights%": 64.5,
+      "full normal%": 5.2,
+      "full hugs%": 11.1,
+      "full weapon%": 47.4,
+      "waist fights%": 64.9,
+      "chest fights%": 62.4,
+      "chest hugs%": 11.1,
+      "single any%": 0.0,
+      "close any%": 0.0
+    },
+    {
+      "setting": "strict | PROX only",
+      "full fights%": 40.9,
+      "full normal%": 1.9,
+      "full hugs%": 5.6,
+      "full weapon%": 5.3,
+      "waist fights%": 32.6,
+      "chest fights%": 33.9,
+      "chest hugs%": 11.1,
+      "single any%": 0.0,
+      "close any%": 0.0
+    },
+    {
+      "setting": "strict | TWO_KEY only",
+      "full fights%": 54.5,
+      "full normal%": 3.8,
+      "full hugs%": 11.1,
+      "full weapon%": 42.1,
+      "waist fights%": 50.8,
+      "chest fights%": 43.4,
+      "chest hugs%": 11.1,
+      "single any%": 0.0,
+      "close any%": 0.0
+    },
+    {
+      "setting": "strict | K_OF_N only",
+      "full fights%": 44.6,
+      "full normal%": 1.9,
+      "full hugs%": 0.0,
+      "full weapon%": 21.1,
+      "waist fights%": 45.9,
+      "chest fights%": 42.1,
+      "chest hugs%": 5.6,
+      "single any%": 0.0,
+      "close any%": 0.0
+    },
+    {
+      "setting": "strict | MIN_TRACK only",
+      "full fights%": 47.9,
+      "full normal%": 3.8,
+      "full hugs%": 11.1,
+      "full weapon%": 21.1,
+      "waist fights%": 44.2,
+      "chest fights%": 44.2,
+      "chest hugs%": 11.1,
+      "single any%": 0.0,
+      "close any%": 0.0
+    },
+    {
+      "setting": "strict | CLIP_FEATURES only",
+      "full fights%": 64.5,
+      "full normal%": 5.2,
+      "full hugs%": 11.1,
+      "full weapon%": 47.4,
+      "waist fights%": 64.9,
+      "chest fights%": 62.4,
+      "chest hugs%": 11.1,
+      "single any%": 0.0,
+      "close any%": 0.0
+    },
+    {
+      "setting": "strict | all on",
+      "full fights%": 16.5,
+      "full normal%": 0.5,
+      "full hugs%": 0.0,
+      "full weapon%": 0.0,
+      "waist fights%": 12.0,
+      "chest fights%": 12.4,
+      "chest hugs%": 5.6,
+      "single any%": 0.0,
+      "close any%": 0.0
+    },
+    {
+      "setting": "sensitive | all off",
+      "full fights%": 75.6,
+      "full normal%": 9.5,
+      "full hugs%": 22.2,
+      "full weapon%": 57.9,
+      "waist fights%": 77.7,
+      "chest fights%": 78.5,
+      "chest hugs%": 22.2,
+      "single any%": 0.0,
+      "close any%": 0.0
+    },
+    {
+      "setting": "sensitive | PROX only",
+      "full fights%": 47.9,
+      "full normal%": 4.8,
+      "full hugs%": 22.2,
+      "full weapon%": 5.3,
+      "waist fights%": 39.7,
+      "chest fights%": 43.8,
+      "chest hugs%": 22.2,
+      "single any%": 0.0,
+      "close any%": 0.0
+    },
+    {
+      "setting": "sensitive | TWO_KEY only",
+      "full fights%": 63.6,
+      "full normal%": 8.1,
+      "full hugs%": 22.2,
+      "full weapon%": 52.6,
+      "waist fights%": 59.1,
+      "chest fights%": 53.3,
+      "chest hugs%": 22.2,
+      "single any%": 0.0,
+      "close any%": 0.0
+    },
+    {
+      "setting": "sensitive | K_OF_N only",
+      "full fights%": 57.0,
+      "full normal%": 4.3,
+      "full hugs%": 5.6,
+      "full weapon%": 47.4,
+      "waist fights%": 64.0,
+      "chest fights%": 62.0,
+      "chest hugs%": 16.7,
+      "single any%": 0.0,
+      "close any%": 0.0
+    },
+    {
+      "setting": "sensitive | MIN_TRACK only",
+      "full fights%": 57.0,
+      "full normal%": 6.2,
+      "full hugs%": 22.2,
+      "full weapon%": 31.6,
+      "waist fights%": 53.7,
+      "chest fights%": 57.4,
+      "chest hugs%": 22.2,
+      "single any%": 0.0,
+      "close any%": 0.0
+    },
+    {
+      "setting": "sensitive | CLIP_FEATURES only",
+      "full fights%": 75.6,
+      "full normal%": 9.5,
+      "full hugs%": 22.2,
+      "full weapon%": 57.9,
+      "waist fights%": 77.7,
+      "chest fights%": 78.5,
+      "chest hugs%": 22.2,
+      "single any%": 0.0,
+      "close any%": 0.0
+    },
+    {
+      "setting": "sensitive | all on",
+      "full fights%": 24.4,
+      "full normal%": 1.4,
+      "full hugs%": 5.6,
+      "full weapon%": 5.3,
+      "waist fights%": 17.8,
+      "chest fights%": 20.7,
+      "chest hugs%": 16.7,
+      "single any%": 0.0,
+      "close any%": 0.0
+    }
+  ]
+}

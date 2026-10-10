@@ -32,6 +32,7 @@ BEST_LGBM = Path("best_lgbm.json")
 OOF_CSV = Path("oof_seq.csv")
 ONNX_OUT = Path("seq_fold0.onnx")
 INFO_JSON = Path("seq_train.json")
+CLIP_JSON = Path("seq_clip.json")   # x, y range (1st-99th percentile of training data), used live too
 N_FOLDS = 5
 SEED = 42
 HIDDEN = 64              # channels per conv layer (keep it small: must run < 20 ms on the laptop)
@@ -82,6 +83,25 @@ def augment(x):
     shift = (torch.rand(b, 1, 1, 1, 2, device=x.device) * 2 - 1) * SHIFT_JITTER
     xy = (x[..., :2] * scale + shift) * seen
     return torch.cat([xy, x[..., 2:]], dim=-1)
+
+
+def trainable(d):
+    """Windows a model may train on: never synthetic one-person copies of violent clips (not a fight)."""
+    return ~(np.isin(d["crop"], ["single", "close"]) & (d["label"] == 1))
+
+
+def coord_range(X, rng):
+    """1st-99th percentile of present x, y values (sampled)."""
+    present = (X[..., 3] > 0) & (X[..., 2] > 0)
+    vals = X[..., :2][present].astype(np.float32).ravel()
+    vals = rng.choice(vals, min(len(vals), 2_000_000), replace=False)
+    return [float(v) for v in np.percentile(vals, [1, 99])]
+
+
+def clip_coords(X, lo, hi):
+    """Clip x, y in place (missing points are 0, which is inside the range, so they stay 0)."""
+    np.clip(X[..., :2], lo, hi, out=X[..., :2])
+    return X
 
 
 def predict(model, X):
@@ -137,10 +157,14 @@ def main():
     torch.manual_seed(SEED)
     rng = np.random.default_rng(SEED)
     d = np.load(DATA_NPZ, allow_pickle=True)  # our own file from seq_dataset.py
-    keep = d["holdout"] == 0                   # training part only
+    keep = (d["holdout"] == 0) & trainable(d)   # training part only, no one-person copies of fights
     X, y = d["X"][keep], d["label"][keep].astype(np.float32)
     paths, groups = d["path"][keep], d["group_id"][keep]
     dataset, kind, end_s = d["dataset"][keep], d["kind"][keep], d["end_s"][keep]
+    lo, hi = coord_range(X, rng)
+    CLIP_JSON.write_text(json.dumps({"lo": lo, "hi": hi}))
+    X = clip_coords(X, lo, hi)
+    print(f"coordinates clipped to [{lo:.2f}, {hi:.2f}]")
     fold = pd.Series(groups).map(pd.read_csv(FOLDS_CSV).set_index("group_id")["fold"]).to_numpy()
     assert not np.isnan(fold).any(), "a training-part group has no fold"
     wcfg = json.loads(BEST_LGBM.read_text())["settings"] if BEST_LGBM.exists() else DEFAULT_WEIGHTS
