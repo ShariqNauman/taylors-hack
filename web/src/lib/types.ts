@@ -91,6 +91,9 @@ export interface Event {
   pushed_to?: string | null; // two-tier: only fight_likely+ gets pushed; the API sets these
   pushed_at?: string | null; // ISO, +08:00
   acked_at?: string | null; // phone tap; response time = acked_at − pushed_at
+  arrived_at?: string | null; // v3 guard app: "I'm here"
+  outcome?: "sorted" | "hurt" | "backup" | "nothing" | null; // v3 guard app: "What did you find?"
+  outcome_at?: string | null;
   status: Status; // operator sets on Live; edge never overwrites
   staff_note: string | null;
   snapshot?: PoseFrame; // v3: latest keypoints, refreshed on each 0.5 s post
@@ -160,6 +163,10 @@ export interface Proof {
   };
   disclosure: string;
   note?: string; // "placeholder" until real numbers land; "report-v2" once they do
+}
+
+export interface CameraPatch {
+  zone_type: string;
 }
 
 export interface StatusPatch {
