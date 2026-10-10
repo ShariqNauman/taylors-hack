@@ -19,6 +19,9 @@ const API_URL = (process.env.NEXT_PUBLIC_API_URL ?? "").replace(/\/$/, "");
 
 export const usingMock = API_URL === "";
 
+/** Per-request timeout before a screen falls back to mock data. */
+const API_TIMEOUT_MS = 4000;
+
 type MockName =
   "site" | "cameras" | "events" | "replay" | "hotspots" | "plan" | "proof";
 
@@ -29,7 +32,11 @@ function mockUrl(name: MockName): string {
 async function getJson<T>(path: string, mock: MockName): Promise<T> {
   if (!usingMock) {
     try {
-      const r = await fetch(`${API_URL}${path}`, { cache: "no-store" });
+      const r = await fetch(`${API_URL}${path}`, {
+        cache: "no-store",
+        // A cold Render instance can hang for 30 s or more; fall back to mock instead.
+        signal: AbortSignal.timeout(API_TIMEOUT_MS),
+      });
       if (r.ok) {
         useAppStore.getState().setApiDown(false);
         return (await r.json()) as T;
@@ -81,6 +88,7 @@ export async function patchEvent(
   let r: Response;
   try {
     r = await fetch(url, {
+      signal: AbortSignal.timeout(API_TIMEOUT_MS * 2),
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(patch),
