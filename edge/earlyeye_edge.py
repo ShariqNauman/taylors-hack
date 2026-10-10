@@ -531,6 +531,9 @@ def make_handler(s: State):
                 except (BrokenPipeError, ConnectionResetError):
                     pass
                 return None
+            if path in ("/clips", "/clips/"):
+                ids = sorted(f.stem for f in CLIPS.glob("*.mp4")) if CLIPS.is_dir() else []
+                return self._json({"incident_ids": ids})
             if path.startswith("/clips/"):
                 return self._clip(path[len("/clips/"):])
             return self._json({"error": "not found"}, 404)

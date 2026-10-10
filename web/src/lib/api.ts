@@ -56,6 +56,21 @@ export async function getEdgeLive(edgeUrl: string): Promise<EdgeLive | null> {
   }
 }
 
+/** On site only: incident IDs that have a recording in edge/clips/ on this laptop. */
+export async function getEdgeClips(edgeUrl: string): Promise<string[]> {
+  try {
+    const r = await fetch(`${edgeUrl.replace(/\/$/, "")}/clips`, {
+      cache: "no-store",
+      signal: AbortSignal.timeout(800),
+    });
+    if (!r.ok) return [];
+    const j = (await r.json()) as { incident_ids?: string[] };
+    return j.incident_ids ?? [];
+  } catch {
+    return [];
+  }
+}
+
 /** Per-request timeout before a screen falls back to mock data. */
 const API_TIMEOUT_MS = 4000;
 

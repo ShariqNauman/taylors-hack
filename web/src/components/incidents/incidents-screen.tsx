@@ -4,7 +4,13 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import useSWR from "swr";
-import { getCameras, getEvents, getSite, patchEvent } from "@/lib/api";
+import {
+  getCameras,
+  getEdgeClips,
+  getEvents,
+  getSite,
+  patchEvent,
+} from "@/lib/api";
 import type { Camera, Event, Site, Status } from "@/lib/types";
 import {
   fmtTime,
@@ -24,7 +30,13 @@ import { CameraFrame, SkeletonView } from "@/components/skeleton/skeleton-view";
 import { IncidentMap } from "./incident-map";
 
 type Filter =
-  "all" | "open" | "pushed" | "confirmed" | "dismissed" | "resolved";
+  | "all"
+  | "open"
+  | "pushed"
+  | "confirmed"
+  | "dismissed"
+  | "resolved"
+  | "recorded";
 const FILTERS: [Filter, string][] = [
   ["all", "All"],
   ["open", "Open"],
@@ -67,6 +79,9 @@ function happened(e: Event) {
   return `${day}, ${fmtTime(e.start_time)} to ${fmtTime(e.end_time)} · ${dur}`;
 }
 
+const clipSrc = (edge: string, id: string) =>
+  `${edge.replace(/\/$/, "")}/clips/${encodeURIComponent(id)}.mp4`;
+
 export function IncidentsScreen() {
   const params = useSearchParams();
   const router = useRouter();
@@ -77,6 +92,17 @@ export function IncidentsScreen() {
   const { data: cameras } = useSWR("cameras", getCameras, {
     refreshInterval: 30_000,
   });
+  const view = useAppStore((s) => s.view);
+  // Every edge serves edge/clips/ on this laptop; use the one the on-site probe reached.
+  const clipEdge =
+    view === "onsite"
+      ? cameras?.find((c) => c.source === "live" && c.edge_url)?.edge_url
+      : null;
+  const { data: clipIds } = useSWR(
+    clipEdge ? ["edge-clips", clipEdge] : null,
+    () => getEdgeClips(clipEdge!),
+    { refreshInterval: 30_000 },
+  );
   const [overrides, setOverrides] = useState<Record<string, Partial<Event>>>(
     {},
   );
@@ -102,7 +128,16 @@ export function IncidentsScreen() {
   );
   const scoped = camParam ? all.filter((e) => e.camera_id === camParam) : all;
   const match = (e: Event, f: Filter) =>
-    f === "all" ? true : f === "open" ? isOpen(e) : e.status === f;
+    f === "all"
+      ? true
+      : f === "open"
+        ? isOpen(e)
+        : f === "recorded"
+          ? !!clipIds?.includes(e.incident_id)
+          : e.status === f;
+  const filters: [Filter, string][] = clipIds?.length
+    ? [...FILTERS, ["recorded", "With recording"]]
+    : FILTERS;
   const rows = scoped.filter((e) => match(e, statusParam));
   const selected = all.find((e) => e.incident_id === idParam) ?? rows[0];
 
@@ -187,7 +222,7 @@ export function IncidentsScreen() {
             aria-label="Filter by status"
             className="flex flex-wrap gap-1.5"
           >
-            {FILTERS.map(([f, label]) => (
+            {filters.map(([f, label]) => (
               <button
                 key={f}
                 type="button"
@@ -251,14 +286,25 @@ export function IncidentsScreen() {
                     border: sel ? "2px solid #0B0D10" : "1px solid #DCDFE4",
                   }}
                 >
-                  <SkeletonView
-                    frame={e.peak_snapshot}
-                    level={e.level}
-                    showBox={false}
-                    stroke={7}
-                    background="remote"
-                    ariaLabel="Skeleton at the peak"
-                  />
+                  {clipEdge && clipIds?.includes(e.incident_id) ? (
+                    <video
+                      src={`${clipSrc(clipEdge, e.incident_id)}#t=8`}
+                      muted
+                      playsInline
+                      preload="metadata"
+                      aria-label="Recording of this incident"
+                      className="block aspect-video w-full bg-black object-cover"
+                    />
+                  ) : (
+                    <SkeletonView
+                      frame={e.peak_snapshot}
+                      level={e.level}
+                      showBox={false}
+                      stroke={7}
+                      background="remote"
+                      ariaLabel="Skeleton at the peak"
+                    />
+                  )}
                   <span className="flex min-w-0 flex-col gap-1">
                     <span className="flex flex-wrap items-center gap-1">
                       <LevelPill level={e.level} size="sm" />
@@ -285,8 +331,10 @@ export function IncidentsScreen() {
             e={selected}
             site={site}
             camera={cameras?.find((c) => c.camera_id === selected.camera_id)}
-            clipEdge={
-              cameras?.find((c) => c.source === "live" && c.edge_url)?.edge_url
+            clipUrl={
+              clipEdge && clipIds?.includes(selected.incident_id)
+                ? clipSrc(clipEdge, selected.incident_id)
+                : null
             }
             onSave={save}
           />
@@ -343,23 +391,23 @@ function CaseView({
   e,
   site,
   camera,
-  clipEdge,
+  clipUrl,
   onSave,
 }: {
   e: Event;
   site?: Site;
   camera?: Camera;
-  /** Every edge serves edge/clips/ on this laptop; use the one the on-site probe reached. */
-  clipEdge?: string | null;
+  /** Set only on site, when the edge has a recording of this incident. */
+  clipUrl: string | null;
   onSave: (e: Event, p: { status?: Status; staff_note?: string }) => void;
 }) {
   const view = useAppStore((s) => s.view);
   const [note, setNote] = useState(e.staff_note ?? "");
-  const [clip, setClip] = useState(false);
+  const [clip, setClip] = useState(true);
   const [clipFailed, setClipFailed] = useState(false);
   useEffect(() => setNote(e.staff_note ?? ""), [e.staff_note]);
-  const edge = clipEdge ?? camera?.edge_url;
-  const onsite = view === "onsite" && !!edge;
+  const onsite = view === "onsite";
+  const hasClip = !!clipUrl && !clipFailed;
   const ack = secondsBetween(e.pushed_at, e.acked_at);
 
   const trail: { t: string; text: string; dot: string }[] = [
@@ -421,11 +469,6 @@ function CaseView({
       dot: "#FFFFFF",
     });
 
-  const clipUrl =
-    onsite && edge
-      ? `${edge.replace(/\/$/, "")}/clips/${encodeURIComponent(e.incident_id)}.mp4`
-      : null;
-
   return (
     <section
       aria-label="Case"
@@ -466,11 +509,14 @@ function CaseView({
       <div className="grid gap-3.5 min-[1200px]:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
         <figure className="m-0 flex flex-col gap-2">
           <CameraFrame>
-            {clip && clipUrl && !clipFailed ? (
+            {clip && hasClip ? (
               <video
-                src={clipUrl}
+                src={clipUrl!}
                 controls
                 autoPlay
+                muted
+                loop
+                playsInline
                 className="block aspect-video w-full bg-black"
                 onError={() => setClipFailed(true)}
               />
@@ -490,24 +536,27 @@ function CaseView({
             )}
           </CameraFrame>
           <figcaption className="flex flex-wrap items-center gap-2.5 text-[13px] text-ink-2">
-            {onsite ? (
+            {onsite && hasClip ? (
               <>
                 <button
                   type="button"
-                  onClick={() => {
-                    setClip((c) => !c);
-                    setClipFailed(false);
-                  }}
-                  className="min-h-10 rounded-[2px] bg-signal px-3.5 text-[14px] font-extrabold text-white"
+                  onClick={() => setClip((c) => !c)}
+                  className="min-h-10 rounded-[2px] border border-line-strong bg-white px-3.5 text-[14px] font-bold text-ink"
                 >
-                  {clip ? "Back to the peak frame" : "Play the recording"}
+                  {clip
+                    ? "Show the skeleton at the peak"
+                    : "Back to the recording"}
                 </button>
                 <span>
-                  {clipFailed
-                    ? "No recording of this incident on the edge laptop."
-                    : "The recording stays on the edge laptop. It is never uploaded."}
+                  Recording from {camera?.camera_id ?? e.camera_id}. It stays on
+                  the edge laptop and is never uploaded.
                 </span>
               </>
+            ) : onsite ? (
+              <span>
+                No recording of this incident on the edge laptop. This is the
+                skeleton at the peak, rebuilt from keypoints.
+              </span>
             ) : (
               <span>
                 Video stays on site. This is the skeleton at the peak, rebuilt
