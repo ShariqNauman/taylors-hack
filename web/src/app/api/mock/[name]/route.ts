@@ -15,6 +15,7 @@ const ALLOWED = new Set([
 /** The instant the mock files were generated against (scripts/gen-mock.mjs NOW). */
 const MOCK_NOW = Date.parse("2026-10-10T14:30:00+08:00");
 const DAY = 86_400_000;
+const BUCKET = 15 * 60_000;
 
 function toMyt(ms: number): string {
   const d = new Date(ms + 8 * 3_600_000);
@@ -31,7 +32,9 @@ type Json = Record<string, unknown>;
  */
 function rebase(name: string, data: unknown): unknown {
   const now = Date.now();
-  const shift = now - MOCK_NOW;
+  // Stable within a 15-minute bucket, so open incidents keep a fixed start time between polls.
+  const anchor = Math.floor(now / BUCKET) * BUCKET;
+  const shift = anchor - MOCK_NOW;
   if (name === "cameras" && Array.isArray(data)) {
     return data.map((c: Json) =>
       c.black_since

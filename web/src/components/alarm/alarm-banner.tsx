@@ -19,7 +19,7 @@ export function AlarmBanner() {
   const silence = useAlarmStore((s) => s.silence);
   if (!banner) return null;
   const bg = banner.level === "fight" ? "#7F1310" : "#C8241B";
-  const thisSounding = sounding && !banner.silenced;
+  const thisSounding = sounding && !banner.silenced && !banner.decision;
   return (
     <div
       role="alert"
@@ -40,9 +40,11 @@ export function AlarmBanner() {
           {LEVEL_LABEL[banner.level]} · {banner.location}
         </span>
         <span className="text-[16px] font-medium">
-          {banner.pushed_to
-            ? `${banner.pushed_to} pushed${banner.pushed_at ? ` at ${fmtTime(banner.pushed_at)}` : ""}`
-            : "Not pushed yet"}
+          {banner.decision === "confirmed"
+            ? `Confirmed by desk${banner.pushed_to ? ` · ${banner.pushed_to} on the way` : ""}`
+            : banner.pushed_to
+              ? `${banner.pushed_to} pushed${banner.pushed_at ? ` at ${fmtTime(banner.pushed_at)}` : ""}`
+              : "Not pushed yet"}
         </span>
         <Link
           href={`/cameras?cam=${encodeURIComponent(banner.camera_id)}`}
