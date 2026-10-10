@@ -247,7 +247,7 @@ export default function Campus3DEngine({
       return { longitude: compactCam.geo.lng, latitude: compactCam.geo.lat, zoom: compactZoom(size.w), pitch: 55, bearing: HOME_BEARING };
     }
     return { ...fitView(geo, size.w, size.h, HOME_BEARING), pitch: HOME_PITCH, bearing: HOME_BEARING };
-  }, [geo, size, compact, compactCam, seed]);
+  }, [geo, size, compact, compactCam]);
 
   useEffect(() => {
     if (viewState) return;
