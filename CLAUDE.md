@@ -1,6 +1,6 @@
 # EarlyEye — Dormathon 2026, Track 1 (Predictive Model)
 
-Read this first. Full plan: `docs/earlyeye-TEAM-FINAL.md`. Rubric and judges verbatim: `docs/hackathon-brief.md`. Frontend: `docs/kayla-frontend-plan.md`.
+Read this first. Full plan: `docs/earlyeye-TEAM-FINAL.md`. Rubric and judges verbatim: `docs/hackathon-brief.md`. Frontend: `docs/kayla-frontend-plan.md`. **Who builds what (backend vs frontend, with acceptance tests): `docs/work-split.md`.** Users, journeys, approved system decisions: `docs/earlyeye-system-proposal.md`. Business case: `docs/earlyeye-business-case.md`.
 
 ## Hard facts
 - Taylor's University branch. Build Sat 10 Oct 14:00 → **submit Sun 11 Oct 08:30** (hard buffer 09:00, deadline 09:30).
@@ -29,7 +29,10 @@ Claude `claude-sonnet-5-5` only for the SHOULD weekly report (reads SQL output).
 Secrets only in Render/Vercel env vars. `grep -r sk-ant` and Supabase keys before the repo goes public.
 
 ## Non-negotiable modelling rules
-- Train on RLVS + AIRTLab + Surveillance Camera Fight keypoints. RWF-2000 is withdrawn; never cite it as used.
+- Train on RLVS + AIRTLab keypoints. **Hold out Surveillance Camera Fight + SCVD as the CCTV-domain test** (team plan §5.6b); if retrained with them included, report both rows. RWF-2000 is withdrawn; never cite it as used.
+- **System decisions approved 10 Oct 14:50** (docs/earlyeye-system-proposal.md): contract = frontend version + `acked_at`; API owns push fields and the shift budget (budget caps `fight_likely` only, `fight` always pushes); edge heartbeat every 10 s, `black_since` computed on read; patrol maths 0.75/week ("~3 a month"); rank by avoided/week, show per-hour beside; replay by timestamps; operator labels on Live, phone tap = `acked_at`. Edge never overwrites human-set fields. Staff table lives in `GET /site`.
+- **Phone pop-out:** `/push?staff=` page with an "I'm on duty" tap (unlocks audio, wake lock, fullscreen), then full-screen red card + sound + vibrate on push (MUST). Telegram bot message with the link (SHOULD, after 23:00). Web Push/PWA is the production answer, Q&A only.
+- Work split: `docs/work-split.md`.
 - **GroupKFold by video**, never by window. Report clip-level precision/recall/AUC. Calibrate.
 - Types are **rules on top of the score** (fight / cornering: 1 vs ≥3 within 2 torso-lengths >5 s / crowd / play-sports). Say so; don't call them a model.
 - **Threshold tuned on our own venue footage** for ≤1 false alarm per camera-hour. "Tense" is silent; alarm only at fight_likely+; 1-s persistence.

@@ -42,7 +42,7 @@ type IncidentType = "fight" | "cornering" | "crowd" | "play";
 type Level = "calm" | "tense" | "fight_likely" | "fight";
 type Status = "new" | "pushed" | "confirmed" | "dismissed" | "resolved";
 
-interface Site { site_id: string; name: string; site_type: SiteType; zones: { zone_type: string; label: string; risk: number }[]; }
+interface Site { site_id: string; name: string; site_type: SiteType; zones: { zone_type: string; label: string; risk: number }[]; staff: { name: string; zone_type: string; on_duty: boolean }[]; }
 
 interface Camera { camera_id: string; location: string; zone_type: string; online: boolean; last_frame_at: string; black_since?: string; }
 
@@ -53,14 +53,15 @@ interface Event {
   eta_seconds: number | null; priority: number;          // 0–1
   reason: string; people_count: number;
   action: string; nearest_staff: string | null;
-  pushed_to?: string; pushed_at?: string;                // two-tier: only fight_likely+ gets pushed
-  status: Status; staff_note: string | null;
+  pushed_to?: string; pushed_at?: string;                // two-tier: only fight_likely+ gets pushed; API sets these
+  acked_at?: string;                                     // phone tap; response time = acked_at − pushed_at
+  status: Status; staff_note: string | null;             // operator sets on Live; edge never overwrites
 }
 
 interface Hotspot { location: string; zone_type: string; weekday: number; hour: number; count: number; last_seen: string; }
 
-interface PatrolSlot { location: string; days: string; hours: string; incidents_4w: number; expected_avoided_per_week: number; rationale: string; }
-interface PatrolPlan { generated_at: string; slots: PatrolSlot[]; assumption: string; }   // top-3; assumption = "60% of hotspot incidents avoided when a person is present (stated, not measured)"
+interface PatrolSlot { location: string; days: string; hours: string; incidents_4w: number; expected_avoided_per_week: number; avoided_per_patrol_hour: number; rationale: string; }
+interface PatrolPlan { generated_at: string; slots: PatrolSlot[]; assumption: string; }   // top-3 ranked by expected_avoided_per_week; Block C = 5 × 0.6 / 4 = 0.75/week ("~3 a month"); assumption = "60% of hotspot incidents avoided when a person is present (stated, not measured)"
 
 interface Proof {
   datasets: string[]; n_clips: number;
@@ -79,7 +80,9 @@ interface Proof {
 }
 ```
 
-Endpoints: `GET /site` · `GET /cameras` · `GET /events?since=<iso>` · `PATCH /events/:id {status, staff_note?}` · `GET /hotspots` · `GET /plan` · `GET /proof`.
+Endpoints: `GET /site` · `GET /cameras` · `GET /events?since=<iso>` · `PATCH /events/:id {status?, staff_note?, acked_at?}` · `GET /hotspots` · `GET /plan` · `GET /proof`. (`POST /events`, `POST /cameras/heartbeat` are edge → API; the dashboard never calls them.)
+
+Replay rule: `?replay=1` and `replay.json` events are played **by timestamp** (`start_time` deltas), not at a fixed 0.5 s, so "fight likely in ~6 s" is true on screen. `replay.json` therefore needs realistic timestamps: tense at t=0, fight_likely at t≈4 s with eta 6, fight at t≈10 s.
 
 Write `public/mock/*.json` yourself in the first hour. Demo site = **Taylor's Lakeside campus** (`site_type: "campus"`): zones = hostel corridor (risk 1.0), Block C stairwell (0.8), canteen (0.7), car park (0.6), sports court (0.3). 6 cameras, one with `black_since` 3 days ago. `replay.json` = 12-event escalation calm → tense → fight_likely (eta 6) → fight at "Block C stairwell". `events.json` = ~40 incidents over 8 weeks. `hotspots.json` + `plan.json` with the planted pattern "Block C stairwell, Mon–Thu 13:00–14:00, 5 incidents, ~3 avoided/week". `proof.json` with placeholders and `note: "placeholder"`.
 
@@ -104,8 +107,12 @@ Write `public/mock/*.json` yourself in the first hour. Demo site = **Taylor's La
 ### 4. Incidents — by 23:00
 - Table: time, camera/location, zone, type, level, priority, status (new / pushed / confirmed / dismissed / resolved), reason. Filters. Click → sheet with the card, `staff_note` editable. Confirmed/dismissed counts shown as "labels collected: N" (feeds the false-alarm story).
 
-### 5. Push (mock phone) — 30 min, only if ahead
-- `/push?incident=INC-…` renders a phone-sized card: location, reason, Confirm / Dismiss, 10-second countdown. Open it on your actual phone during the demo so the judges see the push land. If short on time, the Confirm/Dismiss on the live card is enough.
+### 5. Push (duty phone) — MUST, ~45 min, build right after Live
+- `/push?staff=Guard%20B`. Two states.
+- **Idle:** big button **"I'm on duty"**. The tap (a) plays-and-pauses the alarm to unlock audio, (b) `navigator.wakeLock.request("screen")` so the phone never sleeps, (c) `requestFullscreen()`. Then a calm screen: name, "On duty · 0 pushes this shift", a small camera-health line.
+- **Pushed:** swr poll (2 s) finds an event with `pushed_to === staff && status === "pushed" && !acked_at` → whole screen red, card slides in: location (big), type chip, reason, "fight likely in ~N s" if any, 10-s countdown ring, one button **On my way** → `PATCH {acked_at: now}`. Alarm plays, `navigator.vibrate?.([500,200,500,200,800])` (Android only; iOS has no vibration, sound works after the tap). After ack: green "Acknowledged in 4 s", back to idle after 5 s.
+- Deep link from a Telegram message (SHOULD) opens the same page already in the pushed state.
+- Demo: phone on the table, page open, on-duty tapped before the pitch starts. Wake lock keeps it lit through the 3 minutes.
 
 ### 6. Swap to real API — 21:00–23:00
 - Set `NEXT_PUBLIC_API_URL`. Live queue polls `/events?since=`. Fix shape mismatches with Web A together.
@@ -116,8 +123,9 @@ Write `public/mock/*.json` yourself in the first hour. Demo site = **Taylor's La
 |---|---|
 | 14:00–14:30 | Lock the contract. Scaffold, push, **deploy to Vercel, open on your phone on mobile data**. |
 | 14:30–15:30 | types, api.ts with mock fallback, all mock JSON (site, cameras with one dead, replay, events, hotspots, plan, proof), alarm.mp3, ir-frame placeholder. |
-| 15:30–17:00 | Live screen on mock + `?replay=1` + two-tier behaviour + camera health. **17:00 checkpoint:** rule scorer POSTs to Render → appears on the deployed queue (or replay if API late). |
-| 17:00–20:00 | Proof page. Act in the venue footage for 20 min (you're an actor; the high mount matters). |
+| 15:30–17:00 | Live screen on mock + `?replay=1` (by timestamp) + two-tier behaviour + camera health. **17:00 checkpoint:** rule scorer POSTs to Render → appears on the deployed queue (or replay if API late). |
+| 17:00–17:45 | `/push` duty-phone page: on-duty tap, wake lock, fullscreen, red takeover, `acked_at`. Test on your real phone over mobile data. |
+| 17:45–20:00 | Proof page. Act in the venue footage for 20 min (you're an actor; the high mount matters). |
 | 20:00–22:00 | Plan page (patrol cards first, then heatmap). Slides v1 skeleton (10 slides, §9 of the team plan). |
 | 22:00–23:00 | Incidents page. Swap to real API. **23:00 checkpoint:** full loop on the deployed link; apply the cut order if not. |
 | 23:00–01:00 | Sleep. |

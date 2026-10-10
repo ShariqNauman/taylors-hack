@@ -7,3 +7,8 @@ __pycache__/
 *_openvino_*/
 windows*.csv
 live_features*.csv
+node_modules/
+.next/
+.env*
+.DS_Store
+.Rhistory
