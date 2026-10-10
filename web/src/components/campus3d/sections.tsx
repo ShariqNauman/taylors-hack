@@ -45,6 +45,8 @@ export function CampusCamerasSection({
   view?: SiteView;
 }) {
   const resolvedView = useResolvedView(view);
+  const params = useSearchParams();
+  const groundAlt = params.get("groundalt");
   const { data: site } = useSWR("site", getSite, { refreshInterval: 30_000 });
   const { data: cameras } = useSWR("cameras", getCameras, { refreshInterval: 10_000 });
   const { data: events } = useSWR("events", () => getEvents(), { refreshInterval: 2000 });
@@ -61,6 +63,7 @@ export function CampusCamerasSection({
         events={events as CampusEvent[] | undefined}
         onOpenCamera={onOpenCamera}
         view={resolvedView}
+        groundAltOverride={groundAlt != null && groundAlt !== "" && !Number.isNaN(Number(groundAlt)) ? Number(groundAlt) : undefined}
       />
     </section>
   );

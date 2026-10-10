@@ -58,12 +58,16 @@ export interface Campus3DProps {
   view?: SiteView;
   /** Google 3D Tiles are used when true and NEXT_PUBLIC_GOOGLE_MAPS_API_KEY exists. Never in compact. Default true. */
   allowTiles?: boolean;
+  /** Overrides the seed's ground_alt_m_estimate (metres the pins are lifted over the tiles). Tuning aid. */
+  groundAltOverride?: number;
   className?: string;
 }
 
 const GOOGLE_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? "";
 const TILESET_URL = "https://tile.googleapis.com/v1/3dtiles/root.json";
+/** Footprints show while tiles load; give up 5 s after the tileset JSON arrives (the key works then), 20 s at most. */
 const TILE_TIMEOUT_MS = 5000;
+const TILE_HARD_TIMEOUT_MS = 20000;
 const HOME_PITCH = 50;
 const HOME_BEARING = 90; // the north–south long axis runs across the screen
 const FOCUS_ZOOM = 18.0;
@@ -184,6 +188,7 @@ export default function Campus3DEngine({
   onOpenCamera,
   view = "remote",
   allowTiles = true,
+  groundAltOverride,
   className,
 }: Campus3DProps) {
   const ref = useRef<HTMLDivElement>(null);
@@ -222,7 +227,7 @@ export default function Campus3DEngine({
   const selCam = sel?.kind === "camera" ? (placed.find((p) => p.id === sel.id) ?? null) : null;
   const selPost = sel?.kind === "post" ? (posts.find((p) => p.id === sel.id) ?? null) : null;
   const selBuildingId = selCam?.buildingId ?? selPost?.buildingId ?? null;
-  const groundAlt = seed?.campus.ground_alt_m_estimate ?? 0;
+  const groundAlt = groundAltOverride ?? seed?.campus.ground_alt_m_estimate ?? 0;
 
   // ── Tiles: wanted only with a key, outside compact, on WebGL ──
   const tilesWanted = allowTiles && !compact && !!GOOGLE_KEY && webgl === true;
@@ -232,8 +237,24 @@ export default function Campus3DEngine({
       return;
     }
     setTiles("loading");
-    const t = setTimeout(() => setTiles((s) => (s === "loading" ? "failed" : s)), TILE_TIMEOUT_MS);
-    return () => clearTimeout(t);
+    tilesStartedAt.current = performance.now();
+    tilesetAt.current = 0;
+    const giveUp = () =>
+      setTiles((s) => {
+        if (s === "loading") console.warn(`[campus3d] no Google tile ${Math.round(performance.now() - tilesStartedAt.current)} ms after start, showing footprints`);
+        return s === "loading" ? "failed" : s;
+      });
+    const hard = setTimeout(giveUp, TILE_HARD_TIMEOUT_MS);
+    const soft = setInterval(() => {
+      if (tilesetAt.current && performance.now() - tilesetAt.current > TILE_TIMEOUT_MS) {
+        clearInterval(soft);
+        giveUp();
+      }
+    }, 500);
+    return () => {
+      clearTimeout(hard);
+      clearInterval(soft);
+    };
   }, [tilesWanted]);
   const tilesOn = tiles === "on";
   const tilesLayer = tiles === "loading" || tiles === "on";
@@ -415,6 +436,8 @@ export default function Campus3DEngine({
   );
 
   const tileLoaded = useRef(false);
+  const tilesStartedAt = useRef(0);
+  const tilesetAt = useRef(0);
   const layers = useMemo(() => {
     if (!geo || !buildingsFC) return [];
     const out: unknown[] = [];
@@ -429,6 +452,8 @@ export default function Campus3DEngine({
           loadOptions: { fetch: { headers: { "X-GOOG-API-KEY": GOOGLE_KEY } } },
           operation: "terrain+draw",
           onTilesetLoad: (tileset) => {
+            tilesetAt.current = performance.now();
+            console.info(`[campus3d] Google tileset loaded after ${Math.round(tilesetAt.current - tilesStartedAt.current)} ms`);
             tileset.options.onTraversalComplete = (selected) => {
               const set = new Set<string>();
               for (const t of selected) {
@@ -440,10 +465,12 @@ export default function Campus3DEngine({
             };
           },
           onTileLoad: () => {
+            if (!tileLoaded.current) console.info(`[campus3d] first Google tile loaded after ${Math.round(performance.now() - tilesStartedAt.current)} ms`);
             tileLoaded.current = true;
             setTiles((s) => (s === "loading" ? "on" : s));
           },
-          onTileError: () => {
+          onTileError: (_tile, url, message) => {
+            console.warn("[campus3d] Google tile error", url, message);
             if (!tileLoaded.current) setTiles("failed");
           },
         }),
@@ -667,7 +694,8 @@ export default function Campus3DEngine({
             onClick={(info: PickingInfo) => {
               if (!info.object && !compact) setSel(null);
             }}
-            onError={() => {
+            onError={(err) => {
+              console.warn("[campus3d] deck.gl error", err);
               if (tiles === "loading") setTiles("failed");
             }}
           />
