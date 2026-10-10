@@ -240,6 +240,53 @@ class CheckinCreate(BaseModel):
     at: Optional[str] = None
 
 
+# ── Daily / weekly report (POST /report/summary) ──────────────────────────────
+
+class ReportCount(BaseModel):
+    label: str
+    count: int
+
+
+class ReportIncident(BaseModel):
+    incident_id: str
+    time: str  # "Sat 10 Oct 22:14", already in site time
+    location: str
+    level: str
+    type: str
+    status: str
+    outcome: Optional[str] = None
+
+
+class ReportFacts(BaseModel):
+    """Numbers the dashboard already computed for the period. The model only words them."""
+    site: str
+    period: str  # "daily" or "weekly"
+    start: str  # ISO, +08:00
+    end: str
+    data_source: str  # "live" or "synthetic history"
+    incidents: int  # tense and above
+    alarms: int  # fight_likely and fight
+    fights: int
+    confirmed: int
+    dismissed: int
+    resolved: int
+    open: int
+    guard_alerts: int
+    median_response_s: Optional[float] = None
+    by_location: list[ReportCount] = Field(default_factory=list)
+    by_type: list[ReportCount] = Field(default_factory=list)
+    outcomes: list[ReportCount] = Field(default_factory=list)
+    black_cameras: list[str] = Field(default_factory=list)
+    patrol: list[str] = Field(default_factory=list)
+    top_incidents: list[ReportIncident] = Field(default_factory=list)
+
+
+class ReportSummary(BaseModel):
+    text: str
+    model: str  # e.g. "claude-sonnet-5-5", or "offline-template"
+    generated_at: str
+
+
 class PatrolPlan(BaseModel):
     generated_at: str
     slots: list[PatrolSlot]

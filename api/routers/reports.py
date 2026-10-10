@@ -16,7 +16,7 @@ import httpx
 
 from api.config import ANTHROPIC_API_KEY, ANTHROPIC_MODEL
 from api.db import get_supabase
-from api.models import ReportRequest, ReportResponse
+from api.models import ReportFacts, ReportRequest, ReportResponse, ReportSummary
 from api.routers.hotspots import get_hotspots, get_plan
 
 router = APIRouter(prefix="", tags=["reports"])
@@ -117,3 +117,69 @@ def generate_report(req: ReportRequest):
         cited_incident_ids=cited_ids,
         report_markdown=claude_summary,
     )
+
+
+# ── POST /report/summary: words a daily or weekly report from the dashboard's numbers ──
+
+REPORT_RULES = (
+    "You write the summary section of a security report for a site manager. "
+    "Use ONLY the facts in the JSON. Never invent a number, a name, a time or a cause. "
+    "If a list is empty, say so plainly or leave it out. "
+    "The system detects physical aggression and crowding from body keypoints. Never claim it predicts fights early, "
+    "detects verbal or online bullying, sees at night, or identifies people. "
+    "If data_source is 'synthetic history', say once that the numbers are demo data. "
+    "Plain English, short sentences, no markdown headings, no bold. "
+    "Format: two short paragraphs (what happened; how the team responded), then a line 'Actions:' "
+    "and at most three lines starting with '- ', each one concrete action that follows from the facts."
+)
+
+
+def _offline_summary(f: ReportFacts) -> str:
+    where = ", ".join(f"{c.label} ({c.count})" for c in f.by_location[:3]) or "no location"
+    resp = f"; median response {round(f.median_response_s)} s" if f.median_response_s is not None else ""
+    lines = [
+        f"{f.incidents} incidents {('on this day' if f.period == 'daily' else 'this week')}, {f.alarms} of them alarms "
+        f"({f.fights} fights). Most were at {where}.",
+        f"The desk confirmed {f.confirmed}, dismissed {f.dismissed} and resolved {f.resolved}; {f.open} still open. "
+        f"Guards were alerted {f.guard_alerts} times{resp}.",
+        "Actions:",
+    ]
+    if f.black_cameras:
+        lines.append(f"- Repair {f.black_cameras[0]}.")
+    if f.open:
+        lines.append(f"- Close or label the {f.open} open incident{'s' if f.open != 1 else ''}.")
+    if f.patrol:
+        lines.append(f"- Keep the patrol: {f.patrol[0]}.")
+    if f.data_source != "live":
+        lines.insert(0, "These numbers are demo data (synthetic history).")
+    return "\n".join(lines)
+
+
+@router.post("/report/summary", response_model=ReportSummary)
+async def report_summary(facts: ReportFacts):
+    """Claude words the facts; a template does it when the key is missing or the call fails."""
+    now_iso = datetime.now(timezone.utc).isoformat()
+    if ANTHROPIC_API_KEY:
+        try:
+            async with httpx.AsyncClient(timeout=25.0) as client:
+                res = await client.post(
+                    "https://api.anthropic.com/v1/messages",
+                    headers={
+                        "x-api-key": ANTHROPIC_API_KEY,
+                        "anthropic-version": "2023-06-01",
+                        "content-type": "application/json",
+                    },
+                    json={
+                        "model": ANTHROPIC_MODEL,
+                        "max_tokens": 700,
+                        "system": REPORT_RULES,
+                        "messages": [{"role": "user", "content": facts.model_dump_json(indent=1)}],
+                    },
+                )
+            if res.status_code == 200:
+                text = "".join(b.get("text", "") for b in res.json().get("content", [])).strip()
+                if text:
+                    return ReportSummary(text=text, model=ANTHROPIC_MODEL, generated_at=now_iso)
+        except Exception:
+            pass
+    return ReportSummary(text=_offline_summary(facts), model="offline-template", generated_at=now_iso)
