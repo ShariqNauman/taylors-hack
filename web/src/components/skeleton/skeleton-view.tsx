@@ -77,7 +77,7 @@ export interface SkeletonViewProps {
   /** Dashed cyan polyline, frame coordinates 0–1. */
   trail?: [number, number][];
   /** On site: dark frame with scene lines. Remote: darker frame with a 40 px grid. */
-  background?: "onsite" | "remote" | "black";
+  background?: "onsite" | "remote" | "black" | "none";
   /** HUD overlays, mono uppercase. */
   hud?: {
     topLeft?: string;
@@ -163,7 +163,9 @@ export function SkeletonView({
       }
       className={cn("block h-auto w-full", className)}
     >
-      <rect x="0" y="0" width={W} height={H} fill={bg} />
+      {background !== "none" && (
+        <rect x="0" y="0" width={W} height={H} fill={bg} />
+      )}
       {lines && (
         <path
           d={lines}

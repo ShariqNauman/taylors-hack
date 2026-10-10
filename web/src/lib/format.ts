@@ -256,3 +256,26 @@ export function patrolHoursPerWeek(days: string, hours: string): number {
   }
   return nDays * span;
 }
+
+/** Does a patrol "days" string ("Mon–Thu", "Fri", "Sun–Thu") include a weekday (0 = Mon)? */
+export function daysInclude(days: string, weekday: number): boolean {
+  const DAY = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
+  const d = days.toLowerCase().replace(/\s/g, "");
+  const m = d.match(/^([a-z]{3})[–-]([a-z]{3})$/);
+  if (m) {
+    const a = DAY.indexOf(m[1]);
+    const b = DAY.indexOf(m[2]);
+    if (a < 0 || b < 0) return false;
+    return (weekday - a + 7) % 7 <= (b - a + 7) % 7;
+  }
+  return d.split(",").some((x) => DAY.indexOf(x.slice(0, 3)) === weekday);
+}
+
+/** Weekday (0 = Mon) of a date in Malaysia time. */
+export function mytWeekday(d: Date = new Date()): number {
+  const w = new Intl.DateTimeFormat("en-GB", {
+    timeZone: MYT_TZ,
+    weekday: "short",
+  }).format(d);
+  return WEEKDAY_SHORT.indexOf(w);
+}

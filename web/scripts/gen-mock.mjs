@@ -171,13 +171,14 @@ const R = [
   [14, "fight", "fight", 0.95, null, "Repeated fast strikes toward head height.", 10],
   [15, "fight", "fight", 0.91, null, "Strikes continuing; a third person is approaching.", 11],
 ];
+const REPLAY_PRIORITY = [0.01, 0.01, 0.01, 0.12, 0.13, 0.15, 0.36, 0.4, 0.43, 0.6, 0.61, 0.58];
 const replay = R.map(([off, level, type, score, eta, reason, kf]) => {
   const t = iso(T0 + off * 1000);
   const people = kf >= 11 ? 3 : 2;
   return {
     incident_id: "INC-2026-00142", camera_id: "CAM-AU-01", location: "Auditorium, Block A and B", zone_type: "auditorium",
     start_time: t, end_time: null, type, level, peak_score: score, eta_seconds: eta,
-    priority: prio(level, score, "auditorium", people), reason, people_count: people,
+    priority: REPLAY_PRIORITY[kf], reason, people_count: people,
     action: actionFor(level, "Guard B"), nearest_staff: "Guard B", status: "new", staff_note: null,
     snapshot: P.replayFrame(kf, t), top_features: P.replayFeatures(kf, score),
   };

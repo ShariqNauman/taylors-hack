@@ -9,6 +9,13 @@
  */
 import type { Keypoint, PoseFrame, TopFeature } from "./types";
 
+/**
+ * True while public/mock/replay.json and events.json carry poses generated here.
+ * Set to false once replay.json is replaced by the recorded auditorium session.
+ * While true, every frame fed from mock or replay data shows a SYNTHETIC POSES chip.
+ */
+export const SYNTHETIC_POSES_IN_MOCKS = true;
+
 export interface ProtoPose {
   x: number;
   dir: 1 | -1;
@@ -305,5 +312,10 @@ export const FEATURE_LABEL: Record<
     label: "RISK SCORE",
     note: "Model score for this window",
     max: 1,
+  },
+  people_close: {
+    label: "PEOPLE CLOSE",
+    note: "People within 3 torso-lengths",
+    max: 6,
   },
 };
