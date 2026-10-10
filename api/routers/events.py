@@ -282,6 +282,17 @@ async def patch_event(incident_id: str, body: EventPatch):
     if not update_data:
         raise HTTPException(status_code=422, detail="Send status, staff_note, acked_at, arrived_at or outcome.")
     update_data["incident_id"] = incident_id
+    # Desk "Push now" (status pushed): record who and when, so the guard's phone rings.
+    if update_data.get("status") == "pushed":
+        try:
+            cur = supabase.table("events").select("*").eq("incident_id", incident_id).limit(1).execute().data
+        except Exception:
+            cur = []
+        if cur and not cur[0].get("pushed_to"):
+            name = live_loop.choose_guard(_staff_rows(supabase), cur[0].get("nearest_staff"), cur[0].get("zone_type"))
+            if name:
+                update_data["pushed_to"] = name
+                update_data["pushed_at"] = datetime.now(timezone.utc).isoformat()
     try:
         data = _write(supabase, update_data, existing=True)
     except Exception as exc:
