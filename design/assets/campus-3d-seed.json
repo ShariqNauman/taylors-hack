@@ -1,0 +1,164 @@
+{
+ "_note": "Seed for the 3D campus of the real Taylor's University Lakeside Campus, 1 Jalan Taylor's, 47500 Subang Jaya. Footprints from OpenStreetMap (ODbL). Room names and floors from Taylor's official pages (see sources). Positions are placed by hand on the footprints: check each one against Google Maps 3D and move it to the right spot on the real building.",
+ "campus": {
+  "name": "Taylor's University Lakeside Campus",
+  "osm_way": 210350320,
+  "center": {
+   "lat": 3.0631104,
+   "lng": 101.6169899
+  },
+  "buildings_geojson": "taylors-lakeside-campus.geojson"
+ },
+ "cameras": [
+  {
+   "camera_id": "CAM-AU-01",
+   "location": "Grand Hall",
+   "building": "Block B (OSM footprint: Block A and Block B)",
+   "zone_type": "auditorium",
+   "source": "live",
+   "floor": "level 2, stage left",
+   "geo": {
+    "lat": 3.0645574,
+    "lng": 101.6170349,
+    "alt_m": 10
+   }
+  },
+  {
+   "camera_id": "CAM-BC-03",
+   "location": "Block C stairwell",
+   "building": "Block C",
+   "zone_type": "stairwell",
+   "source": "recorded",
+   "floor": "level 1 landing",
+   "geo": {
+    "lat": 3.0640871,
+    "lng": 101.6175477,
+    "alt_m": 8
+   }
+  },
+  {
+   "camera_id": "CAM-CT-04",
+   "location": "Syopz Mall food court",
+   "building": "Syopz Mall",
+   "zone_type": "canteen",
+   "source": "recorded",
+   "floor": "east entrance",
+   "geo": {
+    "lat": 3.0638158,
+    "lng": 101.6164681,
+    "alt_m": 8
+   }
+  },
+  {
+   "camera_id": "CAM-HC-01",
+   "location": "U Residence, corridor L3",
+   "building": "U Residence, above Syopz Mall",
+   "zone_type": "hostel_corridor",
+   "source": "recorded",
+   "floor": "residence level 3",
+   "geo": {
+    "lat": 3.0642137,
+    "lng": 101.6160904,
+    "alt_m": 16
+   }
+  },
+  {
+   "camera_id": "CAM-HC-02",
+   "location": "U Residence, corridor L5",
+   "building": "U Residence, above Syopz Mall",
+   "zone_type": "hostel_corridor",
+   "source": "black",
+   "floor": "residence level 5",
+   "geo": {
+    "lat": 3.0643042,
+    "lng": 101.6162883,
+    "alt_m": 22
+   }
+  },
+  {
+   "camera_id": "CAM-SC-06",
+   "location": "Sports pitch",
+   "building": "Sports centre",
+   "zone_type": "sports_court",
+   "source": "recorded",
+   "floor": "football pitch side",
+   "geo": {
+    "lat": 3.0617539,
+    "lng": 101.6172328,
+    "alt_m": 8
+   }
+  }
+ ],
+ "staff": [
+  {
+   "name": "Guard B",
+   "zone_type": "stairwell",
+   "on_duty": true,
+   "post": {
+    "lat": 3.0642137,
+    "lng": 101.6170619
+   }
+  },
+  {
+   "name": "Guard A",
+   "zone_type": "canteen",
+   "on_duty": true,
+   "post": {
+    "lat": 3.0631104,
+    "lng": 101.6163152
+   }
+  },
+  {
+   "name": "Guard C",
+   "zone_type": "hostel_corridor",
+   "on_duty": true,
+   "post": {
+    "lat": 3.06406,
+    "lng": 101.6165401
+   }
+  },
+  {
+   "name": "Warden D",
+   "zone_type": "hostel_corridor",
+   "on_duty": false,
+   "post": null
+  }
+ ],
+ "patrol_posts": [
+  {
+   "slot": "P/01",
+   "location": "Block C stairwell",
+   "days": "Mon–Thu",
+   "hours": "13:00–14:00",
+   "geo": {
+    "lat": 3.0640148,
+    "lng": 101.6173947
+   }
+  },
+  {
+   "slot": "P/02",
+   "location": "U Residence, corridor L3",
+   "days": "Sun–Thu",
+   "hours": "22:00–23:00",
+   "geo": {
+    "lat": 3.0641776,
+    "lng": 101.6161353
+   }
+  },
+  {
+   "slot": "P/03",
+   "location": "Syopz Mall food court",
+   "days": "Fri",
+   "hours": "12:00–13:00",
+   "geo": {
+    "lat": 3.0635174,
+    "lng": 101.6163602
+   }
+  }
+ ],
+ "sources": {
+  "facilities": "https://university.taylors.edu.my/en/study/campus-facilities.html",
+  "on_campus_hostels": "https://taylorshostel.taylors.edu.my/accommodations/on-campus/ruemz",
+  "footprints": "https://www.openstreetmap.org/way/210350320"
+ }
+}
