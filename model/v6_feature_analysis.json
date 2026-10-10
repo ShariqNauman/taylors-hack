@@ -1,0 +1,131 @@
+{
+  "fast_cut": 2.4898086349478743,
+  "table": [
+    {
+      "feature": "limb_rel_speed_max",
+      "missing %": 11.9,
+      "AUC vs normal": 0.734,
+      "AUC vs hugs": 0.65,
+      "AUC vs fast": 0.441,
+      "AUC vs KTH": 0.494,
+      "best strength vs fast": 0.5589999999999999
+    },
+    {
+      "feature": "limb_rel_speed_mean",
+      "missing %": 11.9,
+      "AUC vs normal": 0.777,
+      "AUC vs hugs": 0.807,
+      "AUC vs fast": 0.496,
+      "AUC vs KTH": 0.292,
+      "best strength vs fast": 0.504
+    },
+    {
+      "feature": "centre_speed_max",
+      "missing %": 9.3,
+      "AUC vs normal": 0.743,
+      "AUC vs hugs": 0.796,
+      "AUC vs fast": 0.352,
+      "AUC vs KTH": 0.154,
+      "best strength vs fast": 0.648
+    },
+    {
+      "feature": "path_straightness",
+      "missing %": 11.3,
+      "AUC vs normal": 0.627,
+      "AUC vs hugs": 0.472,
+      "AUC vs fast": 0.383,
+      "AUC vs KTH": 0.084,
+      "best strength vs fast": 0.617
+    },
+    {
+      "feature": "limb_periodicity",
+      "missing %": 43.0,
+      "AUC vs normal": 0.539,
+      "AUC vs hugs": 0.403,
+      "AUC vs fast": 0.486,
+      "AUC vs KTH": 0.399,
+      "best strength vs fast": 0.514
+    },
+    {
+      "feature": "limb_toward_rel",
+      "missing %": 46.2,
+      "AUC vs normal": 0.702,
+      "AUC vs hugs": 0.587,
+      "AUC vs fast": 0.442,
+      "AUC vs KTH": NaN,
+      "best strength vs fast": 0.558
+    },
+    {
+      "feature": "pair_alignment",
+      "missing %": 49.7,
+      "AUC vs normal": 0.527,
+      "AUC vs hugs": 0.61,
+      "AUC vs fast": 0.501,
+      "AUC vs KTH": NaN,
+      "best strength vs fast": 0.501
+    },
+    {
+      "feature": "impact_count",
+      "missing %": 45.6,
+      "AUC vs normal": 0.516,
+      "AUC vs hugs": 0.471,
+      "AUC vs fast": 0.508,
+      "AUC vs KTH": NaN,
+      "best strength vs fast": 0.508
+    },
+    {
+      "feature": "max_impact_speed",
+      "missing %": 97.9,
+      "AUC vs normal": 0.59,
+      "AUC vs hugs": 0.591,
+      "AUC vs fast": 0.374,
+      "AUC vs KTH": NaN,
+      "best strength vs fast": 0.626
+    },
+    {
+      "feature": "impact_with_reaction_count",
+      "missing %": 45.6,
+      "AUC vs normal": 0.506,
+      "AUC vs hugs": 0.49,
+      "AUC vs fast": 0.499,
+      "AUC vs KTH": NaN,
+      "best strength vs fast": 0.501
+    },
+    {
+      "feature": "max_reaction_jolt",
+      "missing %": 97.9,
+      "AUC vs normal": 0.546,
+      "AUC vs hugs": 0.496,
+      "AUC vs fast": 0.374,
+      "AUC vs KTH": NaN,
+      "best strength vs fast": 0.626
+    },
+    {
+      "feature": "push_displacement",
+      "missing %": 97.9,
+      "AUC vs normal": 0.585,
+      "AUC vs hugs": 0.523,
+      "AUC vs fast": 0.573,
+      "AUC vs KTH": NaN,
+      "best strength vs fast": 0.573
+    },
+    {
+      "feature": "max_wrist_speed",
+      "missing %": 17.1,
+      "AUC vs normal": 0.736,
+      "AUC vs hugs": 0.619,
+      "AUC vs fast": 0.409,
+      "AUC vs KTH": 0.536,
+      "best strength vs fast": 0.591
+    },
+    {
+      "feature": "energy_max",
+      "missing %": 45.6,
+      "AUC vs normal": 0.777,
+      "AUC vs hugs": 0.824,
+      "AUC vs fast": 0.307,
+      "AUC vs KTH": NaN,
+      "best strength vs fast": 0.6930000000000001
+    }
+  ]
+}

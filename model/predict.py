@@ -27,6 +27,12 @@ RULE_MAX_DIST = 2.5              # people further apart than this (torso lengths
 RULE_WRIST_WEIGHT = 0.7          # rest of the weight goes to closing speed
 # ---------------------------------------------------
 
+if MODE == "ensemble":  # the CNN runs on OpenVINO; without it (e.g. macOS) fall back to LightGBM alone
+    try:
+        import openvino  # noqa: F401
+    except ImportError:
+        print("predict.py: OpenVINO not installed, using MODE 'lgbm' (LightGBM alone, its own FIGHT_AT)")
+        MODE = "lgbm"
 NEEDS_SEQUENCE = MODE == "ensemble"   # live_detector builds the sequence input only when needed
 _bundle, _seq, _seq_clip = None, None, None
 
@@ -68,7 +74,9 @@ def _cnn(sequence: np.ndarray) -> float:
         _seq_clip = json.loads(SEQ_CLIP_PATH.read_text()) if SEQ_CLIP_PATH.exists() else None
     x = sequence[None].astype(np.float32)
     if _seq_clip:
-        np.clip(x[..., :2], _seq_clip["lo"], _seq_clip["hi"], out=x[..., :2])
+        from seq_features import COORD_CHANNELS
+        for c in COORD_CHANNELS if x.shape[-1] > 4 else (0, 1):
+            np.clip(x[..., c], _seq_clip["lo"], _seq_clip["hi"], out=x[..., c])
     logit = float(np.asarray(_seq(x)[0]).ravel()[0])
     return 1.0 / (1.0 + math.exp(-logit))
 

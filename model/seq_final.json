@@ -12,13 +12,13 @@
     "hug_mult": 5.0
   },
   "trainpart": {
-    "val_clip_auc": 0.9354914379544921,
-    "best_epoch": 15,
-    "n_windows": 104036
+    "val_clip_auc": 0.9403494867149759,
+    "best_epoch": 30,
+    "n_windows": 132718
   },
   "all": {
-    "val_clip_auc": 0.9402700518233253,
-    "best_epoch": 7,
-    "n_windows": 97634
+    "val_clip_auc": 0.9354867865832189,
+    "best_epoch": 9,
+    "n_windows": 125372
   }
 }

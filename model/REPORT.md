@@ -2,17 +2,19 @@
 
 Fight detection from video using body keypoints (no faces). Model only, no backend or website.
 
-## Status at a glance (10 Oct 2026, 21:00)
+## Status at a glance (10 Oct 2026, 23:00)
 
 | | |
 |---|---|
-| **Current model** | **v5**: ensemble of LightGBM (24 features) + 1D-CNN (keypoint sequences), averaged. Made robust to half bodies, one person and people close to the camera. Branch `model-halfbody` (pushed, PR not opened yet). |
-| **Model files** | `violence_model.joblib` (LightGBM + clipping ranges), `seq_model.onnx` (CNN), `seq_clip.json` (CNN coordinate range) |
-| **Live default** | `SENSITIVITY = "strict"` (FIGHT_AT 0.656); all guards off except `CLIP_FEATURES`; single-person rule always on |
-| **Hold-out (470 clips, second look)** | Full body: AUC 0.917, 64.5% of fights caught, 5.2% of normal clips → FIGHT, 11.1% of hugs → FIGHT. Waist-up AUC 0.922, chest-up 0.928. One person alone or close to the camera: 0% → FIGHT. |
-| **Proof page** (`proof.json`) | Phone-video sets AUC 0.942 (precision 0.93, recall 0.70); CCTV AUC 0.813; AIRTLab hug false alarms 11.1% |
-| **Live room** | v4 gave 2 false alarms in 4 min (`session4.csv`). v5 has not been tested in the room yet. |
-| **Fallbacks** | `predict.MODE = "lgbm"` (LightGBM alone, FIGHT_AT 0.67). v4 models in `backup_v4/`, v3 in `backup_v3/`. |
+| **Current model** | **v6**: ensemble of LightGBM (36 features) + 1D-CNN (keypoint sequences, pair-centred and body-centred), averaged. Trained to detect violence, not fast movement. Branch `model-v6`. |
+| **Model files** | `violence_model.joblib` (LightGBM), `seq_model.onnx` (CNN), `seq_clip.json` (CNN coordinate range) |
+| **Live default** | `SENSITIVITY = "strict"` (FIGHT_AT 0.505, TENSE_AT 0.385); all guards off except `CLIP_FEATURES`; single-person rule always on |
+| **Hold-out (470 clips, third look)** | Full body: AUC **0.935**, **72.3%** of fights caught (v5 64.5%), 6.7% of normal clips → FIGHT, 16.7% of hugs (3/18). Waist-up fights 67.8%, chest-up 73.6%. One person / close to camera: 0%. |
+| **Own camera (7 videos, leave one out)** | **6 of 6 fights caught**; 2 false alarms in 2.9 min outside fights (v5: 3); running segments → FIGHT 0/4 (v5: 1/4) |
+| **Speed bias** | Score vs body speed in non-violent clips (Spearman): v5 0.71 → v6 **0.54**. Fast non-violent windows → FIGHT: training part 19.4% → 13.0%, hold-out 11.3% → 7.5% |
+| **Proof page** (`proof.json`) | Phone-video sets AUC 0.950 (precision 0.91, recall 0.78); CCTV AUC 0.880; AIRTLab hug false alarms 16.7% |
+| **Edge** | `edge/earlyeye_edge.py` uses the same inputs, model, guards and thresholds as `live_detector.py`; end-to-end tested |
+| **Fallbacks** | `predict.MODE = "lgbm"` (FIGHT_AT 0.581). v5 in `backup_v5/`, v4 in `backup_v4/`, v3 in `backup_v3/`. |
 
 **Branches:**
 
@@ -20,13 +22,219 @@ Fight detection from video using body keypoints (no faces). Model only, no backe
 |---|---|---|
 | `model-dev` | v3 multi-dataset LightGBM | merged (PR #12) |
 | `model-final` | v4 ensemble, hold-out | merged (PR #21) |
+| `model-halfbody` | v5 + presets + guards + `--save-keypoints` | pushed (contained in `model-v6`) |
+| `model-v6` | v6 + edge switch | PR into `main` |
 | `model-live-display` | Live drawing: threshold 0.3, head as one dot | local only (not pushed, not merged) |
-| `model-halfbody` | v5 + presets + guards + `--save-keypoints` | pushed, PR pending |
 
-- **Part V5** (below): v5, half-body round. Same ensemble, made robust to partial bodies, one person and people close to the camera. **Current model.**
+- **Part V6** (below): v6, "violence, not speed". **Current model.**
+- **Part V5**: v5, half-body round. Same ensemble, made robust to partial bodies, one person and people close to the camera (backed up in `backup_v5/`).
 - **Part A0**: v4, the final training round. LightGBM + 1D-CNN ensemble, tested on a locked hold-out (backed up in `backup_v4/`).
 - **Part A**: v3, multi-dataset LightGBM on v2 keypoints (the previous model, backed up in `backup_v3/`).
 - **Part B**: the first model (RLVS only, v1 keypoints).
+
+---
+
+# Part V6 — v6: violence, not speed (10 Oct 2026, branch `model-v6`)
+
+## V6.1 Speed bias: found, measured, fixed
+
+**Found.**
+
+- Live, v5 raised alarms when two people ran or moved fast without fighting.
+- On our own recordings (played through the live pipeline in real time), v5 gave 3 false alarms in 2.9 minutes outside fights: 2 in the webcam video of someone running past a standing person, 1 in the hall video with two people running.
+
+**Measured** (training part, v5 out-of-fold scores, `diagnose_speed.py`):
+
+| | v5 |
+|---|---|
+| Spearman correlation of score with body speed, non-violent windows | **0.71** (within a clip, median 0.43; fight windows 0.53) |
+| Fast non-violent windows (top 20% speed): mean score | **0.66** (real fights: 0.68) |
+| Fast non-violent windows → FIGHT (live logic) | 19.5% of windows, **26.7% of clips** |
+| Slow non-violent windows → FIGHT | 3.5% of windows, 8.4% of clips |
+| One person running or walking (KTH, never trained on) | mean score 0.28, never above the threshold |
+
+The bias needs **two or more people moving fast**, such as sports, dancing or play. A single runner does not trigger it, because most pair features are empty.
+
+**Fixed:**
+
+- **Features** that separate fighting from moving (V6.2).
+- **Training data:**
+  - KTH running/walking (label 0, 2×)
+  - our 7 videos (5×): fights labelled from `fight_times.csv`, the rest 0
+  - the running segments in `fast_times.csv` as hard negatives
+- **Hard negatives:** fast non-violent windows with 2+ people get 4× weight (3/4/5× tried).
+- **Speed guardrail** (relaxed with the team): fast non-violent → FIGHT ≤ 15% and clearly better than v5.
+
+| Fast non-violent movement | v5 | **v6** |
+|---|---|---|
+| Score vs body speed (Spearman, non-violent windows) | 0.71 | **0.54** |
+| Fast windows → FIGHT, training part (same windows) | 19.4% | **13.0%** |
+| Fast windows → FIGHT, hold-out (third look) | 11.3% | **7.5%** |
+| Running segments in our own videos → FIGHT | 1 / 4 | **0 / 4** |
+
+**Not fully fixed.** Fast group movement with contact still reaches FIGHT more often than calm scenes. On the hold-out, 7.5% of fast windows vs 3.8% of normal windows.
+
+## V6.2 New features
+
+**Speed vs violence (7):**
+
+- `limb_rel_speed_max`, `limb_rel_speed_mean`: wrist/ankle speed relative to the person's own body centre
+- `centre_speed_max`: body-centre travel speed
+- `path_straightness`: net displacement ÷ path length
+- `limb_periodicity`: autocorrelation peak of limb speed (rhythm)
+- `limb_toward_rel`: limb velocity toward the other torso, relative to own body
+- `pair_alignment`: cosine of the two bodies' velocities
+
+Pair close duration already existed as `contact_s`.
+
+**Collision (5):**
+
+- `impact_count`
+- `max_impact_speed`
+- `impact_with_reaction_count`
+- `max_reaction_jolt`
+- `push_displacement`
+
+**CNN input:** 8 values per keypoint instead of 4. Added: body-centred x/y, and the other person's position relative to this one.
+
+**Window AUC on the training part, fights vs each group** (`analyze_v6_features.py`; 0.5 = no signal, below 0.5 = higher in the non-fight group):
+
+| Feature | vs normal | vs hugs | vs fast non-violent | vs KTH running |
+|---|---|---|---|---|
+| centre_speed_max | 0.74 | 0.80 | **0.35** | **0.15** |
+| path_straightness | 0.63 | 0.47 | **0.38** | **0.08** |
+| limb_rel_speed_mean | 0.78 | 0.81 | 0.50 | 0.29 |
+| limb_toward_rel | 0.70 | 0.59 | 0.44 | — |
+| impact_count | 0.52 | 0.47 | 0.51 | — |
+| impact_with_reaction_count | 0.51 | 0.49 | 0.50 | — |
+
+- **Fast non-violent people and runners travel faster and straighter than fighters.** The model learns that as a "not a fight" signal.
+
+## V6.3 Collision features: tried, and why they failed at 10 fps
+
+**What they do:** an impact = a wrist, elbow, ankle or head entering the other person's torso polygon or head circle faster than 3 torso lengths/s, slowing to half that speed within 0.2 s, and the hit body jolting away within 0.3 s.
+
+**Result:**
+
+- They fire in only **~2% of windows**, about equally in fights and non-fights (AUC ~0.5).
+- As a hard guard (TWO_KEY with the impact cue), fights caught drop to **1.2%**.
+
+**Why they fail:**
+
+1. **10 fps is too coarse.** A 0.2 s deceleration is 2 frames, and a punch is often 1–2 frames, so speed before and after contact can't be measured reliably.
+2. **2D overlap is ambiguous.** Limbs pass "through" the other torso from the camera's view without touching, and real contact can hide behind the body.
+3. **Low resolution and blur.** Dataset clips are often 240–480p, and fast limbs blur, so keypoints drop out exactly at the moment of impact.
+4. **Reactions need clean body-centre tracking.** In a scuffle, body-centre tracking is noisy.
+
+**What would make them work:** 30 fps scoring for this feature, higher-resolution cameras, or a model trained on impact labels. The features stay in the model (LightGBM gives them little weight). They are not used as rules.
+
+## V6.4 Retraining and choice
+
+**Candidates** (training part, out-of-fold, each at its own 9% normal threshold):
+
+| Candidate | Clip AUC | Fights caught | Hugs | Weapon | Fast → FIGHT | Normal → FIGHT |
+|---|---|---|---|---|---|---|
+| v6 + CNN | 0.913 | 63.8% | 8.8% | 46.7% | 15.1% | 4.0% |
+| v6-no-speed + CNN | 0.909 | 64.7% | 6.9% | 47.6% | 15.3% | 4.3% |
+| **v6-hn4 + CNN (chosen)** | **0.913** | **65.2%** | 8.8% | 46.7% | **12.4%** | 4.1% |
+| CNN alone | 0.888 | 58.3% | 14.7% | 47.6% | 8.1% | 4.0% |
+
+The fast and normal → FIGHT columns are per window; the others are per clip.
+
+**The guardrails:**
+
+- **The original speed guardrail failed for every candidate** ("fast → FIGHT ≤ normal → FIGHT"). The team relaxed it to "≤ 15% and clearly better than v5".
+- **Hug guardrail** (≤ 18.6% at the matched threshold): passed.
+- **Keep rule** (hold-out fights caught must not drop more than 3 points vs v5): passed. Fights caught rose by 7.8 points.
+
+## V6.5 Hold-out (third look: also used for v4 and v5)
+
+Each model is shown at its own 9% threshold, fixed on the training part. Both models were trained on the training part only.
+
+| | Clip AUC | Fights caught | Normal → FIGHT | Hugs → FIGHT | Weapon | Waist-up fights | Chest-up fights | Fast non-violent → FIGHT (windows) | One person / close |
+|---|---|---|---|---|---|---|---|---|---|
+| v5 | 0.917 | 64.5% | 5.2% | 11.1% (2/18) | 47.4% | 64.9% | 62.8% | 11.3% | 0% / 0% |
+| **v6** | **0.935** | **72.3%** | 6.7% | 16.7% (3/18) | 47.4% | **67.8%** | **73.6%** | **7.5%** | 0% / 0% |
+
+**Proof rows (v6):**
+
+| Row | AUC | Precision | Recall |
+|---|---|---|---|
+| Phone-video sets | 0.950 | 0.911 | 0.777 |
+| CCTV | 0.880 | 0.914 | 0.552 |
+
+**Costs:** one more hug clip alarms (3 vs 2 of 18), and slightly more normal clips (6.7% vs 5.2%).
+
+## V6.6 Own-camera results (7 own videos)
+
+**Setup:**
+
+- 3 normal videos, 4 fight videos (6 fights).
+- Formats: WhatsApp 832×464 at ~60 fps, webcam 1920×1080 at ~22 fps.
+- v6 is scored **leave one video out**: LightGBM and the CNN are retrained without that video.
+- v5 never trained on any of them.
+
+**Per video:**
+
+| Video | Fights | v5: caught / false alarms | **v6: caught / false alarms** | v5 first-fight lead | v6 first-fight lead |
+|---|---|---|---|---|---|
+| WIN 20_00_43 (runner past a standing person) | 0 | – / 2 | – / 1 | | |
+| WhatsApp 9.13.57 (hall, two people running) | 0 | – / 1 | – / **0** | | |
+| WhatsApp 9.14.53 (corridor) | 0 | – / 0 | – / 0 | | |
+| WIN 19_59_33 (webcam grapple) | 1 | 1 / 0 | 1 / 0 | −1.0 s | −2.5 s |
+| WhatsApp 9.13.44 (lawn at night) | 2 | 2 / 0 | 2 / 0 | +3.5 s | −1.5 s |
+| WhatsApp 9.14.17 (hall) | 2 | 2 / 0 | 2 / 1 (at 43.5 s, after the fight ended at 41 s) | 0.0 s | −2.0 s |
+| **WhatsApp 9.15.28 (plaza, crowd)** | 1 | **0 / 0** | **1** / 0 | −9.0 s (late, no FIGHT) | +10.0 s |
+| **Total** | **6** | **5 / 3** | **6 / 2** | | |
+
+- **Totals:** 2.9 minutes outside fights → v5 1.03 false alarms/min, **v6 0.69/min**. Running segments → FIGHT: v5 1/4, **v6 0/4**.
+- **Plaza clip before 0:12 (no fight):** max smoothed score v5 0.44, v6 0.44. No FIGHT for either.
+  - v6 does reach TENSE (threshold 0.385) at about 2 s, before the fight. That is where the "+10 s lead" comes from: an amber warning in a crowd, not a predicted fight.
+- **Lead time.** Negative = the first TENSE comes after the fight starts.
+  - On these videos, v6's warning comes **1.5–2.5 s after** the fight starts. So **early warning is not shown yet**; the team's "predict early" claim still needs escalation clips.
+  - The 15 s values in `step6_results.json` for second fights are an artifact: the warning was still on from the first fight.
+- **Sample size:** 7 short videos (6 minutes in all) are far too few for a false-alarm rate per camera-hour. They show the direction, not a rate.
+
+## V6.7 Live and edge
+
+**Thresholds** (chosen on the training part):
+
+| Setting | Value |
+|---|---|
+| strict FIGHT_AT | 0.505 |
+| sensitive FIGHT_AT | 0.439 (15% normal false alarms) |
+| LightGBM-only FIGHT_AT | 0.581 |
+| TENSE_AT | 0.385 (keeps v5's TENSE/FIGHT ratio, so the amber stage stays) |
+
+**Edge app** (`edge/earlyeye_edge.py`): now calls `seq_features.window_inputs()` → `predict(feats, seq)` → `guards.LevelLogic(live_detector.LOGIC_CONFIG)`. So it has the same model, preset, guards and single-person rule as `live_detector.py`.
+
+**End-to-end test** (posting off), with each incident record validated against the API's `EventCreate` model:
+
+| Video | Result | Record |
+|---|---|---|
+| Webcam fight | **fight** incident, peak 0.93 | valid |
+| Corridor (with a running segment) | tense only, peak 0.48, no FIGHT | valid |
+
+## V6.8 Operating range
+
+The model was trained on and tested with:
+
+- **Camera:** about one floor up, looking down at people (CCTV, phone held at head height or above).
+- **People at least ~60 px tall:** smaller people lose wrists, elbows and ankles, and most features go missing.
+- **Small groups:** not wide crowd views. In a crowd, the "active pair" can switch between people, and contact is everywhere.
+- **Daylight or indoor lighting.** Night/IR is untested.
+- **At least waist-up:** half bodies work (V5); heads-only does not.
+
+## V6.9 Honest weaknesses
+
+1. **No early warning shown on our videos.** Alarms come 1.5–2.5 s after a fight starts.
+2. **Fast group movement with contact** (sports, play) still alarms about twice as often as calm scenes.
+3. **Hugs:** 3 of 18 hold-out hug/clap clips alarm. Close, energetic contact is still the hard case.
+4. **Collision features don't work at 10 fps** (V6.3).
+5. **Own-camera evidence is thin:** 7 videos, 6 minutes. No false-alarm rate per camera-hour yet.
+6. **The hold-out has been used three times** (v4, v5, v6): it is a "third look", not a pristine test.
+7. **CCTV recall** (0.55) is lower than for phone video: people are small and far away.
+8. **A fight where only one person is tracked can't raise FIGHT** (single-person rule).
 
 ---
 

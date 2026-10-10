@@ -1,0 +1,51 @@
+{
+  "folds": [
+    {
+      "fold": 0,
+      "val_clip_auc": 0.923666213768116,
+      "best_epoch": 15,
+      "test_clip_auc": 0.9236088745750582
+    },
+    {
+      "fold": 1,
+      "val_clip_auc": 0.9113719044488274,
+      "best_epoch": 10,
+      "test_clip_auc": 0.931374623091139
+    },
+    {
+      "fold": 2,
+      "val_clip_auc": 0.9297229394933353,
+      "best_epoch": 11,
+      "test_clip_auc": 0.9184697873661085
+    },
+    {
+      "fold": 3,
+      "val_clip_auc": 0.9423529411764705,
+      "best_epoch": 28,
+      "test_clip_auc": 0.9347798127798127
+    },
+    {
+      "fold": 4,
+      "val_clip_auc": 0.9273301680058438,
+      "best_epoch": 13,
+      "test_clip_auc": 0.9117139067442098
+    }
+  ],
+  "oof_clip_auc": 0.9215761022393975,
+  "weights": {
+    "num_leaves": 31,
+    "learning_rate": 0.05,
+    "n_estimators": 400,
+    "min_child_samples": 100,
+    "subsample": 0.8,
+    "colsample_bytree": 1.0,
+    "reg_lambda": 0.0,
+    "w_airtlab": 2.0,
+    "w_cctv": 2.0,
+    "hug_mult": 5.0
+  },
+  "hidden": 64,
+  "dropout": 0.3,
+  "params": 77505,
+  "minutes": 0.5015959064165751
+}

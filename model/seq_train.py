@@ -23,7 +23,7 @@ import torch
 import torch.nn as nn
 from sklearn.metrics import roc_auc_score
 
-from seq_features import FLIP
+from seq_features import CHANNELS, COORD_CHANNELS, FLIP, X_CHANNELS
 
 # ---------------- Tunable constants ----------------
 DATA_NPZ = Path("seq_windows.npz")
@@ -32,7 +32,8 @@ BEST_LGBM = Path("best_lgbm.json")
 OOF_CSV = Path("oof_seq.csv")
 ONNX_OUT = Path("seq_fold0.onnx")
 INFO_JSON = Path("seq_train.json")
-CLIP_JSON = Path("seq_clip.json")   # x, y range (1st-99th percentile of training data), used live too
+CLIP_JSON = Path("seq_clip.json")
+WEIGHTS_CSV = Path("weights_v6.csv")   # v6: per-window weight, label and trainable flag from train_v6.py   # x, y range (1st-99th percentile of training data), used live too
 N_FOLDS = 5
 SEED = 42
 HIDDEN = 64              # channels per conv layer (keep it small: must run < 20 ms on the laptop)
@@ -54,7 +55,7 @@ DEV = "cuda" if torch.cuda.is_available() else "cpu"
 class SeqNet(nn.Module):
     """(B, 20, 2, 17, 4) -> fight logit. Dilated 1D convolutions over time, then max + mean pooling."""
 
-    def __init__(self, c_in=2 * 17 * 4, hidden=HIDDEN, dropout=DROPOUT):
+    def __init__(self, c_in=2 * 17 * CHANNELS, hidden=HIDDEN, dropout=DROPOUT):
         super().__init__()
         layers, c = [], c_in
         for d in (1, 2, 4):
@@ -74,15 +75,16 @@ def augment(x):
     b = x.shape[0]
     flip = torch.rand(b, device=x.device) < 0.5
     xf = x[:, :, :, FLIP].clone()
-    xf[..., 0] = -xf[..., 0]
+    xf[..., list(X_CHANNELS)] = -xf[..., list(X_CHANNELS)]
     x = torch.where(flip[:, None, None, None, None], xf, x)
     swap = torch.rand(b, device=x.device) < 0.5
     x = torch.where(swap[:, None, None, None, None], x.flip(2), x)
     seen = (x[..., 2:3] > 0).float()                               # keypoint present
     scale = 1 + (torch.rand(b, 1, 1, 1, 1, device=x.device) * 2 - 1) * SCALE_JITTER
     shift = (torch.rand(b, 1, 1, 1, 2, device=x.device) * 2 - 1) * SHIFT_JITTER
-    xy = (x[..., :2] * scale + shift) * seen
-    return torch.cat([xy, x[..., 2:]], dim=-1)
+    xy = (x[..., :2] * scale + shift) * seen                       # pair-centred: scale + shift
+    rest = x[..., 4:] * scale                                      # body-centred + relative position: scale only
+    return torch.cat([xy, x[..., 2:4], rest], dim=-1)
 
 
 def trainable(d):
@@ -93,15 +95,24 @@ def trainable(d):
 def coord_range(X, rng):
     """1st-99th percentile of present x, y values (sampled)."""
     present = (X[..., 3] > 0) & (X[..., 2] > 0)
-    vals = X[..., :2][present].astype(np.float32).ravel()
+    vals = X[..., list(COORD_CHANNELS)][present].astype(np.float32).ravel()
     vals = rng.choice(vals, min(len(vals), 2_000_000), replace=False)
     return [float(v) for v in np.percentile(vals, [1, 99])]
 
 
 def clip_coords(X, lo, hi):
     """Clip x, y in place (missing points are 0, which is inside the range, so they stay 0)."""
-    np.clip(X[..., :2], lo, hi, out=X[..., :2])
+    for c in COORD_CHANNELS:
+        np.clip(X[..., c], lo, hi, out=X[..., c])
     return X
+
+
+def v6_table(d):
+    """Per-window weight / label / trainable from weights_v6.csv (same as LightGBM), aligned to the npz."""
+    t = pd.read_csv(WEIGHTS_CSV).assign(end_s=lambda x: x["end_s"].round(2))
+    key = pd.DataFrame({"path": d["path"], "end_s": np.round(d["end_s"].astype(float), 2)})
+    m = key.merge(t, on=["path", "end_s"], how="left")
+    return m["weight"].fillna(0).to_numpy(np.float32), m["label"].to_numpy(), m["trainable"].fillna(False).to_numpy(bool)
 
 
 def predict(model, X):
@@ -158,6 +169,10 @@ def main():
     rng = np.random.default_rng(SEED)
     d = np.load(DATA_NPZ, allow_pickle=True)  # our own file from seq_dataset.py
     keep = (d["holdout"] == 0) & trainable(d)   # training part only, no one-person copies of fights
+    if WEIGHTS_CSV.exists():
+        w6, y6, ok6 = v6_table(d)
+        keep &= ok6
+        w6, y6 = w6[keep], y6[keep]
     X, y = d["X"][keep], d["label"][keep].astype(np.float32)
     paths, groups = d["path"][keep], d["group_id"][keep]
     dataset, kind, end_s = d["dataset"][keep], d["kind"][keep], d["end_s"][keep]
@@ -171,6 +186,8 @@ def main():
     w = pd.Series(dataset).map({"AIRTLab": wcfg["w_airtlab"], "SCF": wcfg["w_cctv"], "SCVD": wcfg["w_cctv"],
                                 "RLVS": 1.0}).fillna(1.0).to_numpy()
     w = np.where((dataset == "AIRTLab") & (y == 0), w * wcfg["hug_mult"], w).astype(np.float32)
+    if WEIGHTS_CSV.exists():  # v6: weights and own-camera labels shared with LightGBM
+        w, y = w6, y6.astype(np.float32)
     print(f"{len(X)} training-part windows on {DEV}; weights {wcfg}; "
           f"{sum(p.numel() for p in SeqNet().parameters())} parameters")
 
@@ -185,7 +202,7 @@ def main():
               f"({time.time() - start:.0f} s)", flush=True)
         if k == 0:
             model.eval().cpu()
-            torch.onnx.export(model, torch.zeros(1, 20, 2, 17, 4), str(ONNX_OUT), input_names=["x"],
+            torch.onnx.export(model, torch.zeros(1, 20, 2, 17, CHANNELS), str(ONNX_OUT), input_names=["x"],
                               output_names=["logit"], opset_version=17, dynamo=False)
             model.to(DEV)
 

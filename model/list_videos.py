@@ -61,6 +61,13 @@ def classify(rel: Path):
     if top == "weaponizeviolence" and re.match(r"(t_)?w\d", name):
         return "SCVD", 1, "weapon", "cctv"
 
+    if top == "non_violent_run_walk" and len(parts) >= 3:  # KTH running / walking: fast but not violent
+        return "KTH", 0, parts[1], "acted"
+    if top == "recorded_data" and len(parts) >= 3:  # our own camera; fight seconds in fight_times.csv
+        label = {"violence": 1, "nonviolence": 0}.get(parts[1])
+        if label is not None:
+            return "OwnRec", label, "fight" if label else "normal", "own"
+
     if top == "own" and len(parts) >= 3:
         label = {"violent": 1, "nonviolent": 0}.get(parts[1])
         if label is not None:
@@ -95,6 +102,15 @@ def main():
         return
     df = pd.DataFrame(rows)
     df["group_id"] = pd.factorize(df["group_key"])[0]  # one integer per real-world scene
+    # Keep the group ids of clips already in videos.csv (folds.csv and other results refer to them);
+    # new scenes get new ids after the largest old one.
+    if OUT_CSV.exists():
+        old = pd.read_csv(OUT_CSV).set_index("path")["group_id"]
+        known = df["path"].map(old)
+        key_to_old = df.assign(old=known).dropna(subset=["old"]).groupby("group_key")["old"].first()
+        new_keys = [k for k in pd.unique(df["group_key"]) if k not in key_to_old.index]
+        ids = {**key_to_old.astype(int).to_dict(), **{k: int(old.max()) + 1 + i for i, k in enumerate(new_keys)}}
+        df["group_id"] = df["group_key"].map(ids)
     df = df.drop(columns="group_key")
     df.to_csv(OUT_CSV, index=False)
 
