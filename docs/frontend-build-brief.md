@@ -233,7 +233,9 @@ Load with `next/font/google`: `Saira_Condensed` (600, 700, 800), `Atkinson_Hyper
 | See it on the campus map / How EarlyEye decides / See the patrol plan | Incidents | `/cameras?cam=`, `/proof`, `/plan` |
 | Write a summary for your report, Copy summary | Incidents case, real incidents | Local only. Copies a plain paragraph to the clipboard. |
 | Mark as closed, Reopen, note | Incidents case | `PATCH {status: "resolved"}`, `PATCH {status: "confirmed"}`, `PATCH {staff_note}` |
-| Show on the heatmap | Plan slot | Selects the zone and outlines that slot's cells |
+| Send (suggested) / Choose someone else / a person in the list / Change | Plan post card | Assigns that person to the post (API `assigned_to` or localStorage). Unavailable people are not clickable. |
+| Share the roster, Copy roster, Print | Plan | Opens the roster, copies plain text, `window.print()` |
+| A post in "Your week at a glance" | Plan | Focuses that post's card |
 | See the incidents behind this slot | Plan slot | `/incidents?cam=<camera>` |
 | Open the camera | Plan, black-camera strip | `/cameras?cam=CAM-HC-02` |
 | Zone chips | Plan heatmap | Filter the heatmap |
@@ -337,17 +339,47 @@ Never show: `peak_score`, priority, zone risk, keypoint or skeleton jargon, rule
    - **Footer:** "Reference INC-…", the camera's plain name, **See it on the campus map**, **How EarlyEye decides** (to `/proof`).
 6. Deep links: `?status=`, `?cam=`, `?id=`.
 
-### 6.4 Plan (`/plan`), design file `L3Plan.dc.html`
+### 6.4 Plan (`/plan`), design file `L3Plan.dc.html`, use case `L3PlanStory.dc.html`
 
-- Title "Where to put people this week" over a mono line built from `plan.generated_at`, for example `PATROL PLAN · WEEK OF MON 12 OCT · BUILT SAT 10 OCT 14:30`.
-- **This week on the campus**, first: `<Campus3D mode="plan">`. Each patrol slot is a blue post pin (`P/01 · MON–THU 13:00–14:00`) with a blue column whose height is its incidents in 4 weeks. Clicking a post opens its card. The mentors asked for this view, so it goes above the cards.
-- **Three slot cards:** `P/01`, "PLACE ONE PERSON AT", location in Saira, days and hours in ink chips. Three stats: incidents in 4 weeks; **avoided a week** in the signal-tint box with "≈ N a month"; avoided per patrol hour with hours per week. Then the rationale, **Show on the heatmap**, and "See the incidents behind this slot".
-- **Assumption** strip, dashed: "60% of hotspot incidents are avoided when a person is present. Stated, not measured. Avoided = incidents in 4 weeks × 0.6."
-- **Black camera** strip, ink: "CAM-HC-02, U Residence corridor L5, black for 3 days. Slot P/02 is the only eye on that block.", with **Open the camera**.
-- **Heatmap:** zone chips, then a 7 × 24 CSS grid with hour headers 00–23 and MON–SUN rows. Each cell shows its count and a tooltip. The selected slot's cells get a 2 px ink outline. Legend underneath.
-- **Hotspots** list beside it, with the rule sentence and a link to Incidents.
-- Wording: "~3 a month" for Block C. Never "~3 a week".
-- SHOULD, after 23:00: a "Weekly summary" button that calls `POST /report` and shows the text in a sheet.
+**Who uses it and why.** The security supervisor, every Monday morning, to decide where to put people this week. The page must end in an action: each post has a person, and the roster goes to the team. Plain words only: no "avoided per patrol hour", no "slot", no "P/01" codes in headings, no 7 × 24 number grid.
+
+**Layout, top to bottom:**
+1. **Title block:** kicker `PATROL PLAN · WEEK OF MON 12 OCT` from `plan.generated_at`, H1 "Where to put people this week", and one line: "EarlyEye found 3 places and times where trouble keeps happening. Put one person at each, and fewer incidents should happen."
+   - On the right: "N of 3 posts covered" and **Share the roster**.
+2. **Three steps:** "Check the 3 posts", "Pick who goes (N of 3)", "Share the roster". Each gets a tick when done.
+3. **Post cards (left) and map (right):**
+   - Each card shows the rank, the place in Saira, and "Mon–Thu · 13:00–14:00 · 4 hours this week".
+   - The why, in one sentence: "5 incidents here in the last 4 weeks, all on weekdays at lunch."
+   - "Should prevent about N incidents a month", where N = round(incidents_4w × 0.6).
+   - **Who goes:**
+     - Assigned: a guard chip, "On shift for all 4 hours", and **Change**.
+     - Unassigned: **Send Guard C**, suggested because that guard is on shift then and works nearby, plus **Choose someone else**.
+     - The chooser lists the whole team. Anyone not free is greyed out with the reason: "Not working on Sun", "Shift starts at 14:00", or "Already at post 1 then".
+   - "At the post:" one practical tip, then **See it on the map** and **See the N incidents** (links to `/incidents`).
+   - Under the cards, in small text: the estimate in plain words ("we assume a person on the spot stops about 6 in 10 of these incidents; an estimate, not a measurement").
+   - The map is `<Campus3D mode="plan">`, with guard names on the post pins once they are assigned.
+   - Under the map, the black-camera note in plain words, with **Report the repair**.
+4. **Your week at a glance:** this replaces the heatmap.
+   - Columns are Mon to Sun and rows are 07:00 to 23:00.
+   - Cell shading is the incidents at that hour in the last 4 weeks, light to darker blue, with no numbers in the cells. Counts go in the tooltip.
+   - Posts are drawn on top: "1 · Guard B" with a solid ink border, or "2 · Nobody yet" with a dashed border. Clicking one focuses its card.
+   - Place chips filter the shading.
+5. **Your team this week:**
+   - One row per person: name, role, "On duty now" or "Off duty", shift, the posts assigned, and the hours this week.
+   - Footer: "No personal profiles. EarlyEye only needs a name, a shift and a duty phone."
+6. **Did last week's plan work?**
+   - One plain line for the total.
+   - Per post: who covered it and on how many of the planned days, the result against the baseline, and a verdict ("Working. Keep it." or "Cover every night this week.").
+   - Footer: "One week is too short to be sure."
+7. **Share the roster** opens a plain-text roster (place, days, hours, person, tip) with **Copy roster** and **Print**. Nothing is sent from the app. Each guard also sees their own post on the `/push` idle screen ("Your post this week").
+
+**Data:**
+- Shifts and roles come from `site.staff[].role` and `site.staff[].shift`.
+- Assignments come from `plan.slots[].assigned_to` if the API has it. Otherwise keep them in `localStorage`, keyed by week and slot, and show "Saved on this computer".
+- "Did last week's plan work?" uses `plan.review` if present. Otherwise use mock data, and keep the synthetic-history chip visible.
+- The suggestion rule: the free person whose base zone matches the post, then the fewest hours this week.
+
+**Wording:** "about 3 a month" for Block C. Never "a week".
 
 ### 6.5 Proof (`/proof`), design file `L3Proof.dc.html`
 

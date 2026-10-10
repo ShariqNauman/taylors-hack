@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>EarlyEye v3 Plan</title>
+<title>EarlyEye Patrol Plan</title>
 <script src="./support.js"></script>
 </head>
 <body>
@@ -34,169 +34,307 @@ button{font-family:inherit}
 <span style="margin-left: auto; display: inline-flex; align-items: center; min-height: 36px; padding: 0 10px; border: 1px dashed #B4BAC3; border-radius: 2px; background: #FFFFFF; font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; color: #3A414B">SYNTHETIC HISTORY · 8 WEEKS</span>
 </div>
 </header>
+<main style="max-width: 1680px; margin: 0 auto; padding: 20px 24px 40px; display: flex; flex-direction: column; gap: 18px">
 
-<main style="max-width: 1680px; margin: 0 auto; padding: 24px 24px 48px; display: flex; flex-direction: column; gap: 22px">
-
-<div style="display: flex; flex-direction: column; gap: 6px; max-width: 900px">
-<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; color: #5D6672; letter-spacing: 0.08em">PATROL PLAN · WEEK OF MON 12 OCT · BUILT SAT 10 OCT 14:30</span>
-<h1 style="margin: 0; font-family: 'Saira Condensed', sans-serif; font-size: 60px; font-weight: 800; text-transform: uppercase; line-height: 0.95">Where to put people this week</h1>
-<p style="margin: 0; font-size: 17px; line-height: 1.5; color: #3A414B">Three slots from the last four weeks of incidents. Ranked by incidents avoided per week; avoided per patrol hour sits beside it.</p>
+<div style="display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 14px">
+<div style="display: flex; flex-direction: column; gap: 6px; max-width: 860px">
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; color: #5D6672; letter-spacing: 0.08em">PATROL PLAN · WEEK OF MON 12 OCT</span>
+<h1 style="margin: 0; font-family: 'Saira Condensed', sans-serif; font-size: 56px; font-weight: 800; text-transform: uppercase; line-height: 0.95">Where to put people this week</h1>
+<p style="margin: 0; font-size: 18px; line-height: 1.45; color: #3A414B">EarlyEye found 3 places and times where trouble keeps happening. Put one person at each, and fewer incidents should happen. It takes about two minutes.</p>
 </div>
-
-<section aria-labelledby="map3d-h" style="background: #FFFFFF; border: 1px solid #DCDFE4; border-radius: 2px; padding: 14px; display: flex; flex-direction: column; gap: 10px">
-<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 8px">
-<h2 id="map3d-h" style="margin: 0; font-family: 'Saira Condensed', sans-serif; font-size: 30px; font-weight: 800; text-transform: uppercase">This week on the campus</h2>
-<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; color: #5D6672">BLUE PIN: WHERE TO STAND · COLUMN HEIGHT: INCIDENTS IN 4 WEEKS · CLICK A POST</span>
-</div>
-<dc-import name="Campus3D" mode="plan" hint-size="100%,700px"></dc-import>
-</section>
-
-<section aria-label="Patrol slots" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 12px">
-<sc-for list="{{slots}}" as="p" hint-placeholder-count="3">
-<article style="background: #FFFFFF; border: {{p.border}}; border-radius: 2px; padding: 20px; display: flex; flex-direction: column; gap: 16px">
-<div style="display: flex; justify-content: space-between; align-items: baseline; gap: 8px">
-<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 14px; font-weight: 700; color: #5D6672">P/{{p.rank}}</span>
-<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; color: #5D6672; letter-spacing: 0.08em">PLACE ONE PERSON AT</span>
-</div>
-<h2 style="margin: 0; font-family: 'Saira Condensed', sans-serif; font-size: 38px; font-weight: 800; text-transform: uppercase; line-height: 0.95">{{p.location}}</h2>
-<div style="display: flex; flex-wrap: wrap; gap: 6px">
-<span style="display: inline-flex; align-items: center; min-height: 36px; padding: 0 12px; border-radius: 2px; background: #0B0D10; color: #FFFFFF; font-size: 17px; font-weight: 800">{{p.days}}</span>
-<span style="display: inline-flex; align-items: center; min-height: 36px; padding: 0 12px; border-radius: 2px; background: #0B0D10; color: #FFFFFF; font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 17px; font-weight: 700">{{p.hours}}</span>
-</div>
-<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px">
-<div style="background: #F7F8FA; border: 1px solid #DCDFE4; border-radius: 2px; padding: 10px; display: flex; flex-direction: column; gap: 4px"><span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 26px; font-weight: 700; line-height: 1">{{p.incidents}}</span><span style="font-size: 12px; color: #3A414B">incidents in 4 weeks</span></div>
-<div style="background: #E7EBFD; border: 1px solid #A9B6F2; border-radius: 2px; padding: 10px; display: flex; flex-direction: column; gap: 4px"><span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 26px; font-weight: 700; line-height: 1; color: #1F35B3">{{p.perWeek}}</span><span style="font-size: 12px; color: #1F35B3">avoided a week · {{p.avoided4w}} a month</span></div>
-<div style="background: #F7F8FA; border: 1px solid #DCDFE4; border-radius: 2px; padding: 10px; display: flex; flex-direction: column; gap: 4px"><span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 26px; font-weight: 700; line-height: 1">{{p.perHour}}</span><span style="font-size: 12px; color: #3A414B">avoided per patrol hour · {{p.hoursWeek}} h</span></div>
-</div>
-<p style="margin: 0; font-size: 15px; line-height: 1.5; color: #3A414B">{{p.rationale}}</p>
-<button type="button" onClick="{{p.show}}" aria-pressed="{{p.pressed}}" style="align-self: flex-start; min-height: 42px; padding: 0 16px; border-radius: 2px; border: 1px solid #2742D9; background: {{p.btnBg}}; color: {{p.btnFg}}; font-size: 14px; font-weight: 800; cursor: pointer">{{p.btnLabel}}</button>
-<a href="L3Incidents.dc.html" style="font-size: 14px; font-weight: 700">See the incidents behind this slot</a>
-</article>
-</sc-for>
-</section>
-
-<div style="display: flex; flex-wrap: wrap; gap: 12px">
-<div style="flex: 1 1 520px; display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; background: #FFFFFF; border: 1px dashed #B4BAC3; border-radius: 2px; padding: 12px 16px; font-size: 14px; line-height: 1.45">
-<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; padding: 3px 8px; border: 1px solid #0B0D10; border-radius: 2px">ASSUMPTION</span>
-<span style="color: #3A414B">60% of hotspot incidents are avoided when a person is present. Stated, not measured. Avoided = incidents in 4 weeks × 0.6.</span>
-</div>
-<div style="flex: 1 1 420px; display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: center; background: #0B0D10; color: #FFFFFF; border-radius: 2px; padding: 12px 16px; font-size: 14px; line-height: 1.45">
-<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; font-weight: 700; padding: 3px 8px; background: #FFFFFF; color: #0B0D10; border-radius: 1px">NO SIGNAL</span>
-<span>CAM-HC-02, U Residence corridor L5, black for 3 days. Slot P/02 is the only eye on that block.</span>
-<a href="L3Cameras.dc.html" style="color: #FFFFFF; font-weight: 800">Open the camera</a>
+<div style="display: flex; flex-direction: column; align-items: flex-end; gap: 8px">
+<span style="font-family: 'Saira Condensed', sans-serif; font-size: 30px; font-weight: 800; text-transform: uppercase; line-height: 1">{{progressText}}</span>
+<button type="button" onClick="{{toggleRoster}}" style="min-height: 48px; padding: 0 18px; border-radius: 2px; border: none; background: #0B0D10; color: #FFFFFF; font-size: 16px; font-weight: 800; cursor: pointer">{{rosterLabel}}</button>
 </div>
 </div>
 
-<section aria-labelledby="heat-h" style="display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-start">
-<div style="flex: 999 1 760px; min-width: 0; background: #FFFFFF; border: 1px solid #DCDFE4; border-radius: 2px; padding: 18px; display: flex; flex-direction: column; gap: 14px">
-<div style="display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 10px">
-<h2 id="heat-h" style="margin: 0; font-family: 'Saira Condensed', sans-serif; font-size: 30px; font-weight: 800; text-transform: uppercase">When and where incidents cluster</h2>
-<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; color: #5D6672">INCIDENTS PER HOUR OF THE WEEK · 8 WEEKS</span>
-</div>
-<div role="group" aria-label="Zone" style="display: flex; flex-wrap: wrap; gap: 6px">
-<sc-for list="{{zones}}" as="z" hint-placeholder-count="6">
-<button type="button" onClick="{{z.pick}}" aria-pressed="{{z.pressed}}" style="min-height: 38px; padding: 0 12px; border-radius: 2px; border: 1px solid {{z.border}}; background: {{z.bg}}; color: {{z.fg}}; font-size: 13px; font-weight: 700; cursor: pointer">{{z.label}}</button>
-</sc-for>
-</div>
-<div style="overflow-x: auto">
-<div style="min-width: 760px; display: flex; flex-direction: column; gap: 3px">
-<div style="display: grid; grid-template-columns: 44px repeat(24, minmax(0, 1fr)); gap: 3px">
-<span></span>
-<sc-for list="{{hoursHead}}" as="h" hint-placeholder-count="24">
-<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 11px; color: #5D6672; text-align: center">{{h}}</span>
-</sc-for>
-</div>
-<sc-for list="{{grid}}" as="row" hint-placeholder-count="7">
-<div style="display: grid; grid-template-columns: 44px repeat(24, minmax(0, 1fr)); gap: 3px">
-<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; font-weight: 700; align-self: center; color: #3A414B">{{row.day}}</span>
-<sc-for list="{{row.cells}}" as="c" hint-placeholder-count="24">
-<span title="{{c.title}}" style="height: 30px; border-radius: 1px; background: {{c.bg}}; color: {{c.fg}}; outline: {{c.outline}}; outline-offset: -2px; box-shadow: inset 0 0 0 1px #EEF0F3; display: flex; align-items: center; justify-content: center; font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; font-weight: 700">{{c.txt}}</span>
-</sc-for>
-</div>
-</sc-for>
-</div>
-</div>
-<div style="display: flex; flex-wrap: wrap; gap: 14px; align-items: center; font-size: 12px; color: #3A414B">
-<span style="display: inline-flex; align-items: center; gap: 3px">0 <span style="width: 18px; height: 12px; background: #FFFFFF; box-shadow: inset 0 0 0 1px #DCDFE4"></span><span style="width: 18px; height: 12px; background: #DDE3FB"></span><span style="width: 18px; height: 12px; background: #AFBDF3"></span><span style="width: 18px; height: 12px; background: #6E86E8"></span><span style="width: 18px; height: 12px; background: #3653DC"></span><span style="width: 18px; height: 12px; background: #1F35B3"></span> 5+</span>
-<span style="display: inline-flex; align-items: center; gap: 6px"><span style="width: 16px; height: 12px; outline: 2px solid #0B0D10; outline-offset: -2px"></span>Selected slot</span>
-<span>Blue is a count, never a risk level.</span>
-</div>
-</div>
-<aside aria-labelledby="hot-h" style="flex: 1 1 320px; min-width: 0; background: #FFFFFF; border: 1px solid #DCDFE4; border-radius: 2px; padding: 18px; display: flex; flex-direction: column; gap: 12px">
-<h2 id="hot-h" style="margin: 0; font-family: 'Saira Condensed', sans-serif; font-size: 28px; font-weight: 800; text-transform: uppercase">Hotspots</h2>
-<p style="margin: 0; font-size: 13px; line-height: 1.45; color: #3A414B">3 or more incidents in one place, in the same hour of the week, within 4 weeks.</p>
-<ol style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 8px">
-<sc-for list="{{hotspots}}" as="h" hint-placeholder-count="3">
-<li style="border: 1px solid #DCDFE4; border-radius: 2px; padding: 10px 12px; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 10px; background: #F7F8FA">
-<span style="font-size: 15px; font-weight: 800">{{h.loc}}</span>
-<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 22px; font-weight: 700; grid-row: span 2; align-self: center">{{h.count}}</span>
-<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; color: #5D6672">{{h.window}} · LAST {{h.last}}</span>
+<ol aria-label="How to use this page" style="margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 8px">
+<sc-for list="{{steps}}" as="st" hint-placeholder-count="3">
+<li style="display: flex; align-items: center; gap: 12px; background: #FFFFFF; border: 1px solid #DCDFE4; border-radius: 2px; padding: 10px 14px">
+<span style="flex: none; width: 32px; height: 32px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; background: {{st.bg}}; color: {{st.fg}}; border: 2px solid #0B0D10; font-weight: 800; font-size: 15px">{{st.mark}}</span>
+<span style="display: flex; flex-direction: column; gap: 1px"><span style="font-size: 16px; font-weight: 800">{{st.title}}</span><span style="font-size: 13px; color: #5D6672">{{st.sub}}</span></span>
 </li>
 </sc-for>
 </ol>
-<a href="L3Incidents.dc.html" style="font-size: 14px; font-weight: 700">Review the incidents behind these</a>
-</aside>
+
+<sc-if value="{{rosterOpen}}" hint-placeholder-val="{{ false }}">
+<section aria-label="Roster to share" style="background: #FFFFFF; border: 2px solid #0B0D10; border-radius: 2px; padding: 16px; display: flex; flex-direction: column; gap: 10px">
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; color: #5D6672">ROSTER TO SHARE WITH YOUR TEAM</span>
+<div style="background: #F7F8FA; border: 1px solid #DCDFE4; border-radius: 2px; padding: 12px 14px; display: flex; flex-direction: column; gap: 6px">
+<sc-for list="{{rosterLines}}" as="ln" hint-placeholder-count="5">
+<span style="font-size: 15px; line-height: 1.45; font-weight: {{ln.weight}}">{{ln.text}}</span>
+</sc-for>
+</div>
+<span style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px">
+<button type="button" onClick="{{copyRoster}}" style="min-height: 44px; padding: 0 16px; border-radius: 2px; border: none; background: #2742D9; color: #FFFFFF; font-size: 15px; font-weight: 800; cursor: pointer">Copy roster</button>
+<button type="button" onClick="{{printRoster}}" style="min-height: 44px; padding: 0 16px; border-radius: 2px; border: 2px solid #0B0D10; background: #FFFFFF; color: #0B0D10; font-size: 15px; font-weight: 800; cursor: pointer">Print</button>
+<span style="font-size: 14px; font-weight: 700; color: #1F35B3">{{copiedText}}</span>
+</span>
+<span style="font-size: 13px; color: #5D6672">Paste it into your team chat. Each guard also sees their own post on their duty phone page.</span>
 </section>
+</sc-if>
+
+<div style="display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-start">
+
+<section aria-label="This week's posts" style="flex: 1 1 520px; min-width: 0; display: flex; flex-direction: column; gap: 10px">
+<sc-for list="{{posts}}" as="p" hint-placeholder-count="3">
+<article style="background: #FFFFFF; border: {{p.border}}; border-radius: 2px; padding: 16px; display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; align-items: flex-start; gap: 12px">
+<span style="flex: none; width: 40px; height: 40px; border-radius: 2px; background: #2742D9; color: #FFFFFF; display: inline-flex; align-items: center; justify-content: center; font-family: 'Saira Condensed', sans-serif; font-size: 26px; font-weight: 800">{{p.rank}}</span>
+<span style="display: flex; flex-direction: column; gap: 2px; flex: 1 1 auto; min-width: 0">
+<span style="font-family: 'Saira Condensed', sans-serif; font-size: 32px; font-weight: 800; text-transform: uppercase; line-height: 1">{{p.place}}</span>
+<span style="font-size: 16px; font-weight: 700">{{p.when}}</span>
+</span>
+<span style="flex: none; font-size: 13px; font-weight: 800; padding: 3px 9px; border-radius: 1px; background: {{p.stBg}}; color: {{p.stFg}}; border: {{p.stBorder}}">{{p.statusText}}</span>
+</div>
+<p style="margin: 0; font-size: 16px; line-height: 1.45">{{p.why}}</p>
+<p style="margin: 0; font-size: 15px; line-height: 1.45; color: #1F35B3; font-weight: 700">{{p.expected}}</p>
+
+<div style="background: #F7F8FA; border: 1px solid #DCDFE4; border-radius: 2px; padding: 12px; display: flex; flex-direction: column; gap: 10px">
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; color: #5D6672">WHO GOES</span>
+<div style="display: {{p.assignedDisplay}}; flex-wrap: wrap; align-items: center; gap: 10px">
+<span style="display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 12px 0 6px; border-radius: 999px; background: #2742D9; color: #FFFFFF; font-size: 15px; font-weight: 800"><span style="width: 28px; height: 28px; border-radius: 50%; background: #FFFFFF; color: #2742D9; display: inline-flex; align-items: center; justify-content: center; font-size: 13px">{{p.initial}}</span>{{p.assigned}}</span>
+<span style="font-size: 14px; color: #3A414B; flex: 1 1 200px">{{p.fitText}}</span>
+<button type="button" onClick="{{p.change}}" style="min-height: 40px; padding: 0 12px; border-radius: 2px; border: 1px solid #B4BAC3; background: #FFFFFF; color: #0B0D10; font-size: 14px; font-weight: 700; cursor: pointer">{{p.changeLabel}}</button>
+</div>
+<div style="display: {{p.unassignedDisplay}}; flex-wrap: wrap; align-items: center; gap: 10px">
+<button type="button" onClick="{{p.useSuggestion}}" style="min-height: 44px; padding: 0 16px; border-radius: 2px; border: none; background: #0B0D10; color: #FFFFFF; font-size: 15px; font-weight: 800; cursor: pointer">{{p.suggestLabel}}</button>
+<span style="font-size: 14px; color: #3A414B; flex: 1 1 200px">{{p.suggestWhy}}</span>
+<button type="button" onClick="{{p.change}}" style="min-height: 40px; padding: 0 12px; border-radius: 2px; border: 1px solid #B4BAC3; background: #FFFFFF; color: #0B0D10; font-size: 14px; font-weight: 700; cursor: pointer">{{p.changeLabel}}</button>
+</div>
+<div style="display: {{p.chooserDisplay}}; flex-direction: column; gap: 6px">
+<sc-for list="{{p.options}}" as="o" hint-placeholder-count="4">
+<button type="button" onClick="{{o.pick}}" aria-disabled="{{o.disabled}}" style="text-align: left; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 12px; min-height: 44px; padding: 6px 12px; border-radius: 2px; border: 1px solid {{o.border}}; background: {{o.bg}}; color: {{o.fg}}; cursor: {{o.cursor}}; font-size: 15px"><span style="font-weight: 800; min-width: 84px">{{o.name}}</span><span style="font-size: 13px">{{o.note}}</span></button>
+</sc-for>
+</div>
+</div>
+
+<p style="margin: 0; font-size: 14px; line-height: 1.45; color: #3A414B"><span style="font-weight: 800">At the post: </span>{{p.tip}}</p>
+<span style="display: flex; flex-wrap: wrap; gap: 14px; font-size: 14px; font-weight: 800"><a href="#plan-map">See it on the map</a><a href="L3Incidents.dc.html">See the {{p.incidents}} incidents</a></span>
+</article>
+</sc-for>
+<p style="margin: 0; font-size: 13px; color: #5D6672; line-height: 1.45">How "should prevent" is worked out: we assume a person on the spot stops about 6 in 10 of these incidents. That is our estimate, not a measurement. The "Did last week's plan work?" section below checks it.</p>
+</section>
+
+<section id="plan-map" aria-label="The posts on the campus" style="flex: 1 1 520px; min-width: 0; background: #FFFFFF; border: 1px solid #DCDFE4; border-radius: 2px; padding: 14px; display: flex; flex-direction: column; gap: 10px">
+<h2 style="margin: 0; font-family: 'Saira Condensed', sans-serif; font-size: 28px; font-weight: 800; text-transform: uppercase">Where the posts are</h2>
+<dc-import name="Campus3D" mode="plan" hint-size="100%,520px"></dc-import>
+<span style="font-size: 14px; color: #3A414B">Blue pins are the posts. Taller columns mean more incidents there in the last 4 weeks.</span>
+<div style="background: #0B0D10; color: #FFFFFF; border-radius: 2px; padding: 12px 14px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px">
+<span style="font-size: 15px; line-height: 1.45; flex: 1 1 280px">The camera on U Residence level 5 has been off for 3 days. Until it's fixed, the level 3 post is the only eye on that block.</span>
+<a href="L3Cameras.dc.html" style="color: #FFFFFF; font-size: 14px; font-weight: 800">Report the repair</a>
+</div>
+</section>
+</div>
+
+<section aria-labelledby="week-h" style="background: #FFFFFF; border: 1px solid #DCDFE4; border-radius: 2px; padding: 16px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px">
+<h2 id="week-h" style="margin: 0; font-family: 'Saira Condensed', sans-serif; font-size: 30px; font-weight: 800; text-transform: uppercase">Your week at a glance</h2>
+<span style="font-size: 14px; color: #3A414B">Shading shows when trouble happened in the last 4 weeks. Boxes are this week's posts.</span>
+</div>
+<div role="group" aria-label="Show trouble at" style="display: flex; flex-wrap: wrap; gap: 6px">
+<sc-for list="{{zones}}" as="z" hint-placeholder-count="5">
+<button type="button" onClick="{{z.pick}}" aria-pressed="{{z.pressed}}" style="min-height: 38px; padding: 0 12px; border-radius: 2px; border: 1px solid {{z.border}}; background: {{z.bg}}; color: {{z.fg}}; font-size: 14px; font-weight: 700; cursor: pointer">{{z.label}}</button>
+</sc-for>
+</div>
+<div style="overflow-x: auto">
+<div style="min-width: 760px; display: flex; flex-direction: column; gap: 2px">
+<div style="display: grid; grid-template-columns: 64px repeat(7, minmax(0, 1fr)); gap: 2px">
+<span></span>
+<sc-for list="{{dayHead}}" as="d" hint-placeholder-count="7">
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; font-weight: 700; color: #3A414B; padding: 4px 6px">{{d}}</span>
+</sc-for>
+</div>
+<sc-for list="{{week}}" as="row" hint-placeholder-count="17">
+<div style="display: grid; grid-template-columns: 64px repeat(7, minmax(0, 1fr)); gap: 2px">
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; color: #5D6672; padding: 6px 4px; text-align: right">{{row.label}}</span>
+<sc-for list="{{row.cells}}" as="c" hint-placeholder-count="7">
+<button type="button" onClick="{{c.pick}}" title="{{c.title}}" style="min-height: 30px; padding: 2px 6px; border-radius: 1px; border: {{c.border}}; background: {{c.bg}}; color: {{c.fg}}; font-size: 12px; font-weight: 800; text-align: left; cursor: {{c.cursor}}; overflow: hidden; white-space: nowrap; text-overflow: ellipsis">{{c.text}}</button>
+</sc-for>
+</div>
+</sc-for>
+</div>
+</div>
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; font-size: 13px; color: #3A414B">
+<span style="display: inline-flex; align-items: center; gap: 4px">Fewer <span style="width: 18px; height: 14px; background: #FFFFFF; border: 1px solid #DCDFE4"></span><span style="width: 18px; height: 14px; background: #E7EBFD"></span><span style="width: 18px; height: 14px; background: #C4CEF6"></span><span style="width: 18px; height: 14px; background: #93A6EE"></span> More incidents</span>
+<span style="display: inline-flex; align-items: center; gap: 6px"><span style="width: 18px; height: 14px; border: 2px solid #0B0D10; background: #FFFFFF"></span>Post with someone</span>
+<span style="display: inline-flex; align-items: center; gap: 6px"><span style="width: 18px; height: 14px; border: 2px dashed #0B0D10; background: #FFFFFF"></span>Post with nobody yet</span>
+</div>
+</section>
+
+<div style="display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-start">
+
+<section aria-labelledby="team-h" style="flex: 1 1 520px; min-width: 0; background: #FFFFFF; border: 1px solid #DCDFE4; border-radius: 2px; padding: 16px; display: flex; flex-direction: column; gap: 10px">
+<h2 id="team-h" style="margin: 0; font-family: 'Saira Condensed', sans-serif; font-size: 30px; font-weight: 800; text-transform: uppercase">Your team this week</h2>
+<sc-for list="{{team}}" as="g" hint-placeholder-count="4">
+<div style="display: grid; grid-template-columns: 40px minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 10px 0; border-bottom: 1px solid #F1F2F4">
+<span style="width: 40px; height: 40px; border-radius: 50%; background: {{g.avBg}}; color: {{g.avFg}}; display: inline-flex; align-items: center; justify-content: center; font-weight: 800">{{g.initial}}</span>
+<span style="display: flex; flex-direction: column; gap: 2px; min-width: 0">
+<span style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px"><span style="font-size: 17px; font-weight: 800">{{g.name}}</span><span style="font-size: 13px; color: #5D6672">{{g.role}}</span><span style="display: inline-flex; align-items: center; gap: 5px; font-size: 13px; font-weight: 700; color: {{g.nowFg}}"><span style="width: 8px; height: 8px; border-radius: 50%; background: {{g.nowDot}}"></span>{{g.now}}</span></span>
+<span style="font-size: 14px; color: #3A414B">{{g.shift}}</span>
+<span style="font-size: 14px; font-weight: 700">{{g.posts}}</span>
+</span>
+<span style="font-family: 'Saira Condensed', sans-serif; font-size: 26px; font-weight: 800; text-align: right">{{g.hours}}</span>
+</div>
+</sc-for>
+<span style="font-size: 13px; color: #5D6672; line-height: 1.45">No personal profiles. EarlyEye only needs a name, a shift and a duty phone to send each alert to the nearest person on duty.</span>
+</section>
+
+<section aria-labelledby="last-h" style="flex: 1 1 520px; min-width: 0; background: #FFFFFF; border: 1px solid #DCDFE4; border-radius: 2px; padding: 16px; display: flex; flex-direction: column; gap: 10px">
+<h2 id="last-h" style="margin: 0; font-family: 'Saira Condensed', sans-serif; font-size: 30px; font-weight: 800; text-transform: uppercase">Did last week's plan work?</h2>
+<p style="margin: 0; font-size: 17px; line-height: 1.45; font-weight: 700">1 incident at these places during post hours last week, down from about 3 a week before the plan.</p>
+<sc-for list="{{results}}" as="r" hint-placeholder-count="3">
+<div style="border: 1px solid #DCDFE4; border-radius: 2px; padding: 10px 12px; display: flex; flex-direction: column; gap: 4px">
+<span style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 10px"><span style="font-size: 16px; font-weight: 800">{{r.place}}</span><span style="font-size: 13px; color: #5D6672">{{r.covered}}</span></span>
+<span style="font-size: 15px; line-height: 1.45">{{r.result}}</span>
+<span style="font-size: 14px; font-weight: 800; color: #1F35B3">{{r.verdict}}</span>
+</div>
+</sc-for>
+<span style="font-size: 13px; color: #5D6672">One week is too short to be sure. EarlyEye keeps counting every week.</span>
+</section>
+</div>
 </main>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1500}}'>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2700}}'>
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    this.state = { zone: 'all', slot: 0 };
+    this.state = { zone: 'all', focus: 'P1', assign: { P1: 'Guard B' }, choosing: null, roster: false, copied: false };
   }
   renderVals() {
     const s = this.state;
-    const DAYS = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
-    const ZONES = [['all', 'All zones'], ['hostel', 'U Residence corridors'], ['stairwell', 'Block C stairwell'], ['canteen', 'Syopz Mall'], ['sports', 'Sports pitch']];
+    const DAYS = ['MON 12', 'TUE 13', 'WED 14', 'THU 15', 'FRI 16', 'SAT 17', 'SUN 18'];
+    const DAYN = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    const hh = (h) => String(h % 24).padStart(2, '0') + ':00';
+    // the team: name, shift and duty phone only, no profiles
+    const TEAM = [
+      { name: 'Guard A', role: 'Security guard', shift: 'Day shift · Mon–Sat 07:00–15:00', days: [0, 1, 2, 3, 4, 5], from: 7, to: 15, onNow: true, base: 'syopz' },
+      { name: 'Guard B', role: 'Security guard', shift: 'Day shift · Mon–Sat 10:00–18:00', days: [0, 1, 2, 3, 4, 5], from: 10, to: 18, onNow: true, base: 'blockc' },
+      { name: 'Guard C', role: 'Security guard', shift: 'Evening shift · every day 14:00–23:00', days: [0, 1, 2, 3, 4, 5, 6], from: 14, to: 23, onNow: true, base: 'ures' },
+      { name: 'Warden D', role: 'Hostel warden', shift: 'Nights · Fri–Sat 21:00–02:00', days: [4, 5], from: 21, to: 26, onNow: false, base: 'ures' }
+    ];
+    const SLOTS = [
+      { id: 'P1', rank: '1', zone: 'stairwell', base: 'blockc', place: 'Block C stairwell', days: [0, 1, 2, 3], hour: 13, daysLabel: 'Mon–Thu', hours: '13:00–14:00', hoursWeek: 4, incidents: 5,
+        why: '5 incidents here in the last 4 weeks, all on weekdays at lunch.', tip: 'Stand on the level 1 landing. You can see both flights of stairs from there.' },
+      { id: 'P2', rank: '2', zone: 'hostel', base: 'ures', place: 'U Residence, corridor L3', days: [6, 0, 1, 2, 3], hour: 22, daysLabel: 'Sun–Thu', hours: '22:00–23:00', hoursWeek: 5, incidents: 4,
+        why: '4 incidents here in the last 4 weeks, all late at night.', tip: 'Walk the level 3 corridor. The level 5 camera is off, so check level 5 once as well.' },
+      { id: 'P3', rank: '3', zone: 'canteen', base: 'syopz', place: 'Syopz Mall food court', days: [4], hour: 12, daysLabel: 'Fri', hours: '12:00–13:00', hoursWeek: 1, incidents: 3,
+        why: '3 crowd gatherings here in the last 4 weeks, all at Friday lunch.', tip: 'Stand at the east entrance, where the queue builds up.' }
+    ];
+    const assign = s.assign;
+    const busyAt = (name, slot) => SLOTS.find((o) => o.id !== slot.id && assign[o.id] === name && o.hour === slot.hour && o.days.some((d) => slot.days.indexOf(d) >= 0));
+    const fit = (g, slot) => {
+      const missing = slot.days.filter((d) => g.days.indexOf(d) < 0);
+      if (missing.length) return { ok: false, note: 'Not working on ' + missing.map((d) => DAYN[d]).join(', ') };
+      if (slot.hour < g.from) return { ok: false, note: 'Shift starts at ' + hh(g.from) };
+      if (slot.hour + 1 > g.to) return { ok: false, note: 'Shift ends at ' + hh(g.to) };
+      const clash = busyAt(g.name, slot);
+      if (clash) return { ok: false, note: 'Already at post ' + clash.rank + ' then' };
+      return { ok: true, note: slot.hoursWeek === 1 ? 'On shift for the whole hour' : 'On shift for all ' + slot.hoursWeek + ' hours' };
+    };
+    const hoursOf = (name) => SLOTS.filter((o) => assign[o.id] === name).reduce((a, o) => a + o.hoursWeek, 0);
+    const suggest = (slot) => {
+      const ok = TEAM.filter((g) => fit(g, slot).ok);
+      ok.sort((a, b) => (a.base === slot.base ? -1 : 0) - (b.base === slot.base ? -1 : 0) || hoursOf(a.name) - hoursOf(b.name));
+      return ok[0] || null;
+    };
+    const setAssign = (id, name) => { const a = Object.assign({}, assign); if (name) a[id] = name; else delete a[id]; this.setState({ assign: a, choosing: null, focus: id, copied: false }); };
+    const covered = SLOTS.filter((o) => assign[o.id]).length;
+
+    const posts = SLOTS.map((slot) => {
+      const who = assign[slot.id];
+      const g = who ? TEAM.find((t) => t.name === who) : null;
+      const sug = suggest(slot);
+      const choosing = s.choosing === slot.id;
+      const prevent = Math.round(slot.incidents * 0.6);
+      const on = s.focus === slot.id;
+      return {
+        rank: slot.rank, place: slot.place, when: slot.daysLabel + ' · ' + slot.hours + ' · ' + slot.hoursWeek + ' hour' + (slot.hoursWeek === 1 ? '' : 's') + ' this week',
+        why: slot.why, expected: 'Should prevent about ' + prevent + ' incident' + (prevent === 1 ? '' : 's') + ' a month.', tip: slot.tip, incidents: slot.incidents,
+        border: on ? '2px solid #0B0D10' : '1px solid #DCDFE4',
+        statusText: who ? 'Covered' : 'Nobody yet', stBg: who ? '#0B0D10' : '#FFFFFF', stFg: who ? '#FFFFFF' : '#0B0D10', stBorder: who ? '1px solid #0B0D10' : '2px dashed #0B0D10',
+        assignedDisplay: who && !choosing ? 'flex' : 'none', unassignedDisplay: !who && !choosing ? 'flex' : 'none', chooserDisplay: choosing ? 'flex' : 'none',
+        assigned: who || '', initial: who ? who.split(' ')[1] : '', fitText: g ? fit(g, slot).note + '. ' + g.shift + '.' : '',
+        suggestLabel: sug ? 'Send ' + sug.name : 'Nobody is free',
+        suggestWhy: sug ? 'Suggested: on shift then' + (sug.base === slot.base ? ', and already works nearby.' : '.') : 'Nobody on the team is working then. Change a shift or skip this post.',
+        useSuggestion: () => { if (sug) setAssign(slot.id, sug.name); },
+        changeLabel: choosing ? 'Cancel' : (who ? 'Change' : 'Choose someone else'),
+        change: () => this.setState({ choosing: choosing ? null : slot.id, focus: slot.id }),
+        options: TEAM.map((t) => {
+          const f = t.name === who ? { ok: true, note: 'Going now' } : fit(t, slot);
+          return { name: t.name, note: f.note, disabled: f.ok ? 'false' : 'true', bg: f.ok ? '#FFFFFF' : '#F1F2F4', fg: f.ok ? '#0B0D10' : '#5D6672', border: f.ok ? '#0B0D10' : '#DCDFE4', cursor: f.ok ? 'pointer' : 'not-allowed',
+            pick: () => { if (f.ok) setAssign(slot.id, t.name); } };
+        }).concat(who ? [{ name: 'Nobody', note: 'Leave this post empty', disabled: 'false', bg: '#FFFFFF', fg: '#0B0D10', border: '#B4BAC3', cursor: 'pointer', pick: () => setAssign(slot.id, null) }] : [])
+      };
+    });
+
+    // incidents per hour of the week, last 4 weeks
     const DATA = {
       stairwell: [[0, 13, 3], [1, 13, 2], [2, 13, 2], [3, 13, 2], [4, 13, 1], [0, 16, 1], [2, 10, 1]],
-      hostel: [[6, 22, 2], [0, 22, 3], [1, 22, 2], [2, 22, 2], [3, 22, 1], [2, 18, 1], [5, 23, 1], [4, 7, 1], [4, 20, 1]],
+      hostel: [[6, 22, 2], [0, 22, 3], [1, 22, 2], [2, 22, 2], [3, 22, 1], [2, 18, 1], [5, 23, 1], [4, 20, 1]],
       canteen: [[4, 12, 4], [0, 12, 1], [2, 12, 1], [3, 19, 1]],
       sports: [[1, 17, 1], [3, 17, 1], [0, 10, 1]]
     };
-    const SLOTS = [
-      { zone: 'stairwell', days: [0, 1, 2, 3], hour: 13, location: 'Block C stairwell', daysLabel: 'Mon–Thu', hours: '13:00–14:00', incidents: 5, hoursWeek: 4, rationale: 'Five incidents in the same lunch hour in 4 weeks. One person on the landing covers both flights.' },
-      { zone: 'hostel', days: [6, 0, 1, 2, 3], hour: 22, location: 'U Residence, corridor L3', daysLabel: 'Sun–Thu', hours: '22:00–23:00', incidents: 4, hoursWeek: 5, rationale: 'Four incidents after lights-out in 4 weeks. Corridor L5 camera is black, so this is the only eye on the block.' },
-      { zone: 'canteen', days: [4], hour: 12, location: 'Syopz Mall food court', daysLabel: 'Fri', hours: '12:00–13:00', incidents: 3, hoursWeek: 1, rationale: 'Three crowd gatherings at Friday lunch in 4 weeks. One person at the entrance thins the queue.' }
-    ];
+    const ZONES = [['all', 'All places'], ['stairwell', 'Block C stairwell'], ['hostel', 'U Residence'], ['canteen', 'Food court'], ['sports', 'Sports pitch']];
     const grid = DAYS.map(() => new Array(24).fill(0));
     (s.zone === 'all' ? Object.keys(DATA) : [s.zone]).forEach((k) => DATA[k].forEach((d) => { grid[d[0]][d[1]] += d[2]; }));
-    const ramp = ['#FFFFFF', '#DDE3FB', '#AFBDF3', '#6E86E8', '#3653DC', '#1F35B3'];
-    const sel = SLOTS[s.slot];
-    const vis = sel && (s.zone === 'all' || s.zone === sel.zone);
-    const rows = DAYS.map((day, di) => ({
-      day: day,
-      cells: grid[di].map((c, h) => ({
-        txt: c > 0 ? String(c) : '', bg: ramp[Math.min(c, 5)], fg: c >= 4 ? '#FFFFFF' : '#0B0D10',
-        outline: vis && sel.days.indexOf(di) >= 0 && sel.hour === h ? '2px solid #0B0D10' : 'none',
-        title: day + ' ' + String(h).padStart(2, '0') + ':00 · ' + c + ' incident' + (c === 1 ? '' : 's')
-      }))
-    }));
-    const slots = SLOTS.map((p, i) => {
-      const a4 = p.incidents * 0.6, wk = a4 / 4, on = s.slot === i;
+    const ramp = ['#FFFFFF', '#E7EBFD', '#C4CEF6', '#93A6EE', '#93A6EE', '#93A6EE'];
+    const week = [];
+    for (let h = 7; h < 24; h++) {
+      week.push({
+        label: hh(h),
+        cells: DAYS.map((d, di) => {
+          const c = grid[di][h];
+          const slot = SLOTS.find((o) => o.hour === h && o.days.indexOf(di) >= 0);
+          const who = slot ? assign[slot.id] : null;
+          return {
+            text: slot ? slot.rank + ' · ' + (who || 'Nobody yet') : '',
+            bg: ramp[Math.min(c, 5)], fg: '#0B0D10',
+            border: slot ? (who ? '2px solid #0B0D10' : '2px dashed #0B0D10') : '1px solid #EEF0F3',
+            cursor: slot ? 'pointer' : 'default',
+            title: DAYN[di] + ' ' + hh(h) + ': ' + (c ? c + ' incident' + (c === 1 ? '' : 's') + ' in the last 4 weeks' : 'no incidents in the last 4 weeks') + (slot ? '. Post ' + slot.rank + ', ' + slot.place + ': ' + (who || 'nobody yet') : ''),
+            pick: () => { if (slot) this.setState({ focus: slot.id }); }
+          };
+        })
+      });
+    }
+    const zones = ZONES.map((z) => { const on = s.zone === z[0]; return { label: z[1], pressed: on ? 'true' : 'false', bg: on ? '#0B0D10' : '#FFFFFF', fg: on ? '#FFFFFF' : '#0B0D10', border: on ? '#0B0D10' : '#B4BAC3', pick: () => this.setState({ zone: z[0] }) }; });
+
+    const team = TEAM.map((t) => {
+      const mine = SLOTS.filter((o) => assign[o.id] === t.name);
+      const hrs = hoursOf(t.name);
       return {
-        rank: String(i + 1).padStart(2, '0'), location: p.location, days: p.daysLabel, hours: p.hours, incidents: p.incidents,
-        avoided4w: '~' + (Math.round(a4 * 10) / 10), perWeek: wk.toFixed(2), hoursWeek: p.hoursWeek, perHour: (wk / p.hoursWeek).toFixed(2), rationale: p.rationale,
-        border: on ? '2px solid #0B0D10' : '1px solid #DCDFE4', pressed: on ? 'true' : 'false',
-        btnBg: on ? '#2742D9' : '#FFFFFF', btnFg: on ? '#FFFFFF' : '#2742D9', btnLabel: on ? 'Shown on the heatmap' : 'Show on the heatmap',
-        show: () => this.setState({ slot: i, zone: p.zone })
+        name: t.name, initial: t.name.split(' ')[1], role: t.role, shift: t.shift,
+        now: t.onNow ? 'On duty now' : 'Off duty', nowDot: t.onNow ? '#2742D9' : '#B4BAC3', nowFg: t.onNow ? '#1F35B3' : '#5D6672',
+        avBg: t.onNow ? '#2742D9' : '#F1F2F4', avFg: t.onNow ? '#FFFFFF' : '#3A414B',
+        posts: mine.length ? mine.map((o) => 'Post ' + o.rank + ', ' + o.place + ', ' + o.daysLabel + ' ' + o.hours).join(' · ') : 'No posts this week',
+        hours: hrs ? hrs + ' h' : '—'
       };
     });
-    const zones = ZONES.map((z) => {
-      const on = s.zone === z[0];
-      return { label: z[1], pressed: on ? 'true' : 'false', bg: on ? '#0B0D10' : '#FFFFFF', fg: on ? '#FFFFFF' : '#0B0D10', border: on ? '#0B0D10' : '#B4BAC3', pick: () => this.setState({ zone: z[0] }) };
-    });
-    const hoursHead = [];
-    for (let h = 0; h < 24; h++) hoursHead.push(String(h).padStart(2, '0'));
+
+    const results = [
+      { place: 'Block C stairwell', covered: 'Guard B · covered 4 of 4 days', result: 'No incidents during the post hour. Before the plan: about 1 a week.', verdict: 'Working. Keep it.' },
+      { place: 'U Residence, corridor L3', covered: 'Guard C · covered 3 of 5 nights', result: 'One fight, on Thursday night, when nobody was posted. None on the covered nights.', verdict: 'Cover every night this week.' },
+      { place: 'Syopz Mall food court', covered: 'Guard A · covered 1 of 1 day', result: 'One crowd gathering. The guard was there and it cleared within a minute.', verdict: 'Working. Keep it.' }
+    ];
+
+    const rosterLines = [{ text: "Patrol roster · week of Mon 12 Oct · Taylor's Lakeside", weight: 800 }].concat(SLOTS.map((o) => ({
+      text: o.rank + '. ' + o.place + ' · ' + o.daysLabel + ' ' + o.hours + ' · ' + (assign[o.id] || 'NOBODY YET') + '. ' + o.tip, weight: 500 })));
+    const rosterText = rosterLines.map((l) => l.text).join('\n');
+    const steps = [
+      { mark: '1', title: 'Check the 3 posts', sub: 'Where and when trouble keeps happening', bg: '#FFFFFF', fg: '#0B0D10' },
+      { mark: covered === SLOTS.length ? '✓' : '2', title: 'Pick who goes', sub: covered + ' of ' + SLOTS.length + ' posts have someone', bg: covered === SLOTS.length ? '#0B0D10' : '#FFFFFF', fg: covered === SLOTS.length ? '#FFFFFF' : '#0B0D10' },
+      { mark: s.copied ? '✓' : '3', title: 'Share the roster', sub: s.copied ? 'Copied for your team chat' : 'Copy or print it for your team', bg: s.copied ? '#0B0D10' : '#FFFFFF', fg: s.copied ? '#FFFFFF' : '#0B0D10' }
+    ];
     return {
-      slots: slots, zones: zones, grid: rows, hoursHead: hoursHead,
-      hotspots: [
-        { loc: 'Block C stairwell', window: 'MON–THU 13:00', count: 5, last: 'WED 7 OCT' },
-        { loc: 'U Residence, corridor L3', window: 'SUN–THU 22:00', count: 4, last: 'MON 5 OCT' },
-        { loc: 'Syopz Mall food court', window: 'FRI 12:00', count: 3, last: 'FRI 9 OCT' }
-      ]
+      progressText: covered + ' of ' + SLOTS.length + ' posts covered',
+      rosterOpen: s.roster, rosterLabel: s.roster ? 'Hide the roster' : 'Share the roster',
+      toggleRoster: () => this.setState({ roster: !s.roster, copied: false }),
+      copyRoster: () => { try { if (navigator && navigator.clipboard) navigator.clipboard.writeText(rosterText); } catch (err) {} this.setState({ copied: true }); },
+      printRoster: () => { try { window.print(); } catch (err) {} },
+      copiedText: s.copied ? 'Copied. Paste it into your team chat.' : '',
+      rosterLines: rosterLines, steps: steps, posts: posts, zones: zones, dayHead: DAYS, week: week, team: team, results: results
     };
   }
 }

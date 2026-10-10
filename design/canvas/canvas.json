@@ -87,9 +87,9 @@
     },
     "L3Plan.dc.html": {
       "expand": "fill",
-      "h": 2250,
+      "h": 2700,
       "is_interactive": true,
-      "title": "7d · v3 Plan with 3D campus",
+      "title": "7d · v3 Plan: weekly deployment board",
       "w": 1440,
       "x": 4560,
       "y": 14500
@@ -230,6 +230,15 @@
       "w": 390,
       "x": 7600,
       "y": 10780
+    },
+    "L3PlanStory.dc.html": {
+      "expand": "fill",
+      "h": 1250,
+      "is_interactive": true,
+      "title": "7i · Use case: one real week with the patrol plan",
+      "w": 1440,
+      "x": 4560,
+      "y": 17300
     }
   },
   "createdOnFiles": {
@@ -314,6 +323,7 @@
     "L3Live.dc.html",
     "L3Incidents.dc.html",
     "L3Plan.dc.html",
+    "L3PlanStory.dc.html",
     "L3Proof.dc.html",
     "L3Push.dc.html",
     "L3Cameras.dc.html",
