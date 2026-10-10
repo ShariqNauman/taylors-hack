@@ -5,7 +5,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import useSWR from "swr";
 import { toast } from "sonner";
-import { getCameras, getEdgeClips, getEvents, patchEvent, PatchError } from "@/lib/api";
+import { EDGE_URL, getCameras, getEdgeClips, getEvents, patchEvent, PatchError } from "@/lib/api";
 import type { Camera, Event, Status } from "@/lib/types";
 import { fmtTime, normaliseStatus, secondsBetween } from "@/lib/format";
 import {
@@ -112,15 +112,26 @@ export function IncidentsScreen() {
   const inTab = (e: Event, t: Tab) => t === "all" || bucketOf(e.status) === t;
   // On site, cases with a recording on this laptop come first (the clip never leaves campus).
   const siteView = useAppStore((s) => s.view);
-  const clipEdge =
+  // The live camera's edge (may be a GPU server) and this laptop's own edge: either may hold a clip.
+  const liveEdge = cameras?.find((c) => c.source === "live" && c.edge_url)?.edge_url ?? null;
+  const clipEdges =
     siteView === "onsite"
-      ? (cameras?.find((c) => c.source === "live" && c.edge_url)?.edge_url ?? null)
-      : null;
-  const { data: clipIds } = useSWR(clipEdge ? ["edge-clips", clipEdge] : null, () => getEdgeClips(clipEdge!), {
-    refreshInterval: 10_000,
-  });
-  const clipFor = (id: string) =>
-    clipEdge && clipIds?.includes(id) ? `${clipEdge.replace(/\/$/, "")}/clips/${encodeURIComponent(id)}.mp4` : null;
+      ? [...new Set([liveEdge, EDGE_URL].filter((u): u is string => !!u).map((u) => u.replace(/\/$/, "")))]
+      : [];
+  const { data: clipMap } = useSWR(
+    clipEdges.length ? ["edge-clips", ...clipEdges] : null,
+    async () => {
+      const m = new Map<string, string>();
+      const lists = await Promise.all(clipEdges.map((u) => getEdgeClips(u)));
+      lists.forEach((ids, i) => ids.forEach((id) => m.has(id) || m.set(id, clipEdges[i])));
+      return m;
+    },
+    { refreshInterval: 10_000 },
+  );
+  const clipFor = (id: string) => {
+    const edge = clipMap?.get(id);
+    return edge ? `${edge}/clips/${encodeURIComponent(id)}.mp4` : null;
+  };
   const inScope = scoped.filter((e) => inTab(e, tab));
   const recorded = inScope.filter((e) => clipFor(e.incident_id));
   const rows = [...recorded, ...inScope.filter((e) => !clipFor(e.incident_id))];
