@@ -167,3 +167,30 @@ export interface StatusPatch {
   staff_note?: string;
   acked_at?: string;
 }
+
+// ── Shift handover brief (POST /handover). Facts are computed on the dashboard; the API only words them. ──
+
+/** Already-computed shift facts. Never raw events: nothing the model could miscount. */
+export interface HandoverFacts {
+  shift_start: string; // ISO
+  now: string; // ISO
+  pushes: number;
+  budget: number;
+  open: {
+    incident_id: string;
+    location: string;
+    level: string;
+    priority: number;
+    status: string;
+  }[];
+  confirmed: number;
+  dismissed: number;
+  black_cameras: { camera_id: string; location: string; black_since: string }[];
+  patrol_today: string | null;
+}
+
+export interface HandoverBrief {
+  text: string;
+  model: string; // e.g. "claude-sonnet-5-5", or "offline-template" from the mock
+  generated_at: string; // ISO
+}

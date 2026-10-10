@@ -1,5 +1,7 @@
 import type {
   Camera,
+  HandoverBrief,
+  HandoverFacts,
   Event,
   Hotspot,
   PatrolPlan,
@@ -175,4 +177,55 @@ export function mergeEvents(base: Event[], incoming: Event[]): Event[] {
   for (const e of incoming)
     map.set(e.incident_id, { ...map.get(e.incident_id), ...e });
   return [...map.values()];
+}
+
+/** Abort when either signal fires (6 s timeout, drawer closed). */
+function anySignal(signals: (AbortSignal | undefined)[]): AbortSignal {
+  const list = signals.filter((x): x is AbortSignal => !!x);
+  const any = (AbortSignal as unknown as { any?: (s: AbortSignal[]) => AbortSignal }).any;
+  if (any) return any(list);
+  const ctrl = new AbortController();
+  for (const sig of list) {
+    if (sig.aborted) ctrl.abort(sig.reason);
+    else sig.addEventListener("abort", () => ctrl.abort(sig.reason), { once: true });
+  }
+  return ctrl.signal;
+}
+
+export const HANDOVER_TIMEOUT_MS = 6000;
+
+/**
+ * POST /handover: words the already-computed shift facts as a short brief.
+ * Same discipline as the rest of this file: the API first (when configured),
+ * then the local mock route, which assembles the brief without any model.
+ * Rejects only if both fail or the caller aborts; the drawer keeps its facts either way.
+ */
+export async function postHandover(
+  facts: HandoverFacts,
+  signal?: AbortSignal,
+): Promise<HandoverBrief> {
+  const body = JSON.stringify(facts);
+  const post = (url: string) =>
+    fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body,
+      cache: "no-store",
+      signal: anySignal([signal, AbortSignal.timeout(HANDOVER_TIMEOUT_MS)]),
+    });
+  if (!usingMock) {
+    try {
+      const r = await post(`${API_URL}/handover`);
+      if (r.ok) {
+        useAppStore.getState().setApiDown(false);
+        return (await r.json()) as HandoverBrief;
+      }
+    } catch (err) {
+      if (signal?.aborted) throw err; // drawer closed: stop here
+    }
+    useAppStore.getState().setApiDown(true);
+  }
+  const r = await post("/api/mock/handover");
+  if (!r.ok) throw new Error(`mock handover failed: ${r.status}`);
+  return (await r.json()) as HandoverBrief;
 }
