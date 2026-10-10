@@ -35,7 +35,7 @@ export function sourceLabel(k: CameraKind): string {
 
 /** "Recording made Sat 10 Oct 16:20, looping". */
 export function recordingLine(c: Camera): string | null {
-  if (!c.recorded_at) return null;
+  if (!c.recorded_at) return "Sample CCTV clip, not filmed on campus · looping";
   return `Recording made ${fmtDateTime(c.recorded_at).replace(",", "")}, looping`;
 }
 

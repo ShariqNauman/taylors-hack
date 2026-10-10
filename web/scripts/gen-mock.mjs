@@ -48,9 +48,8 @@ const site = {
 const risk = Object.fromEntries(site.zones.map((z) => [z.zone_type, z.risk]));
 
 // ── cameras (brief §8.1). Mock route rebases last_frame_at to now and black_since to now − 3 days. ──
-const REC = { "CAM-BC-03": "16:20", "CAM-CT-04": "16:35", "CAM-HC-01": "16:50", "CAM-SC-06": "17:05" };
 const PEOPLE = { "CAM-AU-01": 2, "CAM-BC-03": 1, "CAM-CT-04": 14, "CAM-HC-01": 1, "CAM-SC-06": 6 };
-const PORT = { "CAM-AU-01": 8765, "CAM-BC-03": 8766, "CAM-CT-04": 8767, "CAM-HC-01": 8768, "CAM-SC-06": 8769 };
+const PORT = { "CAM-AU-01": 8765, "CAM-BC-03": 8766, "CAM-SC-06": 8769 }; // CAM-CT-04, CAM-HC-01: no edge (see edge/cameras.json)
 const cameras = seed3d.cameras.map((c) => {
   const black = c.source === "black";
   const out = {
@@ -63,8 +62,8 @@ const cameras = seed3d.cameras.map((c) => {
     ...(black ? {} : { people_count: PEOPLE[c.camera_id] }),
     geo: { ...c.geo, building: c.building.replace(/ \(.*\)$/, ""), floor: c.floor },
     ...(black ? {} : { source: c.source }),
-    ...(c.source === "recorded" ? { recorded_at: iso(myt(2026, 10, 10, +REC[c.camera_id].slice(0, 2), +REC[c.camera_id].slice(3))) } : {}),
-    edge_url: black ? "" : `http://127.0.0.1:${PORT[c.camera_id]}`,
+    // Recordings are sample CCTV clips (edge/cameras.json), not filmed on campus: no recorded_at.
+    edge_url: black || !PORT[c.camera_id] ? "" : `http://127.0.0.1:${PORT[c.camera_id]}`,
   };
   return out;
 });

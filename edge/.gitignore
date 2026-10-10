@@ -1,0 +1,3 @@
+recordings/*
+!recordings/README.md
+.venv/

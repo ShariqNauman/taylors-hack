@@ -7,4 +7,8 @@ if not exist edge\.venv\Scripts\python.exe (
   edge\.venv\Scripts\python -m pip install --upgrade pip
   edge\.venv\Scripts\python -m pip install -r edge\requirements.txt || exit /b 1
 )
-edge\.venv\Scripts\python edge\earlyeye_edge.py %*
+if /i "%~1"=="all" (
+  edge\.venv\Scripts\python edge\run_all.py %2 %3 %4
+) else (
+  edge\.venv\Scripts\python edge\earlyeye_edge.py %*
+)

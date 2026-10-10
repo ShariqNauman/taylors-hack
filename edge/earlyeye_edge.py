@@ -295,13 +295,16 @@ def run_model(s: State):
     rows, frame_times = deque(), deque()
     last_id, next_score = 0, ld.SHORT_S
     smooth, high_since, fight_until = 0.0, None, -1.0
+    min_gap = 1.0 / a.pose_fps if a.pose_fps else 0.0
+    last_pose = 0.0
     while s.running:
         with s.lock:
             frame, fid = s.frame, s.frame_id
-        if frame is None or fid == last_id:
+        if frame is None or fid == last_id or time.time() - last_pose < min_gap:
             time.sleep(0.002)
             continue
         last_id = fid
+        last_pose = time.time()
         t = time.time() - start
         res = model.track(frame, persist=True, tracker=ld.TRACKER, imgsz=ld.IMGSZ, conf=ld.DET_CONF,
                           device=device, verbose=False)[0]
@@ -400,6 +403,11 @@ def draw(frame, people, level, score, a):
     cv2.rectangle(frame, (0, h - 28), (w, h), (22, 27, 34), -1)
     cv2.putText(frame, f"{a.camera_id}  {level}  {score:.2f}", (10, h - 9),
                 cv2.FONT_HERSHEY_SIMPLEX, 0.55, LEVEL_BGR[level], 2, cv2.LINE_AA)
+    if a.label:
+        (tw, th), _ = cv2.getTextSize(a.label, cv2.FONT_HERSHEY_SIMPLEX, 0.5, 1)
+        cv2.rectangle(frame, (w - tw - 16, h - 28), (w, h), (11, 13, 16), -1)
+        cv2.putText(frame, a.label, (w - tw - 8, h - 9), cv2.FONT_HERSHEY_SIMPLEX, 0.5,
+                    (236, 239, 243), 1, cv2.LINE_AA)
     return frame
 
 
@@ -465,7 +473,7 @@ def make_handler(s: State):
             a = s.args
             if path == "/health":
                 return self._json({"ok": True, "camera_id": a.camera_id, "source": a.source,
-                                   "fake": a.fake})
+                                   "fake": a.fake, "label": a.label})
             if path == "/live.json":
                 with s.lock:
                     inc = dict(s.incident) if s.incident else None
@@ -515,6 +523,9 @@ def main():
     ap.add_argument("--no-post", action="store_true", help="do not post events to the API")
     ap.add_argument("--upsert", action="store_true", help="API upserts by incident_id: post every 0.5 s")
     ap.add_argument("--fake", action="store_true", help="scripted escalation, no camera or model")
+    ap.add_argument("--pose-fps", type=float, default=0,
+                    help="cap pose runs per second (0 = every frame, as in training; a lower rate raises scores)")
+    ap.add_argument("--label", default="", help="text burned into the stream, e.g. SAMPLE CCTV CLIP")
     ap.add_argument("--device", default="auto", choices=["auto", "openvino", "mps", "cuda", "cpu"],
                     help="pose backend; auto = OpenVINO on Windows/Linux, Apple GPU (mps) on macOS")
     args = ap.parse_args()
