@@ -380,13 +380,11 @@ export function IncidentsScreen() {
             {rows.map((e, i) => {
               const clip = clipFor(e.incident_id);
               const head =
-                i === 0 && clip
-                  ? `WITH A RECORDING · ${recorded.length}`
-                  : !clip &&
+                !clip &&
                       (i === recorded.length ||
                         dayKey(rows[i - 1].start_time) !== dayKey(e.start_time))
                     ? dayHeading(e.start_time, now)
-                    : null;
+                  : null;
               const on = e.incident_id === selected?.incident_id;
               return (
                 <div key={e.incident_id} className="flex flex-col gap-1.5">
