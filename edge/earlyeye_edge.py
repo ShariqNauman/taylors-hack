@@ -420,7 +420,8 @@ def run_model(s: State):
                 continue
             annotated = draw(frame.copy(), people, level, score, a)
             colour = (0, 200, 0) if pose_fps >= MIN_POSE_FPS else (0, 0, 255)
-            cv2.putText(annotated, f"pose {pose_fps:4.1f} fps  camera {cam_fps:4.1f} fps", (10, 22),
+            # Bottom-left, clear of the level/score badge in the top-left corner.
+            cv2.putText(annotated, f"pose {pose_fps:4.1f} fps  camera {cam_fps:4.1f} fps", (10, annotated.shape[0] - 12),
                         cv2.FONT_HERSHEY_SIMPLEX, 0.55, colour, 2, cv2.LINE_AA)
             if s.clips is not None:   # the clip shows what the model saw: skeletons, level and score
                 s.clips.add(annotated, time.time())
