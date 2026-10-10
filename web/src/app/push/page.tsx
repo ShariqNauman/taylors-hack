@@ -1,14 +1,18 @@
-import type { Metadata } from "next";
+import { Suspense } from "react";
+import type { Metadata, Viewport } from "next";
+import { PushScreen } from "@/components/push/push-screen";
 
-export const metadata: Metadata = { title: "Push" };
+export const metadata: Metadata = { title: "Duty phone" };
+export const viewport: Viewport = {
+  themeColor: "#F1F2F4",
+  width: "device-width",
+  initialScale: 1,
+};
 
 export default function PushPage() {
   return (
-    <main className="mx-auto flex min-h-screen max-w-[430px] flex-col items-center justify-center gap-4 p-6 text-center">
-      <span className="ee-display text-[40px]">Start your shift</span>
-      <p className="text-[16px] text-ink-2">
-        The duty-phone screen is built on its own branch.
-      </p>
-    </main>
+    <Suspense fallback={null}>
+      <PushScreen />
+    </Suspense>
   );
 }
