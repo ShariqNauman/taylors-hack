@@ -1,29 +1,42 @@
 """
 EarlyEye API — Events router (the core incident pipeline).
 
-POST /events   → edge app creates a new incident
-GET  /events   → dashboard fetches recent or filtered incidents
-PATCH /events/{incident_id} → staff confirms / dismisses / resolves
+POST /events                   → edge app creates or updates an incident (upsert by incident_id)
+GET  /events                   → dashboard fetches recent (?since=updated_at) or 28 days of incidents
+PATCH /events/{incident_id}    → staff confirms / dismisses / resolves / Push now / guard taps acked_at
+POST /events/{incident_id}/backup → send backup to an incident
+GET  /labels                   → training labels for the model team (Route 21)
+POST /handover                 → shift handover brief for live dashboard (Route 15)
 """
 
 from __future__ import annotations
 
 import random
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from typing import Optional
 
 from fastapi import APIRouter, HTTPException, Query
+import httpx
 from supabase import Client
 
+from api.config import ANTHROPIC_API_KEY, ANTHROPIC_MODEL
 from api.db import get_supabase
-from api.models import BackupRequest, Event, EventCreate, EventPatch, Status
+from api.models import (
+    BackupRequest,
+    Event,
+    EventCreate,
+    EventPatch,
+    HandoverBrief,
+    HandoverFacts,
+    LabelRow,
+    Status,
+)
 from api.services import live_loop
 
 router = APIRouter(prefix="", tags=["events"])
 
 
 # ── Helper functions ──────────────────────────────────────────────────────────
-
 
 def compute_priority(
     level: str,
@@ -60,8 +73,8 @@ def get_zone_risk(supabase: Client, zone_type: str) -> float:
         if resp.data:
             return float(resp.data[0]["risk"])
     except Exception:
-        pass  # fall through to default
-    return 0.5  # sensible default if zone not found
+        pass
+    return 0.5
 
 
 def get_nearest_staff(
@@ -107,11 +120,19 @@ def _send_backup(sb: Client, row: dict, staff_rows: list[dict], staff: str | Non
     return data[0] if data else None
 
 
-# ── Routes ────────────────────────────────────────────────────────────────────
+_EVENT_OVERLAYS: dict[str, dict] = {}
+
+
+def _to_event(row: dict) -> Event:
+    inc_id = row.get("incident_id")
+    if inc_id and inc_id in _EVENT_OVERLAYS:
+        row = {**row, **_EVENT_OVERLAYS[inc_id]}
+    return Event(**row)
 
 
 def _write(sb: Client, row: dict, existing: bool) -> list:
     """Upsert / update an event, dropping columns the table does not have yet (pre-migration)."""
+    inc_id = row.get("incident_id")
     for _ in range(6):
         try:
             if existing:
@@ -120,6 +141,10 @@ def _write(sb: Client, row: dict, existing: bool) -> list:
                 q = sb.table("events").upsert(row, on_conflict="incident_id")
             return q.execute().data or []
         except Exception as exc:
+            # Store dropped human fields in overlay memory
+            for col in ("acked_at", "arrived_at", "outcome", "outcome_at", "pushed_to", "pushed_at", "updated_at"):
+                if col in row and row[col] is not None:
+                    _EVENT_OVERLAYS.setdefault(inc_id, {})[col] = row[col]
             smaller = live_loop.without_unknown_columns(row, str(exc))
             if smaller is None:
                 raise
@@ -135,12 +160,18 @@ def _ensure_camera(sb: Client, camera_id: str, location: str, zone_type: str) ->
         site = sb.table("sites").select("site_id").limit(1).execute().data
         if not site:
             return
-        sb.table("cameras").insert({"camera_id": camera_id, "site_id": site[0]["site_id"],
-                                    "location": location, "zone_type": zone_type,
-                                    "online": True}).execute()
+        sb.table("cameras").insert({
+            "camera_id": camera_id,
+            "site_id": site[0]["site_id"],
+            "location": location,
+            "zone_type": zone_type,
+            "online": True,
+        }).execute()
     except Exception:
-        pass  # if this fails, the insert below reports the real error
+        pass
 
+
+# ── POST /events (Route 7) ────────────────────────────────────────────────────
 
 @router.post("/events", response_model=Event, status_code=201)
 async def create_event(body: EventCreate):
@@ -174,18 +205,54 @@ async def create_event(body: EventCreate):
     existing = found[0] if found else None
     row = live_loop.merge_for_upsert(existing, incoming)
 
-    # The API owns the push.
+    # Shift push budget
     pushes = 0
     try:
         pushes = len(supabase.table("events").select("incident_id")
                      .gte("pushed_at", live_loop.shift_start()).execute().data or [])
     except Exception:
         pass
-    # Only someone on duty gets the alarm (guard app: Start my shift / End my shift).
+
+    # Look up camera geo
+    cam_geo = None
+    try:
+        c_row = supabase.table("cameras").select("geo").eq("camera_id", body.camera_id).limit(1).execute().data
+        if c_row and c_row[0].get("geo"):
+            cam_geo = c_row[0]["geo"]
+    except Exception:
+        pass
+
+    # Check active standing post positions (Rule 7: checked-in guard on active post)
+    active_posts_geo = {}
+    try:
+        since_4h = (datetime.now(timezone.utc) - timedelta(hours=4)).isoformat()
+        chks = supabase.table("plan_checkins").select("slot_id,staff,at").gte("at", since_4h).execute().data or []
+        if chks:
+            slots_rows = supabase.table("plan_slots").select("id,geo").eq("status", "active").execute().data or []
+            slot_geo_map = {s["id"]: s.get("geo") for s in slots_rows if s.get("geo")}
+            for c in chks:
+                if c["staff"] not in active_posts_geo and c["slot_id"] in slot_geo_map:
+                    active_posts_geo[c["staff"]] = slot_geo_map[c["slot_id"]]
+    except Exception:
+        pass
+
     staff_rows = _staff_rows(supabase)
-    staff_name = live_loop.choose_guard(staff_rows, body.nearest_staff, body.zone_type)
-    if not staff_name:
-        _, staff_name = get_nearest_staff(supabase, body.zone_type)
+
+    # Rule 2 & 7: pick nearest on-duty guard
+    staff_name = live_loop.choose_guard(
+        staff_rows, body.nearest_staff, body.zone_type,
+        camera_geo=cam_geo, guard_posts=active_posts_geo
+    )
+
+    # Set nearest_staff (regardless of on-duty) if not already set
+    nearest_person = live_loop.nearest_guard(
+        staff_rows, body.nearest_staff, body.zone_type,
+        camera_geo=cam_geo, guard_posts=active_posts_geo
+    )
+    if nearest_person and not row.get("nearest_staff"):
+        row["nearest_staff"] = nearest_person
+
+    # If nobody on duty, staff_name is None; push_decision leaves pushed_to empty
     row.update(live_loop.push_decision(row, pushes, staff_name, now_iso))
 
     if existing is None:
@@ -211,9 +278,11 @@ async def create_event(body: EventCreate):
             _send_backup(supabase, stored, staff_rows, None,
                          f"No answer from {stored.get('pushed_to')} in {live_loop.NO_ANSWER_S} s.")
     except Exception:
-        pass  # the desk still sees "No answer in 20 s" and can send someone
-    return Event(**stored)
+        pass
+    return _to_event(stored)
 
+
+# ── POST /events/{incident_id}/backup ─────────────────────────────────────────
 
 @router.post("/events/{incident_id}/backup", response_model=Event, status_code=201)
 async def send_backup(incident_id: str, body: BackupRequest):
@@ -230,73 +299,213 @@ async def send_backup(incident_id: str, body: BackupRequest):
     row = _send_backup(supabase, found[0], _staff_rows(supabase), body.staff, why)
     if not row:
         raise HTTPException(status_code=409, detail="Nobody else is on duty.")
-    return Event(**row)
+    return _to_event(row)
 
+
+# ── GET /events (Route 6) ─────────────────────────────────────────────────────
 
 @router.get("/events", response_model=list[Event])
 async def list_events(since: Optional[str] = Query(default=None)):
     """
-    Fetch events for the dashboard.
+    Fetch events for the dashboard (Route 6).
 
-    • If *since* is provided, return events whose start_time is after that
-      timestamp, sorted by priority descending (most urgent first).
-    • Otherwise return the most recent 50 events by start_time.
+    • If *since* is provided: filter by updated_at > since (fallback to start_time > since),
+      sorted by priority descending (most urgent first).
+    • Without *since*: return the last 28 days of events (start_time >= 28 days ago),
+      sorted by start_time descending (supporting Track record's 4-week window).
     """
     supabase = get_supabase()
 
     try:
         if since:
-            resp = (
-                supabase.table("events")
-                .select("*")
-                .gt("start_time", since)
-                .order("priority", desc=True)
-                .execute()
-            )
+            try:
+                resp = (
+                    supabase.table("events")
+                    .select("*")
+                    .gt("updated_at", since)
+                    .order("priority", desc=True)
+                    .execute()
+                )
+            except Exception:
+                # Pre-migration fallback
+                resp = (
+                    supabase.table("events")
+                    .select("*")
+                    .gt("start_time", since)
+                    .order("priority", desc=True)
+                    .execute()
+                )
         else:
+            twenty_eight_days_ago = (datetime.now(timezone.utc) - timedelta(days=28)).isoformat()
             resp = (
                 supabase.table("events")
                 .select("*")
+                .gte("start_time", twenty_eight_days_ago)
                 .order("start_time", desc=True)
-                .limit(50)
+                .limit(1000)
                 .execute()
             )
     except Exception as exc:
         raise HTTPException(status_code=500, detail=f"Query failed: {exc}")
 
-    return [Event(**row) for row in (resp.data or [])]
+    return [_to_event(row) for row in (resp.data or [])]
 
+
+# ── PATCH /events/{incident_id} (Route 8) ─────────────────────────────────────
 
 @router.patch("/events/{incident_id}", response_model=Event)
 async def patch_event(incident_id: str, body: EventPatch):
     """
-    The desk sends status (+ staff_note): confirmed / dismissed / resolved, or pushed for an
-    early push. The duty phone sends acked_at ("On my way"; response = acked_at - pushed_at),
-    arrived_at ("I'm here") and outcome + outcome_at ("What did you find?").
+    Route 8: Operator / Guard status updates.
+    The desk sends status (+ staff_note) or pushed_to/pushed_at for Push now.
+    The duty phone sends acked_at ("On my way"), arrived_at ("I'm here"),
+    and outcome + outcome_at ("What did you find?").
     """
     supabase = get_supabase()
     update_data = live_loop.patch_update(
-        body.status.value if body.status is not None else None, body.staff_note, body.acked_at,
-        body.arrived_at, body.outcome.value if body.outcome is not None else None, body.outcome_at,
+        body.status.value if body.status is not None else None,
+        body.staff_note,
+        body.acked_at,
+        body.arrived_at,
+        body.outcome.value if body.outcome is not None else None,
+        body.outcome_at,
+        pushed_to=body.pushed_to,
+        pushed_at=body.pushed_at,
     )
     if not update_data:
-        raise HTTPException(status_code=422, detail="Send status, staff_note, acked_at, arrived_at or outcome.")
+        raise HTTPException(status_code=422, detail="Send status, staff_note, acked_at, arrived_at, outcome, or pushed_to/pushed_at.")
     update_data["incident_id"] = incident_id
+
     # Desk "Push now" (status pushed): record who and when, so the guard's phone rings.
     if update_data.get("status") == "pushed":
-        try:
-            cur = supabase.table("events").select("*").eq("incident_id", incident_id).limit(1).execute().data
-        except Exception:
-            cur = []
-        if cur and not cur[0].get("pushed_to"):
-            name = live_loop.choose_guard(_staff_rows(supabase), cur[0].get("nearest_staff"), cur[0].get("zone_type"))
+        if not update_data.get("pushed_to"):
+            try:
+                cur = supabase.table("events").select("*").eq("incident_id", incident_id).limit(1).execute().data
+            except Exception:
+                cur = []
+            pref = cur[0].get("nearest_staff") if cur else None
+            zt = cur[0].get("zone_type") if cur else None
+            name = live_loop.choose_guard(_staff_rows(supabase), pref, zt)
             if name:
                 update_data["pushed_to"] = name
-                update_data["pushed_at"] = datetime.now(timezone.utc).isoformat()
+        if not update_data.get("pushed_at"):
+            update_data["pushed_at"] = datetime.now(timezone.utc).isoformat()
+
     try:
         data = _write(supabase, update_data, existing=True)
     except Exception as exc:
         raise HTTPException(status_code=500, detail=f"Update failed: {exc}")
     if not data:
         raise HTTPException(status_code=404, detail=f"Event {incident_id} not found")
-    return Event(**data[0])
+    return _to_event(data[0])
+
+
+# ── GET /labels (Route 21: Model Training Labels) ─────────────────────────────
+
+@router.get("/labels", response_model=list[LabelRow])
+async def get_labels(since: Optional[str] = Query(default=None)):
+    """
+    Route 21: Decided incidents for model retraining (keypoints only, never video).
+    Fetches incidents where a decision was made (status confirmed, dismissed, resolved, or outcome exists).
+    """
+    supabase = get_supabase()
+    rows = []
+    try:
+        q = supabase.table("events").select("incident_id, camera_id, start_time, level, peak_score, status, outcome, peak_snapshot")
+        if since:
+            q = q.gt("start_time", since)
+        q = q.in_("status", ["confirmed", "dismissed", "resolved"]).order("start_time", desc=True).limit(1000)
+        resp = q.execute()
+        rows = resp.data or []
+    except Exception:
+        # Pre-migration fallback if outcome or peak_snapshot columns are not yet created
+        try:
+            q = supabase.table("events").select("incident_id, camera_id, start_time, level, peak_score, status")
+            if since:
+                q = q.gt("start_time", since)
+            q = q.in_("status", ["confirmed", "dismissed", "resolved"]).order("start_time", desc=True).limit(1000)
+            resp = q.execute()
+            rows = resp.data or []
+        except Exception as exc:
+            raise HTTPException(status_code=500, detail=f"Query failed: {exc}")
+
+    return [
+        LabelRow(
+            incident_id=r["incident_id"],
+            camera_id=r.get("camera_id") or "CAM-AU-01",
+            start_time=r["start_time"],
+            level=r.get("level", "tense"),
+            peak_score=float(r.get("peak_score") or 0.0),
+            status=r["status"],
+            outcome=r.get("outcome"),
+            peak_snapshot=r.get("peak_snapshot"),
+        )
+        for r in rows
+    ]
+
+
+# ── POST /handover (Route 15: Shift Handover Brief) ───────────────────────────
+
+@router.post("/handover", response_model=HandoverBrief)
+async def post_handover(facts: HandoverFacts):
+    """
+    Route 15: Shift handover brief.
+    Words the already-computed shift facts using Claude (claude-sonnet-5-5),
+    falling back to a clean deterministic brief.
+    Never invents numbers; words only the facts provided.
+    """
+    now_iso = datetime.now(timezone.utc).isoformat()
+    text = None
+    model_name = ANTHROPIC_MODEL
+
+    if ANTHROPIC_API_KEY:
+        prompt = (
+            "You are the control room supervisor writing an operational shift handover brief for EarlyEye.\n"
+            "Summarize ONLY these verified shift facts (do not invent or extrapolate numbers):\n"
+            f"- Shift window: {facts.shift_start} to {facts.now}\n"
+            f"- Pushes / Alert budget: {facts.pushes} / {facts.budget}\n"
+            f"- Confirmed incidents: {facts.confirmed}\n"
+            f"- Dismissed alarms: {facts.dismissed}\n"
+            f"- Open incidents ({len(facts.open)}): {[f'{i.incident_id} at {i.location} ({i.level})' for i in facts.open]}\n"
+            f"- Inactive/Black cameras ({len(facts.black_cameras)}): {[f'{c.camera_id} at {c.location} since {c.black_since}' for c in facts.black_cameras]}\n"
+            f"- Today's patrol plan: {facts.patrol_today or 'Standard schedule'}\n\n"
+            "Write a concise, professional 2-3 paragraph brief for the incoming shift supervisor."
+        )
+        try:
+            async with httpx.AsyncClient(timeout=10.0) as client:
+                res = await client.post(
+                    "https://api.anthropic.com/v1/messages",
+                    headers={
+                        "x-api-key": ANTHROPIC_API_KEY,
+                        "anthropic-version": "2023-06-01",
+                        "content-type": "application/json",
+                    },
+                    json={
+                        "model": ANTHROPIC_MODEL,
+                        "max_tokens": 500,
+                        "messages": [{"role": "user", "content": prompt}],
+                    },
+                )
+                if res.status_code == 200:
+                    text = res.json()["content"][0]["text"]
+        except Exception:
+            pass
+
+    if not text:
+        # Fallback offline template without inventing numbers
+        model_name = "offline-template"
+        open_desc = f"{len(facts.open)} open incident(s)" if facts.open else "No open incidents"
+        black_desc = f"{len(facts.black_cameras)} camera(s) black" if facts.black_cameras else "All cameras operational"
+        text = (
+            f"Shift Handover Brief ({facts.shift_start[:16]} to {facts.now[:16]}):\n"
+            f"Pushes used: {facts.pushes} of {facts.budget} budget. "
+            f"Actions: {facts.confirmed} confirmed, {facts.dismissed} dismissed.\n"
+            f"Status: {open_desc}. Hardware: {black_desc}.\n"
+            f"Patrol coverage: {facts.patrol_today or 'Standard standing posts active'}."
+        )
+
+    return HandoverBrief(
+        text=text,
+        model=model_name,
+        generated_at=now_iso,
+    )

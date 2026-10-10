@@ -180,17 +180,29 @@ def _after(e: dict, since: datetime, now: datetime) -> bool:
     return since <= t <= now
 
 
-SLOT_PATCH_FIELDS = ("status", "assigned_to", "seen_at", "suggestion")
+SLOT_PATCH_FIELDS = (
+    "status", "assigned_to", "seen_at", "suggestion",
+    "days", "hours", "location", "zone_type", "geo", "tip", "source"
+)
 
 
 def slot_update(current: dict, patch: dict, now: datetime) -> dict:
     """
-    Columns to write for PATCH /plan/slots/:id.
+    Columns to write for PATCH /plan/slots/:id (Route 19 extended).
     - Accepting a suggestion (suggested → active) starts the post: since = now, suggestion cleared.
     - Ending a post (or "Not now" on a suggestion): status ended, guard removed, ended_at = now.
     - A new guard resets seen_at (the post must be seen again in their app).
+    - If days or hours change on an assigned post, clear seen_at so the app shows "Changed by your supervisor".
+    - Extended fields: days, hours, location, zone_type, geo, tip, source.
     """
     out: dict = {}
+    time_changed = False
+    for field in ("days", "hours", "location", "zone_type", "geo", "tip", "source"):
+        if field in patch and patch[field] is not None:
+            out[field] = patch[field]
+            if field in ("days", "hours") and patch[field] != current.get(field):
+                time_changed = True
+
     status = patch.get("status")
     if status:
         out["status"] = status
@@ -205,6 +217,8 @@ def slot_update(current: dict, patch: dict, now: datetime) -> dict:
         out["assigned_to"] = patch["assigned_to"]
         if patch["assigned_to"] != current.get("assigned_to"):
             out["seen_at"] = None
+    if time_changed and (current.get("assigned_to") or patch.get("assigned_to")):
+        out["seen_at"] = None
     if patch.get("seen_at"):
         out["seen_at"] = patch["seen_at"]
     return out

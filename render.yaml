@@ -14,6 +14,12 @@ services:
         sync: false           # set manually in Render dashboard
       - key: SUPABASE_KEY
         sync: false
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: ANTHROPIC_MODEL
+        value: "claude-sonnet-5-5"
+      - key: OPENAI_API_KEY
+        sync: false
       - key: CORS_ORIGINS
         value: "*"
       - key: PYTHON_VERSION

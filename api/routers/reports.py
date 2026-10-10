@@ -1,17 +1,17 @@
 """
-EarlyEye API — Weekly Report Router (SHOULD Item #8)
+EarlyEye API — Weekly Report Router (SHOULD Item #8 / Route 17)
 
-Generates a formal executive incident & security audit report over SQL data
+Generates an executive incident & security audit report over SQL data
 in English and Bahasa Malaysia, citing real incident IDs and hotspot data.
-Can query Claude (Anthropic) or use built-in analytical generator.
+Uses Claude (claude-sonnet-5-5) when ANTHROPIC_API_KEY is available.
 """
 
 from __future__ import annotations
 
 from collections import Counter
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 import httpx
 
 from api.config import ANTHROPIC_API_KEY, ANTHROPIC_MODEL
@@ -26,21 +26,26 @@ router = APIRouter(prefix="", tags=["reports"])
 def generate_report(req: ReportRequest):
     """
     Generate an executive weekly or monthly security report based on database records.
-    Cites specific incident IDs, hotspot clusters, and patrol hours saved.
+    Filters by requested period ('last_week', 'last_month', 'all_time').
+    Cites verified incident IDs, hotspot clusters, and real data without invented numbers.
     """
     sb = get_supabase()
+    now = datetime.now(timezone.utc)
 
-    # Query events from database
+    # Filter events based on requested period
+    query = sb.table("events").select("incident_id, location, zone_type, level, type, start_time, status")
+    if req.period == "last_week":
+        cutoff = (now - timedelta(days=7)).isoformat()
+        query = query.gte("start_time", cutoff)
+    elif req.period == "last_month":
+        cutoff = (now - timedelta(days=30)).isoformat()
+        query = query.gte("start_time", cutoff)
+
     try:
-        events_resp = (
-            sb.table("events")
-            .select("incident_id, location, zone_type, level, type, start_time, status")
-            .order("start_time", desc=True)
-            .execute()
-        )
+        events_resp = query.order("start_time", desc=True).limit(500).execute()
         events = events_resp.data or []
-    except Exception:
-        events = []
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f"Database query failed: {exc}")
 
     total_incidents = len(events)
     severity_counts = dict(Counter(e["level"] for e in events))
@@ -48,24 +53,27 @@ def generate_report(req: ReportRequest):
     hotspots = get_hotspots()
     plan = get_plan()
 
-    cited_ids = [e["incident_id"] for e in events[:8]]
+    cited_ids = [e["incident_id"] for e in events[:6]]
+    top_hotspot_locs = [h.location for h in hotspots[:2]]
 
-    # Generate Markdown Report
-    now_str = datetime.now(timezone.utc).strftime("%d %B %Y, %H:%M UTC")
+    now_str = now.strftime("%d %B %Y, %H:%M UTC")
 
-    # If Anthropic Claude API key is configured, invoke Claude for dynamic synthesis
+    # Dynamic Claude synthesis
     claude_summary = None
     if ANTHROPIC_API_KEY:
         try:
             prompt = (
                 f"You are the Lead Security Analyst for EarlyEye at Taylor's Lakeside Campus. "
-                f"Write a 3-paragraph executive weekly security report based on this data: "
-                f"Total incidents: {total_incidents}, Severity: {severity_counts}, "
-                f"Types: {type_counts}, Top hotspots: {[h.location for h in hotspots[:2]]}, "
-                f"Sample Incident IDs: {cited_ids[:4]}. "
-                f"Write in formal English with a short Bahasa Malaysia summary at the end."
+                f"Write a 3-paragraph executive security report for the period '{req.period}' based strictly on this verified data:\n"
+                f"- Total incidents: {total_incidents}\n"
+                f"- Severity breakdown: {severity_counts}\n"
+                f"- Incident types: {type_counts}\n"
+                f"- Top hotspot locations: {top_hotspot_locs}\n"
+                f"- Cited Incident IDs: {cited_ids}\n"
+                f"Do not invent statistics or numbers not in this prompt. "
+                f"Write in formal English with a short Bahasa Malaysia summary paragraph at the end."
             )
-            with httpx.Client(timeout=20.0) as client:
+            with httpx.Client(timeout=15.0) as client:
                 res = client.post(
                     "https://api.anthropic.com/v1/messages",
                     headers={
@@ -85,21 +93,25 @@ def generate_report(req: ReportRequest):
             pass
 
     if not claude_summary:
-        # High-clarity built-in executive analytical report
+        # Factual fallback based strictly on real queried numbers
+        fights = severity_counts.get("fight", 0)
+        fight_likely = severity_counts.get("fight_likely", 0)
+        hotspot_bullets = "\n".join(
+            f"- **{h.location}:** {h.count} incidents concentrated around {h.hour:02d}:00."
+            for h in hotspots[:3]
+        ) or "- No recurring hotspots in this period."
+
         claude_summary = (
             f"### Executive Security Overview — Taylor's Lakeside Campus\n\n"
-            f"Over the reporting period ({req.period}), the EarlyEye early-warning network recorded "
-            f"**{total_incidents} automated physical-interaction detections**. Of these, "
-            f"**{severity_counts.get('fight_likely', 0)}** were flagged as `fight_likely` and "
-            f"**{severity_counts.get('fight', 0)}** escalated to active physical altercation.\n\n"
-            f"#### Key Hotspot Concentrations\n"
-            f"- **Block C Stairwell:** Identified as the primary escalation point during weekday midday hours (13:00–14:00). "
-            f"Incidents such as `{cited_ids[0] if cited_ids else 'INC-2026-0001'}` demonstrated rapid crowd convergence.\n"
-            f"- **Asrama Puteri Corridor (L3):** Clustered late-night activity (>22:00) with cornering dynamics.\n\n"
+            f"Over the reporting period ({req.period}), the EarlyEye early-warning system recorded "
+            f"**{total_incidents} physical-interaction detections**. "
+            f"Severity breakdown: **{fight_likely}** flagged as `fight_likely`, and **{fights}** escalated to `fight`.\n\n"
+            f"#### Verified Hotspot Locations\n"
+            f"{hotspot_bullets}\n\n"
+            f"Sample verified incident records: {', '.join(f'`{cid}`' for cid in cited_ids) if cited_ids else 'None'}.\n\n"
             f"#### Ringkasan Eksekutif (Bahasa Malaysia)\n"
-            f"Sistem EarlyEye berjaya mengeluarkan amaran awal purata 5.8 saat sebelum sebarang kontak fizikal berlaku. "
-            f"Rancangan rondaan mingguan mencadangkan penempatan pegawai keselamatan di Tangga Blok C pada jam 13:00–14:00, "
-            f"dengan unjuran pengurangan kes sebanyak 60% seminggu."
+            f"Sepanjang tempoh laporan ({req.period}), sistem EarlyEye merekodkan sebanyak {total_incidents} insiden fizikal. "
+            f"Pasukan keselamatan disyorkan meronda lokasi tumpuan mengikut jadual rondaan standing posts bagi mencegah ketegangan."
         )
 
     hotspot_summary_list = [

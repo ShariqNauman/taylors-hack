@@ -71,6 +71,12 @@ class Zone(BaseModel):
     risk: float = Field(ge=0, le=1)
 
 
+class GeoPoint(BaseModel):
+    lat: float
+    lng: float
+    alt_m: Optional[float] = None
+
+
 class StaffShift(BaseModel):
     """A person's usual shift. days: 0=Mon … 6=Sun. from/to are "HH:MM"; to < from means it ends after midnight."""
     model_config = {"populate_by_name": True}
@@ -89,6 +95,12 @@ class SiteStaff(BaseModel):
     zone_type: Optional[str] = None             # base zone
     shift: Optional[StaffShift] = None
     on_duty: Optional[bool] = None
+    post: Optional[GeoPoint] = None
+
+
+class CampusInfo(BaseModel):
+    center: GeoPoint
+    buildings: str
 
 
 class Site(BaseModel):
@@ -97,6 +109,7 @@ class Site(BaseModel):
     site_type: SiteType
     zones: list[Zone]
     staff: list[SiteStaff] = Field(default_factory=list)
+    campus: Optional[CampusInfo] = None
 
 
 class Camera(BaseModel):
@@ -106,12 +119,33 @@ class Camera(BaseModel):
     online: bool = True
     last_frame_at: Optional[str] = None
     black_since: Optional[str] = None
+    people_count: Optional[int] = 0
+    geo: Optional[dict[str, Any]] = None
+    source: Optional[str] = "recorded"          # "live" | "recorded"
+    recorded_at: Optional[str] = None
+    edge_url: Optional[str] = None
+    sensitivity: Optional[str] = "strict"       # "strict" | "sensitive"
 
 
 class CameraPatch(BaseModel):
-    """PATCH /cameras/{camera_id}. The manager changes a camera's zone on Track record
-    ("Make it a sports zone"). zone_type must be one of the site's zones."""
+    """PATCH /cameras/{camera_id}. The manager changes a camera's zone or sensitivity."""
+    zone_type: Optional[str] = None
+    sensitivity: Optional[str] = None           # "strict" | "sensitive"
+
+
+class CameraHeartbeat(BaseModel):
+    camera_id: str
+    people_count: Optional[int] = 0
+    edge_url: Optional[str] = None
+    source: Optional[str] = None
+    recorded_at: Optional[str] = None
+
+
+class CameraHeartbeatResponse(BaseModel):
+    ok: bool = True
+    camera_id: str
     zone_type: str
+    sensitivity: str = "strict"
 
 
 # ── Event (the core incident record) ─────────────────────────────────────────
@@ -166,20 +200,23 @@ class Event(BaseModel):
     outcome_at: Optional[str] = None
     status: Status
     staff_note: Optional[str] = None
+    updated_at: Optional[str] = None
     snapshot: Optional[dict[str, Any]] = None
     peak_snapshot: Optional[dict[str, Any]] = None
     top_features: Optional[list[dict[str, Any]]] = None
 
 
 class EventPatch(BaseModel):
-    """PATCH body. The desk sends status (+ staff_note); the duty phone sends acked_at ("On my way"),
-    arrived_at ("I'm here") and outcome + outcome_at ("What did you find?")."""
+    """PATCH body. The desk sends status (+ staff_note) or pushed_to/pushed_at for Push now;
+    the duty phone sends acked_at ("On my way"), arrived_at ("I'm here") and outcome + outcome_at ("What did you find?")."""
     status: Optional[Status] = None
     staff_note: Optional[str] = None
     acked_at: Optional[str] = None
     arrived_at: Optional[str] = None
     outcome: Optional[Outcome] = None
     outcome_at: Optional[str] = None
+    pushed_to: Optional[str] = None
+    pushed_at: Optional[str] = None
 
 
 # ── Hotspot & Patrol Plan ─────────────────────────────────────────────────────
@@ -212,9 +249,9 @@ class PatrolSlot(BaseModel):
     zone_type: Optional[str] = None
     days: str
     hours: str
-    incidents_4w: int
-    expected_avoided_per_week: float
-    rationale: str
+    incidents_4w: int = 0
+    expected_avoided_per_week: float = 0.0
+    rationale: str = ""
     status: SlotStatus = SlotStatus.active
     since: Optional[str] = None
     assigned_to: Optional[str] = None           # call sign
@@ -224,6 +261,20 @@ class PatrolSlot(BaseModel):
     ended_at: Optional[str] = None
     evidence: list[str] = Field(default_factory=list)
     checkins: list[Checkin] = Field(default_factory=list)
+    source: Optional[str] = "model"             # "model" | "manual"
+    geo: Optional[dict[str, Any]] = None
+
+
+class SlotCreate(BaseModel):
+    """POST /plan/slots. Supervisor manually adds a post."""
+    location: str
+    zone_type: Optional[str] = None
+    geo: Optional[dict[str, Any]] = None
+    days: str
+    hours: str
+    tip: Optional[str] = None
+    assigned_to: Optional[str] = None
+    source: Optional[str] = "manual"
 
 
 class SlotPatch(BaseModel):
@@ -231,11 +282,65 @@ class SlotPatch(BaseModel):
     status: Optional[SlotStatus] = None
     assigned_to: Optional[str] = None
     seen_at: Optional[str] = None
+    days: Optional[str] = None
+    hours: Optional[str] = None
+    location: Optional[str] = None
+    zone_type: Optional[str] = None
+    geo: Optional[dict[str, Any]] = None
+    tip: Optional[str] = None
+    source: Optional[str] = None
 
 
 class CheckinCreate(BaseModel):
     staff: str
     at: Optional[str] = None
+
+
+# ── Shift Handover (Route 15) ────────────────────────────────────────────────
+
+class OpenIncident(BaseModel):
+    incident_id: str
+    location: str
+    level: str
+    priority: float
+    status: str
+
+
+class BlackCamera(BaseModel):
+    camera_id: str
+    location: str
+    black_since: str
+
+
+class HandoverFacts(BaseModel):
+    shift_start: str
+    now: str
+    pushes: int
+    budget: int
+    open: list[OpenIncident] = Field(default_factory=list)
+    confirmed: int
+    dismissed: int
+    black_cameras: list[BlackCamera] = Field(default_factory=list)
+    patrol_today: Optional[str] = None
+
+
+class HandoverBrief(BaseModel):
+    text: str
+    model: str
+    generated_at: str
+
+
+# ── Training Labels (Route 21) ────────────────────────────────────────────────
+
+class LabelRow(BaseModel):
+    incident_id: str
+    camera_id: str
+    start_time: str
+    level: str
+    peak_score: float
+    status: str
+    outcome: Optional[str] = None
+    peak_snapshot: Optional[dict[str, Any]] = None
 
 
 class PatrolPlan(BaseModel):

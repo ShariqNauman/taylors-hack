@@ -66,7 +66,8 @@ def shift_start(now: datetime | None = None) -> str:
 
 def patch_update(status: str | None, staff_note: str | None, acked_at: str | None,
                  arrived_at: str | None = None, outcome: str | None = None,
-                 outcome_at: str | None = None) -> dict:
+                 outcome_at: str | None = None, pushed_to: str | None = None,
+                 pushed_at: str | None = None) -> dict:
     """PATCH body -> columns to update. The phone sends acked_at / arrived_at / outcome; the desk sends status."""
     out: dict = {}
     if arrived_at is not None:
@@ -81,6 +82,10 @@ def patch_update(status: str | None, staff_note: str | None, acked_at: str | Non
         out["staff_note"] = staff_note
     if acked_at is not None:
         out["acked_at"] = acked_at
+    if pushed_to is not None:
+        out["pushed_to"] = pushed_to
+    if pushed_at is not None:
+        out["pushed_at"] = pushed_at
     return out
 
 
@@ -88,7 +93,7 @@ def without_unknown_columns(row: dict, error_text: str) -> dict | None:
     """Supabase/PostgREST rejects a column that the table does not have yet (before the
     migration runs). Return the row without that column so the write can be retried, or None."""
     text = error_text or ""
-    for col in ("acked_at", "arrived_at", "outcome", "outcome_at", "snapshot", "peak_snapshot", "top_features", "updated_at"):
+    for col in ("acked_at", "arrived_at", "outcome", "outcome_at", "snapshot", "peak_snapshot", "top_features", "updated_at", "pushed_to", "pushed_at"):
         if col in row and col in text:
             r = dict(row)
             r.pop(col)
@@ -98,16 +103,62 @@ def without_unknown_columns(row: dict, error_text: str) -> dict | None:
 
 # ── Who gets the alarm (guard app) ───────────────────────────────────────────
 
+def _guard_dist(target_geo: dict | None, post_geo: dict | None) -> float:
+    if not target_geo or not post_geo:
+        return float("inf")
+    try:
+        dlat = float(target_geo.get("lat", 0)) - float(post_geo.get("lat", 0))
+        dlng = float(target_geo.get("lng", 0)) - float(post_geo.get("lng", 0))
+        return dlat * dlat + dlng * dlng
+    except (TypeError, ValueError):
+        return float("inf")
+
+
+def nearest_guard(staff: list[dict], preferred: str | None, zone_type: str | None,
+                  camera_geo: dict | None = None, guard_posts: dict[str, dict] | None = None) -> str | None:
+    """Find the geographically or zone-nearest guard regardless of on_duty, used for nearest_staff."""
+    if not staff:
+        return preferred
+    guard_posts = guard_posts or {}
+    # If geo is available, sort by distance to camera
+    if camera_geo:
+        def key(r):
+            pos = guard_posts.get(r["name"]) or r.get("post")
+            return (_guard_dist(camera_geo, pos), 0 if r.get("zone") == zone_type else 1)
+        sorted_staff = sorted(staff, key=key)
+        return sorted_staff[0]["name"]
+    # Fallback to zone match
+    for r in staff:
+        if zone_type and r.get("zone") == zone_type:
+            return r["name"]
+    return preferred or (staff[0]["name"] if staff else None)
+
+
 def choose_guard(staff: list[dict], preferred: str | None, zone_type: str | None,
-                 exclude: tuple[str, ...] = ()) -> str | None:
+                 exclude: tuple[str, ...] = (),
+                 camera_geo: dict | None = None,
+                 guard_posts: dict[str, dict] | None = None) -> str | None:
     """
     The person to push. Only people on duty (on_duty is not False: a guard who never tapped
     Start my shift still counts, so nobody is silently skipped). Preference: the edge's
-    nearest_staff, then someone based in this zone, then anyone on duty. If nobody is on
-    duty, the edge's choice still gets it rather than nobody.
+    nearest_staff (if on duty), then someone based in this zone, then anyone on duty.
+    If nobody is on duty, the edge's choice still gets it rather than nobody.
     """
+    guard_posts = guard_posts or {}
     on = [r for r in staff if r.get("on_duty") is not False and r.get("name") not in exclude]
     names = [r["name"] for r in on]
+
+    # If camera geo is provided, sort on-duty guards by distance to camera
+    if camera_geo and on:
+        def dist_key(r):
+            pos = guard_posts.get(r["name"]) or r.get("post")
+            dist = _guard_dist(camera_geo, pos)
+            zone_match = 0 if (zone_type and r.get("zone") == zone_type) else 1
+            pref_match = 0 if (preferred and r.get("name") == preferred) else 1
+            return (dist, zone_match, pref_match)
+        ranked = sorted(on, key=dist_key)
+        return ranked[0]["name"]
+
     if preferred and preferred in names:
         return preferred
     for r in on:

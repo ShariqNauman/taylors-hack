@@ -18,7 +18,7 @@ SUPABASE_KEY: str = os.getenv("SUPABASE_KEY", "")  # service-role or anon key
 
 # ── AI Keys (SHOULD & CUT: Agent, RAG, Weekly Report) ─────────────────────────
 ANTHROPIC_API_KEY: str = os.getenv("ANTHROPIC_API_KEY", "")
-ANTHROPIC_MODEL: str = os.getenv("ANTHROPIC_MODEL", "claude-sonnet-5")
+ANTHROPIC_MODEL: str = os.getenv("ANTHROPIC_MODEL", "claude-sonnet-5-5")
 OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY", "")
 
 # ── Auth & Security ───────────────────────────────────────────────────────────
