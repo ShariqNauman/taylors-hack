@@ -76,7 +76,11 @@ export function AlertCard({
     );
   }
 
-  const theme = LEVEL_THEME[event.level];
+  // The guard reported back (not "Need backup"): no longer an alarm on this screen.
+  const closedByGuard = handled && !!event.outcome && event.outcome !== "backup";
+  const theme = closedByGuard
+    ? { ...LEVEL_THEME.calm, tint: "#FFFFFF", border: "#0B0D10" }
+    : LEVEL_THEME[event.level];
   const isCalm = event.level === "calm";
   const decided = event.status === "confirmed" || event.status === "dismissed";
   const pushed = !!event.pushed_to;
@@ -208,11 +212,11 @@ export function AlertCard({
         </div>
       )}
       <div className="flex flex-wrap items-center gap-2.5">
-        <LevelPill level={event.level} size="xl" />
+        {!closedByGuard && <LevelPill level={event.level} size="xl" />}
         {!isCalm && <TypeChip type={event.type} size="lg" />}
       </div>
       <div className="ee-display text-[40px] sm:text-[44px]" aria-live="polite">
-        {etaText(event.level, etaLeft)}
+        {closedByGuard ? "Handled by the guard" : etaText(event.level, etaLeft)}
       </div>
       <div className="flex flex-col gap-1">
         <h2 className="text-[30px] font-extrabold leading-[1.1]">
