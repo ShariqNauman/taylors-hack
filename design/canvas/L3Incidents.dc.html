@@ -251,16 +251,16 @@ class Component extends DCLogic {
       resolved: { label: 'Resolved', bg: '#FFFFFF', fg: '#3A414B', border: '#B4BAC3' }
     };
     const RAW = [
-      ['INC-2026-00142', 'Sat 10 Oct', '14:31:00', 'CAM-AU-01', 'Auditorium', 'Auditorium', 'fight', 'fight', 0.61, 'confirmed', 'Guard B', 'fightShove', 'Shove: sudden lunge; second person pushed back.', 'Two people separated near the stage. Live demo incident.', 4],
+      ['INC-2026-00142', 'Sat 10 Oct', '14:31:00', 'CAM-AU-01', 'Grand Hall', 'Auditorium', 'fight', 'fight', 0.61, 'confirmed', 'Guard B', 'fightShove', 'Shove: sudden lunge; second person pushed back.', 'Two people separated near the stage. Live demo incident.', 4],
       ['INC-2026-00140', 'Sat 10 Oct', '14:29:12', 'CAM-SC-06', 'Sports pitch', 'Sports pitch', 'fight', 'fight_likely', 0.29, 'pushed', 'Guard B', 'fightPeak', 'Repeated fast arm strikes toward head height while close.', '', 6],
       ['INC-2026-00139', 'Sat 10 Oct', '14:28:40', 'CAM-CT-04', 'Syopz Mall food court', 'Food court', 'crowd', 'tense', 0.16, 'new', null, 'crowd', 'Six people stopped and faced the same point for 8 s.', '', null],
       ['INC-2026-00116', 'Fri 9 Oct', '12:44:05', 'CAM-CT-04', 'Syopz Mall food court', 'Food court', 'crowd', 'tense', 0.14, 'resolved', null, 'crowd', 'Eight people formed a ring in 4 s; two in the centre.', '', null],
       ['INC-2026-00127', 'Thu 8 Oct', '14:16:31', 'CAM-SC-06', 'Sports pitch', 'Sports pitch', 'fight', 'tense', 0.12, 'dismissed', null, 'fightTense', 'Arm raised toward the other person; motion rising.', '', null],
       ['INC-2026-00104', 'Wed 7 Oct', '13:47:02', 'CAM-BC-03', 'Block C stairwell', 'Stairwell', 'cornering', 'fight_likely', 0.40, 'resolved', 'Guard B', 'cornering', 'One person against the wall, three within 2 torso-lengths for 7 s.', '', 5],
       ['INC-2026-00123', 'Mon 5 Oct', '07:47:20', 'CAM-BC-03', 'Block C stairwell', 'Stairwell', 'play', 'tense', 0.16, 'dismissed', null, 'play', 'Fast arms, no approach; distance stayed above 1 torso-length.', 'Friends play-fighting.', null],
-      ['INC-2026-00120', 'Thu 1 Oct', '12:06:44', 'CAM-HC-01', 'DK Senza, corridor L3', 'Hostel corridor', 'fight', 'fight_likely', 0.45, 'dismissed', 'Guard C', 'fightTense', 'Arm raised above shoulder for 0.8 s while close.', '', 9],
+      ['INC-2026-00120', 'Thu 1 Oct', '12:06:44', 'CAM-HC-01', 'U Residence, corridor L3', 'Hostel corridor', 'fight', 'fight_likely', 0.45, 'dismissed', 'Guard C', 'fightTense', 'Arm raised above shoulder for 0.8 s while close.', '', 9],
       ['INC-2026-00101', 'Wed 30 Sep', '13:24:10', 'CAM-BC-03', 'Block C stairwell', 'Stairwell', 'cornering', 'fight', 0.54, 'resolved', 'Guard C', 'cornering', 'Group of three closed in on one person; no exit path for 6 s.', '', 3],
-      ['INC-2026-00111', 'Mon 21 Sep', '22:08:15', 'CAM-HC-01', 'DK Senza, corridor L3', 'Hostel corridor', 'fight', 'fight', 0.80, 'confirmed', 'Guard C', 'fightPeak', 'Repeated fast strikes toward head height.', '', 7]
+      ['INC-2026-00111', 'Mon 21 Sep', '22:08:15', 'CAM-HC-01', 'U Residence, corridor L3', 'Hostel corridor', 'fight', 'fight', 0.80, 'confirmed', 'Guard C', 'fightPeak', 'Repeated fast strikes toward head height.', '', 7]
     ];
     const all = RAW.map((r) => ({ id: r[0], day: r[1], time: r[2], cam: r[3], loc: r[4], zone: r[5], type: r[6], level: r[7], prio: r[8].toFixed(2), status: s.patch[r[0]] || r[9], staff: r[10], scene: r[11], reason: r[12], note: s.notes[r[0]] != null ? s.notes[r[0]] : r[13], ack: r[14] }));
     const counts = { all: all.length, open: 0, confirmed: 0, dismissed: 0, resolved: 0 };

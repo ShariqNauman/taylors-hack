@@ -139,19 +139,19 @@ body{margin:0}
 </sc-if>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"mode":{"editor":"enum","options":["cameras","plan"],"default":"cameras"},"compact":{"editor":"boolean","default":false},"focus":{"editor":"enum","options":["","aud","blockc","syopz","sports","dksenza"],"default":""},"$preview":{"width":1200,"height":640}}'>
+<script type="text/x-dc" data-dc-script data-props='{"mode":{"editor":"enum","options":["cameras","plan"],"default":"cameras"},"compact":{"editor":"boolean","default":false},"focus":{"editor":"enum","options":["","aud","blockc","syopz","sports","ures"],"default":""},"$preview":{"width":1200,"height":640}}'>
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    const FC = { aud: [10, -175], blockc: [55, -125], syopz: [-90, -80], sports: [50, 145], dksenza: [15, 345] };
+    const FC = { aud: [10, -175], blockc: [55, -125], syopz: [-80, -55], sports: [50, 145], ures: [-90, -120] };
     const fc = props && props.focus ? FC[props.focus] : null;
     const compact = !!(props && props.compact);
-    this.state = { mode: (props && props.mode) || 'cameras', th: 90, pitch: compact ? 60 : 52, zoom: fc ? 2.2 : 1, fx: fc ? fc[0] : 5, fy: fc ? fc[1] : 75, sel: compact ? null : 'CAM-AU-01', post: null, drag: null };
+    this.state = { mode: (props && props.mode) || 'cameras', th: 90, pitch: compact ? 60 : 52, zoom: fc ? 2.2 : 1.2, fx: fc ? fc[0] : 0, fy: fc ? fc[1] : -12, sel: compact ? null : 'CAM-AU-01', post: null, drag: null };
   }
   componentDidUpdate(prev) { if (prev.mode !== this.props.mode) this.setState({ mode: this.props.mode || 'cameras', sel: null, post: null }); }
   data() {
     if (this._d) return this._d;
-    const D = {"B":[{"id":"blockab","label":"BLOCK A AND B","h":30,"p":[[-64,-209],[-64,-173],[-64,-165],[-64,-163],[38,-163],[38,-143],[71,-143],[71,-163],[76,-163],[76,-180],[77,-188],[79,-192],[79,-196],[78,-200],[76,-205],[74,-209],[-17,-209],[-16,-211],[-24,-211],[-24,-217],[-39,-217],[-39,-209]]},{"id":"blockc","label":"BLOCK C","h":30,"p":[[38,-143],[71,-143],[84,-143],[84,-135],[95,-135],[95,-113],[74,-113],[74,-100],[53,-100],[53,-113],[21,-114],[14,-114],[14,-143]]},{"id":"blockd","label":"BLOCK D","h":30,"p":[[112,-100],[112,-77],[74,-77],[74,-62],[54,-62],[54,-77],[16,-77],[17,-82],[16,-100],[21,-100],[53,-100],[74,-100]]},{"id":"blocke","label":"BLOCK E","h":30,"p":[[111,-62],[112,-40],[85,-40],[86,-25],[32,-25],[31,-41],[18,-42],[18,-63],[54,-62],[74,-62]]},{"id":"syopz","label":"SYOPZ MALL","h":14,"p":[[-119,-145],[-119,-30],[-96,-29],[-96,-17],[-81,-17],[-81,-29],[-59,-29],[-59,-143],[-72,-143]]},{"id":"sports","label":"SPORTS CENTRE","h":12,"p":[[89,123],[90,170],[44,171],[43,122]]},{"id":"dksenza","label":"DK SENZA","h":45,"p":[[-48,382],[12,345],[63,285],[77,304],[29,360],[-38,404]]}],"campus":[[-94,-248],[55,-243],[83,-242],[98,-240],[136,-238],[141,-238],[152,-227],[154,-209],[155,-196],[156,-190],[160,-176],[160,-166],[160,-148],[158,-135],[154,-126],[150,-115],[148,-107],[141,-36],[140,-6],[137,53],[127,142],[124,169],[117,203],[82,201],[77,213],[72,219],[68,222],[64,224],[60,224],[57,223],[50,218],[35,202],[-18,142],[-28,131],[-35,137],[-57,157],[-78,175],[-90,181],[-97,184],[-104,184],[-109,183],[-113,179],[-121,168],[-131,145],[-132,140],[-133,134],[-132,127],[-127,113],[-124,102],[-122,92],[-122,82],[-124,10],[-124,-5],[-124,-31],[-151,-34],[-151,-147],[-148,-164],[-144,-178],[-124,-218],[-113,-238],[-103,-238],[-104,-242],[-103,-248]],"water":[[[-58,-19],[-60,76],[-56,94],[-49,106],[-38,117],[-24,119],[-8,117],[7,110],[14,100],[15,55],[14,-17],[8,-18],[7,-82],[-3,-81],[-3,-99],[-58,-99]],[[75,186],[65,210],[63,212],[59,212],[54,211],[45,206],[43,202],[45,195],[50,183],[53,179],[55,177],[67,177],[71,178],[74,180],[75,182]]],"pitch":[[[7,123],[7,146],[17,146],[17,123]],[[23,131],[23,169],[42,169],[42,131]]]};
+    const D = {"B":[{"id":"blockab","label":"BLOCK A AND B","h":30,"p":[[-64,-209],[-64,-173],[-64,-165],[-64,-163],[38,-163],[38,-143],[71,-143],[71,-163],[76,-163],[76,-180],[77,-188],[79,-192],[79,-196],[78,-200],[76,-205],[74,-209],[-17,-209],[-16,-211],[-24,-211],[-24,-217],[-39,-217],[-39,-209]]},{"id":"blockc","label":"BLOCK C","h":38,"p":[[38,-143],[71,-143],[84,-143],[84,-135],[95,-135],[95,-113],[74,-113],[74,-100],[53,-100],[53,-113],[21,-114],[14,-114],[14,-143]]},{"id":"blockd","label":"BLOCK D","h":38,"p":[[112,-100],[112,-77],[74,-77],[74,-62],[54,-62],[54,-77],[16,-77],[17,-82],[16,-100],[21,-100],[53,-100],[74,-100]]},{"id":"blocke","label":"BLOCK E","h":38,"p":[[111,-62],[112,-40],[85,-40],[86,-25],[32,-25],[31,-41],[18,-42],[18,-63],[54,-62],[74,-62]]},{"id":"syopz","label":"SYOPZ MALL \u00b7 U RESIDENCE ABOVE","h":24,"p":[[-119,-145],[-119,-30],[-96,-29],[-96,-17],[-81,-17],[-81,-29],[-59,-29],[-59,-143],[-72,-143]]},{"id":"sports","label":"SPORTS CENTRE","h":12,"p":[[89,123],[90,170],[44,171],[43,122]]}],"campus":[[-94,-248],[55,-243],[83,-242],[98,-240],[136,-238],[141,-238],[152,-227],[154,-209],[155,-196],[156,-190],[160,-176],[160,-166],[160,-148],[158,-135],[154,-126],[150,-115],[148,-107],[141,-36],[140,-6],[137,53],[127,142],[124,169],[117,203],[82,201],[77,213],[72,219],[68,222],[64,224],[60,224],[57,223],[50,218],[35,202],[-18,142],[-28,131],[-35,137],[-57,157],[-78,175],[-90,181],[-97,184],[-104,184],[-109,183],[-113,179],[-121,168],[-131,145],[-132,140],[-133,134],[-132,127],[-127,113],[-124,102],[-122,92],[-122,82],[-124,10],[-124,-5],[-124,-31],[-151,-34],[-151,-147],[-148,-164],[-144,-178],[-124,-218],[-113,-238],[-103,-238],[-104,-242],[-103,-248]],"water":[[[-58,-19],[-60,76],[-56,94],[-49,106],[-38,117],[-24,119],[-8,117],[7,110],[14,100],[15,55],[14,-17],[8,-18],[7,-82],[-3,-81],[-3,-99],[-58,-99]],[[75,186],[65,210],[63,212],[59,212],[54,211],[45,206],[43,202],[45,195],[50,183],[53,179],[55,177],[67,177],[71,178],[74,180],[75,182]]],"pitch":[[[7,123],[7,146],[17,146],[17,123]],[[23,131],[23,169],[42,169],[42,131]]]};
     const inside = (pt, poly) => { let c = false; for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) { const a = poly[i], b = poly[j]; if ((a[1] > pt[1]) !== (b[1] > pt[1]) && pt[0] < (b[0] - a[0]) * (pt[1] - a[1]) / (b[1] - a[1] + 1e-9) + a[0]) c = !c; } return c; };
     D.B.forEach((b) => {
       b.edges = b.p.map((a, i) => {
@@ -193,17 +193,17 @@ class Component extends DCLogic {
     const pct = (p) => ({ x: (p[0] / 1200 * 100).toFixed(2) + '%', y: (p[1] / 640 * 100).toFixed(2) + '%' });
 
     const CAMS = {
-      'CAM-AU-01': { loc: 'Auditorium', where: 'Block A and B · auditorium · stage left', src: 'live', level: 'fight_likely', people: 2, pos: [5, -160, 6], pose: 'fight', b: 'blockab' },
+      'CAM-AU-01': { loc: 'Grand Hall', where: 'Block B · level 2 · Grand Hall, stage left', src: 'live', level: 'fight_likely', people: 2, pos: [5, -160, 10], pose: 'fight', b: 'blockab' },
       'CAM-BC-03': { loc: 'Block C stairwell', where: 'Block C · level 1 landing', src: 'rec', level: 'calm', people: 1, pos: [62, -108, 8], pose: 'one', b: 'blockc' },
       'CAM-CT-04': { loc: 'Syopz Mall food court', where: 'Syopz Mall · east entrance', src: 'rec', level: 'tense', people: 14, pos: [-58, -78, 5], pose: 'crowd', b: 'syopz' },
-      'CAM-HC-01': { loc: 'DK Senza, corridor L3', where: 'DK Senza residence · level 3', src: 'rec', level: 'calm', people: 1, pos: [40, 322, 10], pose: 'one', b: 'dksenza' },
-      'CAM-HC-02': { loc: 'DK Senza, corridor L5', where: 'DK Senza residence · level 5', src: 'black', level: 'black', people: null, pos: [8, 352, 18], pose: null, b: 'dksenza' },
-      'CAM-SC-06': { loc: 'Sports pitch', where: 'Pitches by the sports centre', src: 'rec', level: 'tense', people: 6, pos: [27, 150, 1], pose: 'play', b: 'sports' }
+      'CAM-HC-01': { loc: 'U Residence, corridor L3', where: 'U Residence hostel, above Syopz Mall · level 3', src: 'rec', level: 'calm', people: 1, pos: [-100, -122, 16], pose: 'one', b: 'syopz' },
+      'CAM-HC-02': { loc: 'U Residence, corridor L5', where: 'U Residence hostel, above Syopz Mall · level 5', src: 'black', level: 'black', people: null, pos: [-78, -132, 22], pose: null, b: 'syopz' },
+      'CAM-SC-06': { loc: 'Sports pitch', where: 'Football pitch by the sports centre', src: 'rec', level: 'tense', people: 6, pos: [27, 150, 1], pose: 'play', b: 'sports' }
     };
     const POSTS = [
       { id: 'P1', short: 'P/01', loc: 'Block C stairwell', when: 'MON–THU 13:00–14:00', pos: [45, -100], inc: 5, hrs: 4, b: 'blockc', why: 'Five incidents in the same lunch hour in 4 weeks. One person on the landing covers both flights.' },
-      { id: 'P2', short: 'P/02', loc: 'DK Senza, corridor L3', when: 'SUN–THU 22:00–23:00', pos: [45, 320], inc: 4, hrs: 5, b: 'dksenza', why: 'Four incidents after lights-out. The L5 camera is black, so this is the only eye on the block.' },
-      { id: 'P3', short: 'P/03', loc: 'Syopz Mall food court', when: 'FRI 12:00–13:00', pos: [-50, -60], inc: 3, hrs: 1, b: 'syopz', why: 'Three crowd gatherings at Friday lunch. One person at the entrance thins the queue.' }
+      { id: 'P2', short: 'P/02', loc: 'U Residence, corridor L3', when: 'SUN–THU 22:00–23:00', pos: [-95, -118], inc: 4, hrs: 5, b: 'syopz', why: 'Four incidents after lights-out. The L5 camera is black, so this is the only eye on the block.' },
+      { id: 'P3', short: 'P/03', loc: 'Syopz Mall food court', when: 'FRI 12:00–13:00', pos: [-70, -45], inc: 3, hrs: 1, b: 'syopz', why: 'Three crowd gatherings at Friday lunch. One person at the entrance thins the queue.' }
     ];
     const selCam = s.sel ? CAMS[s.sel] : null;
     const selPost = s.post ? POSTS.find((p) => p.id === s.post) : null;
@@ -261,14 +261,14 @@ class Component extends DCLogic {
       const p = pct(pr(q.pos[0], q.pos[1], q.inc * 9 + 4)); const on = q.id === s.post;
       return { x: p.x, y: p.y, text: q.short + ' · ' + q.when, aria: 'Patrol post ' + q.short + ' at ' + q.loc + ', ' + q.when, border: on ? '#0B0D10' : '#FFFFFF', pick: () => this.setState({ post: q.id, sel: null }) };
     }) : [];
-    const GUARDS = [{ name: 'Guard B', pos: [8, -122] }, { name: 'Guard A', pos: [-75, 0] }, { name: 'Guard C', pos: [15, 300] }];
+    const GUARDS = [{ name: 'Guard B', pos: [8, -122] }, { name: 'Guard A', pos: [-75, 0] }, { name: 'Guard C', pos: [-50, -105] }];
     const guards = plan ? [] : GUARDS.filter((g) => !compact || g.name === 'Guard B').map((g) => { const p = pct(pr(g.pos[0], g.pos[1], 0)); return { name: g.name, x: p.x, y: p.y }; });
     const camsOf = (id) => Object.keys(CAMS).filter((k) => CAMS[k].b === id);
     const labels = compact ? [] : D.B.map((b) => {
       const p = pct(pr(b.c[0], b.c[1], b.h + 3)); const on = b.id === selB; const cams = camsOf(b.id);
       const live = cams.indexOf('CAM-AU-01') >= 0;
       return {
-        x: p.x, y: p.y, text: (live ? 'AUDITORIUM · ' : '') + b.label + (cams.length ? (live ? ' · LIVE' : ' · ' + cams.length + ' CAM') : ''),
+        x: p.x, y: p.y, text: (live ? 'GRAND HALL · ' : '') + b.label + (cams.length ? (live ? ' · LIVE' : ' · ' + cams.length + ' CAM') : ''),
         bg: on ? '#0B0D10' : 'rgba(255, 255, 255, 0.94)', fg: on ? '#FFFFFF' : '#0B0D10', border: live && !plan ? '#C8241B' : (on ? '#0B0D10' : '#B4BAC3'),
         pick: () => {
           if (plan) { const q = POSTS.find((x) => x.b === b.id); this.setState(q ? { post: q.id, sel: null } : { post: null, sel: null }); }
@@ -311,18 +311,18 @@ class Component extends DCLogic {
       const wk = selPost.inc * 0.6 / 4;
       card = { show: true, isCam: false, isPost: true, src: 'PATROL POST ' + selPost.short, srcBg: '#2742D9', srcFg: '#FFFFFF', srcDot: '#FFFFFF', code: selPost.when, title: selPost.loc, sub: 'Place one person here · ' + selPost.when.toLowerCase(), inc: selPost.inc, wk: wk.toFixed(2), hrs: selPost.hrs + ' h', why: selPost.why };
     }
-    const FOCUS = [['Auditorium', [10, -175], 'blockab'], ['Block C', [55, -125], 'blockc'], ['Syopz Mall', [-90, -80], 'syopz'], ['Sports centre', [50, 145], 'sports'], ['DK Senza', [15, 345], 'dksenza']];
+    const FOCUS = [['Grand Hall', [10, -175], 'blockab'], ['Block C', [55, -125], 'blockc'], ['Syopz Mall', [-80, -55], 'syopz', 'CAM-CT-04', 'P3'], ['U Residence', [-90, -120], 'syopz', 'CAM-HC-01', 'P2'], ['Sports centre', [50, 145], 'sports']];
     const jumps = FOCUS.map((j) => ({ label: j[0], go: () => {
-      const cams = camsOf(j[2]); const q = POSTS.find((x) => x.b === j[2]);
+      const cams = j[3] ? [j[3]] : camsOf(j[2]); const q = j[4] ? POSTS.find((x) => x.id === j[4]) : POSTS.find((x) => x.b === j[2]);
       this.setState({ fx: j[1][0], fy: j[1][1], zoom: 2.2, sel: plan ? null : (cams[0] || null), post: plan ? (q ? q.id : null) : null });
-    } })).concat([{ label: 'Whole campus', go: () => this.setState({ fx: 5, fy: 75, zoom: 1, th: 90, pitch: 52 }) }]);
+    } })).concat([{ label: 'Whole campus', go: () => this.setState({ fx: 0, fy: -12, zoom: 1.2, th: 90, pitch: 52 }) }]);
     const set = (patch) => () => this.setState(patch);
     return Object.assign({
       aria: "3D view of Taylor's University Lakeside campus with " + (plan ? 'patrol posts and hotspot columns' : 'camera pins'),
       cursor: compact ? 'default' : (s.drag ? 'grabbing' : 'grab'),
       campus: poly(D.campus, 0), water: D.water.map((w) => poly(w, 0)).join(''), pitch: D.pitch.map((w) => poly(w, 0.2)).join(''), route: route,
       pins: pins, posts: posts, labels: labels, guards: guards, jumps: jumps, card: card,
-      full: !compact, compact: compact, compactLabel: 'WHERE · AUDITORIUM, BLOCK A AND B · GUARD B ~40 M AWAY',
+      full: !compact, compact: compact, compactLabel: 'WHERE · GRAND HALL, BLOCK B LEVEL 2 · GUARD B ~40 M AWAY',
       closeCard: set({ sel: null, post: null }),
       north: s.th + 'deg',
       camsPressed: plan ? 'false' : 'true', planPressed: plan ? 'true' : 'false',
@@ -331,7 +331,7 @@ class Component extends DCLogic {
       rotL: set({ th: s.th - 20 }), rotR: set({ th: s.th + 20 }),
       tiltUp: set({ pitch: Math.min(88, s.pitch + 12) }), tiltDown: set({ pitch: Math.max(28, s.pitch - 12) }),
       zoomIn: set({ zoom: Math.min(3.2, s.zoom * 1.25) }), zoomOut: set({ zoom: Math.max(0.6, s.zoom / 1.25) }),
-      reset: set({ th: 90, pitch: 52, zoom: 1, fx: 5, fy: 75 }),
+      reset: set({ th: 90, pitch: 52, zoom: 1.2, fx: 0, fy: -12 }),
       down: (e) => { if (compact) return; if (e && e.target && e.target.closest && e.target.closest('button,a')) return; this.setState({ drag: { x: e.clientX, y: e.clientY, th: s.th, pitch: s.pitch } }); },
       move: (e) => { const d = this.state.drag; if (!d) return; this.setState({ th: d.th + (e.clientX - d.x) * 0.4, pitch: Math.max(28, Math.min(88, d.pitch - (e.clientY - d.y) * 0.25)) }); },
       up: () => { if (this.state.drag) this.setState({ drag: null }); }

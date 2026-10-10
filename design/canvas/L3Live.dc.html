@@ -76,7 +76,7 @@ button{font-family:inherit}
 
 <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; background: #FFFFFF; border: 1px dashed #B4BAC3; border-radius: 2px; padding: 10px 14px">
 <span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; font-weight: 700; padding: 3px 8px; border: 1px solid #0B0D10; border-radius: 1px">NO CAMERA CONNECTED</span>
-<span style="font-size: 15px">Showing the recorded demo feed from the auditorium webcam, played in real time. When the laptop webcam is on, this is live.</span>
+<span style="font-size: 15px">Showing the recorded demo feed from the Grand Hall webcam, played in real time. When the laptop webcam is on, this is live.</span>
 <button type="button" onClick="{{restart}}" style="margin-left: auto; min-height: 40px; padding: 0 14px; border-radius: 2px; border: none; background: #2742D9; color: #FFFFFF; font-size: 14px; font-weight: 800; cursor: pointer">Restart demo feed</button>
 </div>
 
@@ -477,7 +477,7 @@ class Component extends DCLogic {
     const RID = 'INC-2026-00142';
     const autoPushed = step >= 6;
     const items = [
-      { id: RID, cam: 'CAM-AU-01', loc: 'Auditorium', zone: 'Auditorium', risk: '0.5', type: cur.type, level: cur.level, score: cur.score, eta: cur.eta, priority: cur.priority,
+      { id: RID, cam: 'CAM-AU-01', loc: 'Grand Hall', zone: 'Auditorium', risk: '0.5', type: cur.type, level: cur.level, score: cur.score, eta: cur.eta, priority: cur.priority,
         people: t > 10.2 ? 3 : 2, reason: cur.reason, action: cur.action, nearest: 'Guard B', dist: '~40 m', since: '14:31:00', pushed: autoPushed || !!s.manual[RID], pushedAt: autoPushed ? '14:31:06' : s.manual[RID], replay: true, scene: 'replay' },
       { id: 'INC-2026-00139', cam: 'CAM-CT-04', loc: 'Syopz Mall food court', zone: 'Food court', risk: '0.7', type: 'crowd', level: 'tense', score: 0.44, eta: null, priority: 0.10, people: 5,
         reason: 'Five people stopped and faced the same point for 4 s.', action: 'Watch this camera', nearest: 'Guard A', dist: '~60 m', since: '14:30:22', pushed: !!s.manual['INC-2026-00139'], pushedAt: s.manual['INC-2026-00139'], scene: 'crowd' },
@@ -564,11 +564,11 @@ class Component extends DCLogic {
     });
     const sceneFor = { 'CAM-AU-01': items[0], 'CAM-CT-04': items[1], 'CAM-SC-06': items[2] };
     const camsRaw = [
-      { id: 'CAM-AU-01', loc: 'Auditorium, Block A and B', last: 'live', people: 2, src: 'live' },
+      { id: 'CAM-AU-01', loc: 'Grand Hall, Block B L2', last: 'live', people: 2, src: 'live' },
       { id: 'CAM-BC-03', loc: 'Block C stairwell', last: 'rec 16:20', people: 1, src: 'rec' },
       { id: 'CAM-CT-04', loc: 'Syopz Mall food court', last: 'rec 16:35', people: 14, src: 'rec' },
-      { id: 'CAM-HC-01', loc: 'DK Senza, corridor L3', last: 'rec 16:50', people: 1, src: 'rec' },
-      { id: 'CAM-HC-02', loc: 'DK Senza, corridor L5', last: 'Thu 02:00', black: true, src: 'black' },
+      { id: 'CAM-HC-01', loc: 'U Residence, corridor L3', last: 'rec 16:50', people: 1, src: 'rec' },
+      { id: 'CAM-HC-02', loc: 'U Residence, corridor L5', last: 'Thu 02:00', black: true, src: 'black' },
       { id: 'CAM-SC-06', loc: 'Sports pitch', last: 'rec 17:05', people: 6, src: 'rec' }
     ];
     const tiles = camsRaw.map((c) => {
@@ -616,13 +616,13 @@ class Component extends DCLogic {
       copySummary: set({ copied: true }), copyLabel: s.copied ? 'Summary copied' : 'Copy summary',
       openCount: active.length, unlabelled: items.filter((q) => q.level !== 'calm' && !q.decision).length,
       handoverItems: [
-        rDec ? ('Auditorium incident labelled ' + rDec + '.') : (cur.level !== 'calm' ? 'Auditorium incident is open and has no label yet.' : 'Auditorium is calm.'),
+        rDec ? ('Grand Hall incident labelled ' + rDec + '.') : (cur.level !== 'calm' ? 'Grand Hall incident is open and has no label yet.' : 'Grand Hall is calm.'),
         items[1].decision === 'dismissed' ? 'Syopz Mall crowd was dismissed.' : 'Syopz Mall food court crowd is still tense.',
-        'CAM-HC-02, DK Senza corridor L5, black for 3 days. Repair not reported yet.',
+        'CAM-HC-02, U Residence corridor L5, black for 3 days. Repair not reported yet.',
         'Patrol slot today: Block C stairwell, 13:00–14:00.'
       ],
       bannerBg: cur.level === 'fight' ? '#7F1310' : '#C8241B',
-      bannerTitle: (cur.level === 'fight' ? 'Fight' : 'Fight likely') + ' · Auditorium',
+      bannerTitle: (cur.level === 'fight' ? 'Fight' : 'Fight likely') + ' · Grand Hall',
       bannerSub: rDec === 'confirmed' ? 'Confirmed by desk · Guard B on the way' : 'Guard B pushed at 14:31:06',
       silence: set({ silenced: true }),
       liveSel: live ? 'true' : 'false', replaySel: live ? 'false' : 'true',

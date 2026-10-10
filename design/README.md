@@ -17,7 +17,9 @@ Design source for the EarlyEye dashboard, exported from the design canvas on 10 
 
 `Campus3D.dc.html` is the 3D campus component used inside `L3Cameras`, `L3Plan` and `L3Live` through `<dc-import>`. It is an interaction reference only: the real build uses deck.gl, per `docs/campus-3d-agent-prompt.md`.
 
-`assets/taylors-lakeside-campus.geojson` holds the real building footprints of Taylor's University Lakeside Campus from OpenStreetMap (© OpenStreetMap contributors, ODbL; heights estimated). `assets/campus-3d-seed.json` holds the latitude and longitude of every camera, on-duty post and patrol post.
+`assets/taylors-lakeside-campus.geojson` holds the real building footprints of Taylor's University Lakeside Campus from OpenStreetMap (© OpenStreetMap contributors, ODbL). Room names and floors come from Taylor's own campus facilities page, and heights are estimated. `assets/campus-3d-seed.json` holds the latitude and longitude of every camera, on-duty post and patrol post.
+
+The demo uses real places only: the live webcam is in the **Grand Hall** (Block B, Level 2), and the hostel cameras are in **U Residence**, the on-campus hostel above Syopz Mall. Brief §9 lists the sources and the checks.
 
 ## How to read a `.dc.html` file
 

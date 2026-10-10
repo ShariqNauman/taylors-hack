@@ -82,7 +82,7 @@ button{font-family:inherit}
 </div>
 <div style="flex: 1 1 420px; display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: center; background: #0B0D10; color: #FFFFFF; border-radius: 2px; padding: 12px 16px; font-size: 14px; line-height: 1.45">
 <span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; font-weight: 700; padding: 3px 8px; background: #FFFFFF; color: #0B0D10; border-radius: 1px">NO SIGNAL</span>
-<span>CAM-HC-02, DK Senza corridor L5, black for 3 days. Slot P/02 is the only eye on that block.</span>
+<span>CAM-HC-02, U Residence corridor L5, black for 3 days. Slot P/02 is the only eye on that block.</span>
 <a href="L3Cameras.dc.html" style="color: #FFFFFF; font-weight: 800">Open the camera</a>
 </div>
 </div>
@@ -149,7 +149,7 @@ class Component extends DCLogic {
   renderVals() {
     const s = this.state;
     const DAYS = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
-    const ZONES = [['all', 'All zones'], ['hostel', 'DK Senza corridors'], ['stairwell', 'Block C stairwell'], ['canteen', 'Syopz Mall'], ['sports', 'Sports pitch']];
+    const ZONES = [['all', 'All zones'], ['hostel', 'U Residence corridors'], ['stairwell', 'Block C stairwell'], ['canteen', 'Syopz Mall'], ['sports', 'Sports pitch']];
     const DATA = {
       stairwell: [[0, 13, 3], [1, 13, 2], [2, 13, 2], [3, 13, 2], [4, 13, 1], [0, 16, 1], [2, 10, 1]],
       hostel: [[6, 22, 2], [0, 22, 3], [1, 22, 2], [2, 22, 2], [3, 22, 1], [2, 18, 1], [5, 23, 1], [4, 7, 1], [4, 20, 1]],
@@ -158,7 +158,7 @@ class Component extends DCLogic {
     };
     const SLOTS = [
       { zone: 'stairwell', days: [0, 1, 2, 3], hour: 13, location: 'Block C stairwell', daysLabel: 'Mon–Thu', hours: '13:00–14:00', incidents: 5, hoursWeek: 4, rationale: 'Five incidents in the same lunch hour in 4 weeks. One person on the landing covers both flights.' },
-      { zone: 'hostel', days: [6, 0, 1, 2, 3], hour: 22, location: 'DK Senza, corridor L3', daysLabel: 'Sun–Thu', hours: '22:00–23:00', incidents: 4, hoursWeek: 5, rationale: 'Four incidents after lights-out in 4 weeks. Corridor L5 camera is black, so this is the only eye on the block.' },
+      { zone: 'hostel', days: [6, 0, 1, 2, 3], hour: 22, location: 'U Residence, corridor L3', daysLabel: 'Sun–Thu', hours: '22:00–23:00', incidents: 4, hoursWeek: 5, rationale: 'Four incidents after lights-out in 4 weeks. Corridor L5 camera is black, so this is the only eye on the block.' },
       { zone: 'canteen', days: [4], hour: 12, location: 'Syopz Mall food court', daysLabel: 'Fri', hours: '12:00–13:00', incidents: 3, hoursWeek: 1, rationale: 'Three crowd gatherings at Friday lunch in 4 weeks. One person at the entrance thins the queue.' }
     ];
     const grid = DAYS.map(() => new Array(24).fill(0));
@@ -194,7 +194,7 @@ class Component extends DCLogic {
       slots: slots, zones: zones, grid: rows, hoursHead: hoursHead,
       hotspots: [
         { loc: 'Block C stairwell', window: 'MON–THU 13:00', count: 5, last: 'WED 7 OCT' },
-        { loc: 'DK Senza, corridor L3', window: 'SUN–THU 22:00', count: 4, last: 'MON 5 OCT' },
+        { loc: 'U Residence, corridor L3', window: 'SUN–THU 22:00', count: 4, last: 'MON 5 OCT' },
         { loc: 'Syopz Mall food court', window: 'FRI 12:00', count: 3, last: 'FRI 9 OCT' }
       ]
     };

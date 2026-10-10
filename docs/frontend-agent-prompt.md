@@ -20,11 +20,12 @@ You are building the EarlyEye dashboard in `web/` for Dormathon 2026 (Taylor's b
 - One branch per screen. PR each one, squash-merge, rebase on `main` first. Never add `Co-Authored-By` trailers or "Generated with" footers.
 - Light theme only. The only motion is the 300 ms level-pill transition, the 1 Hz alarm pulse and the 3D fly-to, all with `prefers-reduced-motion` respected.
 - Every route renders from mock data with the API down.
-- **Cameras:** 1 live webcam (`CAM-AU-01`, the auditorium, on the demo laptop), 4 recordings of our own staged clips played through the same edge pipeline, and 1 seeded black camera.
+- **Cameras:** 1 live webcam (`CAM-AU-01`, the Grand Hall in Block B, on the demo laptop), 4 recordings of our own staged clips played through the same edge pipeline, and 1 seeded black camera.
   - Recordings are **always labelled REC** with their recording time, and never shown as live.
   - No video file goes in `web/`.
   - Video appears only in the on-site view, on laptop 1, loading each camera's `edge_url`.
   - The Vercel remote view shows skeletons and data only, and never requests an `edge_url`.
+- **Real campus only.** Every building, room, name and pin follows the real Taylor's University Lakeside Campus, as in brief §9. Never invent one. Google Maps 3D and Taylor's own facilities page are the truth.
 - Never show a number without a source. Missing metrics read "not measured".
 - Don't build CUT items, even though the backend has routes for them: auth, multi-site, copilot or chat, knowledge base, notification settings, cloud clip storage.
 
@@ -60,6 +61,6 @@ For every branch:
 
 **Ask me for:**
 - the Google Maps API key, if you build the real 3D tiles,
-- the auditorium's real building and room.
+- the room the demo laptop will film on pitch day, if it isn't the Grand Hall.
 
 **After each PR, report back:** the PR link, what works on the deployed preview, which backend gaps from brief §11 you hit, and anything in the docs that contradicts itself.

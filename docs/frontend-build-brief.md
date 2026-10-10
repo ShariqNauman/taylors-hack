@@ -186,7 +186,7 @@ Load with `next/font/google`: `Saira_Condensed` (600, 700, 800), `Atkinson_Hyper
 - View indicator: `ON-SITE DESK` or `REMOTE LINK` (§8). In dev, `?view=onsite|remote` forces it, and the prototype's toggle can stay behind that flag.
 
 **Alarm layer**, mounted once in `layout.tsx` and driven by a small store (Zustand or React context):
-- **Banner** under the header, full width: level colour, octagon glyph, `FIGHT LIKELY · AUDITORIUM` in Saira, "Guard B pushed at 14:31:06", a **View on the 3D campus** link to `/cameras?cam=…`, and **Silence**. Class `ee-banner` while sounding.
+- **Banner** under the header, full width: level colour, octagon glyph, `FIGHT LIKELY · GRAND HALL` in Saira, "Guard B pushed at 14:31:06", a **View on the 3D campus** link to `/cameras?cam=…`, and **Silence**. Class `ee-banner` while sounding.
 - **Screen edge**: a fixed, pointer-events-none overlay with `box-shadow: inset 0 0 0 8px #C8241B, inset 0 0 90px rgb(200 36 27 / .55)` and class `ee-edge`, while sounding.
 - **Sound**: one `<audio src="/alarm.mp3" loop>`. It plays only after the operator arms it.
 - **Toast** (sonner): "Pushed to Guard B · 14:31:06", subline "One person only. They see a skeleton snapshot, not video.", and a link "Open their phone screen" to `/push?staff=…`.
@@ -221,7 +221,7 @@ Load with `next/font/google`: `Saira_Condensed` (600, 700, 800), `Atkinson_Hyper
 | 3D building, or its label | Cameras, Plan | Cameras layer: opens that building's camera in the info card. Plan layer: opens its patrol post. |
 | 3D camera pin (LIVE, REC or black) | Cameras | Info card: feed, level, people, **Open live view** (or **Play recording in Live**) and **Camera details**. Also selects it in the detail panel below. |
 | 3D patrol post pin | Plan | Info card: incidents in 4 weeks, avoided a week, hours a week, rationale, **Open in Plan**, **See the incidents** |
-| 3D controls: drag, rotate, Top, Tilt, + and −, Reset view, Jump to | Cameras, Plan | Move the view. Jump to flies to Auditorium, Block C, Syopz Mall, Sports centre, DK Senza or Whole campus. |
+| 3D controls: drag, rotate, Top, Tilt, + and −, Reset view, Jump to | Cameras, Plan | Move the view. Jump to flies to Grand Hall, Block C, Syopz Mall, U Residence, Sports centre or Whole campus. |
 | CAMERAS / PATROL PLAN toggle | 3D view | Switch layer |
 | Filter chips All / Live webcam / Recordings / Black / With an incident | Cameras | Filter the grid |
 | Grid tile | Cameras | Selects that camera |
@@ -312,7 +312,7 @@ The canvas files are exact references for layout, sizes and copy. This section l
 - **This week on the campus**, first: `<Campus3D mode="plan">`. Each patrol slot is a blue post pin (`P/01 · MON–THU 13:00–14:00`) with a blue column whose height is its incidents in 4 weeks. Clicking a post opens its card. The mentors asked for this view, so it goes above the cards.
 - **Three slot cards:** `P/01`, "PLACE ONE PERSON AT", location in Saira, days and hours in ink chips. Three stats: incidents in 4 weeks; **avoided a week** in the signal-tint box with "≈ N a month"; avoided per patrol hour with hours per week. Then the rationale, **Show on the heatmap**, and "See the incidents behind this slot".
 - **Assumption** strip, dashed: "60% of hotspot incidents are avoided when a person is present. Stated, not measured. Avoided = incidents in 4 weeks × 0.6."
-- **Black camera** strip, ink: "CAM-HC-02, DK Senza corridor L5, black for 3 days. Slot P/02 is the only eye on that block.", with **Open the camera**.
+- **Black camera** strip, ink: "CAM-HC-02, U Residence corridor L5, black for 3 days. Slot P/02 is the only eye on that block.", with **Open the camera**.
 - **Heatmap:** zone chips, then a 7 × 24 CSS grid with hour headers 00–23 and MON–SUN rows. Each cell shows its count and a tooltip. The selected slot's cells get a 2 px ink outline. Legend underneath.
 - **Hotspots** list beside it, with the rule sentence and a link to Incidents.
 - Wording: "~3 a month" for Block C. Never "~3 a week".
@@ -373,16 +373,16 @@ Poll every 2 s for an event where `pushed_to === staff && status === "pushed" &&
 
 ### 8.1 Camera setup: 1 live webcam, 4 labelled recordings, 1 black
 
-**One camera is live:** the demo laptop's webcam, filming the auditorium where we pitch. The others play **our own recordings**: short clips we film on site with a laptop webcam, staged by the team, of the stairwell, the food court, a hostel corridor and the pitch. Each recording runs through the same edge pipeline as the webcam. `model/live_detector.py --camera <file.mp4>` already plays a file in real time, so recordings produce real events, keypoints and alerts, not canned UI.
+**One camera is live:** the demo laptop's webcam, filming the room where we pitch. The seed calls it the **Grand Hall** (Block B, Level 2), Taylor's real 1,000-seat hall. Rename it if we pitch in another room. The others play **our own recordings**: short clips we film on site with a laptop webcam, staged by the team, of the stairwell, the food court, a hostel corridor and the pitch. Each recording runs through the same edge pipeline as the webcam. `model/live_detector.py --camera <file.mp4>` already plays a file in real time, so recordings produce real events, keypoints and alerts, not canned UI.
 
 | Camera | Place (real building) | Source | Role |
 |---|---|---|---|
-| `CAM-AU-01` | Auditorium, Block A and B | **live webcam**, demo laptop | Actors stage the escalation here, in front of the judges. This drives the live alarm. |
+| `CAM-AU-01` | Grand Hall, Block B Level 2 | **live webcam**, demo laptop | Actors stage the escalation here, in front of the judges. This drives the live alarm. |
 | `CAM-BC-03` | Block C stairwell | recording | The patrol plan's top hotspot |
 | `CAM-CT-04` | Syopz Mall food court | recording | Crowd type |
-| `CAM-HC-01` | DK Senza, corridor L3 | recording | Hostel corridor at night |
+| `CAM-HC-01` | U Residence, corridor L3 (above Syopz Mall) | recording | Hostel corridor at night |
 | `CAM-SC-06` | Sports pitch | recording | Play suppressed in the sports zone |
-| `CAM-HC-02` | DK Senza, corridor L5 | none, **seeded black** | Camera-health story |
+| `CAM-HC-02` | U Residence, corridor L5 | none, **seeded black** | Camera-health story |
 
 **Recordings are always labelled.** Show `REC` on every tile, pin and frame, and the recording time in the detail panel: "Recording made Sat 10 Oct 16:20, looping". Never present a recording as live. Recording files stay on the laptop. They are never committed to `web/` and never uploaded. The remote link shows skeletons from them, never pixels.
 
@@ -423,7 +423,7 @@ Contract additions: `Camera.source?: "live" | "recorded"`, `Camera.recorded_at?:
 - Optional: a dashed white line between the active pair's hips, labelled `0.45 TL`, and a dashed cyan trail for the fastest wrist over the last 0.8 s.
 - Background: on site `frame` with scene lines; remote `frame-remote` with a 40 px grid.
 
-**Poses must come from the real pipeline.** The deployed demo (`?replay=1`, and `edge/replay.py` in Phase 2) replays a **real recorded session**. Record the escalation in the auditorium on laptop 1 with the edge app. The edge saves every event it posts, snapshots included, and that file becomes `public/mock/replay.json`. Do the same for a few negatives (hug, high-five, chat) to fill `events.json` peak snapshots.
+**Poses must come from the real pipeline.** The deployed demo (`?replay=1`, and `edge/replay.py` in Phase 2) replays a **real recorded session**. Record the escalation in the demo room on laptop 1 with the edge app. The edge saves every event it posts, snapshots included, and that file becomes `public/mock/replay.json`. Do the same for a few negatives (hug, high-five, chat) to fill `events.json` peak snapshots.
 
 Until that recording exists, and for dev only, you may synthesise 12-keypoint frames by porting `fig(pose)` and the pose tables `PA` and `PB` from `L3Live.dc.html` into `web/src/lib/mock-poses.ts`. The prototype draws a side view with both shoulders at the neck. When converting, put the left and right shoulder 6 px either side of the neck, and do the same for the hips. Any screen fed by synthetic poses shows a dashed `SYNTHETIC POSES` chip. **Replace them with the recording before the 03:00 run-through.**
 
@@ -445,43 +445,60 @@ Every map in the product is the 3D campus, in three places:
 - **Fallback:** the OpenStreetMap footprints in `design/assets/taylors-lakeside-campus.geojson`, extruded. Use this always on the Live card, in mock mode, and when the tiles don't load within 5 s.
 - **No WebGL:** a flat top-down view of the same footprints.
 
-The real buildings, from OpenStreetMap: Block A and B, Block C, Block D, Block E, Syopz Mall, the sports centre and pitches, and the lake. DK Senza is the student residence just south of campus. Heights are estimates.
+**Ground truth: the real Taylor's University Lakeside Campus.** The 3D view shows the real campus at No. 1 Jalan Taylor's, 47500 Subang Jaya, and nothing invented. Whatever the data comes from, Google or OpenStreetMap, it must match the real place.
+- **Shape, position and height:** Google Photorealistic 3D Tiles and Google Maps satellite are the truth.
+- **Names, rooms and floors:** Taylor's own [campus facilities page](https://university.taylors.edu.my/en/study/campus-facilities.html) is the truth.
+- **Fallback footprints:** OpenStreetMap, as in the GeoJSON.
+- Never invent a building, a name, a room or a floor. If the sources disagree, follow the order above and tell Kayla.
 
-Copy `design/assets/campus-3d-seed.json` and the GeoJSON to `web/public/campus/`. Seed positions:
+What is really there:
 
-| Camera | Place | Source | lat | lng |
-|---|---|---|---|---|
-| CAM-AU-01 | Auditorium, Block A and B | live | 3.0645574 | 101.6170349 |
-| CAM-BC-03 | Block C stairwell | recorded | 3.0640871 | 101.6175477 |
-| CAM-CT-04 | Syopz Mall food court | recorded | 3.0638158 | 101.6164681 |
-| CAM-HC-01 | DK Senza, corridor L3 | recorded | 3.0601983 | 101.6173498 |
-| CAM-HC-02 | DK Senza, corridor L5 | black | 3.0599270 | 101.6170619 |
-| CAM-SC-06 | Sports pitch | recorded | 3.0617539 | 101.6172328 |
+| Building (OpenStreetMap name) | What it holds, per Taylor's | Height in the fallback |
+|---|---|---|
+| Block A and Block B | The **Grand Hall**, Block B Level 2, 1,000 seats. This is the live webcam room. | about 30 m, estimated |
+| Block C, Block D, Block E | Lecture theatres on Levels 1 and 2. Rooms go up to Level 8. | about 38 m, estimated |
+| Syopz Mall | Shops, food outlets and the gym. **U Residence** and **Ruemz**, the two on-campus hostels, sit above the mall. | about 24 m, estimated |
+| Sports centre | Unnamed in OpenStreetMap. Tennis courts and a football pitch sit beside it. | about 12 m, estimated |
+| Lake | The lake the campus is built around | none |
+
+DK Senza is a private condominium south of the campus, not a Taylor's hostel, so it is not shown. The hostel cameras are in U Residence.
+
+Copy `design/assets/campus-3d-seed.json` and the GeoJSON to `web/public/campus/`. Seed positions, placed by hand on the footprints:
+
+| Camera | Place | Building | Source | lat | lng |
+|---|---|---|---|---|---|
+| CAM-AU-01 | Grand Hall | Block B (OSM footprint: Block A and Block B) | live | 3.0645574 | 101.6170349 |
+| CAM-BC-03 | Block C stairwell | Block C | recorded | 3.0640871 | 101.6175477 |
+| CAM-CT-04 | Syopz Mall food court | Syopz Mall | recorded | 3.0638158 | 101.6164681 |
+| CAM-HC-01 | U Residence, corridor L3 | U Residence, above Syopz Mall | recorded | 3.0642137 | 101.6160904 |
+| CAM-HC-02 | U Residence, corridor L5 | U Residence, above Syopz Mall | black | 3.0643042 | 101.6162883 |
+| CAM-SC-06 | Sports pitch | Sports centre | recorded | 3.0617539 | 101.6172328 |
 
 | On-duty post (site.staff) | zone_type | lat | lng |
 |---|---|---|---|
 | Guard B | stairwell | 3.0642137 | 101.6170619 |
 | Guard A | canteen | 3.0631104 | 101.6163152 |
-| Guard C | hostel_corridor | 3.0603973 | 101.6171249 |
+| Guard C | hostel_corridor | 3.0640600 | 101.6165401 |
 | Warden D, off duty | hostel_corridor | none | none |
 
 | Patrol post | Place | lat | lng |
 |---|---|---|---|
 | P/01 | Block C stairwell | 3.0640148 | 101.6173947 |
-| P/02 | DK Senza, corridor L3 | 3.0602164 | 101.6173947 |
-| P/03 | Syopz Mall food court | 3.0636530 | 101.6165401 |
+| P/02 | U Residence, corridor L3 | 3.0641776 | 101.6161353 |
+| P/03 | Syopz Mall food court | 3.0635174 | 101.6163602 |
 
-**Check on site:**
-- Which room is the auditorium? The seed assumes Block A and B. Move the pin if it's elsewhere.
-- Confirm that DK Senza is the hostel we want to show.
+**Check before the demo:**
+- Which room will the demo laptop film on pitch day? The seed uses the Grand Hall. If it is a lecture theatre, move `CAM-AU-01` to that block and rename it.
+- Where does the U Residence tower sit on the Syopz podium? Move the hostel pins onto it using the Google tiles.
+- Check every pin against Google Maps 3D, and move any that sit on the wrong building.
 
-**Compact on the Live card:** locked, framed on the incident's building. It shows only the alarming pin, the nearest on-duty guard and the dashed route, plus a corner label reading `WHERE · AUDITORIUM, BLOCK A AND B · GUARD B ~40 M AWAY`. "Open the 3D campus" sits under it as a link to `/cameras?cam=<id>`.
+**Compact on the Live card:** locked, framed on the incident's building. It shows only the alarming pin, the nearest on-duty guard and the dashed route, plus a corner label reading `WHERE · GRAND HALL, BLOCK B LEVEL 2 · GUARD B ~40 M AWAY`. "Open the 3D campus" sits under it as a link to `/cameras?cam=<id>`.
 
 ---
 
 ## 10. Mock files to add or update (`web/public/mock/`)
 
-- `site.json`: real zone names (auditorium 0.5, stairwell 0.8, canteen as "Syopz Mall food court" 0.7, hostel_corridor as "DK Senza corridors" 1.0, sports_court as "Sports pitch" 0.3), plus `staff` with `post` geo, plus `campus: { "center": {…}, "buildings": "/campus/taylors-lakeside-campus.geojson" }`.
+- `site.json`: real zone names (auditorium 0.5, stairwell 0.8, canteen as "Syopz Mall food court" 0.7, hostel_corridor as "U Residence corridors" 1.0, sports_court as "Sports pitch" 0.3), plus `staff` with `post` geo, plus `campus: { "center": {…}, "buildings": "/campus/taylors-lakeside-campus.geojson" }`.
 - `cameras.json`: the 6 cameras from §8.1 with `source`, `recorded_at` for recordings, `geo`, `people_count`, and `edge_url` (`http://127.0.0.1:8765` to `:8769`; empty for the black one). In mock mode, **compute `black_since` at runtime as now minus 3 days**, so the badge always reads "Black for 3 days".
 - `replay.json`: timestamps per the replay rule (tense at t = 0, fight_likely at about 4 s with eta 6, fight at about 10 s). Add `snapshot` and `top_features` per event from `mock-poses.ts`. Rewrite reasons around the model's real signals, as on the canvas. Examples: "Pair moving closer; body motion rising." "Fast whole-body motion while close, for 1.2 s." "Shove: sudden lunge; second person pushed back."
 - `events.json`: add `peak_snapshot` to at least 10 incidents. Add `acked_at` to pushed ones, 3 to 9 s after `pushed_at`.
@@ -549,7 +566,7 @@ Keep the mock fallback for every call, so every route renders with the API down.
 - [ ] On laptop 1, the live webcam and the 4 recording streams play, and each falls back to skeletons when its stream drops.
 - [ ] Every recording shows `REC` and its recording time. Nothing recorded is ever labelled live.
 - [ ] No video file is committed anywhere in `web/`, and no screen shows a stock clip.
-- [ ] 3D campus: footprints render with no key; the real campus renders with a key; clicking the auditorium opens the live feed; the plan layer shows 3 posts; the Live card shows the compact view.
+- [ ] 3D campus: footprints render with no key; the real campus renders with a key; every building, name and pin matches the real campus on Google Maps 3D (side-by-side screenshot in the PR); clicking the Grand Hall opens the live feed; the plan layer shows 3 posts; the Live card shows the compact view.
 - [ ] No "student" or "school" in the chrome. Zone names come from `site.json`.
 - [ ] Proof shows no number without a source.
 - [ ] The integration tests in `docs/work-split.md` §4 pass against the deployed link.
@@ -560,7 +577,7 @@ Keep the mock fallback for every call, so every route renders with the API down.
 
 | Where | Exact text |
 |---|---|
-| Live strip | NO CAMERA CONNECTED · "Showing the recorded demo feed from the auditorium webcam, played in real time. When the laptop webcam is on, this is live." · Restart demo feed |
+| Live strip | NO CAMERA CONNECTED · "Showing the recorded demo feed from the Grand Hall webcam, played in real time. When the laptop webcam is on, this is live." · Restart demo feed |
 | Source labels | `LIVE WEBCAM` · `RECORDING · LOOP` · `NO SIGNAL` · tile suffix `· LIVE` / `· REC` · "Recording made Sat 10 Oct 16:20, looping" |
 | 3D footer | "Footprints © OpenStreetMap contributors · heights estimated · drag to rotate". In Google tiles mode, add Google's required attribution. |
 | Evidence footnote | "The three signals the model leans on most, plus its score. Pose: 12 body keypoints per person, no face points." |

@@ -1,6 +1,6 @@
 {
  "type": "FeatureCollection",
- "attribution": "\u00a9 OpenStreetMap contributors, ODbL 1.0. Building heights are estimates, not OSM data.",
+ "attribution": "Footprints © OpenStreetMap contributors, ODbL 1.0. Names and floors from Taylor's University official pages. Heights are estimates; Google Photorealistic 3D Tiles are the ground truth for shape and height.",
  "center": {
   "lat": 3.0631104109375,
   "lng": 101.616989915625
@@ -13,7 +13,12 @@
     "name": "Block A and Block B",
     "osm_way": 210350182,
     "height_m_estimate": 30,
-    "kind": "building"
+    "kind": "building",
+    "contains": [
+     "Grand Hall, Block B Level 2, 1,000 seats (the live webcam room in the demo)",
+     "Experimental Theatre, Block B Level 2",
+     "Student Life Centre, Block B Level 1"
+    ]
    },
    "geometry": {
     "type": "Polygon",
@@ -121,8 +126,9 @@
     "id": "blockc",
     "name": "Block C",
     "osm_way": 210350323,
-    "height_m_estimate": 30,
-    "kind": "building"
+    "height_m_estimate": 38,
+    "kind": "building",
+    "height_basis": "Taylor's lists rooms up to Level 8 in this block"
    },
    "geometry": {
     "type": "Polygon",
@@ -194,8 +200,9 @@
     "id": "blockd",
     "name": "Block D",
     "osm_way": 210350316,
-    "height_m_estimate": 30,
-    "kind": "building"
+    "height_m_estimate": 38,
+    "kind": "building",
+    "height_basis": "Taylor's lists rooms up to Level 8 in this block"
    },
    "geometry": {
     "type": "Polygon",
@@ -263,8 +270,9 @@
     "id": "blocke",
     "name": "Block E",
     "osm_way": 210350324,
-    "height_m_estimate": 30,
-    "kind": "building"
+    "height_m_estimate": 38,
+    "kind": "building",
+    "height_basis": "Taylor's lists rooms up to Level 8 in this block"
    },
    "geometry": {
     "type": "Polygon",
@@ -324,8 +332,14 @@
     "id": "syopz",
     "name": "Syopz Mall @ Taylor's Lakeside Campus",
     "osm_way": 210350284,
-    "height_m_estimate": 14,
-    "kind": "building"
+    "height_m_estimate": 24,
+    "kind": "building",
+    "contains": [
+     "Syopz Mall (retail, food outlets, UNIGYM)",
+     "U Residence, the on-campus hostel, above the mall",
+     "Ruemz, the second on-campus hostel, above the mall"
+    ],
+    "note": "OSM has one footprint. The residence towers sit on part of the mall podium; check their position on the Google tiles."
    },
    "geometry": {
     "type": "Polygon",
@@ -379,10 +393,11 @@
    "type": "Feature",
    "properties": {
     "id": "sports",
-    "name": null,
+    "name": "Sports centre",
     "osm_way": 210350298,
     "height_m_estimate": 12,
-    "kind": "building"
+    "kind": "building",
+    "note": "Tagged leisure=sports_centre in OSM, without a name"
    },
    "geometry": {
     "type": "Polygon",
@@ -407,51 +422,6 @@
       [
        101.6177926,
        3.0620024
-      ]
-     ]
-    ]
-   }
-  },
-  {
-   "type": "Feature",
-   "properties": {
-    "id": "dksenza",
-    "name": "DK Senza",
-    "osm_way": 820509818,
-    "height_m_estimate": 45,
-    "kind": "building"
-   },
-   "geometry": {
-    "type": "Polygon",
-    "coordinates": [
-     [
-      [
-       101.6165619,
-       3.0596573
-      ],
-      [
-       101.6170947,
-       3.0599879
-      ],
-      [
-       101.6175523,
-       3.0605361
-      ],
-      [
-       101.6176788,
-       3.0603587
-      ],
-      [
-       101.6172481,
-       3.0598562
-      ],
-      [
-       101.6166507,
-       3.0594611
-      ],
-      [
-       101.6165619,
-       3.0596573
       ]
      ]
     ]
@@ -733,7 +703,7 @@
    "properties": {
     "osm_way": 666437569,
     "kind": "water",
-    "name": null
+    "name": "Lake"
    },
    "geometry": {
     "type": "Polygon",
@@ -895,7 +865,7 @@
    "properties": {
     "osm_way": 210350293,
     "kind": "pitch",
-    "name": null
+    "name": "Tennis courts"
    },
    "geometry": {
     "type": "Polygon",
@@ -930,7 +900,7 @@
    "properties": {
     "osm_way": 210350299,
     "kind": "pitch",
-    "name": null
+    "name": "Football pitch"
    },
    "geometry": {
     "type": "Polygon",
@@ -960,5 +930,10 @@
     ]
    }
   }
- ]
+ ],
+ "sources": {
+  "footprints": "OpenStreetMap, campus way 210350320",
+  "facilities": "https://university.taylors.edu.my/en/study/campus-facilities.html",
+  "on_campus_hostels": "https://taylorshostel.taylors.edu.my/accommodations/on-campus/ruemz"
+ }
 }
