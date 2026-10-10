@@ -298,6 +298,21 @@ export async function patchCamera(
   }
 }
 
+/** Desk sends another guard (API: POST /events/:id/backup → <id>-B pushed to them). */
+export async function sendBackup(
+  incident_id: string,
+  staff: string,
+  reason: "need_backup" | "no_answer",
+): Promise<void> {
+  const r = await fetch(`${API_URL}/events/${encodeURIComponent(incident_id)}/backup`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ staff, reason }),
+    signal: AbortSignal.timeout(API_TIMEOUT_MS * 2),
+  });
+  if (!r.ok) throw new PatchError(r.status, `backup ${incident_id} failed: ${r.status}`);
+}
+
 /** Back-compat alias. */
 export const patchStatus = patchEvent;
 

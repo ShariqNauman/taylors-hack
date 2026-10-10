@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { usingMock } from "@/lib/api";
 import type { Camera, Outcome, Site } from "@/lib/types";
 import {
   etaText,
@@ -42,7 +41,7 @@ export function AlertCard({
   /** Renders the compact 3D campus; defaults to the slot. */
   compact3d?: React.ReactNode;
   onPush: (e: LiveEvent) => void;
-  /** Send another guard (no answer in 20 s, or Need backup). Mock / local server only. */
+  /** Send another guard (no answer in 20 s, or Need backup). */
   onPushBackup?: (e: LiveEvent, name: string) => void;
   onConfirm: (e: LiveEvent) => void;
   onDismiss: (e: LiveEvent) => void;
@@ -90,12 +89,17 @@ export function AlertCard({
   const noAnswer = pushed && !event.acked_at && pushedFor >= 20 && event.status === "pushed";
   const calmNow = event.level === "calm" || event.end_time != null;
   const OUTCOME: Record<Outcome, string> = { sorted: "Sorted, nobody hurt", hurt: "Sorted, someone hurt", backup: "Needs backup", nothing: "Nothing there" };
+  // Next guard: anyone not marked off duty (same rule as the API), nearest first when we know
+  // where they stand, then same zone.
   const nextGuard = (() => {
-    if (!site?.staff || !camera?.geo) return null;
-    const free = site.staff.filter((s) => s.on_duty && s.post && s.name !== event.pushed_to && s.name !== event.nearest_staff);
-    free.sort((a, b) => haversineM(a.post!, camera.geo!) - haversineM(b.post!, camera.geo!));
+    if (!site?.staff) return null;
+    const far = (s: (typeof site.staff)[number]) => (s.post && camera?.geo ? haversineM(s.post, camera.geo) : Infinity);
+    const free = site.staff.filter((s) => s.on_duty !== false && s.name !== event.pushed_to && s.name !== event.nearest_staff);
+    free.sort((a, b) => far(a) - far(b) || Number(b.zone_type === event.zone_type) - Number(a.zone_type === event.zone_type));
     const s = free[0];
-    return s ? { call: s.name, first: firstOf(s.name), dist: fmtDistance(haversineM(s.post!, camera.geo!)) } : null;
+    if (!s) return null;
+    const m = far(s);
+    return { call: s.name, first: firstOf(s.name), dist: Number.isFinite(m) ? fmtDistance(m) : null };
   })();
   const guardLine = !pushed
     ? null
@@ -170,7 +174,7 @@ export function AlertCard({
             <span className="text-[19px] font-extrabold">{guard} is at {event.location} and needs help.</span>
             <span className="text-[14px]">{nextGuard ? `Next nearest: ${nextGuard.first}${nextGuard.dist ? `, ${nextGuard.dist}` : ""}.` : "Nobody else is on duty. Call the security lead."}</span>
           </span>
-          {nextGuard && onPushBackup && usingMock ? (
+          {nextGuard && onPushBackup ? (
             <button type="button" onClick={() => onPushBackup(event, nextGuard.call)} className="min-h-12 rounded-[2px] bg-white px-4 text-[16px] font-extrabold text-[#C8241B]">
               Send {nextGuard.first}
             </button>
@@ -235,7 +239,7 @@ export function AlertCard({
           {noAnswer && (
             <span className="flex flex-wrap items-center gap-2 text-[15px]">
               <span className="font-bold">No answer in 20 s.{nextGuard ? ` Next nearest: ${nextGuard.first}${nextGuard.dist ? `, ${nextGuard.dist}` : ""}.` : " Nobody else is on duty."}</span>
-              {nextGuard && onPushBackup && usingMock ? (
+              {nextGuard && onPushBackup ? (
                 <button type="button" onClick={() => onPushBackup(event, nextGuard.call)} className="min-h-10 rounded-[2px] bg-signal px-3 text-[14px] font-extrabold text-white">
                   Push {nextGuard.first} now
                 </button>
