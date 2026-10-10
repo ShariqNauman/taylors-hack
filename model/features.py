@@ -35,6 +35,7 @@ MIN_PAIR_SPAN_S = 0.3    # a pair must be seen over at least this long to measur
 ARM_PAIR_MAX_DIST = 3.0  # only count arm reach toward people within this many torso lengths
 PEAK_MIN_SPEED = 3.0     # a wrist-speed peak counts as a "strike" above this speed
 CLOSE_DIST = 1.5         # torsos closer than this (torso lengths) count as "close"
+MIN_ARM_SPEED = 0.5      # arm symmetry is only measured when the arms move faster than this
 # ---------------------------------------------------
 
 FEATURE_NAMES = [
@@ -51,9 +52,27 @@ FEATURE_NAMES = [
     "close_motion",        # all-joint speed of the pair while their torsos are close (hug = low)
     "pair_dist_var",       # variance of the pair's distance (fights move in and out)
 ]
+OLD_FEATURES = list(FEATURE_NAMES)  # the 10 features of the v3 model (for ablations)
+FEATURE_NAMES += [
+    # all last 2 s, active pair
+    "head_dist_min",       # closest the two heads got (torso lengths)
+    "head_snap",           # sharpest head acceleration of either person (torso lengths / s^2)
+    "facing_score",        # how much the pair face each other (nose vs ears), -1..1
+    "ankle_toward_speed",  # fastest ankle velocity aimed at the other person (kicks)
+    "knee_lift",           # highest knee relative to its hip (torso lengths; higher = lifted)
+    "height_drop",         # largest drop of a person's shoulders (falling or pushed down)
+    "arm_asymmetry",       # left vs right wrist speed difference while close (hug ~0, punch ~1)
+    "elbow_ext_rate",      # fastest elbow straightening (degrees / s, punch extension)
+    "energy_max",          # all-joint motion energy of the more active person
+    "energy_min",          # ... and of the less active person (one attacker vs both moving)
+    "contact_s",           # seconds the pair spent close (torsos < CLOSE_DIST)
+    "contact_count",       # number of separate close contacts
+    "box_iou_max",         # largest YOLO box overlap between the pair
+]
 
 SIDES = ("l", "r")
 JOINTS = [f"{s}_{j}" for j in ("shoulder", "elbow", "wrist", "hip", "knee", "ankle") for s in SIDES]
+HEAD_POINTS = ["nose", "l_eye", "r_eye", "l_ear", "r_ear"]  # v2 files only; NaN otherwise
 
 
 def _points(df, name, min_conf):
@@ -93,8 +112,8 @@ def window_features(kp: pd.DataFrame, t_end: float, frame_times=None) -> dict:
 class _Person:
     """One tracked person inside the window: times, positions and motion, all torso-scaled."""
 
-    def __init__(self, t, joints, centre, scale):
-        self.t, self.joints, self.centre, self.scale = t, joints, centre, scale
+    def __init__(self, t, joints, centre, scale, box):
+        self.t, self.joints, self.centre, self.scale, self.box = t, joints, centre, scale, box
         dt = np.diff(t)
         self.gap_ok = dt <= MAX_GAP_S
         self.dt = dt
@@ -141,10 +160,24 @@ class _Person:
     def max_wrist_speed(self):
         return _nanmax(self.wrist_speeds(-np.inf))
 
+    def vel(self, name):
+        """Velocity of a joint, (N-1, 2) in torso lengths / s, NaN across long gaps."""
+        v = np.diff(self.joints[name], axis=0) / self.dt[:, None] / self.scale
+        v[~self.gap_ok] = np.nan
+        return v
+
 
 def _people(win):
     """Build _Person objects for tracked people (person_id >= 0)."""
     joints_all = {j: _points(win, j, MIN_CONF) for j in JOINTS}
+    nan2 = np.full((len(win), 2), np.nan)
+    for h in HEAD_POINTS:
+        joints_all[h] = _points(win, h, MIN_CONF) if f"{h}_x" in win else nan2
+    with warnings.catch_warnings():  # rows without any face point are expected
+        warnings.simplefilter("ignore", RuntimeWarning)
+        joints_all["head"] = np.nanmean(np.stack([joints_all[h] for h in HEAD_POINTS]), axis=0)
+    boxes = (win[["box_x1", "box_y1", "box_x2", "box_y2"]].to_numpy(dtype=float) if "box_x1" in win
+             else np.full((len(win), 4), np.nan))
     sh_mid = _midpoint(_points(win, "l_shoulder", TORSO_MIN_CONF), _points(win, "r_shoulder", TORSO_MIN_CONF))
     hip_mid = _midpoint(_points(win, "l_hip", TORSO_MIN_CONF), _points(win, "r_hip", TORSO_MIN_CONF))
     torso = np.linalg.norm(sh_mid - hip_mid, axis=1)
@@ -177,7 +210,8 @@ def _people(win):
             scale = np.nanmedian(box_torso[idx])
         if not np.isfinite(scale) or scale < MIN_TORSO_PX:
             continue
-        people[p] = _Person(t[idx], {j: joints_all[j][idx] for j in JOINTS}, centre[idx], scale)
+        people[p] = _Person(t[idx], {j: v[idx] for j, v in joints_all.items()}, centre[idx], scale,
+                            boxes[idx])
     return people
 
 
@@ -196,15 +230,16 @@ def _active_pair(people):
     return best
 
 
-def compute_features(win: pd.DataFrame, t_end: float = None) -> dict:
-    """win: keypoint rows from the last LONG_S seconds. t_end: window end (default: last row time)."""
+def compute_features(win: pd.DataFrame, t_end: float = None, people: dict = None) -> dict:
+    """win: keypoint rows from the last LONG_S seconds. t_end: window end (default: last row time).
+    people: _people(win) if the caller already has it (seq_features.window_inputs shares it)."""
     feats = dict.fromkeys(FEATURE_NAMES, np.nan)
     if win is None or win.empty:
         return feats
     if t_end is None:
         t_end = float(win["time_s"].max())
     t_short = t_end - SHORT_S
-    people = _people(win)
+    people = _people(win) if people is None else people
     if not people:
         return feats
 
@@ -268,4 +303,102 @@ def compute_features(win: pd.DataFrame, t_end: float = None) -> dict:
         feats["pair_motion_energy"] = float(np.nanmean(e))
     if np.isfinite(e[close]).any():
         feats["close_motion"] = float(np.nanmean(e[close]))
+
+    feats.update(_body_features(a, b, ia, ib, dist))
     return feats
+
+
+def _angle(p, q, r):
+    """Angle at q (degrees) between q->p and q->r, per row."""
+    u, w = p - q, r - q
+    cos = np.sum(u * w, axis=1) / (np.linalg.norm(u, axis=1) * np.linalg.norm(w, axis=1))
+    return np.degrees(np.arccos(np.clip(cos, -1, 1)))
+
+
+def _toward(me, i_me, other, i_other, joint):
+    """Velocities of `joint` aimed at the other person's centre, over common frames."""
+    vel, out = me.vel(joint), []
+    for k_me, k_other in zip(i_me, i_other):
+        if k_me == 0:
+            continue  # velocity needs the previous frame
+        v = vel[k_me - 1]
+        to_other = other.centre[k_other] - me.joints[joint][k_me]
+        norm = np.linalg.norm(to_other)
+        if norm > 0 and np.isfinite(v).all():
+            out.append(np.dot(v, to_other / norm))
+    return out
+
+
+def _body_features(a, b, ia, ib, dist):
+    """Head, leg, arm and whole-body features of the active pair over the last LONG_S seconds.
+    ia / ib index each person's frames that both are seen in; dist is their torso distance there."""
+    f = {}
+    scale = (a.scale + b.scale) / 2
+    pair = ((a, ia, b, ib), (b, ib, a, ia))
+    close = dist < CLOSE_DIST
+    with warnings.catch_warnings():  # all-NaN slices are expected (missing joints)
+        warnings.simplefilter("ignore", RuntimeWarning)
+
+        # ---- Head ----
+        f["head_dist_min"] = np.nanmin(np.linalg.norm(a.joints["head"][ia] - b.joints["head"][ib], axis=1)
+                                       / scale)
+        snaps = []
+        for p in (a, b):
+            if len(p.t) >= 3:
+                acc = np.diff(p.vel("head"), axis=0) / ((p.t[2:] - p.t[:-2]) / 2)[:, None]
+                snaps.extend(np.linalg.norm(acc, axis=1))
+        f["head_snap"] = _nanmax(snaps)
+        cos = []
+        for me, i_me, other, i_other in pair:
+            ears = _midpoint(me.joints["l_ear"][i_me], me.joints["r_ear"][i_me])
+            face = me.joints["nose"][i_me] - ears
+            to_other = other.centre[i_other] - me.joints["head"][i_me]
+            cos.append(np.sum(face * to_other, axis=1) /
+                       (np.linalg.norm(face, axis=1) * np.linalg.norm(to_other, axis=1)))
+        f["facing_score"] = np.nanmean(np.concatenate(cos))
+
+        # ---- Legs ----
+        f["ankle_toward_speed"] = _nanmax([x for me, i_me, other, i_other in pair for s in SIDES
+                                           for x in _toward(me, i_me, other, i_other, f"{s}_ankle")])
+        f["knee_lift"] = _nanmax([np.nanmax((p.joints[f"{s}_hip"][:, 1] - p.joints[f"{s}_knee"][:, 1])
+                                            / p.scale) for p in (a, b) for s in SIDES])
+        drops = []
+        for p in (a, b):
+            y = _midpoint(p.joints["l_shoulder"], p.joints["r_shoulder"])[:, 1]
+            if np.isfinite(y).sum() >= 2:  # image y grows downward, so a drop = y above its running min
+                drops.append(np.nanmax(y - np.fmin.accumulate(np.where(np.isfinite(y), y, np.inf))) / p.scale)
+        f["height_drop"] = _nanmax(drops)
+
+        # ---- Arms ----
+        asym = []
+        for me, i_me, _, _ in pair:
+            for k, k_me in enumerate(i_me):
+                if not close[k] or k_me == 0:
+                    continue
+                vl = np.linalg.norm(me.wrist_vel["l"][k_me - 1])
+                vr = np.linalg.norm(me.wrist_vel["r"][k_me - 1])
+                if np.isfinite(vl) and np.isfinite(vr) and vl + vr > MIN_ARM_SPEED:
+                    asym.append(abs(vl - vr) / (vl + vr))
+        f["arm_asymmetry"] = float(np.mean(asym)) if asym else np.nan
+        rates = []
+        for p in (a, b):
+            for s in SIDES:
+                ang = _angle(p.joints[f"{s}_shoulder"], p.joints[f"{s}_elbow"], p.joints[f"{s}_wrist"])
+                r = np.diff(ang) / p.dt
+                r[~p.gap_ok] = np.nan
+                rates.extend(r)
+        f["elbow_ext_rate"] = _nanmax(rates)
+
+        # ---- Whole body ----
+        per_person = [np.nanmean([p.energy[i - 1] for i in idx if i > 0]) if (idx > 0).any() else np.nan
+                      for p, idx in ((a, ia), (b, ib))]
+        if np.isfinite(per_person).any():
+            f["energy_max"], f["energy_min"] = np.nanmax(per_person), np.nanmin(per_person)
+        f["contact_s"] = close.sum() / FEATURE_FPS
+        f["contact_count"] = int(np.sum(np.diff(np.concatenate([[0], close.astype(int)])) == 1))
+        ba, bb = a.box[ia], b.box[ib]
+        iw = np.clip(np.minimum(ba[:, 2], bb[:, 2]) - np.maximum(ba[:, 0], bb[:, 0]), 0, None)
+        ih = np.clip(np.minimum(ba[:, 3], bb[:, 3]) - np.maximum(ba[:, 1], bb[:, 1]), 0, None)
+        area = lambda bx: (bx[:, 2] - bx[:, 0]) * (bx[:, 3] - bx[:, 1])
+        f["box_iou_max"] = np.nanmax(iw * ih / (area(ba) + area(bb) - iw * ih))
+    return {k: (float(v) if np.isfinite(v) else np.nan) for k, v in f.items()}

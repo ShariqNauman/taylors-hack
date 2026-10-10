@@ -1,0 +1,28 @@
+{
+  "settings": {
+    "num_leaves": 31,
+    "learning_rate": 0.05,
+    "n_estimators": 400,
+    "min_child_samples": 100,
+    "subsample": 0.8,
+    "colsample_bytree": 1.0,
+    "reg_lambda": 0.0,
+    "w_airtlab": 2.0,
+    "w_cctv": 2.0,
+    "hug_mult": 5.0
+  },
+  "scores": {
+    "clip_auc": 0.8888,
+    "FIGHT_AT": 0.6948,
+    "normal%": 8.9,
+    "fights%": 65.4,
+    "hugs%": 17.6,
+    "weapon%": 42.9,
+    "fights_AIRTLab%": 67.3,
+    "fights_RLVS%": 76.4,
+    "fights_SCF%": 4.7,
+    "fights_SCVD%": 55.8
+  },
+  "trial": 94,
+  "hug_limit": 18.6
+}
