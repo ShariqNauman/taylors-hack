@@ -164,7 +164,7 @@ async def create_event(body: EventCreate, background: BackgroundTasks):
 
     incoming = body.model_dump(mode="json", exclude_none=False)
     incoming.update({"incident_id": incident_id, "priority": priority})
-    for k in ("snapshot", "peak_snapshot", "top_features"):
+    for k in ("snapshot", "peak_snapshot", "top_features", "timeline", "clip_start"):
         if incoming.get(k) is None:
             incoming.pop(k, None)
 

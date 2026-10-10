@@ -54,7 +54,10 @@ def annotate(src: str, out: str, camera_id: str, stride: int = 2, max_w: int = 9
     next_score, level, score = ld.SHORT_S, "CALM", 0.0
     writer, tmp, size = None, out_p.with_name(f".{out_p.stem}.tmp.mp4"), None
     h264 = True
-    stats = {"frames": 0, "max_score": 0.0, "fight_s": 0.0, "tense_s": 0.0}
+    stats = {"frames": 0, "max_score": 0.0, "fight_s": 0.0, "tense_s": 0.0, "peak_s": 0.0}
+    # What really happened, for Incidents' "How it unfolded": every level change with the video
+    # second, the model's score and the people count (same shape as the live edge's timeline).
+    timeline: list[dict] = []
     i = -1
     while True:
         ok, frame = cap.read()
@@ -95,7 +98,11 @@ def annotate(src: str, out: str, camera_id: str, stride: int = 2, max_w: int = 9
             score = float(score)
         dt = stride / fps
         stats["frames"] += 1
-        stats["max_score"] = max(stats["max_score"], score)
+        if score > stats["max_score"]:
+            stats["max_score"], stats["peak_s"] = score, round(t, 1)
+        lv = {"FIGHT": "fight", "TENSE": "tense"}.get(level, "calm")
+        if (timeline and timeline[-1]["level"] != lv) or (not timeline and lv != "calm"):
+            timeline.append({"s": round(t, 1), "level": lv, "score": round(score, 2), "people": max(1, len(people))})
         if level == "FIGHT":
             stats["fight_s"] += dt
         elif level == "TENSE":
@@ -125,6 +132,7 @@ def annotate(src: str, out: str, camera_id: str, stride: int = 2, max_w: int = 9
     tmp.replace(out_p)
     stats["max_score"] = round(stats["max_score"], 2)
     stats["fight_s"], stats["tense_s"] = round(stats["fight_s"], 1), round(stats["tense_s"], 1)
+    stats["timeline"] = timeline
     return stats
 
 
@@ -135,4 +143,5 @@ if __name__ == "__main__":
     ap.add_argument("--camera-id", default="CAM")
     ap.add_argument("--stride", type=int, default=2, help="score every Nth frame (2 = half the frames)")
     args = ap.parse_args()
-    print(annotate(args.src, args.out, args.camera_id, args.stride), flush=True)
+    import json
+    print(json.dumps(annotate(args.src, args.out, args.camera_id, args.stride)), flush=True)

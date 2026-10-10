@@ -139,6 +139,8 @@ class EventCreate(BaseModel):
     snapshot: Optional[dict[str, Any]] = None
     peak_snapshot: Optional[dict[str, Any]] = None
     top_features: Optional[list[dict[str, Any]]] = None
+    timeline: Optional[list[dict[str, Any]]] = None   # every level change: {t, level, score, people}
+    clip_start: Optional[str] = None                  # first frame of the edge's recording (stays on the laptop)
 
 
 class Event(BaseModel):
@@ -169,6 +171,8 @@ class Event(BaseModel):
     snapshot: Optional[dict[str, Any]] = None
     peak_snapshot: Optional[dict[str, Any]] = None
     top_features: Optional[list[dict[str, Any]]] = None
+    timeline: Optional[list[dict[str, Any]]] = None   # every level change: {t, level, score, people}
+    clip_start: Optional[str] = None                  # first frame of the edge's recording (stays on the laptop)
 
 
 class EventPatch(BaseModel):

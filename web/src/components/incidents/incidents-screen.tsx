@@ -599,6 +599,7 @@ function CaseStory({
   const view = useAppStore((s) => s.view);
   const onsite = view === "onsite";
   const [clipFailed, setClipFailed] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
   const [note, setNote] = useState(e.staff_note ?? "");
   const [noteSaved, setNoteSaved] = useState(false);
   useEffect(() => setNote(e.staff_note ?? ""), [e.staff_note]);
@@ -615,9 +616,14 @@ function CaseStory({
   // The camera's own timeline (every level change with the model's score) when the edge sent it.
   const LV_WORD: Record<string, string> = { calm: "Calm again", tense: "Tense", fight_likely: "Fight likely", fight: "Fight" };
   const LV_DOT: Record<string, string> = { calm: "#E4F3EA", tense: "#F5B323", fight_likely: "#C8241B", fight: "#7F1310" };
-  const timed: { at: number; t: string; text: string; dot: string }[] = [];
-  const put = (iso: string | null | undefined, text: string, dot: string) => {
-    if (iso) timed.push({ at: Date.parse(iso), t: fmtTime(iso), text, dot });
+  // With the recording and its start time, each camera row links to that second of the video.
+  const clip0 = clipUrl && e.clip_start ? Date.parse(e.clip_start) : NaN;
+  const timed: { at: number; t: string; text: string; dot: string; clip?: number }[] = [];
+  const put = (iso: string | null | undefined, text: string, dot: string, seekable = false) => {
+    if (!iso) return;
+    const at = Date.parse(iso);
+    const off = (at - clip0) / 1000;
+    timed.push({ at, t: fmtTime(iso), text, dot, clip: seekable && off >= 0 ? off : undefined });
   };
   if (e.timeline?.length) {
     e.timeline.forEach((x, i) =>
@@ -625,19 +631,15 @@ function CaseStory({
         x.t,
         `${i === 0 ? "Camera: " : ""}${LV_WORD[x.level] ?? x.level} · score ${x.score.toFixed(2)} · ${x.people} ${x.people === 1 ? "person" : "people"} in view`,
         LV_DOT[x.level] ?? "#FFFFFF",
+        true,
       ),
     );
   } else {
-    put(
-      e.start_time,
-      e.level === "tense"
-        ? "EarlyEye noticed tension and showed it on the desk screen. No alarm: it never went past Tense."
-        : "EarlyEye noticed tension and showed it on the desk screen.",
-      "#F5B323",
-    );
+    put(e.start_time, "Incident opened. The camera's second-by-second record wasn't kept for this one.", "#FFFFFF");
   }
   const peakAt = (e.peak_snapshot as { t?: string } | undefined)?.t;
-  if (peakAt && e.peak_score) put(peakAt, `Highest score ${e.peak_score.toFixed(2)}: the worst moment, shown here`, "#7F1310");
+  if (peakAt && e.peak_score)
+    put(peakAt, `Highest score ${e.peak_score.toFixed(2)}: the worst moment${Number.isNaN(clip0) ? ", shown here" : ""}`, "#7F1310", true);
   put(e.pushed_at, `Alarm: ${guard ?? "the guard on duty"}'s phone rang`, "#C8241B");
   if (reply != null) put(e.acked_at, `${guard ?? "The guard"} tapped "On my way" · ${reply} s after the alarm`, "#2742D9");
   if (e.arrived_at) put(e.arrived_at, `${guard ?? "The guard"} got there${arrived != null ? ` · ${arrived} s later` : ""}`, "#2742D9");
@@ -655,7 +657,17 @@ function CaseStory({
       "#FFFFFF",
     );
   timed.sort((x, y) => x.at - y.at);
-  const trail: { t: string; text: string; dot: string }[] = timed.map(({ t, text, dot }) => ({ t, text, dot }));
+  const trail: { t: string; text: string; dot: string; clip?: number }[] = timed.map(({ t, text, dot, clip }) => ({ t, text, dot, clip }));
+  // The recording opens on the first Fight moment (else 5 s in, where the edge's alarm sits).
+  const firstFight = trail.find((x) => x.clip != null && /^(Camera: )?Fight/.test(x.text))?.clip;
+  const openAt = Math.max(0, Math.floor(firstFight ?? 5));
+  const seek = (sec: number) => {
+    const v = videoRef.current;
+    if (!v) return;
+    v.currentTime = sec;
+    void v.play().catch(() => {});
+  };
+  const mmss = (sec: number) => `${Math.floor(sec / 60)}:${String(Math.floor(sec % 60)).padStart(2, "0")}`;
   if (bucket === "real")
     trail.push({
       t: "",
@@ -832,7 +844,8 @@ function CaseStory({
               {clipUrl && !clipFailed ? (
                 // The recording itself, paused on the alarm moment; play to watch.
                 <video
-                  src={`${clipUrl}#t=5`}
+                  ref={videoRef}
+                  src={`${clipUrl}#t=${openAt}`}
                   controls
                   playsInline
                   preload="metadata"
@@ -883,7 +896,18 @@ function CaseStory({
                   style={{ background: a.dot }}
                   aria-hidden
                 />
-                <span className="text-[15px] leading-[1.45]">{a.text}</span>
+                <span className="flex flex-col items-start gap-1 text-[15px] leading-[1.45]">
+                  {a.text}
+                  {a.clip != null && clipUrl && !clipFailed ? (
+                    <button
+                      type="button"
+                      onClick={() => seek(a.clip!)}
+                      className="font-mono text-[12px] font-bold text-ink underline underline-offset-2"
+                    >
+                      ▶ {mmss(a.clip)} in the recording
+                    </button>
+                  ) : null}
+                </span>
               </li>
             ))}
           </ol>

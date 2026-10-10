@@ -119,11 +119,13 @@ class ClipRecorder:
         for iid, frames in done:
             threading.Thread(target=self._write, args=(iid, frames), daemon=True).start()
 
-    def start(self, incident_id: str, now: float):
+    def start(self, incident_id: str, now: float) -> float | None:
+        """Start a clip; returns the time of its first frame (None if already recording)."""
         with self.lock:
             if incident_id in self.jobs or (CLIPS / f"{incident_id}.mp4").exists():
-                return
+                return None
             self.jobs[incident_id] = {"frames": list(self.buf), "until": now + CLIP_POST_S}
+            return self.buf[0][0] if self.buf else now
 
     @staticmethod
     def _write(incident_id: str, timed: list):
@@ -229,7 +231,9 @@ def tick_incident(s: State, now: float):
     if inc["level"] != "fight":
         inc["level"] = lv
     if inc["level"] == "fight" and s.clips is not None:
-        s.clips.start(inc["incident_id"], now)
+        t0 = s.clips.start(inc["incident_id"], now)
+        if t0 is not None:   # lets Incidents line the timeline up with the recording, second by second
+            inc["clip_start"] = datetime.fromtimestamp(t0, MYT).isoformat(timespec="seconds")
     inc["people_count"] = people
     inc["reason"] = reason_from(s.feats, level, people)
     inc["action"] = f"Send {a.staff} now; call the security lead" if inc["level"] == "fight" else "Watch this camera"

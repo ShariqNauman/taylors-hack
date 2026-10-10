@@ -88,7 +88,7 @@ def without_unknown_columns(row: dict, error_text: str) -> dict | None:
     """Supabase/PostgREST rejects a column that the table does not have yet (before the
     migration runs). Return the row without that column so the write can be retried, or None."""
     text = error_text or ""
-    for col in ("acked_at", "arrived_at", "outcome", "outcome_at", "snapshot", "peak_snapshot", "top_features", "updated_at"):
+    for col in ("acked_at", "arrived_at", "outcome", "outcome_at", "snapshot", "peak_snapshot", "top_features", "timeline", "clip_start", "updated_at"):
         if col in row and col in text:
             r = dict(row)
             r.pop(col)

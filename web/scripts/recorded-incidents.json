@@ -5,10 +5,10 @@
   "location": "Sports pitch",
   "zone_type": "sports_court",
   "start_time": "2026-10-10T22:13:51+08:00",
-  "end_time": "2026-10-10T22:14:54+08:00",
+  "end_time": "2026-10-10T22:14:56+08:00",
   "type": "fight",
   "level": "fight",
-  "peak_score": 0.77,
+  "peak_score": 0.92,
   "eta_seconds": null,
   "priority": 0.18,
   "reason": "Fast whole-body motion while close, held for over 1 s.",
@@ -21,7 +21,7 @@
   "status": "pushed",
   "staff_note": null,
   "peak_snapshot": {
-   "t": "2026-10-10T22:13:53+08:00",
+   "t": "2026-10-10T22:14:48+08:00",
    "people": [
     {
      "id": 1,
@@ -305,7 +305,94 @@
    },
    {
     "name": "risk_score",
-    "value": 0.77
+    "value": 0.92
+   }
+  ],
+  "clip_start": "2026-10-10T22:13:44+08:00",
+  "timeline": [
+   {
+    "t": "2026-10-10T22:13:51+08:00",
+    "level": "tense",
+    "score": 0.53,
+    "people": 2
+   },
+   {
+    "t": "2026-10-10T22:13:52+08:00",
+    "level": "fight",
+    "score": 0.82,
+    "people": 2
+   },
+   {
+    "t": "2026-10-10T22:14:00+08:00",
+    "level": "tense",
+    "score": 0.42,
+    "people": 2
+   },
+   {
+    "t": "2026-10-10T22:14:02+08:00",
+    "level": "fight",
+    "score": 0.85,
+    "people": 2
+   },
+   {
+    "t": "2026-10-10T22:14:16+08:00",
+    "level": "calm",
+    "score": 0.25,
+    "people": 1
+   },
+   {
+    "t": "2026-10-10T22:14:17+08:00",
+    "level": "tense",
+    "score": 0.43,
+    "people": 2
+   },
+   {
+    "t": "2026-10-10T22:14:19+08:00",
+    "level": "fight",
+    "score": 0.8,
+    "people": 2
+   },
+   {
+    "t": "2026-10-10T22:14:27+08:00",
+    "level": "tense",
+    "score": 0.45,
+    "people": 1
+   },
+   {
+    "t": "2026-10-10T22:14:29+08:00",
+    "level": "calm",
+    "score": 0.21,
+    "people": 1
+   },
+   {
+    "t": "2026-10-10T22:14:32+08:00",
+    "level": "tense",
+    "score": 0.47,
+    "people": 2
+   },
+   {
+    "t": "2026-10-10T22:14:34+08:00",
+    "level": "fight",
+    "score": 0.59,
+    "people": 2
+   },
+   {
+    "t": "2026-10-10T22:14:40+08:00",
+    "level": "calm",
+    "score": 0.34,
+    "people": 1
+   },
+   {
+    "t": "2026-10-10T22:14:43+08:00",
+    "level": "tense",
+    "score": 0.56,
+    "people": 2
+   },
+   {
+    "t": "2026-10-10T22:14:44+08:00",
+    "level": "fight",
+    "score": 0.73,
+    "people": 2
    }
   ]
  },
@@ -314,11 +401,11 @@
   "camera_id": "CAM-BC-03",
   "location": "Block C stairwell",
   "zone_type": "stairwell",
-  "start_time": "2026-10-10T22:14:22+08:00",
-  "end_time": "2026-10-10T22:14:58+08:00",
+  "start_time": "2026-10-10T22:14:21+08:00",
+  "end_time": "2026-10-10T22:15:02+08:00",
   "type": "fight",
   "level": "fight",
-  "peak_score": 0.89,
+  "peak_score": 0.94,
   "eta_seconds": null,
   "priority": 0.57,
   "reason": "Fast whole-body motion while close, held for over 1 s.",
@@ -615,7 +702,46 @@
    },
    {
     "name": "risk_score",
-    "value": 0.89
+    "value": 0.94
+   }
+  ],
+  "clip_start": "2026-10-10T22:14:16+08:00",
+  "timeline": [
+   {
+    "t": "2026-10-10T22:14:21+08:00",
+    "level": "tense",
+    "score": 0.64,
+    "people": 2
+   },
+   {
+    "t": "2026-10-10T22:14:22+08:00",
+    "level": "fight",
+    "score": 0.85,
+    "people": 2
+   },
+   {
+    "t": "2026-10-10T22:14:29+08:00",
+    "level": "calm",
+    "score": 0.32,
+    "people": 1
+   },
+   {
+    "t": "2026-10-10T22:14:39+08:00",
+    "level": "tense",
+    "score": 0.39,
+    "people": 3
+   },
+   {
+    "t": "2026-10-10T22:14:43+08:00",
+    "level": "fight",
+    "score": 0.88,
+    "people": 2
+   },
+   {
+    "t": "2026-10-10T22:15:02+08:00",
+    "level": "calm",
+    "score": 0.2,
+    "people": 1
    }
   ]
  },
@@ -624,11 +750,11 @@
   "camera_id": "CAM-CT-04",
   "location": "Syopz Mall food court",
   "zone_type": "canteen",
-  "start_time": "2026-10-10T22:15:30+08:00",
-  "end_time": "2026-10-10T22:16:51+08:00",
+  "start_time": "2026-10-10T22:15:38+08:00",
+  "end_time": "2026-10-10T22:16:58+08:00",
   "type": "fight",
   "level": "fight",
-  "peak_score": 0.8,
+  "peak_score": 0.77,
   "eta_seconds": null,
   "priority": 0.56,
   "reason": "Repeated fast arm motion toward the other person, held for over 1 s.",
@@ -641,7 +767,7 @@
   "status": "pushed",
   "staff_note": null,
   "peak_snapshot": {
-   "t": "2026-10-10T22:15:51+08:00",
+   "t": "2026-10-10T22:15:52+08:00",
    "people": [
     {
      "id": 1,
@@ -1181,7 +1307,112 @@
    },
    {
     "name": "risk_score",
-    "value": 0.8
+    "value": 0.77
+   }
+  ],
+  "clip_start": "2026-10-10T22:15:31+08:00",
+  "timeline": [
+   {
+    "t": "2026-10-10T22:15:38+08:00",
+    "level": "tense",
+    "score": 0.43,
+    "people": 9
+   },
+   {
+    "t": "2026-10-10T22:15:39+08:00",
+    "level": "calm",
+    "score": 0.38,
+    "people": 7
+   },
+   {
+    "t": "2026-10-10T22:15:41+08:00",
+    "level": "tense",
+    "score": 0.45,
+    "people": 7
+   },
+   {
+    "t": "2026-10-10T22:15:42+08:00",
+    "level": "calm",
+    "score": 0.27,
+    "people": 8
+   },
+   {
+    "t": "2026-10-10T22:15:44+08:00",
+    "level": "tense",
+    "score": 0.42,
+    "people": 8
+   },
+   {
+    "t": "2026-10-10T22:15:49+08:00",
+    "level": "fight",
+    "score": 0.63,
+    "people": 5
+   },
+   {
+    "t": "2026-10-10T22:16:04+08:00",
+    "level": "tense",
+    "score": 0.44,
+    "people": 6
+   },
+   {
+    "t": "2026-10-10T22:16:06+08:00",
+    "level": "fight",
+    "score": 0.72,
+    "people": 6
+   },
+   {
+    "t": "2026-10-10T22:16:22+08:00",
+    "level": "tense",
+    "score": 0.46,
+    "people": 7
+   },
+   {
+    "t": "2026-10-10T22:16:24+08:00",
+    "level": "calm",
+    "score": 0.38,
+    "people": 8
+   },
+   {
+    "t": "2026-10-10T22:16:26+08:00",
+    "level": "tense",
+    "score": 0.44,
+    "people": 5
+   },
+   {
+    "t": "2026-10-10T22:16:27+08:00",
+    "level": "fight",
+    "score": 0.72,
+    "people": 6
+   },
+   {
+    "t": "2026-10-10T22:16:35+08:00",
+    "level": "tense",
+    "score": 0.44,
+    "people": 6
+   },
+   {
+    "t": "2026-10-10T22:16:38+08:00",
+    "level": "fight",
+    "score": 0.61,
+    "people": 6
+   },
+   {
+    "t": "2026-10-10T22:16:42+08:00",
+    "level": "tense",
+    "score": 0.56,
+    "people": 6
+   },
+   {
+    "t": "2026-10-10T22:16:51+08:00",
+    "level": "fight",
+    "score": 0.6,
+    "people": 6
+   },
+   {
+    "t": "2026-10-10T22:16:55+08:00",
+    "level": "tense",
+    "score": 0.62,
+    "people": 5
    }
   ]
  }
