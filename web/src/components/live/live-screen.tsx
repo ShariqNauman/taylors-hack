@@ -198,6 +198,7 @@ export function LiveScreen() {
               ) : undefined
             }
             onPush={feed.pushNow}
+            onPushBackup={feed.pushBackup}
             onConfirm={(e) => feed.label(e, "confirmed")}
             onDismiss={(e) => feed.label(e, "dismissed")}
             onUndo={feed.undo}

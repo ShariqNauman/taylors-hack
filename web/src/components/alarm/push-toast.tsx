@@ -20,7 +20,7 @@ export function pushToast(name: string, at: string | Date, location?: string) {
             One person only. They see a skeleton snapshot, not video.
           </span>
           <Link
-            href={`/push?staff=${encodeURIComponent(name)}`}
+            href={`/guard?staff=${encodeURIComponent(name)}`}
             className="text-[14px] font-bold text-[#B7C4FF]"
             onClick={() => toast.dismiss(id)}
           >

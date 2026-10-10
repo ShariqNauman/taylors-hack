@@ -290,3 +290,13 @@
     rgb(93 102 114 / 0.12) 6px 7px
   );
 }
+
+/* Guard app alarm: the whole screen breathes; still under reduced motion. */
+@keyframes ee-guard-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.85; }
+}
+.ee-guard-alarm { animation: ee-guard-pulse 1s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .ee-guard-alarm { animation: none; }
+}

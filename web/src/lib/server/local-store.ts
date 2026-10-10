@@ -5,12 +5,17 @@
 // File: web/.local-store.json (git-ignored). On Vercel it lives in /tmp, per instance.
 import { promises as fs } from "fs";
 import path from "path";
-import type { Checkin, PatrolSlot, StatusPatch } from "@/lib/types";
+import type { Checkin, Event, PatrolSlot, StatusPatch } from "@/lib/types";
 
 export interface LocalStore {
+  /** Human fields set by the desk or a guard's phone (PATCH /events/:id). */
   events: Record<string, StatusPatch>;
+  /** Whole incidents the desk pushed (live webcam, replay demo, backup), like POST /events. */
+  added: Record<string, Event>;
   slots: Record<string, Partial<PatrolSlot>>;
   checkins: Record<string, Checkin[]>;
+  /** Guard app: Start my shift / End my shift. */
+  staff: Record<string, { on_duty: boolean }>;
 }
 
 const FILE =
@@ -19,7 +24,7 @@ const FILE =
     ? "/tmp/earlyeye-local-store.json"
     : path.join(process.cwd(), ".local-store.json"));
 
-const empty = (): LocalStore => ({ events: {}, slots: {}, checkins: {} });
+const empty = (): LocalStore => ({ events: {}, added: {}, slots: {}, checkins: {}, staff: {} });
 let cache: LocalStore | null = null;
 let queue: Promise<unknown> = Promise.resolve();
 
