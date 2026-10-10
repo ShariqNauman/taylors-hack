@@ -15,6 +15,7 @@ cfg = json.loads((REPO / "edge" / "cameras.json").read_text())
 py = sys.executable
 bridge = str(REPO / "edge" / "earlyeye_edge.py")
 procs = []
+RECORDING_POSE_FPS = 10   # sample CCTV recordings: pose at most this often
 
 def start(args, name):
     print(f"starting {name}: port {args[args.index('--port') + 1]}", flush=True)
@@ -25,7 +26,9 @@ for r in cfg["recordings"]:
     if not f.exists():
         print(f"skip {r['camera_id']}: {r['file']} not found", flush=True)
         continue
-    start(["--camera", str(f), "--loop", "--source", "recorded", "--no-post",
+    # Sample recordings share the laptop with the live webcam: cap their pose rate so the webcam keeps
+    # most of the GPU (the live model needs >= ~15 pose fps; recordings never post incidents).
+    start(["--camera", str(f), "--loop", "--source", "recorded", "--no-post", "--pose-fps", str(RECORDING_POSE_FPS),
            "--label", "SAMPLE CCTV CLIP", "--camera-id", r["camera_id"], "--location", r["location"],
            "--zone", r["zone"], "--zone-risk", str(r["zone_risk"]), "--staff", r["staff"],
            "--port", str(r["port"])], r["camera_id"])
