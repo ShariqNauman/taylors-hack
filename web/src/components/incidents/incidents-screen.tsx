@@ -5,7 +5,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import useSWR from "swr";
 import { toast } from "sonner";
-import { getCameras, getEvents, patchEvent, PatchError } from "@/lib/api";
+import { getCameras, getEdgeClips, getEvents, patchEvent, PatchError } from "@/lib/api";
 import type { Camera, Event, Status } from "@/lib/types";
 import { normaliseStatus, secondsBetween } from "@/lib/format";
 import {
@@ -103,7 +103,20 @@ export function IncidentsScreen() {
   );
   const scoped = camParam ? all.filter((e) => e.camera_id === camParam) : all;
   const inTab = (e: Event, t: Tab) => t === "all" || bucketOf(e.status) === t;
-  const rows = scoped.filter((e) => inTab(e, tab));
+  // On site, cases with a recording on this laptop come first (the clip never leaves campus).
+  const siteView = useAppStore((s) => s.view);
+  const clipEdge =
+    siteView === "onsite"
+      ? (cameras?.find((c) => c.source === "live" && c.edge_url)?.edge_url ?? null)
+      : null;
+  const { data: clipIds } = useSWR(clipEdge ? ["edge-clips", clipEdge] : null, () => getEdgeClips(clipEdge!), {
+    refreshInterval: 10_000,
+  });
+  const clipFor = (id: string) =>
+    clipEdge && clipIds?.includes(id) ? `${clipEdge.replace(/\/$/, "")}/clips/${encodeURIComponent(id)}.mp4` : null;
+  const inScope = scoped.filter((e) => inTab(e, tab));
+  const recorded = inScope.filter((e) => clipFor(e.incident_id));
+  const rows = [...recorded, ...inScope.filter((e) => !clipFor(e.incident_id))];
   const selected =
     all.find((e) => e.incident_id === idParam) ?? rows[0] ?? null;
 
@@ -365,11 +378,15 @@ export function IncidentsScreen() {
           )}
           <div className="flex flex-col gap-1.5 min-[1100px]:max-h-[1200px] min-[1100px]:overflow-y-auto min-[1100px]:pr-1">
             {rows.map((e, i) => {
+              const clip = clipFor(e.incident_id);
               const head =
-                i === 0 ||
-                dayKey(rows[i - 1].start_time) !== dayKey(e.start_time)
-                  ? dayHeading(e.start_time, now)
-                  : null;
+                i === 0 && clip
+                  ? `WITH A RECORDING · ${recorded.length}`
+                  : !clip &&
+                      (i === recorded.length ||
+                        dayKey(rows[i - 1].start_time) !== dayKey(e.start_time))
+                    ? dayHeading(e.start_time, now)
+                    : null;
               const on = e.incident_id === selected?.incident_id;
               return (
                 <div key={e.incident_id} className="flex flex-col gap-1.5">
@@ -380,15 +397,34 @@ export function IncidentsScreen() {
                     type="button"
                     aria-pressed={on}
                     onClick={() => openCase(e.incident_id)}
-                    className="grid w-full grid-cols-[56px_minmax(0,1fr)] items-start gap-3 rounded-[2px] p-2.5 text-left text-ink"
+                    className={cn(
+                      "grid w-full items-start gap-3 rounded-[2px] p-2.5 text-left text-ink",
+                      clip ? "grid-cols-[128px_minmax(0,1fr)]" : "grid-cols-[56px_minmax(0,1fr)]",
+                    )}
                     style={{
                       border: on ? "2px solid #0B0D10" : "1px solid #DCDFE4",
                       background: on ? "#F7F8FA" : "#FFFFFF",
                     }}
                   >
-                    <span className="pt-px font-mono text-[17px] font-bold">
-                      {hm(e.start_time)}
-                    </span>
+                    {clip ? (
+                      <span className="relative block">
+                        <video
+                          src={`${clip}#t=5`}
+                          muted
+                          playsInline
+                          preload="metadata"
+                          aria-label="Recording of this incident"
+                          className="block aspect-video w-full rounded-[2px] bg-black object-cover"
+                        />
+                        <span className="absolute bottom-1 left-1 rounded-[1px] bg-ink/85 px-1 font-mono text-[11px] font-bold text-white">
+                          {hm(e.start_time)}
+                        </span>
+                      </span>
+                    ) : (
+                      <span className="pt-px font-mono text-[17px] font-bold">
+                        {hm(e.start_time)}
+                      </span>
+                    )}
                     <span className="flex min-w-0 flex-col gap-1.5">
                       <span className="text-[16px] font-extrabold leading-tight">
                         {caseTitle(e)}
@@ -417,6 +453,7 @@ export function IncidentsScreen() {
             <CaseStory
               key={selected.incident_id}
               e={selected}
+              clipUrl={clipFor(selected.incident_id)}
               camera={camById.get(selected.camera_id)}
               all={all}
               now={now}
@@ -558,6 +595,7 @@ function StatusChip({ status }: { status: string }) {
 function CaseStory({
   e,
   camera,
+  clipUrl,
   all,
   now,
   onSave,
@@ -565,6 +603,8 @@ function CaseStory({
 }: {
   e: Event;
   camera?: Camera;
+  /** This case's recording on this laptop (on site only), else null. */
+  clipUrl: string | null;
   all: Event[];
   now: Date;
   onSave: (
@@ -576,7 +616,6 @@ function CaseStory({
 }) {
   const view = useAppStore((s) => s.view);
   const onsite = view === "onsite";
-  const [clip, setClip] = useState(false);
   const [clipFailed, setClipFailed] = useState(false);
   const [summaryOpen, setSummaryOpen] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -690,10 +729,6 @@ function CaseStory({
   );
   const pattern = repeatPlaces(all, now).find((p) => p.location === e.location);
 
-  const clipUrl =
-    onsite && camera?.edge_url
-      ? `${camera.edge_url.replace(/\/$/, "")}/clips/${encodeURIComponent(e.incident_id)}.mp4`
-      : null;
   const frame = e.peak_snapshot ?? e.snapshot;
   const h3 = label;
 
@@ -815,11 +850,14 @@ function CaseStory({
           </div>
           <figure className="m-0 flex flex-col gap-2">
             <div className="overflow-hidden rounded-[2px]">
-              {clip && clipUrl && !clipFailed ? (
+              {clipUrl && !clipFailed ? (
+                // The recording itself, paused on the alarm moment; play to watch.
                 <video
-                  src={clipUrl}
+                  src={`${clipUrl}#t=5`}
                   controls
-                  autoPlay
+                  playsInline
+                  preload="metadata"
+                  aria-label={`Recording of ${title}`}
                   className="block aspect-video w-full bg-black"
                   onError={() => setClipFailed(true)}
                 />
@@ -841,24 +879,10 @@ function CaseStory({
               )}
             </div>
             <figcaption className="flex flex-wrap items-center gap-2.5">
-              {onsite && clipUrl ? (
-                <>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setClip((c) => !c);
-                      setClipFailed(false);
-                    }}
-                    className="min-h-11 rounded-[2px] bg-signal px-4 text-[15px] font-extrabold text-white"
-                  >
-                    {clip ? "Hide the clip" : "Watch the 10-second clip"}
-                  </button>
-                  <span className="text-[14px] text-ink-2">
-                    {clipFailed
-                      ? "There is no clip of this one on this computer."
-                      : "The clip stays on this computer."}
-                  </span>
-                </>
+              {clipUrl && !clipFailed ? (
+                <span className="font-mono text-[11px] font-bold text-muted-ink">RECORDING · STAYS ON THIS COMPUTER</span>
+              ) : onsite ? (
+                <span className="font-mono text-[11px] font-bold text-muted-ink">NO RECORDING OF THIS ONE · STICK FIGURES</span>
               ) : (
                 <span className="font-mono text-[11px] font-bold text-muted-ink">STICK FIGURES · NO VIDEO OFF SITE</span>
               )}
