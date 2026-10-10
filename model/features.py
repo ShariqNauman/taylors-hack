@@ -230,15 +230,16 @@ def _active_pair(people):
     return best
 
 
-def compute_features(win: pd.DataFrame, t_end: float = None) -> dict:
-    """win: keypoint rows from the last LONG_S seconds. t_end: window end (default: last row time)."""
+def compute_features(win: pd.DataFrame, t_end: float = None, people: dict = None) -> dict:
+    """win: keypoint rows from the last LONG_S seconds. t_end: window end (default: last row time).
+    people: _people(win) if the caller already has it (seq_features.window_inputs shares it)."""
     feats = dict.fromkeys(FEATURE_NAMES, np.nan)
     if win is None or win.empty:
         return feats
     if t_end is None:
         t_end = float(win["time_s"].max())
     t_short = t_end - SHORT_S
-    people = _people(win)
+    people = _people(win) if people is None else people
     if not people:
         return feats
 

@@ -12,7 +12,7 @@ A missing person or time step is all zeros (present = 0). With only one person, 
 import numpy as np
 import pandas as pd
 
-from features import FEATURE_FPS, LONG_S, _active_pair, _people, resample_window
+from features import FEATURE_FPS, LONG_S, _active_pair, _people, compute_features, resample_window
 
 # ---------------- Tunable constants ----------------
 STEPS = int(round(FEATURE_FPS * LONG_S))   # 20
@@ -26,12 +26,26 @@ KEYPOINTS = ["nose", "l_eye", "r_eye", "l_ear", "r_ear",
 FLIP = [KEYPOINTS.index(k.replace("l_", "#").replace("r_", "l_").replace("#", "r_")) for k in KEYPOINTS]
 
 
-def sequence_input(kp: pd.DataFrame, t_end: float, frame_times=None) -> np.ndarray:
-    out = np.zeros((STEPS, 2, len(KEYPOINTS), 4), np.float32)
+def window_inputs(kp: pd.DataFrame, t_end: float, frame_times=None):
+    """Both model inputs for one window with a single resample + people-finding pass (the slow part):
+    returns (LightGBM feature dict, sequence array). Same results as window_features + sequence_input."""
     win = resample_window(kp, t_end, frame_times)
     if win is None or win.empty:
-        return out
+        return compute_features(win, t_end), np.zeros((STEPS, 2, len(KEYPOINTS), 4), np.float32)
     people = _people(win)
+    return compute_features(win, t_end, people), _sequence(win, people, t_end)
+
+
+def sequence_input(kp: pd.DataFrame, t_end: float, frame_times=None) -> np.ndarray:
+    win = resample_window(kp, t_end, frame_times)
+    if win is None or win.empty:
+        return np.zeros((STEPS, 2, len(KEYPOINTS), 4), np.float32)
+    return _sequence(win, _people(win), t_end)
+
+
+def _sequence(win, people, t_end):
+    """Sequence array from an already resampled window and its people."""
+    out = np.zeros((STEPS, 2, len(KEYPOINTS), 4), np.float32)
     if not people:
         return out
     pair = _active_pair(people)
