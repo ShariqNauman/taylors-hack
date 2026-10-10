@@ -8,7 +8,8 @@
       "incidents_4w": 5,
       "expected_avoided_per_week": 0.75,
       "avoided_per_patrol_hour": 0.19,
-      "rationale": "5 incidents in the same lunch hour, Monday to Thursday, in 4 weeks. One person at the level 1 landing covers both flights."
+      "rationale": "5 incidents in the same lunch hour, Monday to Thursday, in 4 weeks. One person at the level 1 landing covers both flights.",
+      "tip": "Stand on the level 1 landing. You can see both flights of stairs from there."
     },
     {
       "location": "U Residence, corridor L3",
@@ -17,7 +18,8 @@
       "incidents_4w": 4,
       "expected_avoided_per_week": 0.6,
       "avoided_per_patrol_hour": 0.12,
-      "rationale": "4 incidents after 22:00 in 4 weeks. The L5 camera is black, so L3 is the only eye on the block."
+      "rationale": "4 incidents after 22:00 in 4 weeks. The L5 camera is black, so L3 is the only eye on the block.",
+      "tip": "Walk the level 3 corridor. The level 5 camera is off, so check level 5 once as well."
     },
     {
       "location": "Syopz Mall food court",
@@ -26,7 +28,8 @@
       "incidents_4w": 3,
       "expected_avoided_per_week": 0.45,
       "avoided_per_patrol_hour": 0.45,
-      "rationale": "3 crowd gatherings at Friday lunch in 4 weeks. One hour a week, so the best return per patrol hour."
+      "rationale": "3 crowd gatherings at Friday lunch in 4 weeks. One hour a week, so the best return per patrol hour.",
+      "tip": "Stand at the east entrance, where the queue builds up."
     }
   ],
   "assumption": "60% of hotspot incidents are avoided when a person is present. Stated, not measured. Avoided = incidents in 4 weeks × 0.6."

@@ -136,6 +136,7 @@ export default function Campus3D({
   onOpenCamera,
   selectedCameraId,
   onSelectCamera,
+  selectedPostLocation,
   height,
 }: Campus3DProps) {
   const h = height ?? (compact ? 240 : 560);
@@ -194,6 +195,15 @@ export default function Campus3D({
     if (selectedCameraId && !compact) {
       setLayer("cameras");
       setSel({ kind: "cam", id: selectedCameraId });
+    }
+  }
+  const [prevPostProp, setPrevPostProp] = useState<string | undefined>();
+  if (selectedPostLocation !== prevPostProp && !compact) {
+    const p = posts.find((q) => q.location === selectedPostLocation);
+    if (p || !selectedPostLocation) setPrevPostProp(selectedPostLocation);
+    if (p) {
+      setLayer("plan");
+      setSel({ kind: "post", id: p.id });
     }
   }
   const camLayer = compact || layer === "cameras";

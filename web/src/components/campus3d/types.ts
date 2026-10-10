@@ -17,6 +17,8 @@ export interface Campus3DProps {
   selectedCameraId?: string;
   /** "Camera details": tells the page which camera was picked. */
   onSelectCamera?: (id: string) => void;
+  /** Plan: select this patrol post (by location) and open its info card. */
+  selectedPostLocation?: string;
   /** Height in px. Default 560 (full), 240 (compact). */
   height?: number;
 }

@@ -37,6 +37,20 @@
       "post": {
         "lat": 3.0642137,
         "lng": 101.6170619
+      },
+      "role": "Security guard",
+      "shift": {
+        "label": "Day shift",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "from": 10,
+        "to": 18
       }
     },
     {
@@ -46,6 +60,20 @@
       "post": {
         "lat": 3.0631104,
         "lng": 101.6163152
+      },
+      "role": "Security guard",
+      "shift": {
+        "label": "Day shift",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "from": 7,
+        "to": 15
       }
     },
     {
@@ -55,12 +83,37 @@
       "post": {
         "lat": 3.06406,
         "lng": 101.6165401
+      },
+      "role": "Security guard",
+      "shift": {
+        "label": "Evening shift",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "from": 14,
+        "to": 23
       }
     },
     {
       "name": "Warden D",
       "zone_type": "hostel_corridor",
-      "on_duty": false
+      "on_duty": false,
+      "role": "Hostel warden",
+      "shift": {
+        "label": "Nights",
+        "days": [
+          4,
+          5
+        ],
+        "from": 21,
+        "to": 26
+      }
     }
   ],
   "campus": {

@@ -40,6 +40,16 @@ export interface Staff {
   zone_type: string;
   on_duty: boolean;
   post?: GeoPoint | null;
+  role?: string; // v3, Plan: "Security guard", "Hostel warden"
+  shift?: StaffShift; // v3, Plan: fit check for patrol posts
+}
+
+/** days: 0 = Mon. from/to are hours; `to` may exceed 24 for night shifts (21 → 26 = 02:00). */
+export interface StaffShift {
+  label: string;
+  days: number[];
+  from: number;
+  to: number;
 }
 
 export interface Site {
@@ -115,12 +125,26 @@ export interface PatrolSlot {
   expected_avoided_per_week: number; // incidents_4w × 0.6 / 4
   avoided_per_patrol_hour?: number; // expected_avoided_per_week / patrol hours per week; computed if missing
   rationale: string;
+  assigned_to?: string | null; // v3: staff name; without it the dashboard keeps assignments in the browser
+  tip?: string; // v3: one practical line for the person at the post
+}
+
+/** v3: one row per last week's post, for "Did last week's plan work?". */
+export interface PatrolReview {
+  location: string;
+  assigned_to: string | null;
+  covered_days: number;
+  planned_days: number;
+  incidents_during_post: number;
+  baseline_per_week: number;
+  verdict: string;
 }
 
 export interface PatrolPlan {
   generated_at: string; // ISO, +08:00
   slots: PatrolSlot[]; // top-3 ranked by expected_avoided_per_week
   assumption: string;
+  review?: PatrolReview[]; // v3: without it the dashboard shows mock data
 }
 
 export interface Proof {
