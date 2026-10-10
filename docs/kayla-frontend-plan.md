@@ -4,7 +4,7 @@ You own everything the judges see on screen, the deployed link, the slides and t
 
 The dashboard is **site-agnostic**: a campus, a mall, a factory, a school hostel. Nothing in the UI says "school" except the demo site's zone names. Copy uses *site*, *zone*, *operator*, *person on duty*.
 
-**Visual and screen spec: v3 Light Console, in `docs/frontend-build-brief.md`.** Where it differs from the screen notes below, the brief wins. It adds a Cameras page with a site map, live and replay evidence on Live, the alarm pulse, and the shift handover. Design source files: `design/canvas/L3*.dc.html`.
+**Visual and screen spec: v3 Light Console, in `docs/frontend-build-brief.md`.** Where it differs from the screen notes below, the brief wins. It adds a 3D model of the real Taylor's Lakeside campus (Cameras, Plan and the Live card), a Cameras page, 1 live webcam plus labelled recordings, live and replay evidence on Live, the alarm pulse, and the shift handover. Design source files: `design/canvas/L3*.dc.html`.
 
 ## Stack
 
@@ -24,7 +24,7 @@ The dashboard is **site-agnostic**: a campus, a mall, a factory, a school hostel
 web/
   src/app/
     page.tsx                  live: alert queue + current alert card + camera tiles (with health)
-    cameras/page.tsx          all cameras: site map with pins + grid + detail panel (v3)
+    cameras/page.tsx          all cameras: 3D campus + grid + detail panel (v3)
     plan/page.tsx             heatmap + hotspots + PATROL PLAN (the weekly decision screen)
     incidents/page.tsx        table of the history (fake + live), confirm/dismiss labels
     proof/page.tsx            lead time, FA/hour, CCTV-domain row, dataset vs live, IR frame, model card, disclosure
@@ -48,11 +48,11 @@ type Status = "new" | "pushed" | "confirmed" | "dismissed" | "resolved";
 // v3 optional additions (10 Oct, design handoff). Every screen must render without them.
 type Keypoint = [x: number, y: number, conf: number];          // x, y normalised 0–1 in the camera frame
 interface PoseFrame { t: string; people: { id: number; kp: Keypoint[] }[] }   // kp = 12 body keypoints, order: l_shoulder, r_shoulder, l_elbow, r_elbow, l_wrist, r_wrist, l_hip, r_hip, l_knee, r_knee, l_ankle, r_ankle (COCO 5–16, no face points)
-interface MapPoint { x: number; y: number }                     // 0–1 on the site plan image
+interface GeoPoint { lat: number; lng: number; alt_m?: number }  // WGS84, placed on the OpenStreetMap footprints of the campus
 
-interface Site { site_id: string; name: string; site_type: SiteType; zones: { zone_type: string; label: string; risk: number }[]; staff: { name: string; zone_type: string; on_duty: boolean; post?: MapPoint }[]; map?: { image: string; width: number; height: number }; }
+interface Site { site_id: string; name: string; site_type: SiteType; zones: { zone_type: string; label: string; risk: number }[]; staff: { name: string; zone_type: string; on_duty: boolean; post?: GeoPoint }[]; campus?: { center: GeoPoint; buildings: string }; }   // buildings = URL of the campus GeoJSON
 
-interface Camera { camera_id: string; location: string; zone_type: string; online: boolean; last_frame_at: string; black_since?: string; people_count?: number; map?: MapPoint & { heading_deg?: number }; edge_url?: string; }   // edge_url: that laptop's edge app on the local network (stream, clips, health); on-site view only, never shown remotely
+interface Camera { camera_id: string; location: string; zone_type: string; online: boolean; last_frame_at: string; black_since?: string; people_count?: number; geo?: GeoPoint & { building?: string; floor?: string }; source?: "live" | "recorded"; recorded_at?: string; edge_url?: string; }   // source: the one live webcam or one of our labelled recordings; edge_url: that camera's edge process (stream, clips, health), on-site view only
 
 interface Event {
   incident_id: string; camera_id: string; location: string; zone_type: string;

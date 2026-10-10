@@ -9,13 +9,15 @@ Design source for the EarlyEye dashboard, exported from the design canvas on 10 
 
 | Files | Status | What |
 |---|---|---|
-| `L3Tokens`, `L3Live`, `L3Cameras`, `L3Incidents`, `L3Plan`, `L3Proof`, `L3Push` | **Build target (v3 Light Console)** | Final screens. Interactive: replay, alarm pulse, site map, handover drawer, links between screens. |
+| `L3Tokens`, `L3Live`, `L3Cameras`, `L3Incidents`, `L3Plan`, `L3Proof`, `L3Push` | **Build target (v3 Light Console)** | Final screens. Interactive: replay, alarm pulse, 3D campus, handover drawer, links between screens. |
 | `Main`, `Blueprint`, `JourneyOperator`, `JourneyResponder`, `JourneyManager`, `JourneyBuyer` | Research | User segmentation, the incident end to end, one journey per role |
 | `V2Proposal`, `V2*` | Superseded | Dark "Ops Console" direction, with the competitor read of Ambient.ai, Volt and ZeroEyes. Kept for reference. |
 | `Live`, `Plan`, `Incidents`, `Proof`, `Push`, `DesignSystem`, `Components` | Superseded | v1 "Daylight Desk". Kept for reference. |
 | `canvas.json` | Index | Artboard positions and titles |
 
-`assets/site-plan-taylors-lakeside.svg` is the schematic site plan for the Cameras map and the Live mini map. Copy it to `web/public/site-plan.svg`.
+`Campus3D.dc.html` is the 3D campus component used inside `L3Cameras`, `L3Plan` and `L3Live` through `<dc-import>`. It is an interaction reference only: the real build uses deck.gl, per `docs/campus-3d-agent-prompt.md`.
+
+`assets/taylors-lakeside-campus.geojson` holds the real building footprints of Taylor's University Lakeside Campus from OpenStreetMap (© OpenStreetMap contributors, ODbL; heights estimated). `assets/campus-3d-seed.json` holds the latitude and longitude of every camera, on-duty post and patrol post.
 
 ## How to read a `.dc.html` file
 

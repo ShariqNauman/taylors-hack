@@ -58,7 +58,7 @@ button{font-family:inherit}
 <svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 2h8l6 6v8l-6 6H8l-6-6V8z" fill="#FFFFFF"></path><path d="M12 7v6M12 16.5v.5" stroke="{{bannerBg}}" stroke-width="2.6" stroke-linecap="round"></path></svg>
 <span style="font-family: 'Saira Condensed', sans-serif; font-size: 30px; font-weight: 800; text-transform: uppercase; line-height: 1">{{bannerTitle}}</span>
 <span style="font-size: 16px; font-weight: 500">{{bannerSub}}</span>
-<a href="L3Cameras.dc.html" style="color: #FFFFFF; font-size: 15px; font-weight: 800">View on the site map</a>
+<a href="L3Cameras.dc.html" style="color: #FFFFFF; font-size: 15px; font-weight: 800">View on the 3D campus</a>
 <div style="margin-left: auto; display: flex; align-items: center; gap: 12px">
 <sc-if value="{{alarmSounding}}" hint-placeholder-val="{{ true }}">
 <span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 14px; font-weight: 700">ALARM SOUNDING</span>
@@ -76,7 +76,7 @@ button{font-family:inherit}
 
 <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; background: #FFFFFF; border: 1px dashed #B4BAC3; border-radius: 2px; padding: 10px 14px">
 <span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; font-weight: 700; padding: 3px 8px; border: 1px solid #0B0D10; border-radius: 1px">NO CAMERA CONNECTED</span>
-<span style="font-size: 15px">Showing the demo feed: an escalation at Block C stairwell, played in real time from the replay file.</span>
+<span style="font-size: 15px">Showing the recorded demo feed from the auditorium webcam, played in real time. When the laptop webcam is on, this is live.</span>
 <button type="button" onClick="{{restart}}" style="margin-left: auto; min-height: 40px; padding: 0 14px; border-radius: 2px; border: none; background: #2742D9; color: #FFFFFF; font-size: 14px; font-weight: 800; cursor: pointer">Restart demo feed</button>
 </div>
 
@@ -175,28 +175,10 @@ button{font-family:inherit}
 <div style="background: #FFFFFF; border: 1px solid #DCDFE4; border-radius: 2px; padding: 12px 14px; display: flex; flex-direction: column; gap: 4px"><span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; color: #5D6672">DO THIS</span><span style="font-size: 19px; font-weight: 800; line-height: 1.25">{{card.action}}</span></div>
 <div style="background: #FFFFFF; border: 1px solid #DCDFE4; border-radius: 2px; padding: 12px 14px; display: flex; flex-direction: column; gap: 4px"><span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; color: #5D6672">PERSON ON DUTY</span><span style="font-size: 19px; font-weight: 800">{{card.nearest}} <span style="font-size: 14px; font-weight: 500; color: #3A414B">{{card.dist}}</span></span><span style="font-size: 13px; color: #3A414B">{{card.nearestState}}</span></div>
 </div>
-<a href="L3Cameras.dc.html" aria-label="Open the site map" style="display: block; position: relative; text-decoration: none; color: #0B0D10; border: 1px solid #DCDFE4; background: #F7F8FA">
-<svg viewBox="{{card.mapVb}}" role="img" aria-label="{{card.mapAria}}" style="display: block; width: 100%; height: auto">
-<rect x="0" y="0" width="800" height="480" fill="#F7F8FA"></rect>
-<path d="M0 230H800M330 0V480M580 0V300" stroke="#E6E8EC" stroke-width="18" fill="none"></path>
-<rect x="40" y="40" width="260" height="150" fill="#FFFFFF" stroke="#B4BAC3" stroke-width="2"></rect>
-<rect x="360" y="40" width="200" height="160" fill="#FFFFFF" stroke="#B4BAC3" stroke-width="2"></rect>
-<path d="M515 150h45v50h-45zM515 160h45M515 170h45M515 180h45M515 190h45" stroke="#B4BAC3" stroke-width="1.5" fill="none"></path>
-<rect x="360" y="260" width="200" height="130" fill="#FFFFFF" stroke="#B4BAC3" stroke-width="2"></rect>
-<rect x="600" y="40" width="170" height="230" fill="#FFFFFF" stroke="#B4BAC3" stroke-width="2" stroke-dasharray="8 5"></rect>
-<rect x="40" y="270" width="260" height="170" fill="#FFFFFF" stroke="#B4BAC3" stroke-width="2"></rect>
-<text x="372" y="64" font-family="'Atkinson Hyperlegible Mono', monospace" font-size="13" font-weight="700" fill="#3A414B">BLOCK C</text>
-<text x="372" y="284" font-family="'Atkinson Hyperlegible Mono', monospace" font-size="13" font-weight="700" fill="#3A414B">CANTEEN</text>
-<text x="52" y="64" font-family="'Atkinson Hyperlegible Mono', monospace" font-size="13" font-weight="700" fill="#3A414B">HOSTEL U</text>
-<text x="52" y="294" font-family="'Atkinson Hyperlegible Mono', monospace" font-size="13" font-weight="700" fill="#3A414B">SPORTS COURT</text>
-<path d="{{card.mapRoute}}" stroke="#2742D9" stroke-width="4" stroke-dasharray="8 6" fill="none"></path>
-<circle cx="{{card.tx}}" cy="{{card.ty}}" r="22" fill="none" stroke="{{card.targetColor}}" stroke-width="4"></circle>
-<circle cx="{{card.tx}}" cy="{{card.ty}}" r="10" fill="{{card.targetColor}}"></circle>
-<circle cx="{{card.gx}}" cy="{{card.gy}}" r="10" fill="#2742D9" stroke="#FFFFFF" stroke-width="3"></circle>
-<text x="{{card.gtx}}" y="{{card.gty}}" font-family="'Atkinson Hyperlegible Mono', monospace" font-size="16" font-weight="700" fill="#1F35B3">{{card.nearest}}</text>
-</svg>
-<span style="position: absolute; left: 8px; top: 8px; font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 11px; font-weight: 700; background: #FFFFFF; border: 1px solid #DCDFE4; padding: 2px 6px">WHERE · {{card.routeText}}</span>
-</a>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<dc-import name="Campus3D" mode="cameras" compact="{{ true }}" focus="aud" hint-size="100%,250px"></dc-import>
+<a href="L3Cameras.dc.html" style="font-size: 13px; font-weight: 700">Open the 3D campus</a>
+</div>
 <ol aria-label="Progress" style="margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px">
 <sc-for list="{{card.steps}}" as="s" hint-placeholder-count="4">
 <li style="border-top: 3px solid {{s.color}}; padding-top: 6px; display: flex; flex-direction: column; gap: 2px">
@@ -207,7 +189,7 @@ button{font-family:inherit}
 </ol>
 <div style="display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 14px; font-weight: 700">
 <a href="L3Incidents.dc.html">Open the case</a>
-<a href="L3Cameras.dc.html">Camera and site map</a>
+<a href="L3Cameras.dc.html">Camera on the 3D campus</a>
 <a href="L3Push.dc.html">{{card.nearest}}'s phone screen</a>
 </div>
 <sc-if value="{{card.showPushNow}}" hint-placeholder-val="{{ false }}">
@@ -256,7 +238,7 @@ button{font-family:inherit}
 <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 8px">
 <h2 id="wall-h" style="margin: 0; font-family: 'Saira Condensed', sans-serif; font-size: 24px; font-weight: 800; text-transform: uppercase"><a href="L3Cameras.dc.html" style="color: #0B0D10; text-decoration: none">Camera wall</a></h2>
 <span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; color: #5D6672">{{wallNote}}</span>
-<a href="L3Cameras.dc.html" style="font-size: 14px; font-weight: 800">All cameras and site map</a>
+<a href="L3Cameras.dc.html" style="font-size: 14px; font-weight: 800">All cameras and the 3D campus</a>
 </div>
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px">
 <sc-for list="{{tiles}}" as="c" hint-placeholder-count="6">
@@ -495,11 +477,11 @@ class Component extends DCLogic {
     const RID = 'INC-2026-00142';
     const autoPushed = step >= 6;
     const items = [
-      { id: RID, cam: 'CAM-BC-03', loc: 'Block C stairwell', zone: 'Stairwell', risk: '0.8', type: cur.type, level: cur.level, score: cur.score, eta: cur.eta, priority: cur.priority,
+      { id: RID, cam: 'CAM-AU-01', loc: 'Auditorium', zone: 'Auditorium', risk: '0.5', type: cur.type, level: cur.level, score: cur.score, eta: cur.eta, priority: cur.priority,
         people: t > 10.2 ? 3 : 2, reason: cur.reason, action: cur.action, nearest: 'Guard B', dist: '~40 m', since: '14:31:00', pushed: autoPushed || !!s.manual[RID], pushedAt: autoPushed ? '14:31:06' : s.manual[RID], replay: true, scene: 'replay' },
-      { id: 'INC-2026-00139', cam: 'CAM-CT-04', loc: 'Canteen, east entrance', zone: 'Canteen', risk: '0.7', type: 'crowd', level: 'tense', score: 0.44, eta: null, priority: 0.10, people: 5,
+      { id: 'INC-2026-00139', cam: 'CAM-CT-04', loc: 'Syopz Mall food court', zone: 'Food court', risk: '0.7', type: 'crowd', level: 'tense', score: 0.44, eta: null, priority: 0.10, people: 5,
         reason: 'Five people stopped and faced the same point for 4 s.', action: 'Watch this camera', nearest: 'Guard A', dist: '~60 m', since: '14:30:22', pushed: !!s.manual['INC-2026-00139'], pushedAt: s.manual['INC-2026-00139'], scene: 'crowd' },
-      { id: 'INC-2026-00138', cam: 'CAM-SC-06', loc: 'Sports court, north', zone: 'Sports court', risk: '0.3', type: 'play', level: 'tense', score: 0.41, eta: null, priority: 0.03, people: 2,
+      { id: 'INC-2026-00138', cam: 'CAM-SC-06', loc: 'Sports pitch', zone: 'Sports pitch', risk: '0.3', type: 'play', level: 'tense', score: 0.41, eta: null, priority: 0.03, people: 2,
         reason: 'Rhythmic arm swings, no approach; ball in play. Sports-zone threshold applied.', action: 'No action; sports zone', nearest: 'Guard C', dist: '~25 m', since: '14:28:40', pushed: !!s.manual['INC-2026-00138'], pushedAt: s.manual['INC-2026-00138'], scene: 'play' }
     ];
     items.forEach((it) => { it.decision = s.dec[it.id] || null; });
@@ -567,7 +549,7 @@ class Component extends DCLogic {
       mapRoute: 'M' + gp[0] + ' ' + gp[1] + 'L' + tp[0] + ' ' + gp[1] + 'L' + tp[0] + ' ' + tp[1],
       targetColor: it.level === 'calm' ? '#17663D' : (it.level === 'tense' ? '#E5A41C' : lv.pillBg),
       routeText: it.nearest.toUpperCase() + ' ' + it.dist.toUpperCase() + ' AWAY',
-      mapAria: 'Site map: ' + it.loc + ', ' + it.nearest + ' about ' + it.dist.replace('~', '') + ' away',
+      mapAria: '3D campus: ' + it.loc + ', ' + it.nearest + ' about ' + it.dist.replace('~', '') + ' away',
       showPushNow: !isCalm && !it.pushed && !dec, showConfirm: !isCalm && !!it.pushed && !dec, decided: !!dec,
       decidedText: dec === 'confirmed' ? 'Confirmed: real incident' : 'Dismissed: false alarm',
       onPush: () => { const m = Object.assign({}, s.manual); m[it.id] = clock; this.setState({ manual: m, sel: it.id, toastManual: 'Pushed to ' + it.nearest + ' · ' + clock, toastClosed: false }); },
@@ -580,14 +562,14 @@ class Component extends DCLogic {
       return { rank: i + 1, loc: q.loc, label: l.label, pillBg: l.pillBg, pillFg: l.pillFg, pillBorder: l.pillBorder, glyph: GLYPH[q.level], typeLabel: TYPE[q.type], since: q.since, prio: q.priority.toFixed(2),
         selected: on ? 'true' : 'false', bg: on ? l.tint : '#FFFFFF', border: on ? ('2px solid ' + l.border) : '1px solid #DCDFE4', pick: set({ sel: q.id }) };
     });
-    const sceneFor = { 'CAM-BC-03': items[0], 'CAM-CT-04': items[1], 'CAM-SC-06': items[2] };
+    const sceneFor = { 'CAM-AU-01': items[0], 'CAM-CT-04': items[1], 'CAM-SC-06': items[2] };
     const camsRaw = [
-      { id: 'CAM-HC-01', loc: 'Hostel U, corridor L3', last: '2 s ago', people: 1 },
-      { id: 'CAM-HC-02', loc: 'Hostel U, corridor L5', last: 'Thu 02:00', black: true },
-      { id: 'CAM-BC-03', loc: 'Block C stairwell', last: '1 s ago', people: 2 },
-      { id: 'CAM-CT-04', loc: 'Canteen, east entrance', last: '3 s ago', people: 14 },
-      { id: 'CAM-CP-05', loc: 'Car park B, level 2', last: '2 s ago', people: 0 },
-      { id: 'CAM-SC-06', loc: 'Sports court, north', last: '2 s ago', people: 6 }
+      { id: 'CAM-AU-01', loc: 'Auditorium, Block A and B', last: 'live', people: 2, src: 'live' },
+      { id: 'CAM-BC-03', loc: 'Block C stairwell', last: 'rec 16:20', people: 1, src: 'rec' },
+      { id: 'CAM-CT-04', loc: 'Syopz Mall food court', last: 'rec 16:35', people: 14, src: 'rec' },
+      { id: 'CAM-HC-01', loc: 'DK Senza, corridor L3', last: 'rec 16:50', people: 1, src: 'rec' },
+      { id: 'CAM-HC-02', loc: 'DK Senza, corridor L5', last: 'Thu 02:00', black: true, src: 'black' },
+      { id: 'CAM-SC-06', loc: 'Sports pitch', last: 'rec 17:05', people: 6, src: 'rec' }
     ];
     const tiles = camsRaw.map((c) => {
       const inc = sceneFor[c.id];
@@ -598,14 +580,14 @@ class Component extends DCLogic {
       const l = level ? LV[level] : null;
       const sel = inc && inc.id === it.id;
       return {
-        id: c.id, loc: c.loc, last: c.black ? 'last ' + c.last : c.last, black: !!c.black, people: c.people,
+        id: c.id + (c.src === 'live' ? ' · LIVE' : (c.src === 'rec' ? ' · REC' : '')), loc: c.loc, last: c.black ? 'last ' + c.last : c.last, black: !!c.black, people: c.people,
         idle: !c.black && !showFigs,
         bgFill: c.black ? '#000000' : bgFill, bgLines: c.black ? '' : bgLines, bgStroke: bgStroke, bgWidth: onsite ? 3 : 1.5,
         cyan: scn ? scn.cyan : '', violet: scn ? scn.violet : '', grey: scn ? scn.grey : '', ball: scn ? scn.ball : '',
-        liveDot: c.black ? '#8B939E' : (onsite ? '#FF453A' : '#7FE0FF'),
+        liveDot: c.black ? '#8B939E' : (c.src === 'live' ? '#FF453A' : '#AEB7C2'),
         levelLabel: l ? l.label : 'No signal', pillBg: l ? l.pillBg : '#FFFFFF', pillFg: l ? l.pillFg : '#0B0D10', pillBorder: l ? l.pillBorder : '#FFFFFF',
-        border: (c.id === 'CAM-BC-03' && alarmNow) ? '2px solid #C8241B' : (sel ? ('2px solid ' + l.border) : '1px solid #DCDFE4'),
-        cls: (c.id === 'CAM-BC-03' && alarmNow) ? 'ee-pulse' : '',
+        border: (c.id === 'CAM-AU-01' && alarmNow) ? '2px solid #C8241B' : (sel ? ('2px solid ' + l.border) : '1px solid #DCDFE4'),
+        cls: (c.id === 'CAM-AU-01' && alarmNow) ? 'ee-pulse' : '',
         aria: c.id + ', ' + c.loc + '. Open all cameras.'
       };
     });
@@ -634,13 +616,13 @@ class Component extends DCLogic {
       copySummary: set({ copied: true }), copyLabel: s.copied ? 'Summary copied' : 'Copy summary',
       openCount: active.length, unlabelled: items.filter((q) => q.level !== 'calm' && !q.decision).length,
       handoverItems: [
-        rDec ? ('Block C stairwell incident labelled ' + rDec + '.') : (cur.level !== 'calm' ? 'Block C stairwell incident is open and has no label yet.' : 'Block C stairwell is calm.'),
-        items[1].decision === 'dismissed' ? 'Canteen crowd was dismissed.' : 'Canteen east entrance crowd is still tense.',
-        'CAM-HC-02, corridor L5, black for 3 days. Repair not reported yet.',
+        rDec ? ('Auditorium incident labelled ' + rDec + '.') : (cur.level !== 'calm' ? 'Auditorium incident is open and has no label yet.' : 'Auditorium is calm.'),
+        items[1].decision === 'dismissed' ? 'Syopz Mall crowd was dismissed.' : 'Syopz Mall food court crowd is still tense.',
+        'CAM-HC-02, DK Senza corridor L5, black for 3 days. Repair not reported yet.',
         'Patrol slot today: Block C stairwell, 13:00–14:00.'
       ],
       bannerBg: cur.level === 'fight' ? '#7F1310' : '#C8241B',
-      bannerTitle: (cur.level === 'fight' ? 'Fight' : 'Fight likely') + ' · Block C stairwell',
+      bannerTitle: (cur.level === 'fight' ? 'Fight' : 'Fight likely') + ' · Auditorium',
       bannerSub: rDec === 'confirmed' ? 'Confirmed by desk · Guard B on the way' : 'Guard B pushed at 14:31:06',
       silence: set({ silenced: true }),
       liveSel: live ? 'true' : 'false', replaySel: live ? 'false' : 'true',
@@ -654,7 +636,7 @@ class Component extends DCLogic {
       recText: live ? (onsite ? 'LIVE ' + clock : 'SKELETONS ' + clock) : 'REPLAY ' + clock,
       footText: onsite ? 'VIDEO FRAME PLACEHOLDER · REAL PICTURE COMES FROM THE EDGE LAPTOP' : 'NO PIXELS LEAVE THE SITE · 12 BODY KEYPOINTS PER PERSON',
       ev: ev, card: card, queue: queue, tiles: tiles,
-      wallNote: onsite ? 'ON SITE: LIVE VIDEO FROM THE EDGE LAPTOP' : 'REMOTE: SKELETONS DURING INCIDENTS, PEOPLE COUNTS OTHERWISE',
+      wallNote: onsite ? 'ON SITE: 1 LIVE WEBCAM · 4 LABELLED RECORDINGS · 1 BLACK' : 'REMOTE: SKELETONS DURING INCIDENTS, PEOPLE COUNTS OTHERWISE',
       cells: cells, playhead: (t / 11 * 100).toFixed(2) + '%',
       showReplayBar: !live,
       playLabel: s.playing ? 'Pause' : 'Play', playIcon: s.playing ? 'M6 4h4v16H6zM14 4h4v16h-4z' : 'M7 4l13 8-13 8z',

@@ -13,6 +13,7 @@
 4. `docs/work-split.md`: frontend tasks F1–F10 and the integration tests in §4.
 5. `design/canvas/L3*.dc.html`: the visual source of truth (see `design/README.md` for how to read them).
 6. `model/REPORT.md`: the real model numbers the Proof page shows.
+7. `docs/campus-3d-agent-prompt.md`, `design/canvas/Campus3D.dc.html` and `design/assets/`: the 3D model of the real Taylor's Lakeside campus, used on Cameras, Plan and the Live card.
 
 **You own `web/` only.** Never edit `edge/`, `api/`, `model/`, `data/`. If a contract field must change, edit `docs/kayla-frontend-plan.md` and `docs/earlyeye-TEAM-FINAL.md` §6 in the same commit.
 
@@ -22,14 +23,14 @@
 
 ## 1. What we are building
 
-A light, video-first security console. It feels like Ambient.ai or ZeroEyes, but on a light background: condensed uppercase headings, mono camera codes, corner brackets on camera frames, a camera wall and a site map. Volt's plain-words alert cards and trust chips sit on top. Camera frames stay dark because camera feeds are dark.
+A light, video-first security console. It feels like Ambient.ai or ZeroEyes, but on a light background: condensed uppercase headings, mono camera codes, corner brackets on camera frames, a camera wall, and a **3D model of the real Taylor's Lakeside campus** you can look around and click into. Volt's plain-words alert cards and trust chips sit on top. Camera frames stay dark because camera feeds are dark.
 
 | Route | Screen | Who | Job |
 |---|---|---|---|
 | `/` | **Live** | Desk operator | See the build-up, get the alarm, send one person, label it |
-| `/cameras` | **Cameras** | Operator, manager | Site map with pins, all cameras, health and activity per camera |
+| `/cameras` | **Cameras** | Operator, manager | 3D campus: click a building or pin to open its feed. Then all cameras, health and activity. |
 | `/incidents` | **Incidents** | Operator, manager | Case review: evidence, why this type, audit trail, label, note |
-| `/plan` | **Plan** | Manager | Three patrol slots, assumption, heatmap, hotspots |
+| `/plan` | **Plan** | Manager | 3D campus with patrol posts and hotspot columns, then three patrol slots, assumption, heatmap, hotspots |
 | `/proof` | **Proof** | Judges, buyer | Proven numbers, honest gaps, watch the model |
 | `/push?staff=Guard%20B` | **Push** | Person on duty | Phone: on duty, red takeover, "On my way" |
 
@@ -146,7 +147,7 @@ Paste and adapt into `web/src/app/globals.css`. Keep shadcn's variable names so 
 | Role | Font | Size / weight | Where |
 |---|---|---|---|
 | Display | **Saira Condensed**, uppercase | 44 to 60 px / 800, line-height 0.95 | Level word on Live (48), ETA (44), page titles (52 to 60) |
-| Section | Saira Condensed, uppercase | 24 to 30 px / 800 | "Active now", "Camera wall", "Site map" |
+| Section | Saira Condensed, uppercase | 24 to 30 px / 800 | "Active now", "Camera wall", "Campus in 3D" |
 | Location | Atkinson Hyperlegible Next | 30 px / 800 | Alert card place name |
 | Reason | Atkinson Hyperlegible Next | 22 px / 500, 20 px minimum anywhere | One-sentence reason |
 | Body | Atkinson Hyperlegible Next | 15 to 16 px / 400 | Running text |
@@ -185,7 +186,7 @@ Load with `next/font/google`: `Saira_Condensed` (600, 700, 800), `Atkinson_Hyper
 - View indicator: `ON-SITE DESK` or `REMOTE LINK` (§8). In dev, `?view=onsite|remote` forces it, and the prototype's toggle can stay behind that flag.
 
 **Alarm layer**, mounted once in `layout.tsx` and driven by a small store (Zustand or React context):
-- **Banner** under the header, full width: level colour, octagon glyph, `FIGHT LIKELY · BLOCK C STAIRWELL` in Saira, "Guard B pushed at 14:31:06", a **View on the site map** link to `/cameras?cam=…`, and **Silence**. Class `ee-banner` while sounding.
+- **Banner** under the header, full width: level colour, octagon glyph, `FIGHT LIKELY · AUDITORIUM` in Saira, "Guard B pushed at 14:31:06", a **View on the 3D campus** link to `/cameras?cam=…`, and **Silence**. Class `ee-banner` while sounding.
 - **Screen edge**: a fixed, pointer-events-none overlay with `box-shadow: inset 0 0 0 8px #C8241B, inset 0 0 90px rgb(200 36 27 / .55)` and class `ee-edge`, while sounding.
 - **Sound**: one `<audio src="/alarm.mp3" loop>`. It plays only after the operator arms it.
 - **Toast** (sonner): "Pushed to Guard B · 14:31:06", subline "One person only. They see a skeleton snapshot, not video.", and a link "Open their phone screen" to `/push?staff=…`.
@@ -208,23 +209,27 @@ Load with `next/font/google`: `Saira_Condensed` (600, 700, 800), `Atkinson_Hyper
 | Push [name] now (tense only) | Live card | `PATCH {status: "pushed"}` (operator early push), then toast |
 | Confirm: real / Dismiss: false alarm | Live card, Incidents | `PATCH {status}`. Stops the alarm. The card shows the decision and Undo. |
 | Undo | Live card | `PATCH` back to the previous status |
-| Mini map | Live card | `/cameras?cam=<id>` |
+| "Open the 3D campus", under the compact 3D view | Live card | `/cameras?cam=<id>`. The compact view itself is locked and not clickable. |
 | Open the case | Live card | `/incidents?id=<incident_id>` |
-| Camera and site map | Live card | `/cameras?cam=<id>` |
+| Camera and 3D campus | Live card | `/cameras?cam=<id>` |
 | [name]'s phone screen | Live card | `/push?staff=<name>` |
-| View on the site map | Alarm banner | `/cameras?cam=<id>` |
+| View on the 3D campus | Alarm banner | `/cameras?cam=<id>` |
 | Silence | Alarm banner | Stops sound and pulse. The banner stays until labelled or the level drops. |
-| "Camera wall" heading, "All cameras and site map" link, any tile | Live | `/cameras?cam=<id>` |
+| "Camera wall" heading, "All cameras and the 3D campus" link, any tile | Live | `/cameras?cam=<id>` |
 | Handover links | Handover drawer | "Label open alerts" goes to `/incidents?status=open`, "Report the black camera" to `/cameras?cam=CAM-HC-02` |
 | Copy summary | Handover drawer | Copies a plain-text shift summary to the clipboard. Label becomes "Summary copied". |
-| Map pin | Cameras | Selects that camera in the detail panel and draws the route from the nearest post |
-| Filter chips All / Live / Black / With an incident | Cameras | Filter the grid |
+| 3D building, or its label | Cameras, Plan | Cameras layer: opens that building's camera in the info card. Plan layer: opens its patrol post. |
+| 3D camera pin (LIVE, REC or black) | Cameras | Info card: feed, level, people, **Open live view** (or **Play recording in Live**) and **Camera details**. Also selects it in the detail panel below. |
+| 3D patrol post pin | Plan | Info card: incidents in 4 weeks, avoided a week, hours a week, rationale, **Open in Plan**, **See the incidents** |
+| 3D controls: drag, rotate, Top, Tilt, + and −, Reset view, Jump to | Cameras, Plan | Move the view. Jump to flies to Auditorium, Block C, Syopz Mall, Sports centre, DK Senza or Whole campus. |
+| CAMERAS / PATROL PLAN toggle | 3D view | Switch layer |
+| Filter chips All / Live webcam / Recordings / Black / With an incident | Cameras | Filter the grid |
 | Grid tile | Cameras | Selects that camera |
 | Report repair (black camera only) | Cameras detail | Local state "Repair reported · HH:MM". No backend in v3. |
 | Open in Live / See its incidents / Patrol plan | Cameras detail | `/?cam=`, `/incidents?cam=`, `/plan` |
 | Status filter chips, list rows | Incidents | Filter the list, open a case |
 | Play 10 s clip on site | Incidents case, on site only | Plays `${camera.edge_url}/clips/<incident_id>.mp4` in a `<video>` inside the frame. Hidden on the remote link. |
-| Open this camera and the site map | Incidents case | `/cameras?cam=` |
+| Open this camera on the 3D campus | Incidents case | `/cameras?cam=` |
 | Mark resolved, staff note | Incidents case | `PATCH {status: "resolved", staff_note}` |
 | Show on the heatmap | Plan slot | Selects the zone and outlines that slot's cells |
 | See the incidents behind this slot | Plan slot | `/incidents?cam=<camera>` |
@@ -256,14 +261,14 @@ The canvas files are exact references for layout, sizes and copy. This section l
 4. Location at 30 px, then a mono meta line: `CAM · ZONE · RISK · N PEOPLE`.
 5. Reason at 22 px.
 6. Two boxes: **DO THIS** with the action, and **PERSON ON DUTY** with the name, distance and push state.
-7. Mini map (§9).
+7. Compact 3D campus (§9), focused on the incident's building, with the nearest guard and route, and "Open the 3D campus" under it.
 8. Four-step progress strip: 01 DETECT, 02 EXPLAIN, 03 PUSH, 04 CONFIRM, each with a time.
 9. Buttons: tense and not pushed shows **Push [name] now** and **Dismiss**. Pushed shows **Confirm: real** and **Dismiss: false alarm**. Once decided, a decision row with **Undo**.
-10. Links row: Open the case · Camera and site map · [name]'s phone screen.
+10. Links row: Open the case · Camera and 3D campus · [name]'s phone screen.
 
 **Queue:** active incidents (level tense or above, no `end_time`, not dismissed), sorted by `priority` descending. Each row shows rank, level pill, location, type, time since, and priority. The selected row gets a 2 px level border and the level tint.
 
-**Camera wall:** 6 tiles in an auto-fit grid, minimum 220 px. Each tile shows a frame (on site: video or skeletons; remote: skeletons during incidents, otherwise "N people in view" from `people_count`), the ID with a live dot, the level chip, location and last frame. A black camera shows `NO SIGNAL` and "Black for N days". The alarming camera's tile gets `ee-pulse` and a 2 px red border.
+**Camera wall:** 6 tiles in an auto-fit grid, minimum 220 px. Each tile shows a frame (on site: video or skeletons; remote: skeletons during incidents, otherwise "N people in view" from `people_count`), the ID with **· LIVE** (red dot) or **· REC** (grey dot), the level chip, location, and the last frame or recording time. A black camera shows `NO SIGNAL` and "Black for N days". The alarming camera's tile gets `ee-pulse` and a 2 px red border.
 
 **Handover drawer:** a sheet from the right. Stats: pushes used, incidents still open, alerts with no label, cameras black. A hand-over list of 3 or 4 generated lines, two links, and Copy summary.
 
@@ -279,11 +284,11 @@ The canvas files are exact references for layout, sizes and copy. This section l
 
 ### 6.2 Cameras (`/cameras`), design file `L3Cameras.dc.html`
 
-**Layout:** title row with filter chips **All 6 · Live 5 · Black 1 · With an incident N**. Left column: **Site map**, then the **grid**. Right: the **detail panel**.
+**Layout:** title row with filter chips **All 6 · Live webcam 1 · Recordings 4 · Black 1 · With an incident N**. Then a full-width **Campus in 3D** section (`<Campus3D mode="cameras">`, §9). Below it, the **grid** on the left and the **detail panel** on the right.
 
-- **Site map:** schematic plan image (`site.map.image`), aspect 800 : 480. Pins are absolutely positioned buttons at `camera.map.x/y` showing a level-coloured dot, a camera icon and the short ID. Black is an ink dot. An alarming pin pulses. A selected pin is ink-filled. On-duty posts are blue person chips at `staff[].post`. A dashed blue L-shaped route runs from the nearest on-duty post to the selected camera. Field-of-view cones are optional. A legend sits underneath with "Nearest to BC-03: Guard B".
+- **Campus in 3D:** the real Taylor's Lakeside campus. The full spec is in `docs/campus-3d-agent-prompt.md`, and the interaction reference is `design/canvas/Campus3D.dc.html`.
 - **Grid:** larger tiles, same content as the Live wall plus zone, risk and last frame.
-- **Detail panel:** ID and level, big location, frame, then a definition list: STATUS (live since, or black since and for how long), LAST FRAME, ZONE, IN VIEW NOW, ALERTS TODAY, LAST 4 WEEKS, HOTSPOT. Then a label bar showing confirmed against dismissed, with a hint when dismissals dominate ("Mostly false alarms: ask to retune this camera"). Actions as in §5.
+- **Detail panel:** ID with its source (LIVE WEBCAM, RECORDING or NO SIGNAL) and level, big location, frame, then a definition list: SOURCE ("Live webcam on the demo laptop", "Recording made Sat 10 Oct 16:20, looping", or black since and for how long), BUILDING, ZONE, IN VIEW NOW, ALERTS TODAY, LAST 4 WEEKS, HOTSPOT. Then a label bar showing confirmed against dismissed, with a hint when dismissals dominate ("Mostly false alarms: ask to retune this camera"). Actions as in §5.
 - `?cam=<id>` preselects a camera.
 
 ### 6.3 Incidents (`/incidents`), design file `L3Incidents.dc.html`
@@ -304,9 +309,10 @@ The canvas files are exact references for layout, sizes and copy. This section l
 ### 6.4 Plan (`/plan`), design file `L3Plan.dc.html`
 
 - Title "Where to put people this week" over a mono line built from `plan.generated_at`, for example `PATROL PLAN · WEEK OF MON 12 OCT · BUILT SAT 10 OCT 14:30`.
+- **This week on the campus**, first: `<Campus3D mode="plan">`. Each patrol slot is a blue post pin (`P/01 · MON–THU 13:00–14:00`) with a blue column whose height is its incidents in 4 weeks. Clicking a post opens its card. The mentors asked for this view, so it goes above the cards.
 - **Three slot cards:** `P/01`, "PLACE ONE PERSON AT", location in Saira, days and hours in ink chips. Three stats: incidents in 4 weeks; **avoided a week** in the signal-tint box with "≈ N a month"; avoided per patrol hour with hours per week. Then the rationale, **Show on the heatmap**, and "See the incidents behind this slot".
 - **Assumption** strip, dashed: "60% of hotspot incidents are avoided when a person is present. Stated, not measured. Avoided = incidents in 4 weeks × 0.6."
-- **Black camera** strip, ink: "CAM-HC-02, corridor L5, black for 3 days. Slot P/02 is the only eye on that block.", with **Open the camera**.
+- **Black camera** strip, ink: "CAM-HC-02, DK Senza corridor L5, black for 3 days. Slot P/02 is the only eye on that block.", with **Open the camera**.
 - **Heatmap:** zone chips, then a 7 × 24 CSS grid with hour headers 00–23 and MON–SUN rows. Each cell shows its count and a tooltip. The selected slot's cells get a 2 px ink outline. Legend underneath.
 - **Hotspots** list beside it, with the rule sentence and a link to Incidents.
 - Wording: "~3 a month" for Block C. Never "~3 a week".
@@ -363,40 +369,41 @@ Poll every 2 s for an event where `pushed_to === staff && status === "pushed" &&
 
 ---
 
-## 8. Real time, video and the four laptops
+## 8. Real time, video, one live webcam and recordings
 
-### 8.1 Camera setup: four real webcams, no hardcoded video
+### 8.1 Camera setup: 1 live webcam, 4 labelled recordings, 1 black
 
-**Every camera is a real laptop webcam running the edge app.** No pre-recorded or bundled video files go in `web/`, and the UI never shows a stock clip. The team has **4 laptops**, including the demo laptop.
+**One camera is live:** the demo laptop's webcam, filming the auditorium where we pitch. The others play **our own recordings**: short clips we film on site with a laptop webcam, staged by the team, of the stairwell, the food court, a hostel corridor and the pitch. Each recording runs through the same edge pipeline as the webcam. `model/live_detector.py --camera <file.mp4>` already plays a file in real time, so recordings produce real events, keypoints and alerts, not canned UI.
 
-| Laptop | Camera | Zone | Role |
+| Camera | Place (real building) | Source | Role |
 |---|---|---|---|
-| 1 · demo laptop, the one on stage | `CAM-BC-03` Block C stairwell | stairwell | **The live camera.** Actors stage the escalation in front of it. It also runs the on-site desk dashboard. |
-| 2 | `CAM-CT-04` Canteen, east entrance | canteen | Second live feed, for the crowd type |
-| 3 | `CAM-HC-01` Hostel U, corridor L3 | hostel_corridor | Third live feed |
-| 4 | `CAM-SC-06` Sports court, north | sports_court | Fourth live feed, for play suppressed in the sports zone |
-| none | `CAM-HC-02` Hostel U, corridor L5 | hostel_corridor | **Seeded black** for the camera-health story. No laptop, so it is truthfully dark. |
+| `CAM-AU-01` | Auditorium, Block A and B | **live webcam**, demo laptop | Actors stage the escalation here, in front of the judges. This drives the live alarm. |
+| `CAM-BC-03` | Block C stairwell | recording | The patrol plan's top hotspot |
+| `CAM-CT-04` | Syopz Mall food court | recording | Crowd type |
+| `CAM-HC-01` | DK Senza, corridor L3 | recording | Hostel corridor at night |
+| `CAM-SC-06` | Sports pitch | recording | Play suppressed in the sports zone |
+| `CAM-HC-02` | DK Senza, corridor L5 | none, **seeded black** | Camera-health story |
 
-That makes 5 cameras: 4 live and 1 black. The canvas shows 6. Drop `CAM-CP-05` from the seed, or keep it black too. Agree the choice with Web A, who owns the seed.
+**Recordings are always labelled.** Show `REC` on every tile, pin and frame, and the recording time in the detail panel: "Recording made Sat 10 Oct 16:20, looping". Never present a recording as live. Recording files stay on the laptop. They are never committed to `web/` and never uploaded. The remote link shows skeletons from them, never pixels.
 
-Each laptop runs the edge app with its own camera ID. The edge app is Model A's code, not yours. It posts events and heartbeats to the Render API, and serves these on the local network at its `edge_url`, for example `http://192.168.43.21:8765`:
+Each camera has its own edge process, which is Model A's code, not yours. It posts events and heartbeats to the Render API, and serves the endpoints below at its `edge_url`. With everything on laptop 1, use one port per camera, for example `http://127.0.0.1:8765` for the webcam and `:8766` to `:8769` for the recordings.
 
 | Edge endpoint | Returns | Used by |
 |---|---|---|
-| `GET /health` | `{ ok: true, camera_id }` | On-site detection, camera tile online dot |
-| `GET /stream.mjpg` | Live MJPEG of the webcam with skeletons drawn, about 10 fps, 640 × 480 | Live evidence frame, camera wall, Cameras grid and detail, on site only |
-| `GET /clips/<incident_id>.mp4` | The 10 s clip the edge saved around that incident | Incidents "Play 10 s clip on site", on site only |
+| `GET /health` | `{ ok: true, camera_id, source }` | On-site detection, camera tile online dot |
+| `GET /stream.mjpg` | MJPEG with skeletons drawn, about 10 fps, 640 × 480, for the webcam or the looping recording | Live evidence frame, camera wall, Cameras grid and detail, 3D info card, on site only |
+| `GET /clips/<incident_id>.mp4` | The 10 s clip saved around that incident | Incidents "Play 10 s clip on site", on site only |
 
-Contract addition: `Camera.edge_url?: string`. The API stores it from the heartbeat, but the dashboard uses it **only in the on-site view** and never shows it on the remote link.
+Contract additions: `Camera.source?: "live" | "recorded"`, `Camera.recorded_at?: string`, `Camera.edge_url?: string`, `Camera.geo?`. The dashboard uses `edge_url` **only in the on-site view**.
 
-**Network, test this at the 17:00 checkpoint:**
-- Put all 4 laptops on one **phone hotspot or travel router**. Venue guest Wi-Fi usually blocks traffic between devices.
-- The **on-site desk dashboard runs locally on laptop 1** with `npm run build && npm start`, served at `http://localhost:3000`. Browsers block http video from an https page, so only an http page can load the other laptops' `http://192.168…` streams. The Vercel link is the **remote view**: skeletons and data only, no video.
-- The phone for `/push` can use either view. It never shows video.
+**Network:**
+- **Default: all edges run on laptop 1** at `127.0.0.1`. Browsers treat `127.0.0.1` as trustworthy, so the Vercel page opened **on laptop 1** can load those streams, and no hotspot is needed. Lower recordings to 5 fps if the CPU struggles.
+- **If recordings move to other laptops** for load: put them on one phone hotspot, because venue guest Wi-Fi usually blocks traffic between devices. Run the on-site dashboard locally on laptop 1 (`npm run build && npm start` on `http://localhost:3000`), because an https page cannot load `http://192.168…` streams.
+- The `/push` phone never shows video.
 
 ### 8.2 Two views of the same dashboard
 
-- **On-site desk:** the local build on laptop 1. Detect it by fetching `${camera.edge_url}/health` for the selected camera with an 800 ms timeout. Allow a `?view=onsite` override. If it answers, show video.
+- **On-site desk:** laptop 1. Detect it by fetching `${camera.edge_url}/health` for the live camera with an 800 ms timeout. Allow a `?view=onsite` override. If it answers, show video.
 - **Remote link:** Vercel, or any case where the edges aren't reachable. **No video element is ever rendered, and no `edge_url` is ever requested.**
 
 ### 8.3 Live frame
@@ -416,7 +423,7 @@ Contract addition: `Camera.edge_url?: string`. The API stores it from the heartb
 - Optional: a dashed white line between the active pair's hips, labelled `0.45 TL`, and a dashed cyan trail for the fastest wrist over the last 0.8 s.
 - Background: on site `frame` with scene lines; remote `frame-remote` with a 40 px grid.
 
-**Poses must come from real webcams.** The deployed demo (`?replay=1`, and `edge/replay.py` in Phase 2) replays a **real recorded session**. Record the escalation in the venue on laptop 1 with the edge app. The edge saves every event it posts, snapshots included, and that file becomes `public/mock/replay.json`. Do the same for a few negatives (hug, high-five, chat) to fill `events.json` peak snapshots.
+**Poses must come from the real pipeline.** The deployed demo (`?replay=1`, and `edge/replay.py` in Phase 2) replays a **real recorded session**. Record the escalation in the auditorium on laptop 1 with the edge app. The edge saves every event it posts, snapshots included, and that file becomes `public/mock/replay.json`. Do the same for a few negatives (hug, high-five, chat) to fill `events.json` peak snapshots.
 
 Until that recording exists, and for dev only, you may synthesise 12-keypoint frames by porting `fig(pose)` and the pose tables `PA` and `PB` from `L3Live.dc.html` into `web/src/lib/mock-poses.ts`. The prototype draws a side view with both shoulders at the neck. When converting, put the left and right shoulder 6 px either side of the neck, and do the same for the hips. Any screen fed by synthetic poses shows a dashed `SYNTHETIC POSES` chip. **Replace them with the recording before the 03:00 run-through.**
 
@@ -426,36 +433,56 @@ Until that recording exists, and for dev only, you may synthesise 12-keypoint fr
 
 ---
 
-## 9. Site map
+## 9. 3D campus: the real Taylor's Lakeside
 
-Copy `design/assets/site-plan-taylors-lakeside.svg` to `web/public/site-plan.svg`. It is schematic and not to scale, and the UI says so. Seed values, as 0–1 of the 800 × 480 plan:
+Every map in the product is the 3D campus, in three places:
+- **Cameras:** full, cameras layer.
+- **Plan:** full, patrol plan layer.
+- **Live alert card:** compact and locked.
 
-| Camera | map.x | map.y | heading_deg | people_count (mock) |
+**Build it on its own branch with `docs/campus-3d-agent-prompt.md`.** That prompt has the engine choice, the API, the behaviour and the acceptance tests. In short:
+- **Real view:** Google Photorealistic 3D Tiles through deck.gl when `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` is set.
+- **Fallback:** the OpenStreetMap footprints in `design/assets/taylors-lakeside-campus.geojson`, extruded. Use this always on the Live card, in mock mode, and when the tiles don't load within 5 s.
+- **No WebGL:** a flat top-down view of the same footprints.
+
+The real buildings, from OpenStreetMap: Block A and B, Block C, Block D, Block E, Syopz Mall, the sports centre and pitches, and the lake. DK Senza is the student residence just south of campus. Heights are estimates.
+
+Copy `design/assets/campus-3d-seed.json` and the GeoJSON to `web/public/campus/`. Seed positions:
+
+| Camera | Place | Source | lat | lng |
 |---|---|---|---|---|
-| CAM-HC-01 Hostel U, corridor L3 · laptop 3 | 0.1375 | 0.2396 | 180 | 1 |
-| CAM-HC-02 Hostel U, corridor L5 · seeded black | 0.3000 | 0.2396 | 180 | none (black) |
-| CAM-BC-03 Block C stairwell · laptop 1, live demo | 0.6750 | 0.3750 | 315 | 2 |
-| CAM-CT-04 Canteen, east entrance · laptop 2 | 0.7000 | 0.6771 | 270 | 14 |
-| CAM-CP-05 Car park B, level 2 · only if kept (§8.1) | 0.8563 | 0.3125 | 180 | 0 |
-| CAM-SC-06 Sports court, north · laptop 4 | 0.2125 | 0.5625 | 180 | 6 |
+| CAM-AU-01 | Auditorium, Block A and B | live | 3.0645574 | 101.6170349 |
+| CAM-BC-03 | Block C stairwell | recorded | 3.0640871 | 101.6175477 |
+| CAM-CT-04 | Syopz Mall food court | recorded | 3.0638158 | 101.6164681 |
+| CAM-HC-01 | DK Senza, corridor L3 | recorded | 3.0601983 | 101.6173498 |
+| CAM-HC-02 | DK Senza, corridor L5 | black | 3.0599270 | 101.6170619 |
+| CAM-SC-06 | Sports pitch | recorded | 3.0617539 | 101.6172328 |
 
-| Staff (site.staff) | zone_type | on_duty | post.x | post.y |
-|---|---|---|---|---|
-| Guard A | canteen | true | 0.5875 | 0.8542 |
-| Guard B | stairwell | true | 0.6250 | 0.4833 |
-| Guard C | hostel_corridor | true | 0.3750 | 0.4479 |
-| Warden D | hostel_corridor | false | none | none |
+| On-duty post (site.staff) | zone_type | lat | lng |
+|---|---|---|---|
+| Guard B | stairwell | 3.0642137 | 101.6170619 |
+| Guard A | canteen | 3.0631104 | 101.6163152 |
+| Guard C | hostel_corridor | 3.0603973 | 101.6171249 |
+| Warden D, off duty | hostel_corridor | none | none |
 
-`heading_deg`: 0 points up, 90 right, 180 down, 270 left, on the plan.
+| Patrol post | Place | lat | lng |
+|---|---|---|---|
+| P/01 | Block C stairwell | 3.0640148 | 101.6173947 |
+| P/02 | DK Senza, corridor L3 | 3.0602164 | 101.6173947 |
+| P/03 | Syopz Mall food court | 3.0636530 | 101.6165401 |
 
-**Mini map on the Live card:** the same plan cropped to a 400 × 240 viewBox centred between the target camera and the on-duty person, clamped to the plan. It shows a target ring and dot in the level colour, the person's blue dot and name, and the dashed L-route. A corner label reads `WHERE · GUARD B ~40 M AWAY`. The whole mini map is a link to `/cameras?cam=<id>`.
+**Check on site:**
+- Which room is the auditorium? The seed assumes Block A and B. Move the pin if it's elsewhere.
+- Confirm that DK Senza is the hostel we want to show.
+
+**Compact on the Live card:** locked, framed on the incident's building. It shows only the alarming pin, the nearest on-duty guard and the dashed route, plus a corner label reading `WHERE · AUDITORIUM, BLOCK A AND B · GUARD B ~40 M AWAY`. "Open the 3D campus" sits under it as a link to `/cameras?cam=<id>`.
 
 ---
 
 ## 10. Mock files to add or update (`web/public/mock/`)
 
-- `site.json`: add `staff` (table above) and `map: { "image": "/site-plan.svg", "width": 800, "height": 480 }`.
-- `cameras.json`: the 5 cameras from §8.1 (4 laptops, `CAM-HC-02` black). Add `map`, `people_count`, and for the 4 laptops `edge_url` (fill in the hotspot IPs on the day; leave it empty in the committed mock). In mock mode, **compute `black_since` at runtime as now minus 3 days**, so the badge always reads "Black for 3 days".
+- `site.json`: real zone names (auditorium 0.5, stairwell 0.8, canteen as "Syopz Mall food court" 0.7, hostel_corridor as "DK Senza corridors" 1.0, sports_court as "Sports pitch" 0.3), plus `staff` with `post` geo, plus `campus: { "center": {…}, "buildings": "/campus/taylors-lakeside-campus.geojson" }`.
+- `cameras.json`: the 6 cameras from §8.1 with `source`, `recorded_at` for recordings, `geo`, `people_count`, and `edge_url` (`http://127.0.0.1:8765` to `:8769`; empty for the black one). In mock mode, **compute `black_since` at runtime as now minus 3 days**, so the badge always reads "Black for 3 days".
 - `replay.json`: timestamps per the replay rule (tense at t = 0, fight_likely at about 4 s with eta 6, fight at about 10 s). Add `snapshot` and `top_features` per event from `mock-poses.ts`. Rewrite reasons around the model's real signals, as on the canvas. Examples: "Pair moving closer; body motion rising." "Fast whole-body motion while close, for 1.2 s." "Shove: sudden lunge; second person pushed back."
 - `events.json`: add `peak_snapshot` to at least 10 incidents. Add `acked_at` to pushed ones, 3 to 9 s after `pushed_at`.
 - `plan.json`: `expected_avoided_per_week` 0.75 / 0.6 / 0.45, and `avoided_per_patrol_hour` 0.19 / 0.12 / 0.45.
@@ -497,13 +524,14 @@ Keep the mock fallback for every call, so every route renders with the API down.
 | 1 | `web/shell-v3` | Rebase scaffold, types v2+v3, tokens, fonts, header, alarm layer, `SkeletonView`, `mock-poses.ts` | 1.5 h |
 | 2 | `web/live-v3` | Live: evidence panel (LIVE, REPLAY), card, queue, wall, timestamp replay, handover drawer | 2.5 h |
 | 3 | `web/push-v3` | Push: five states, wake lock, audio, `acked_at` | 45 min |
-| 4 | `web/cameras` | Site map, grid, detail panel, `?cam=` | 1.5 h |
+| 4 | `web/cameras` | Cameras grid and detail panel, `?cam=`, with a placeholder slot for the 3D view | 1 h |
+| 4b | `web/campus-3d` | 3D campus per `docs/campus-3d-agent-prompt.md`, wired into Cameras, Plan and the Live card. Can run in parallel with a second agent. | 2.5 h |
 | 5 | `web/proof-v3` | Proof with the real numbers | 1.5 h |
 | 6 | `web/plan-v3` | Plan restyle and corrected maths | 1 h |
 | 7 | `web/incidents-v3` | Case review | 1.5 h |
 | 8 | `web/polish` | Empty, loading and error states; 390 px pass; favicon; titles | 1 h |
 
-**Frontend cut order if behind:** handover drawer → mini map → REPLAY tab (keep LIVE) → Proof inspector (keep tiles and table) → Cameras detail panel (keep map and grid) → heatmap (keep the slot cards).
+**Frontend cut order if behind:** handover drawer → compact 3D on the Live card → Google tiles (keep the footprint 3D) → REPLAY tab (keep LIVE) → Proof inspector (keep tiles and table) → Cameras detail panel (keep the 3D and grid) → heatmap (keep the slot cards and the 3D plan view).
 **Never cut:** Live card with alarm, Confirm and Dismiss · deployed link · Push page · Plan slot cards · Proof page.
 
 ---
@@ -518,8 +546,10 @@ Keep the mock fallback for every call, so every route renders with the API down.
 - [ ] Reduced motion: no pulse, static red.
 - [ ] 390 px phone: no horizontal page scroll; Live stacks with the card first; the heatmap scrolls inside its box.
 - [ ] Remote view (Vercel) never requests an `edge_url` and never renders a video or stream element.
-- [ ] On site, the local build on laptop 1 shows all 4 laptop streams over the hotspot, and falls back to skeletons when a stream drops.
-- [ ] No video file is committed anywhere in `web/`, and no screen shows a stock or hardcoded clip.
+- [ ] On laptop 1, the live webcam and the 4 recording streams play, and each falls back to skeletons when its stream drops.
+- [ ] Every recording shows `REC` and its recording time. Nothing recorded is ever labelled live.
+- [ ] No video file is committed anywhere in `web/`, and no screen shows a stock clip.
+- [ ] 3D campus: footprints render with no key; the real campus renders with a key; clicking the auditorium opens the live feed; the plan layer shows 3 posts; the Live card shows the compact view.
 - [ ] No "student" or "school" in the chrome. Zone names come from `site.json`.
 - [ ] Proof shows no number without a source.
 - [ ] The integration tests in `docs/work-split.md` §4 pass against the deployed link.
@@ -530,7 +560,9 @@ Keep the mock fallback for every call, so every route renders with the API down.
 
 | Where | Exact text |
 |---|---|
-| Live strip | NO CAMERA CONNECTED · "Showing the demo feed: an escalation at Block C stairwell, played in real time from the replay file." · Restart demo feed |
+| Live strip | NO CAMERA CONNECTED · "Showing the recorded demo feed from the auditorium webcam, played in real time. When the laptop webcam is on, this is live." · Restart demo feed |
+| Source labels | `LIVE WEBCAM` · `RECORDING · LOOP` · `NO SIGNAL` · tile suffix `· LIVE` / `· REC` · "Recording made Sat 10 Oct 16:20, looping" |
+| 3D footer | "Footprints © OpenStreetMap contributors · heights estimated · drag to rotate". In Google tiles mode, add Google's required attribution. |
 | Evidence footnote | "The three signals the model leans on most, plus its score. Pose: 12 body keypoints per person, no face points." |
 | Calm card | "Nothing to do. Chats, hugs and high-fives stay calm by design." |
 | Tense card state | "Not pushed; tense is silent" |
