@@ -1,0 +1,54 @@
+{
+  "datasets": [
+    "RLVS",
+    "AIRTLab",
+    "Surveillance Camera Fight"
+  ],
+  "n_clips": 0,
+  "clip_auc": 0,
+  "clip_precision": 0,
+  "clip_recall": 0,
+  "cctv_domain": {
+    "datasets": [
+      "Surveillance Camera Fight (held out)"
+    ],
+    "auc": 0,
+    "precision": 0,
+    "recall": 0
+  },
+  "live_precision": 0,
+  "live_recall": 0,
+  "fa_per_camera_hour": 0,
+  "own_footage_minutes": 0,
+  "airtlab_fp_rate": 0,
+  "lead_time_s": [
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "pushes_per_shift_target": 3,
+  "latency_ms": 0,
+  "ir_check": {
+    "frames": 0,
+    "skeletons_detected": 0,
+    "note": "Placeholder. One real IR frame to be captured; night/IR is untested and not claimed.",
+    "image": "/ir-frame.jpg"
+  },
+  "model_card": {
+    "inputs": "17 COCO keypoints per person from YOLO26n-pose, torso-scaled; no faces, no identities",
+    "windows": "1 s windows, stride 0.5 s; pairwise person features (distance, approach speed, wrist speed, arm height)",
+    "classifier": "Random forest / LightGBM on window features; types are rules on top of the score",
+    "split": "GroupKFold by video; clip-level precision / recall / AUC; calibrated",
+    "threshold": "Tuned on own venue footage for ≤1 false alarm per camera-hour; 1 s persistence; tense is silent",
+    "failure_modes": [
+      "Occlusion of one person",
+      "Low light / IR (untested)",
+      "Sports play in non-sports zones",
+      "Tracker ID swaps mid-fight (we score pairs, not IDs)"
+    ]
+  },
+  "disclosure": "Placeholder. Dataset numbers come from public phone-video clips on a video-level split; live-room numbers come from our own venue footage and are lower. We detect physical aggression and crowding only; we do not claim verbal or online bullying, and night/IR is untested.",
+  "note": "placeholder"
+}

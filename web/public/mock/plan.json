@@ -1,0 +1,30 @@
+{
+  "generated_at": "2026-10-10T14:30:00+08:00",
+  "slots": [
+    {
+      "location": "Block C stairwell",
+      "days": "Mon–Thu",
+      "hours": "13:00–14:00",
+      "incidents_4w": 5,
+      "expected_avoided_per_week": 3,
+      "rationale": "5 incidents in the same hour-of-week window in 4 weeks; highest-risk indoor zone after the hostel; one person at the landing covers both flights."
+    },
+    {
+      "location": "Hostel U Block, corridor L3",
+      "days": "Sun–Thu",
+      "hours": "22:00–23:00",
+      "incidents_4w": 4,
+      "expected_avoided_per_week": 2,
+      "rationale": "4 incidents after lights-out in 4 weeks; corridor camera L5 is black so this is the only eye on the block."
+    },
+    {
+      "location": "Canteen, east entrance",
+      "days": "Fri",
+      "hours": "12:00–13:00",
+      "incidents_4w": 3,
+      "expected_avoided_per_week": 1,
+      "rationale": "3 crowd gatherings at Friday lunch in 4 weeks; one person at the entrance thins the queue."
+    }
+  ],
+  "assumption": "60% of hotspot incidents avoided when a person is present (stated, not measured)"
+}

@@ -1,0 +1,45 @@
+[
+  {
+    "camera_id": "CAM-HC-01",
+    "location": "Hostel U Block, corridor L3",
+    "zone_type": "hostel_corridor",
+    "online": true,
+    "last_frame_at": "2026-10-10T14:29:58+08:00"
+  },
+  {
+    "camera_id": "CAM-HC-02",
+    "location": "Hostel U Block, corridor L5",
+    "zone_type": "hostel_corridor",
+    "online": false,
+    "last_frame_at": "2026-10-08T02:00:00+08:00",
+    "black_since": "2026-10-08T02:00:00+08:00"
+  },
+  {
+    "camera_id": "CAM-BC-03",
+    "location": "Block C stairwell",
+    "zone_type": "stairwell",
+    "online": true,
+    "last_frame_at": "2026-10-10T14:29:59+08:00"
+  },
+  {
+    "camera_id": "CAM-CT-04",
+    "location": "Canteen, east entrance",
+    "zone_type": "canteen",
+    "online": true,
+    "last_frame_at": "2026-10-10T14:29:57+08:00"
+  },
+  {
+    "camera_id": "CAM-CP-05",
+    "location": "Car park B, level 2",
+    "zone_type": "car_park",
+    "online": true,
+    "last_frame_at": "2026-10-10T14:29:58+08:00"
+  },
+  {
+    "camera_id": "CAM-SC-06",
+    "location": "Sports court, north",
+    "zone_type": "sports_court",
+    "online": true,
+    "last_frame_at": "2026-10-10T14:29:58+08:00"
+  }
+]
