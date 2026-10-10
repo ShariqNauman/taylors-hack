@@ -395,8 +395,6 @@ def run_model(s: State):
                 time.sleep(max(0.0, n / file_fps - (time.time() - t0)))
             with s.lock:
                 s.frame, s.frame_id = frame, s.frame_id + 1
-            if s.clips is not None:
-                s.clips.add(frame, time.time())
         s.running = False
 
     threading.Thread(target=capture, daemon=True).start()
@@ -433,6 +431,8 @@ def run_model(s: State):
                                                        round(float(xy[p, k, 1]) / h, 4),
                                                        round(float(conf[p, k]), 2)] for k in COCO_12]})
         annotated = draw(frame.copy(), people, s.level, s.score, a)
+        if s.clips is not None:   # the clip shows what the model saw: skeletons, level and score
+            s.clips.add(annotated, time.time())
         ok, jpg = cv2.imencode(".jpg", annotated, [cv2.IMWRITE_JPEG_QUALITY, 70])
         with s.lock:
             s.people = people
@@ -513,6 +513,13 @@ def draw(frame, people, level, score, a):
                 cv2.line(frame, pts[u], pts[v], col, 3, cv2.LINE_AA)
         for pt in pts.values():
             cv2.circle(frame, pt, 3, (255, 255, 255), -1, cv2.LINE_AA)
+    # Level and model score, big enough to read in a recording.
+    badge = f"{level}  {score:.2f}"
+    scale = max(0.7, w / 900)
+    (bw, bh), _ = cv2.getTextSize(badge, cv2.FONT_HERSHEY_SIMPLEX, scale, 2)
+    cv2.rectangle(frame, (10, 10), (10 + bw + 20, 10 + bh + 18), LEVEL_BGR[level], -1)
+    cv2.putText(frame, badge, (20, 10 + bh + 8), cv2.FONT_HERSHEY_SIMPLEX, scale,
+                (255, 255, 255) if level != "TENSE" else (16, 18, 26), 2, cv2.LINE_AA)
     cv2.rectangle(frame, (0, h - 28), (w, h), (22, 27, 34), -1)
     cv2.putText(frame, f"{a.camera_id}  {level}  {score:.2f}", (10, h - 9),
                 cv2.FONT_HERSHEY_SIMPLEX, 0.55, LEVEL_BGR[level], 2, cv2.LINE_AA)
