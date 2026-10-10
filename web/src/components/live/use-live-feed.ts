@@ -359,7 +359,7 @@ export function useLiveFeed(
   useEffect(() => {
     for (const e of events) {
       const was = mirrored.current.get(e.incident_id);
-      const nowKey = `${e.level}|${e.end_time}`;
+      const nowKey = `${e.level}|${e.end_time}|${e.timeline?.length ?? 0}`;
       if (was == null || was === nowKey) continue;
       mirrored.current.set(e.incident_id, nowKey);
       void mirrorEvent(forStore(e));
@@ -419,7 +419,7 @@ export function useLiveFeed(
         }
         // Without the API, copy the push to the shared store so the guard's phone rings.
         if (fresh && usingMock && (e.isReplay || e.isEdge)) {
-          mirrored.current.set(e.incident_id, `${e.level}|${e.end_time}`);
+          mirrored.current.set(e.incident_id, `${e.level}|${e.end_time}|${e.timeline?.length ?? 0}`);
           // The replay loops every few seconds; clear the guard's earlier taps only once per
           // page load, so a guard who is already on the way stays on the way.
           const reset = !!e.isReplay && !resetOnce.current.has(e.incident_id);
@@ -472,7 +472,7 @@ export function useLiveFeed(
       pushToast(name, at, e.location);
       showPhoneBeside(name);
       if (usingMock) {
-        mirrored.current.set(e.incident_id, `${e.level}|${e.end_time}`);
+        mirrored.current.set(e.incident_id, `${e.level}|${e.end_time}|${e.timeline?.length ?? 0}`);
         void mirrorEvent({ ...forStore(e), pushed_to: name, pushed_at: at });
       }
     },

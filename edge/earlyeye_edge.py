@@ -204,6 +204,8 @@ def tick_incident(s: State, now: float):
     if level == "CALM":
         if inc is None:
             return
+        if s.calm_since is None:
+            _mark(inc, "calm", s.score, people)
         s.calm_since = s.calm_since or now
         if now - s.calm_since >= CLOSE_AFTER_CALM_S:
             inc["end_time"] = iso_now()
@@ -222,6 +224,7 @@ def tick_incident(s: State, now: float):
             "people_count": people, "action": "", "nearest_staff": a.staff,
             "status": "new", "staff_note": None,
         }
+    _mark(inc, lv, s.score, people)
     # Level never steps down inside an open incident until it closes (FIGHT_HOLD covers dips).
     if inc["level"] != "fight":
         inc["level"] = lv
@@ -237,6 +240,16 @@ def tick_incident(s: State, now: float):
     inc["snapshot"] = snap
     inc["top_features"] = top_features(s.feats, s.score)
     post_event(s, inc)
+
+
+def _mark(inc: dict, level: str, score: float, people: int):
+    """What really happened, for Incidents' "How it unfolded": every level change, with the
+    model's score and the people count at that moment (not a template)."""
+    tl = inc.setdefault("timeline", [])
+    if tl and tl[-1]["level"] == level:
+        return
+    tl.append({"t": datetime.now(MYT).isoformat(timespec="seconds"), "level": level,
+               "score": round(float(score), 2), "people": int(people)})
 
 
 def post_event(s: State, inc: dict, final: bool = False):

@@ -7,7 +7,7 @@ import useSWR from "swr";
 import { toast } from "sonner";
 import { getCameras, getEdgeClips, getEvents, patchEvent, PatchError } from "@/lib/api";
 import type { Camera, Event, Status } from "@/lib/types";
-import { normaliseStatus, secondsBetween } from "@/lib/format";
+import { fmtTime, normaliseStatus, secondsBetween } from "@/lib/format";
 import {
   bucketOf,
   buildingLine,
@@ -55,6 +55,13 @@ function tabFromParam(p: string | null): Tab {
   if (["false", "dismissed", "false_alarm"].includes(p)) return "false";
   return "all";
 }
+
+const SIGNAL: Record<string, string> = {
+  close_motion: "close motion",
+  pair_motion_energy: "pair motion",
+  max_wrist_speed: "wrist speed",
+  risk_score: "risk score",
+};
 
 const label =
   "font-mono text-[12px] font-bold tracking-[0.08em] text-muted-ink";
@@ -604,47 +611,51 @@ function CaseStory({
   const guard = e.pushed_to ? firstName(e.pushed_to) : null;
   const arrived = secondsBetween(e.acked_at ?? e.pushed_at, e.arrived_at);
 
-  // How it unfolded: only steps with a real timestamp, plus the decision (which has none).
-  const trail: { t: string; text: string; dot: string }[] = [
-    {
-      t: hm(e.start_time),
-      text:
-        e.level === "tense"
-          ? "EarlyEye noticed tension and showed it on the desk screen. No alarm, because it never went past Tense."
-          : "EarlyEye noticed tension and showed it on the desk screen.",
-      dot: "#F5B323",
-    },
-  ];
-  if (e.pushed_at)
-    trail.push({
-      t: hm(e.pushed_at),
-      text: `${e.level === "fight" ? "It looked like a fight." : "It looked likely to turn into a fight."} The alarm sounded and ${guard ?? "the guard on duty"} got an alert on their phone.`,
-      dot: "#C8241B",
-    });
-  if (e.acked_at && reply != null)
-    trail.push({
-      t: hm(e.acked_at),
-      text: `${guard ?? "The guard"} replied "On my way" ${reply} seconds later.`,
-      dot: "#2742D9",
-    });
-  if (e.arrived_at)
-    trail.push({
-      t: hm(e.arrived_at),
-      text: `${guard ?? "The guard"} got there${arrived != null ? `, ${arrived} s later` : ""}.`,
-      dot: "#2742D9",
-    });
+  // How it unfolded: what the camera and the people really did, to the second, from the record.
+  // The camera's own timeline (every level change with the model's score) when the edge sent it.
+  const LV_WORD: Record<string, string> = { calm: "Calm again", tense: "Tense", fight_likely: "Fight likely", fight: "Fight" };
+  const LV_DOT: Record<string, string> = { calm: "#E4F3EA", tense: "#F5B323", fight_likely: "#C8241B", fight: "#7F1310" };
+  const timed: { at: number; t: string; text: string; dot: string }[] = [];
+  const put = (iso: string | null | undefined, text: string, dot: string) => {
+    if (iso) timed.push({ at: Date.parse(iso), t: fmtTime(iso), text, dot });
+  };
+  if (e.timeline?.length) {
+    e.timeline.forEach((x, i) =>
+      put(
+        x.t,
+        `${i === 0 ? "Camera: " : ""}${LV_WORD[x.level] ?? x.level} · score ${x.score.toFixed(2)} · ${x.people} ${x.people === 1 ? "person" : "people"} in view`,
+        LV_DOT[x.level] ?? "#FFFFFF",
+      ),
+    );
+  } else {
+    put(
+      e.start_time,
+      e.level === "tense"
+        ? "EarlyEye noticed tension and showed it on the desk screen. No alarm: it never went past Tense."
+        : "EarlyEye noticed tension and showed it on the desk screen.",
+      "#F5B323",
+    );
+  }
+  const peakAt = (e.peak_snapshot as { t?: string } | undefined)?.t;
+  if (peakAt && e.peak_score) put(peakAt, `Highest score ${e.peak_score.toFixed(2)}: the worst moment, shown here`, "#7F1310");
+  put(e.pushed_at, `Alarm: ${guard ?? "the guard on duty"}'s phone rang`, "#C8241B");
+  if (reply != null) put(e.acked_at, `${guard ?? "The guard"} tapped "On my way" · ${reply} s after the alarm`, "#2742D9");
+  if (e.arrived_at) put(e.arrived_at, `${guard ?? "The guard"} got there${arrived != null ? ` · ${arrived} s later` : ""}`, "#2742D9");
   if (e.outcome)
-    trail.push({
-      t: e.outcome_at ? hm(e.outcome_at) : "",
-      text: `${guard ?? "The guard"}: ${OUTCOME_WORDS[e.outcome]}${e.outcome === "nothing" ? ". The desk still decides whether it was a false alarm." : "."}`,
-      dot: "#0B0D10",
-    });
+    put(
+      e.outcome_at ?? e.arrived_at ?? e.acked_at,
+      `${guard ?? "The guard"}: ${OUTCOME_WORDS[e.outcome]}${e.outcome === "nothing" ? " (a hint; the desk decides)" : ""}`,
+      "#0B0D10",
+    );
+  const lasted = secondsBetween(e.start_time, e.end_time);
   if (e.end_time)
-    trail.push({
-      t: hm(e.end_time),
-      text: "Things calmed down on camera.",
-      dot: "#FFFFFF",
-    });
+    put(
+      e.end_time,
+      `Incident closed${lasted != null ? ` · lasted ${lasted >= 60 ? `${Math.floor(lasted / 60)} min ${lasted % 60} s` : `${lasted} s`}` : ""}`,
+      "#FFFFFF",
+    );
+  timed.sort((x, y) => x.at - y.at);
+  const trail: { t: string; text: string; dot: string }[] = timed.map(({ t, text, dot }) => ({ t, text, dot }));
   if (bucket === "real")
     trail.push({
       t: "",
@@ -802,6 +813,19 @@ function CaseStory({
             <p className="m-0 text-[20px] font-medium leading-[1.4]">
               {e.reason}
             </p>
+            {e.top_features?.length ? (
+              <span className="flex flex-wrap gap-1.5" aria-label="What the model measured">
+                {e.top_features.map((f) => (
+                  <span key={f.name} className="rounded-[2px] border border-line px-2 py-1 font-mono text-[12px]">
+                    {SIGNAL[f.name] ?? f.name.replace(/_/g, " ")}{" "}
+                    <b>{f.value.toFixed(2)}{f.name === "max_wrist_speed" ? " TL/s" : ""}</b>
+                  </span>
+                ))}
+                <span className="rounded-[2px] border border-line px-2 py-1 font-mono text-[12px]">
+                  people <b>{e.people_count}</b>
+                </span>
+              </span>
+            ) : null}
           </div>
           <figure className="m-0 flex flex-col gap-2">
             <div className="overflow-hidden rounded-[2px]">
@@ -851,7 +875,7 @@ function CaseStory({
             {trail.map((a, i) => (
               <li
                 key={i}
-                className="grid grid-cols-[56px_14px_minmax(0,1fr)] items-start gap-2.5 border-b border-ground py-2"
+                className="grid grid-cols-[72px_14px_minmax(0,1fr)] items-start gap-2.5 border-b border-ground py-2"
               >
                 <span className="font-mono text-[14px] text-ink-2">{a.t}</span>
                 <span

@@ -117,6 +117,7 @@ export interface Event {
   snapshot?: PoseFrame; // v3: latest keypoints, refreshed on each 0.5 s post
   peak_snapshot?: PoseFrame; // v3: keypoints at peak_score
   top_features?: TopFeature[]; // v3: model features behind this window
+  timeline?: { t: string; level: Level; score: number; people: number }[]; // edge: every level change in this incident
 }
 
 export interface Hotspot {
