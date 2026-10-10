@@ -7,6 +7,7 @@ import {
 import { Toaster } from "@/components/ui/sonner";
 import { AlarmLayer } from "@/components/alarm/alarm-layer";
 import { PhonePanel } from "@/components/guard/phone-panel";
+import { CameraWake } from "@/components/chrome/camera-wake";
 import "./globals.css";
 
 const saira = Saira_Condensed({
@@ -53,6 +54,7 @@ export default function RootLayout({
         <AlarmLayer />
         {children}
         <PhonePanel />
+        <CameraWake />
         <Toaster position="bottom-right" closeButton />
       </body>
     </html>
