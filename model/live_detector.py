@@ -90,6 +90,7 @@ class Shared:
         self.score, self.level = 0.0, "CALM"
         self.pose_fps, self.display_fps = 0.0, 0.0
         self.labels = deque()                  # (time, label) samples from the keyboard
+        self.kp_writer = None                  # csv.DictWriter for --save-keypoints (pose thread only)
 
     def now(self):
         return time.time() - self.start
@@ -170,7 +171,13 @@ def pose_loop(model, device, s, log):
         res = model.track(frame, persist=True, tracker=TRACKER, imgsz=IMGSZ, conf=DET_CONF,
                           device=device, verbose=False)[0]
         h, w = frame.shape[:2]
-        rows.extend(to_rows(res, t, w, h))
+        new_rows = to_rows(res, t, w, h)
+        rows.extend(new_rows)
+        if s.kp_writer is not None:  # raw keypoints + the key held now, for training on our own footage
+            with s.lock:
+                label = s.labels[-1][1] if s.labels else "normal"
+            for r in new_rows:
+                s.kp_writer.writerow({**r, "label": label})
         frame_times.append(t)
         while rows and rows[0]["time_s"] < t - HISTORY_S:
             rows.popleft()
@@ -264,6 +271,9 @@ def main():
     ap.add_argument("--no-show", action="store_true", help="don't open a window (for testing)")
     ap.add_argument("--log", default=LOG_CSV, help="where to write the per-window log")
     ap.add_argument("--seconds", type=float, default=None, help="stop after this many seconds (speed tests)")
+    ap.add_argument("--save-keypoints", default=None, metavar="CSV",
+                    help="also save every tracked person per frame (17 keypoints + box + held label), so the "
+                         "session can be added to training")
     args = ap.parse_args()
 
     source = int(args.camera) if args.camera.isdigit() else args.camera
@@ -285,6 +295,13 @@ def main():
     log.writerow(["time_s", *FEATURE_NAMES, "raw_score", "smoothed_score", "level", "label"])
 
     s = Shared()
+    kp_file = None
+    if args.save_keypoints:
+        kp_file = open(args.save_keypoints, "w", newline="")
+        cols = (["time_s", "frame_w", "frame_h", "person_id", "box_x1", "box_y1", "box_x2", "box_y2", "box_conf"]
+                + [f"{n}_{v}" for n in KEYPOINTS for v in ("x", "y", "conf")] + ["label"])
+        s.kp_writer = csv.DictWriter(kp_file, fieldnames=cols)
+        s.kp_writer.writeheader()
     threads = [threading.Thread(target=capture_loop, args=(cap, s, is_file, file_fps), daemon=True),
                threading.Thread(target=pose_loop, args=(model, device, s, log), daemon=True)]
     for th in threads:
@@ -333,6 +350,9 @@ def main():
         th.join(timeout=2)
     cap.release()
     log_file.close()
+    if kp_file:
+        kp_file.close()
+        print(f"Saved raw keypoints to {args.save_keypoints}")
     cv2.destroyAllWindows()
     run_s = s.now()
     pose_fps = np.median(pose_fps_seen[len(pose_fps_seen) // 4:]) if pose_fps_seen else 0
