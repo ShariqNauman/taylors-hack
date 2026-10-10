@@ -1,0 +1,7097 @@
+[
+  {
+    "incident_id": "INC-2026-00080",
+    "camera_id": "CAM-CT-04",
+    "location": "Syopz Mall food court",
+    "zone_type": "canteen",
+    "start_time": "2026-08-16T08:44:00+08:00",
+    "end_time": "2026-08-16T08:45:38+08:00",
+    "type": "play",
+    "level": "tense",
+    "peak_score": 0.55,
+    "eta_seconds": null,
+    "priority": 0.14,
+    "reason": "Rhythmic arm swings, no approach; ball in play. Sports-zone threshold applied.",
+    "people_count": 3,
+    "action": "Watch this camera",
+    "nearest_staff": "Guard A",
+    "status": "dismissed",
+    "staff_note": "Friends play-fighting.",
+    "peak_snapshot": {
+      "t": "2026-08-16T08:44:00+08:00",
+      "people": [
+        {
+          "id": 1,
+          "kp": [
+            [
+              0.372,
+              0.554,
+              0.9
+            ],
+            [
+              0.391,
+              0.554,
+              0.9
+            ],
+            [
+              0.403,
+              0.486,
+              0.9
+            ],
+            [
+              0.389,
+              0.477,
+              0.9
+            ],
+            [
+              0.417,
+              0.419,
+              0.9
+            ],
+            [
+              0.396,
+              0.407,
+              0.9
+            ],
+            [
+              0.381,
+              0.708,
+              0.9
+            ],
+            [
+              0.4,
+              0.708,
+              0.9
+            ],
+            [
+              0.372,
+              0.792,
+              0.9
+            ],
+            [
+              0.41,
+              0.792,
+              0.9
+            ],
+            [
+              0.364,
+              0.881,
+              0.9
+            ],
+            [
+              0.417,
+              0.881,
+              0.9
+            ]
+          ]
+        },
+        {
+          "id": 2,
+          "kp": [
+            [
+              0.653,
+              0.553,
+              0.9
+            ],
+            [
+              0.672,
+              0.553,
+              0.9
+            ],
+            [
+              0.647,
+              0.626,
+              0.9
+            ],
+            [
+              0.64,
+              0.486,
+              0.9
+            ],
+            [
+              0.627,
+              0.688,
+              0.9
+            ],
+            [
+              0.627,
+              0.419,
+              0.9
+            ],
+            [
+              0.647,
+              0.708,
+              0.9
+            ],
+            [
+              0.666,
+              0.708,
+              0.9
+            ],
+            [
+              0.674,
+              0.793,
+              0.9
+            ],
+            [
+              0.639,
+              0.793,
+              0.9
+            ],
+            [
+              0.681,
+              0.882,
+              0.9
+            ],
+            [
+              0.632,
+              0.882,
+              0.9
+            ]
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "incident_id": "INC-2026-00081",
+    "camera_id": "CAM-BC-03",
+    "location": "Block C stairwell",
+    "zone_type": "stairwell",
+    "start_time": "2026-08-16T16:42:00+08:00",
+    "end_time": "2026-08-16T16:43:23+08:00",
+    "type": "crowd",
+    "level": "fight_likely",
+    "peak_score": 0.68,
+    "eta_seconds": 6,
+    "priority": 0.43,
+    "reason": "Five people stopped and faced the same point for 4 s.",
+    "people_count": 5,
+    "action": "Send Guard B now",
+    "nearest_staff": "Guard B",
+    "pushed_to": "Guard B",
+    "pushed_at": "2026-08-16T16:42:01+08:00",
+    "acked_at": "2026-08-16T16:42:07+08:00",
+    "status": "resolved",
+    "staff_note": null
+  },
+  {
+    "incident_id": "INC-2026-00082",
+    "camera_id": "CAM-SC-06",
+    "location": "Sports pitch",
+    "zone_type": "sports_court",
+    "start_time": "2026-08-17T08:32:00+08:00",
+    "end_time": "2026-08-17T08:32:30+08:00",
+    "type": "play",
+    "level": "tense",
+    "peak_score": 0.47,
+    "eta_seconds": null,
+    "priority": 0.05,
+    "reason": "Fast arm movement but bodies stayed apart; no approach.",
+    "people_count": 3,
+    "action": "Watch this camera",
+    "nearest_staff": "Guard C",
+    "status": "resolved",
+    "staff_note": null
+  },
+  {
+    "incident_id": "INC-2026-00083",
+    "camera_id": "CAM-HC-01",
+    "location": "DK Senza, corridor L3",
+    "zone_type": "hostel_corridor",
+    "start_time": "2026-08-18T22:20:00+08:00",
+    "end_time": "2026-08-18T22:20:32+08:00",
+    "type": "cornering",
+    "level": "fight",
+    "peak_score": 0.97,
+    "eta_seconds": null,
+    "priority": 0.87,
+    "reason": "One person against the wall, three within 2 torso-lengths for 7 s.",
+    "people_count": 3,
+    "action": "Send Guard C now; call the security lead",
+    "nearest_staff": "Guard C",
+    "pushed_to": "Guard C",
+    "pushed_at": "2026-08-18T22:20:01+08:00",
+    "acked_at": "2026-08-18T22:20:05+08:00",
+    "status": "dismissed",
+    "staff_note": null,
+    "peak_snapshot": {
+      "t": "2026-08-18T22:20:00+08:00",
+      "people": [
+        {
+          "id": 1,
+          "kp": [
+            [
+              0.547,
+              0.56,
+              0.9
+            ],
+            [
+              0.565,
+              0.56,
+              0.9
+            ],
+            [
+              0.599,
+              0.552,
+              0.9
+            ],
+            [
+              0.582,
+              0.498,
+              0.9
+            ],
+            [
+              0.633,
+              0.511,
+              0.9
+            ],
+            [
+              0.613,
+              0.452,
+              0.9
+            ],
+            [
+              0.52,
+              0.708,
+              0.9
+            ],
+            [
+              0.539,
+              0.708,
+              0.9
+            ],
+            [
+              0.514,
+              0.794,
+              0.9
+            ],
+            [
+              0.545,
+              0.794,
+              0.9
+            ],
+            [
+              0.507,
+              0.884,
+              0.9
+            ],
+            [
+              0.552,
+              0.884,
+              0.9
+            ]
+          ]
+        },
+        {
+          "id": 2,
+          "kp": [
+            [
+              0.582,
+              0.556,
+              0.9
+            ],
+            [
+              0.601,
+              0.556,
+              0.9
+            ],
+            [
+              0.552,
+              0.524,
+              0.9
+            ],
+            [
+              0.556,
+              0.512,
+              0.9
+            ],
+            [
+              0.556,
+              0.452,
+              0.9
+            ],
+            [
+              0.566,
+              0.443,
+              0.9
+            ],
+            [
+              0.564,
+              0.708,
+              0.9
+            ],
+            [
+              0.582,
+              0.708,
+              0.9
+            ],
+            [
+              0.585,
+              0.796,
+              0.9
+            ],
+            [
+              0.561,
+              0.796,
+              0.9
+            ],
+            [
+              0.59,
+              0.886,
+              0.9
+            ],
+            [
+              0.556,
+              0.886,
+              0.9
+            ]
+          ]
+        },
+        {
+          "id": 3,
+          "kp": [
+            [
+              0.915,
+              0.554,
+              0.9
+            ],
+            [
+              0.934,
+              0.554,
+              0.9
+            ],
+            [
+              0.939,
+              0.627,
+              0.9
+            ],
+            [
+              0.906,
+              0.624,
+              0.9
+            ],
+            [
+              0.946,
+              0.697,
+              0.9
+            ],
+            [
+              0.883,
+              0.683,
+              0.9
+            ],
+            [
+              0.924,
+              0.708,
+              0.9
+            ],
+            [
+              0.943,
+              0.708,
+              0.9
+            ],
+            [
+              0.949,
+              0.794,
+              0.9
+            ],
+            [
+              0.918,
+              0.794,
+              0.9
+            ],
+            [
+              0.955,
+              0.884,
+              0.9
+            ],
+            [
+              0.911,
+              0.884,
+              0.9
+            ]
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "incident_id": "INC-2026-00084",
+    "camera_id": "CAM-BC-03",
+    "location": "Block C stairwell",
+    "zone_type": "stairwell",
+    "start_time": "2026-08-20T13:35:00+08:00",
+    "end_time": "2026-08-20T13:36:55+08:00",
+    "type": "fight",
+    "level": "fight_likely",
+    "peak_score": 0.73,
+    "eta_seconds": 4,
+    "priority": 0.42,
+    "reason": "Fast whole-body motion while close, for 1.2 s.",
+    "people_count": 3,
+    "action": "Send Guard B now",
+    "nearest_staff": "Guard B",
+    "pushed_to": "Guard B",
+    "pushed_at": "2026-08-20T13:35:01+08:00",
+    "acked_at": "2026-08-20T13:35:06+08:00",
+    "status": "confirmed",
+    "staff_note": null,
+    "peak_snapshot": {
+      "t": "2026-08-20T13:35:00+08:00",
+      "people": [
+        {
+          "id": 1,
+          "kp": [
+            [
+              0.545,
+              0.564,
+              0.9
+            ],
+            [
+              0.564,
+              0.564,
+              0.9
+            ],
+            [
+              0.598,
+              0.572,
+              0.9
+            ],
+            [
+              0.587,
+              0.513,
+              0.9
+            ],
+            [
+              0.636,
+              0.548,
+              0.9
+            ],
+            [
+              0.623,
+              0.479,
+              0.9
+            ],
+            [
+              0.513,
+              0.708,
+              0.9
+            ],
+            [
+              0.532,
+              0.708,
+              0.9
+            ],
+            [
+              0.505,
+              0.793,
+              0.9
+            ],
+            [
+              0.539,
+              0.793,
+              0.9
+            ],
+            [
+              0.498,
+              0.883,
+              0.9
+            ],
+            [
+              0.546,
+              0.883,
+              0.9
+            ]
+          ]
+        },
+        {
+          "id": 2,
+          "kp": [
+            [
+              0.59,
+              0.559,
+              0.9
+            ],
+            [
+              0.609,
+              0.559,
+              0.9
+            ],
+            [
+              0.565,
+              0.512,
+              0.9
+            ],
+            [
+              0.557,
+              0.542,
+              0.9
+            ],
+            [
+              0.565,
+              0.44,
+              0.9
+            ],
+            [
+              0.544,
+              0.474,
+              0.9
+            ],
+            [
+              0.566,
+              0.708,
+              0.9
+            ],
+            [
+              0.585,
+              0.708,
+              0.9
+            ],
+            [
+              0.589,
+              0.795,
+              0.9
+            ],
+            [
+              0.562,
+              0.795,
+              0.9
+            ],
+            [
+              0.594,
+              0.885,
+              0.9
+            ],
+            [
+              0.556,
+              0.885,
+              0.9
+            ]
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "incident_id": "INC-2026-00085",
+    "camera_id": "CAM-CT-04",
+    "location": "Syopz Mall food court",
+    "zone_type": "canteen",
+    "start_time": "2026-08-21T12:44:00+08:00",
+    "end_time": "2026-08-21T12:44:20+08:00",
+    "type": "fight",
+    "level": "fight_likely",
+    "peak_score": 0.75,
+    "eta_seconds": 5,
+    "priority": 0.34,
+    "reason": "Repeated fast strikes toward head height.",
+    "people_count": 2,
+    "action": "Send Guard A now",
+    "nearest_staff": "Guard A",
+    "pushed_to": "Guard A",
+    "pushed_at": "2026-08-21T12:44:01+08:00",
+    "acked_at": "2026-08-21T12:44:07+08:00",
+    "status": "confirmed",
+    "staff_note": null,
+    "peak_snapshot": {
+      "t": "2026-08-21T12:44:00+08:00",
+      "people": [
+        {
+          "id": 1,
+          "kp": [
+            [
+              0.547,
+              0.56,
+              0.9
+            ],
+            [
+              0.566,
+              0.56,
+              0.9
+            ],
+            [
+              0.597,
+              0.527,
+              0.9
+            ],
+            [
+              0.588,
+              0.505,
+              0.9
+            ],
+            [
+              0.627,
+              0.481,
+              0.9
+            ],
+            [
+              0.619,
+              0.459,
+              0.9
+            ],
+            [
+              0.522,
+              0.708,
+              0.9
+            ],
+            [
+              0.541,
+              0.708,
+              0.9
+            ],
+            [
+              0.516,
+              0.794,
+              0.9
+            ],
+            [
+              0.547,
+              0.794,
+              0.9
+            ],
+            [
+              0.509,
+              0.884,
+              0.9
+            ],
+            [
+              0.553,
+              0.884,
+              0.9
+            ]
+          ]
+        },
+        {
+          "id": 2,
+          "kp": [
+            [
+              0.585,
+              0.557,
+              0.9
+            ],
+            [
+              0.603,
+              0.557,
+              0.9
+            ],
+            [
+              0.554,
+              0.524,
+              0.9
+            ],
+            [
+              0.558,
+              0.512,
+              0.9
+            ],
+            [
+              0.558,
+              0.453,
+              0.9
+            ],
+            [
+              0.568,
+              0.443,
+              0.9
+            ],
+            [
+              0.565,
+              0.708,
+              0.9
+            ],
+            [
+              0.584,
+              0.708,
+              0.9
+            ],
+            [
+              0.586,
+              0.796,
+              0.9
+            ],
+            [
+              0.562,
+              0.796,
+              0.9
+            ],
+            [
+              0.591,
+              0.886,
+              0.9
+            ],
+            [
+              0.557,
+              0.886,
+              0.9
+            ]
+          ]
+        },
+        {
+          "id": 3,
+          "kp": [
+            [
+              0.872,
+              0.554,
+              0.9
+            ],
+            [
+              0.891,
+              0.554,
+              0.9
+            ],
+            [
+              0.897,
+              0.627,
+              0.9
+            ],
+            [
+              0.863,
+              0.624,
+              0.9
+            ],
+            [
+              0.904,
+              0.697,
+              0.9
+            ],
+            [
+              0.84,
+              0.683,
+              0.9
+            ],
+            [
+              0.882,
+              0.708,
+              0.9
+            ],
+            [
+              0.9,
+              0.708,
+              0.9
+            ],
+            [
+              0.907,
+              0.794,
+              0.9
+            ],
+            [
+              0.875,
+              0.794,
+              0.9
+            ],
+            [
+              0.913,
+              0.884,
+              0.9
+            ],
+            [
+              0.869,
+              0.884,
+              0.9
+            ]
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "incident_id": "INC-2026-00086",
+    "camera_id": "CAM-AU-01",
+    "location": "Auditorium, Block A and B",
+    "zone_type": "auditorium",
+    "start_time": "2026-08-21T21:02:00+08:00",
+    "end_time": "2026-08-21T21:02:44+08:00",
+    "type": "crowd",
+    "level": "fight",
+    "peak_score": 0.92,
+    "eta_seconds": null,
+    "priority": 0.42,
+    "reason": "Five people stopped and faced the same point for 4 s.",
+    "people_count": 3,
+    "action": "Send Guard B now; call the security lead",
+    "nearest_staff": "Guard B",
+    "pushed_to": "Guard B",
+    "pushed_at": "2026-08-21T21:02:01+08:00",
+    "acked_at": "2026-08-21T21:02:06+08:00",
+    "status": "confirmed",
+    "staff_note": null
+  },
+  {
+    "incident_id": "INC-2026-00087",
+    "camera_id": "CAM-HC-01",
+    "location": "DK Senza, corridor L3",
+    "zone_type": "hostel_corridor",
+    "start_time": "2026-08-23T22:28:00+08:00",
+    "end_time": "2026-08-23T22:29:09+08:00",
+    "type": "crowd",
+    "level": "fight_likely",
+    "peak_score": 0.74,
+    "eta_seconds": 5,
+    "priority": 0.6,
+    "reason": "Five people stopped and faced the same point for 4 s.",
+    "people_count": 4,
+    "action": "Send Guard C now",
+    "nearest_staff": "Guard C",
+    "pushed_to": "Guard C",
+    "pushed_at": "2026-08-23T22:28:01+08:00",
+    "acked_at": "2026-08-23T22:28:07+08:00",
+    "status": "resolved",
+    "staff_note": null,
+    "peak_snapshot": {
+      "t": "2026-08-23T22:28:00+08:00",
+      "people": [
+        {
+          "id": 1,
+          "kp": [
+            [
+              0.544,
+              0.565,
+              0.9
+            ],
+            [
+              0.563,
+              0.565,
+              0.9
+            ],
+            [
+              0.597,
+              0.572,
+              0.9
+            ],
+            [
+              0.591,
+              0.524,
+              0.9
+            ],
+            [
+              0.636,
+              0.554,
+              0.9
+            ],
+            [
+              0.628,
+              0.497,
+              0.9
+            ],
+            [
+              0.51,
+              0.708,
+              0.9
+            ],
+            [
+              0.529,
+              0.708,
+              0.9
+            ],
+            [
+              0.502,
+              0.793,
+              0.9
+            ],
+            [
+              0.537,
+              0.793,
+              0.9
+            ],
+            [
+              0.495,
+              0.882,
+              0.9
+            ],
+            [
+              0.544,
+              0.882,
+              0.9
+            ]
+          ]
+        },
+        {
+          "id": 2,
+          "kp": [
+            [
+              0.594,
+              0.56,
+              0.9
+            ],
+            [
+              0.613,
+              0.56,
+              0.9
+            ],
+            [
+              0.572,
+              0.508,
+              0.9
+            ],
+            [
+              0.56,
+              0.558,
+              0.9
+            ],
+            [
+              0.57,
+              0.436,
+              0.9
+            ],
+            [
+              0.538,
+              0.498,
+              0.9
+            ],
+            [
+              0.567,
+              0.708,
+              0.9
+            ],
+            [
+              0.586,
+              0.708,
+              0.9
+            ],
+            [
+              0.591,
+              0.795,
+              0.9
+            ],
+            [
+              0.563,
+              0.795,
+              0.9
+            ],
+            [
+              0.596,
+              0.885,
+              0.9
+            ],
+            [
+              0.557,
+              0.885,
+              0.9
+            ]
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "incident_id": "INC-2026-00088",
+    "camera_id": "CAM-HC-01",
+    "location": "DK Senza, corridor L3",
+    "zone_type": "hostel_corridor",
+    "start_time": "2026-08-25T17:19:00+08:00",
+    "end_time": "2026-08-25T17:20:45+08:00",
+    "type": "play",
+    "level": "tense",
+    "peak_score": 0.5,
+    "eta_seconds": null,
+    "priority": 0.2,
+    "reason": "Rhythmic arm swings, no approach; ball in play. Sports-zone threshold applied.",
+    "people_count": 5,
+    "action": "Watch this camera",
+    "nearest_staff": "Guard C",
+    "status": "dismissed",
+    "staff_note": null
+  },
+  {
+    "incident_id": "INC-2026-00089",
+    "camera_id": "CAM-HC-01",
+    "location": "DK Senza, corridor L3",
+    "zone_type": "hostel_corridor",
+    "start_time": "2026-08-26T17:40:00+08:00",
+    "end_time": "2026-08-26T17:41:13+08:00",
+    "type": "crowd",
+    "level": "tense",
+    "peak_score": 0.54,
+    "eta_seconds": null,
+    "priority": 0.17,
+    "reason": "Five people stopped and faced the same point for 4 s.",
+    "people_count": 2,
+    "action": "Watch this camera",
+    "nearest_staff": "Guard C",
+    "status": "dismissed",
+    "staff_note": null
+  },
+  {
+    "incident_id": "INC-2026-00090",
+    "camera_id": "CAM-HC-01",
+    "location": "DK Senza, corridor L3",
+    "zone_type": "hostel_corridor",
+    "start_time": "2026-08-26T21:49:00+08:00",
+    "end_time": "2026-08-26T21:50:06+08:00",
+    "type": "fight",
+    "level": "fight",
+    "peak_score": 0.89,
+    "eta_seconds": null,
+    "priority": 0.89,
+    "reason": "Fast whole-body motion while close, for 1.2 s.",
+    "people_count": 5,
+    "action": "Send Guard C now; call the security lead",
+    "nearest_staff": "Guard C",
+    "pushed_to": "Guard C",
+    "pushed_at": "2026-08-26T21:49:01+08:00",
+    "acked_at": "2026-08-26T21:49:04+08:00",
+    "status": "resolved",
+    "staff_note": null,
+    "peak_snapshot": {
+      "t": "2026-08-26T21:49:00+08:00",
+      "people": [
+        {
+          "id": 1,
+          "kp": [
+            [
+              0.547,
+              0.56,
+              0.9
+            ],
+            [
+              0.566,
+              0.56,
+              0.9
+            ],
+            [
+              0.599,
+              0.544,
+              0.9
+            ],
+            [
+              0.584,
+              0.5,
+              0.9
+            ],
+            [
+              0.631,
+              0.502,
+              0.9
+            ],
+            [
+              0.615,
+              0.454,
+              0.9
+            ],
+            [
+              0.521,
+              0.708,
+              0.9
+            ],
+            [
+              0.539,
+              0.708,
+              0.9
+            ],
+            [
+              0.514,
+              0.794,
+              0.9
+            ],
+            [
+              0.546,
+              0.794,
+              0.9
+            ],
+            [
+              0.508,
+              0.884,
+              0.9
+            ],
+            [
+              0.552,
+              0.884,
+              0.9
+            ]
+          ]
+        },
+        {
+          "id": 2,
+          "kp": [
+            [
+              0.583,
+              0.557,
+              0.9
+            ],
+            [
+              0.602,
+              0.557,
+              0.9
+            ],
+            [
+              0.553,
+              0.524,
+              0.9
+            ],
+            [
+              0.557,
+              0.512,
+              0.9
+            ],
+            [
+              0.556,
+              0.452,
+              0.9
+            ],
+            [
+              0.567,
+              0.443,
+              0.9
+            ],
+            [
+              0.564,
+              0.708,
+              0.9
+            ],
+            [
+              0.583,
+              0.708,
+              0.9
+            ],
+            [
+              0.586,
+              0.796,
+              0.9
+            ],
+            [
+              0.561,
+              0.796,
+              0.9
+            ],
+            [
+              0.591,
+              0.886,
+              0.9
+            ],
+            [
+              0.556,
+              0.886,
+              0.9
+            ]
+          ]
+        },
+        {
+          "id": 3,
+          "kp": [
+            [
+              0.901,
+              0.554,
+              0.9
+            ],
+            [
+              0.92,
+              0.554,
+              0.9
+            ],
+            [
+              0.926,
+              0.627,
+              0.9
+            ],
+            [
+              0.892,
+              0.624,
+              0.9
+            ],
+            [
+              0.933,
+              0.697,
+              0.9
+            ],
+            [
+              0.869,
+              0.683,
+              0.9
+            ],
+            [
+              0.911,
+              0.708,
+              0.9
+            ],
+            [
+              0.929,
+              0.708,
+              0.9
+            ],
+            [
+              0.936,
+              0.794,
+              0.9
+            ],
+            [
+              0.904,
+              0.794,
+              0.9
+            ],
+            [
+              0.942,
+              0.884,
+              0.9
+            ],
+            [
+              0.898,
+              0.884,
+              0.9
+            ]
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "incident_id": "INC-2026-00091",
+    "camera_id": "CAM-HC-01",
+    "location": "DK Senza, corridor L3",
+    "zone_type": "hostel_corridor",
+    "start_time": "2026-08-29T20:31:00+08:00",
+    "end_time": "2026-08-29T20:31:38+08:00",
+    "type": "crowd",
+    "level": "fight",
+    "peak_score": 0.82,
+    "eta_seconds": null,
+    "priority": 0.73,
+    "reason": "Eight people formed a ring in 4 s; two in the centre.",
+    "people_count": 3,
+    "action": "Send Guard C now; call the security lead",
+    "nearest_staff": "Guard C",
+    "pushed_to": "Guard C",
+    "pushed_at": "2026-08-29T20:31:01+08:00",
+    "acked_at": "2026-08-29T20:31:09+08:00",
+    "status": "dismissed",
+    "staff_note": "Football warm-up."
+  },
+  {
+    "incident_id": "INC-2026-00092",
+    "camera_id": "CAM-HC-01",
+    "location": "DK Senza, corridor L3",
+    "zone_type": "hostel_corridor",
+    "start_time": "2026-08-31T12:46:00+08:00",
+    "end_time": "2026-08-31T12:46:20+08:00",
+    "type": "crowd",
+    "level": "tense",
+    "peak_score": 0.55,
+    "eta_seconds": null,
+    "priority": 0.22,
+    "reason": "Eight people formed a ring in 4 s; two in the centre.",
+    "people_count": 4,
+    "action": "Watch this camera",
+    "nearest_staff": "Guard C",
+    "status": "resolved",
+    "staff_note": null
+  },
+  {
+    "incident_id": "INC-2026-00093",
+    "camera_id": "CAM-BC-03",
+    "location": "Block C stairwell",
+    "zone_type": "stairwell",
+    "start_time": "2026-08-31T13:31:00+08:00",
+    "end_time": "2026-08-31T13:31:55+08:00",
+    "type": "fight",
+    "level": "fight_likely",
+    "peak_score": 0.75,
+    "eta_seconds": 5,
+    "priority": 0.38,
+    "reason": "Arm above shoulder; second person leaning back.",
+    "people_count": 2,
+    "action": "Send Guard B now",
+    "nearest_staff": "Guard B",
+    "pushed_to": "Guard B",
+    "pushed_at": "2026-08-31T13:31:01+08:00",
+    "acked_at": "2026-08-31T13:31:06+08:00",
+    "status": "confirmed",
+    "staff_note": null,
+    "peak_snapshot": {
+      "t": "2026-08-31T13:31:00+08:00",
+      "people": [
+        {
+          "id": 1,
+          "kp": [
+            [
+              0.543,
+              0.57,
+              0.9
+            ],
+            [
+              0.562,
+              0.57,
+              0.9
+            ],
+            [
+              0.596,
+              0.571,
+              0.9
+            ],
+            [
+              0.596,
+              0.56,
+              0.9
+            ],
+            [
+              0.636,
+              0.569,
+              0.9
+            ],
+            [
+              0.636,
+              0.551,
+              0.9
+            ],
+            [
+              0.502,
+              0.708,
+              0.9
+            ],
+            [
+              0.521,
+              0.708,
+              0.9
+            ],
+            [
+              0.493,
+              0.792,
+              0.9
+            ],
+            [
+              0.531,
+              0.792,
+              0.9
+            ],
+            [
+              0.485,
+              0.881,
+              0.9
+            ],
+            [
+              0.538,
+              0.881,
+              0.9
+            ]
+          ]
+        },
+        {
+          "id": 2,
+          "kp": [
+            [
+              0.606,
+              0.566,
+              0.9
+            ],
+            [
+              0.625,
+              0.566,
+              0.9
+            ],
+            [
+              0.592,
+              0.499,
+              0.9
+            ],
+            [
+              0.576,
+              0.6,
+              0.9
+            ],
+            [
+              0.586,
+              0.429,
+              0.9
+            ],
+            [
+              0.538,
+              0.582,
+              0.9
+            ],
+            [
+              0.571,
+              0.708,
+              0.9
+            ],
+            [
+              0.59,
+              0.708,
+              0.9
+            ],
+            [
+              0.596,
+              0.794,
+              0.9
+            ],
+            [
+              0.565,
+              0.794,
+              0.9
+            ],
+            [
+              0.603,
+              0.884,
+              0.9
+            ],
+            [
+              0.559,
+              0.884,
+              0.9
+            ]
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "incident_id": "INC-2026-00094",
+    "camera_id": "CAM-BC-03",
+    "location": "Block C stairwell",
+    "zone_type": "stairwell",
+    "start_time": "2026-09-04T17:26:00+08:00",
+    "end_time": "2026-09-04T17:26:56+08:00",
+    "type": "crowd",
+    "level": "tense",
+    "peak_score": 0.52,
+    "eta_seconds": null,
+    "priority": 0.15,
+    "reason": "Five people stopped and faced the same point for 4 s.",
+    "people_count": 3,
+    "action": "Watch this camera",
+    "nearest_staff": "Guard B",
+    "status": "dismissed",
+    "staff_note": null,
+    "peak_snapshot": {
+      "t": "2026-09-04T17:26:00+08:00",
+      "people": [
+        {
+          "id": 1,
+          "kp": [
+            [
+              0.359,
+              0.553,
+              0.9
+            ],
+            [
+              0.378,
+              0.553,
+              0.9
+            ],
+            [
+              0.365,
+              0.631,
+              0.9
+            ],
+            [
+              0.376,
+              0.63,
+              0.9
+            ],
+            [
+              0.365,
+              0.702,
+              0.9
+            ],
+            [
+              0.387,
+              0.699,
+              0.9
+            ],
+            [
+              0.353,
+              0.708,
+              0.9
+            ],
+            [
+              0.372,
+              0.708,
+              0.9
+            ],
+            [
+              0.355,
+              0.798,
+              0.9
+            ],
+            [
+              0.37,
+              0.798,
+              0.9
+            ],
+            [
+              0.353,
+              0.888,
+              0.9
+            ],
+            [
+              0.372,
+              0.888,
+              0.9
+            ]
+          ]
+        },
+        {
+          "id": 2,
+          "kp": [
+            [
+              0.44,
+              0.554,
+              0.9
+            ],
+            [
+              0.459,
+              0.554,
+              0.9
+            ],
+            [
+              0.446,
+              0.631,
+              0.9
+            ],
+            [
+              0.461,
+              0.629,
+              0.9
+            ],
+            [
+              0.446,
+              0.703,
+              0.9
+            ],
+            [
+              0.478,
+              0.694,
+              0.9
+            ],
+            [
+              0.431,
+              0.708,
+              0.9
+            ],
+            [
+              0.45,
+              0.708,
+              0.9
+            ],
+            [
+              0.432,
+              0.797,
+              0.9
+            ],
+            [
+              0.449,
+              0.797,
+              0.9
+            ],
+            [
+              0.428,
+              0.887,
+              0.9
+            ],
+            [
+              0.453,
+              0.887,
+              0.9
+            ]
+          ]
+        },
+        {
+          "id": 3,
+          "kp": [
+            [
+              0.509,
+              0.553,
+              0.9
+            ],
+            [
+              0.528,
+              0.553,
+              0.9
+            ],
+            [
+              0.526,
+              0.629,
+              0.9
+            ],
+            [
+              0.534,
+              0.626,
+              0.9
+            ],
+            [
+              0.54,
+              0.697,
+              0.9
+            ],
+            [
+              0.564,
+              0.672,
+              0.9
+            ],
+            [
+              0.506,
+              0.708,
+              0.9
+            ],
+            [
+              0.525,
+              0.708,
+              0.9
+            ],
+            [
+              0.51,
+              0.798,
+              0.9
+            ],
+            [
+              0.521,
+              0.798,
+              0.9
+            ],
+            [
+              0.508,
+              0.888,
+              0.9
+            ],
+            [
+              0.523,
+              0.888,
+              0.9
+            ]
+          ]
+        },
+        {
+          "id": 4,
+          "kp": [
+            [
+              0.594,
+              0.554,
+              0.9
+            ],
+            [
+              0.613,
+              0.554,
+              0.9
+            ],
+            [
+              0.608,
+              0.631,
+              0.9
+            ],
+            [
+              0.594,
+              0.63,
+              0.9
+            ],
+            [
+              0.608,
+              0.703,
+              0.9
+            ],
+            [
+              0.58,
+              0.697,
+              0.9
+            ],
+            [
+              0.603,
+              0.708,
+              0.9
+            ],
+            [
+              0.622,
+              0.708,
+              0.9
+            ],
+            [
+              0.621,
+              0.797,
+              0.9
+            ],
+            [
+              0.604,
+              0.797,
+              0.9
+            ],
+            [
+              0.625,
+              0.887,
+              0.9
+            ],
+            [
+              0.6,
+              0.887,
+              0.9
+            ]
+          ]
+        },
+        {
+          "id": 5,
+          "kp": [
+            [
+              0.678,
+              0.553,
+              0.9
+            ],
+            [
+              0.697,
+              0.553,
+              0.9
+            ],
+            [
+              0.691,
+              0.631,
+              0.9
+            ],
+            [
+              0.68,
+              0.63,
+              0.9
+            ],
+            [
+              0.69,
+              0.702,
+              0.9
+            ],
+            [
+              0.669,
+              0.699,
+              0.9
+            ],
+            [
+              0.684,
+              0.708,
+              0.9
+            ],
+            [
+              0.703,
+              0.708,
+              0.9
+            ],
+            [
+              0.701,
+              0.798,
+              0.9
+            ],
+            [
+              0.687,
+              0.798,
+              0.9
+            ],
+            [
+              0.704,
+              0.888,
+              0.9
+            ],
+            [
+              0.684,
+              0.888,
+              0.9
+            ]
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "incident_id": "INC-2026-00095",
+    "camera_id": "CAM-HC-01",
+    "location": "DK Senza, corridor L3",
+    "zone_type": "hostel_corridor",
+    "start_time": "2026-09-06T18:39:00+08:00",
+    "end_time": "2026-09-06T18:40:22+08:00",
+    "type": "cornering",
+    "level": "tense",
+    "peak_score": 0.56,
+    "eta_seconds": null,
+    "priority": 0.18,
+    "reason": "One person against the wall, three within 2 torso-lengths for 7 s.",
+    "people_count": 2,
+    "action": "Watch this camera",
+    "nearest_staff": "Guard C",
+    "status": "dismissed",
+    "staff_note": "Football warm-up."
+  },
+  {
+    "incident_id": "INC-2026-00096",
+    "camera_id": "CAM-CT-04",
+    "location": "Syopz Mall food court",
+    "zone_type": "canteen",
+    "start_time": "2026-09-07T16:57:00+08:00",
+    "end_time": "2026-09-07T16:58:45+08:00",
+    "type": "fight",
+    "level": "fight_likely",
+    "peak_score": 0.67,
+    "eta_seconds": 5,
+    "priority": 0.34,
+    "reason": "Fast whole-body motion while close, for 1.2 s.",
+    "people_count": 3,
+    "action": "Send Guard A now",
+    "nearest_staff": "Guard A",
+    "pushed_to": "Guard A",
+    "pushed_at": "2026-09-07T16:57:01+08:00",
+    "acked_at": "2026-09-07T16:57:10+08:00",
+    "status": "resolved",
+    "staff_note": null
+  },
+  {
+    "incident_id": "INC-2026-00097",
+    "camera_id": "CAM-BC-03",
+    "location": "Block C stairwell",
+    "zone_type": "stairwell",
+    "start_time": "2026-09-08T13:35:00+08:00",
+    "end_time": "2026-09-08T13:36:31+08:00",
+    "type": "fight",
+    "level": "fight_likely",
+    "peak_score": 0.67,
+    "eta_seconds": 3,
+    "priority": 0.34,
+    "reason": "Shove: sudden lunge; second person pushed back.",
+    "people_count": 2,
+    "action": "Send Guard B now",
+    "nearest_staff": "Guard B",
+    "pushed_to": "Guard B",
+    "pushed_at": "2026-09-08T13:35:01+08:00",
+    "acked_at": "2026-09-08T13:35:07+08:00",
+    "status": "confirmed",
+    "staff_note": null,
+    "peak_snapshot": {
+      "t": "2026-09-08T13:35:00+08:00",
+      "people": [
+        {
+          "id": 1,
+          "kp": [
+            [
+              0.544,
+              0.565,
+              0.9
+            ],
+            [
+              0.563,
+              0.565,
+              0.9
+            ],
+            [
+              0.597,
+              0.572,
+              0.9
+            ],
+            [
+              0.591,
+              0.523,
+              0.9
+            ],
+            [
+              0.636,
+              0.553,
+              0.9
+            ],
+            [
+              0.628,
+              0.496,
+              0.9
+            ],
+            [
+              0.51,
+              0.708,
+              0.9
+            ],
+            [
+              0.529,
+              0.708,
+              0.9
+            ],
+            [
+              0.502,
+              0.793,
+              0.9
+            ],
+            [
+              0.537,
+              0.793,
+              0.9
+            ],
+            [
+              0.495,
+              0.882,
+              0.9
+            ],
+            [
+              0.544,
+              0.882,
+              0.9
+            ]
+          ]
+        },
+        {
+          "id": 2,
+          "kp": [
+            [
+              0.594,
+              0.56,
+              0.9
+            ],
+            [
+              0.613,
+              0.56,
+              0.9
+            ],
+            [
+              0.571,
+              0.508,
+              0.9
+            ],
+            [
+              0.56,
+              0.557,
+              0.9
+            ],
+            [
+              0.57,
+              0.436,
+              0.9
+            ],
+            [
+              0.538,
+              0.497,
+              0.9
+            ],
+            [
+              0.567,
+              0.708,
+              0.9
+            ],
+            [
+              0.586,
+              0.708,
+              0.9
+            ],
+            [
+              0.591,
+              0.795,
+              0.9
+            ],
+            [
+              0.563,
+              0.795,
+              0.9
+            ],
+            [
+              0.596,
+              0.885,
+              0.9
+            ],
+            [
+              0.557,
+              0.885,
+              0.9
+            ]
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "incident_id": "INC-2026-00098",
+    "camera_id": "CAM-AU-01",
+    "location": "Auditorium, Block A and B",
+    "zone_type": "auditorium",
+    "start_time": "2026-09-09T14:37:00+08:00",
+    "end_time": "2026-09-09T14:37:55+08:00",
+    "type": "crowd",
+    "level": "tense",
+    "peak_score": 0.54,
+    "eta_seconds": null,
+    "priority": 0.11,
+    "reason": "Eight people formed a ring in 4 s; two in the centre.",
+    "people_count": 4,
+    "action": "Watch this camera",
+    "nearest_staff": "Guard B",
+    "status": "resolved",
+    "staff_note": null,
+    "peak_snapshot": {
+      "t": "2026-09-09T14:37:00+08:00",
+      "people": [
+        {
+          "id": 1,
+          "kp": [
+            [
+              0.359,
+              0.553,
+              0.9
+            ],
+            [
+              0.378,
+              0.553,
+              0.9
+            ],
+            [
+              0.365,
+              0.631,
+              0.9
+            ],
+            [
+              0.376,
+              0.63,
+              0.9
+            ],
+            [
+              0.365,
+              0.702,
+              0.9
+            ],
+            [
+              0.387,
+              0.699,
+              0.9
+            ],
+            [
+              0.353,
+              0.708,
+              0.9
+            ],
+            [
+              0.372,
+              0.708,
+              0.9
+            ],
+            [
+              0.355,
+              0.798,
+              0.9
+            ],
+            [
+              0.37,
+              0.798,
+              0.9
+            ],
+            [
+              0.353,
+              0.888,
+              0.9
+            ],
+            [
+              0.372,
+              0.888,
+              0.9
+            ]
+          ]
+        },
+        {
+          "id": 2,
+          "kp": [
+            [
+              0.44,
+              0.554,
+              0.9
+            ],
+            [
+              0.459,
+              0.554,
+              0.9
+            ],
+            [
+              0.446,
+              0.631,
+              0.9
+            ],
+            [
+              0.461,
+              0.629,
+              0.9
+            ],
+            [
+              0.446,
+              0.703,
+              0.9
+            ],
+            [
+              0.478,
+              0.694,
+              0.9
+            ],
+            [
+              0.431,
+              0.708,
+              0.9
+            ],
+            [
+              0.45,
+              0.708,
+              0.9
+            ],
+            [
+              0.432,
+              0.797,
+              0.9
+            ],
+            [
+              0.449,
+              0.797,
+              0.9
+            ],
+            [
+              0.428,
+              0.887,
+              0.9
+            ],
+            [
+              0.453,
+              0.887,
+              0.9
+            ]
+          ]
+        },
+        {
+          "id": 3,
+          "kp": [
+            [
+              0.509,
+              0.553,
+              0.9
+            ],
+            [
+              0.528,
+              0.553,
+              0.9
+            ],
+            [
+              0.526,
+              0.629,
+              0.9
+            ],
+            [
+              0.534,
+              0.626,
+              0.9
+            ],
+            [
+              0.54,
+              0.697,
+              0.9
+            ],
+            [
+              0.564,
+              0.672,
+              0.9
+            ],
+            [
+              0.506,
+              0.708,
+              0.9
+            ],
+            [
+              0.525,
+              0.708,
+              0.9
+            ],
+            [
+              0.51,
+              0.798,
+              0.9
+            ],
+            [
+              0.521,
+              0.798,
+              0.9
+            ],
+            [
+              0.508,
+              0.888,
+              0.9
+            ],
+            [
+              0.523,
+              0.888,
+              0.9
+            ]
+          ]
+        },
+        {
+          "id": 4,
+          "kp": [
+            [
+              0.594,
+              0.554,
+              0.9
+            ],
+            [
+              0.613,
+              0.554,
+              0.9
+            ],
+            [
+              0.608,
+              0.631,
+              0.9
+            ],
+            [
+              0.594,
+              0.63,
+              0.9
+            ],
+            [
+              0.608,
+              0.703,
+              0.9
+            ],
+            [
+              0.58,
+              0.697,
+              0.9
+            ],
+            [
+              0.603,
+              0.708,
+              0.9
+            ],
+            [
+              0.622,
+              0.708,
+              0.9
+            ],
+            [
+              0.621,
+              0.797,
+              0.9
+            ],
+            [
+              0.604,
+              0.797,
+              0.9
+            ],
+            [
+              0.625,
+              0.887,
+              0.9
+            ],
+            [
+              0.6,
+              0.887,
+              0.9
+            ]
+          ]
+        },
+        {
+          "id": 5,
+          "kp": [
+            [
+              0.678,
+              0.553,
+              0.9
+            ],
+            [
+              0.697,
+              0.553,
+              0.9
+            ],
+            [
+              0.691,
+              0.631,
+              0.9
+            ],
+            [
+              0.68,
+              0.63,
+              0.9
+            ],
+            [
+              0.69,
+              0.702,
+              0.9
+            ],
+            [
+              0.669,
+              0.699,
+              0.9
+            ],
+            [
+              0.684,
+              0.708,
+              0.9
+            ],
+            [
+              0.703,
+              0.708,
+              0.9
+            ],
+            [
+              0.701,
+              0.798,
+              0.9
+            ],
+            [
+              0.687,
+              0.798,
+              0.9
+            ],
+            [
+              0.704,
+              0.888,
+              0.9
+            ],
+            [
+              0.684,
+              0.888,
+              0.9
+            ]
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "incident_id": "INC-2026-00099",
+    "camera_id": "CAM-AU-01",
+    "location": "Auditorium, Block A and B",
+    "zone_type": "auditorium",
+    "start_time": "2026-09-13T18:53:00+08:00",
+    "end_time": "2026-09-13T18:54:28+08:00",
+    "type": "cornering",
+    "level": "fight_likely",
+    "peak_score": 0.64,
+    "eta_seconds": 4,
+    "priority": 0.2,
+    "reason": "1 against 4 within 1.5 torso-lengths for 9 s; the one has not moved.",
+    "people_count": 2,
+    "action": "Send Guard B now",
+    "nearest_staff": "Guard B",
+    "pushed_to": "Guard B",
+    "pushed_at": "2026-09-13T18:53:01+08:00",
+    "acked_at": "2026-09-13T18:53:06+08:00",
+    "status": "confirmed",
+    "staff_note": null,
+    "peak_snapshot": {
+      "t": "2026-09-13T18:53:00+08:00",
+      "people": [
+        {
+          "id": 1,
+          "kp": [
+            [
+              0.544,
+              0.567,
+              0.9
+            ],
+            [
+              0.563,
+              0.567,
+              0.9
+            ],
+            [
+              0.597,
+              0.571,
+              0.9
+            ],
+            [
+              0.593,
+              0.537,
+              0.9
+            ],
+            [
+              0.637,
+              0.559,
+              0.9
+            ],
+            [
+              0.632,
+              0.517,
+              0.9
+            ],
+            [
+              0.507,
+              0.708,
+              0.9
+            ],
+            [
+              0.526,
+              0.708,
+              0.9
+            ],
+            [
+              0.499,
+              0.793,
+              0.9
+            ],
+            [
+              0.534,
+              0.793,
+              0.9
+            ],
+            [
+              0.491,
+              0.882,
+              0.9
+            ],
+            [
+              0.542,
+              0.882,
+              0.9
+            ]
+          ]
+        },
+        {
+          "id": 2,
+          "kp": [
+            [
+              0.599,
+              0.562,
+              0.9
+            ],
+            [
+              0.618,
+              0.562,
+              0.9
+            ],
+            [
+              0.579,
+              0.504,
+              0.9
+            ],
+            [
+              0.565,
+              0.574,
+              0.9
+            ],
+            [
+              0.576,
+              0.433,
+              0.9
+            ],
+            [
+              0.535,
+              0.528,
+              0.9
+            ],
+            [
+              0.569,
+              0.708,
+              0.9
+            ],
+            [
+              0.588,
+              0.708,
+              0.9
+            ],
+            [
+              0.593,
+              0.795,
+              0.9
+            ],
+            [
+              0.564,
+              0.795,
+              0.9
+            ],
+            [
+              0.599,
+              0.884,
+              0.9
+            ],
+            [
+              0.558,
+              0.884,
+              0.9
+            ]
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "incident_id": "INC-2026-00100",
+    "camera_id": "CAM-AU-01",
+    "location": "Auditorium, Block A and B",
+    "zone_type": "auditorium",
+    "start_time": "2026-09-17T11:43:00+08:00",
+    "end_time": "2026-09-17T11:44:46+08:00",
+    "type": "fight",
+    "level": "fight",
+    "peak_score": 0.93,
+    "eta_seconds": null,
+    "priority": 0.37,
+    "reason": "Pair moving closer; body motion rising.",
+    "people_count": 2,
+    "action": "Send Guard B now; call the security lead",
+    "nearest_staff": "Guard B",
+    "pushed_to": "Guard B",
+    "pushed_at": "2026-09-17T11:43:01+08:00",
+    "acked_at": "2026-09-17T11:43:10+08:00",
+    "status": "resolved",
+    "staff_note": null
+  },
+  {
+    "incident_id": "INC-2026-00101",
+    "camera_id": "CAM-BC-03",
+    "location": "Block C stairwell",
+    "zone_type": "stairwell",
+    "start_time": "2026-09-17T13:34:00+08:00",
+    "end_time": "2026-09-17T13:35:02+08:00",
+    "type": "cornering",
+    "level": "fight_likely",
+    "peak_score": 0.75,
+    "eta_seconds": 3,
+    "priority": 0.43,
+    "reason": "1 against 4 within 1.5 torso-lengths for 9 s; the one has not moved.",
+    "people_count": 3,
+    "action": "Send Guard B now",
+    "nearest_staff": "Guard B",
+    "pushed_to": "Guard B",
+    "pushed_at": "2026-09-17T13:34:01+08:00",
+    "acked_at": "2026-09-17T13:34:09+08:00",
+    "status": "confirmed",
+    "staff_note": null,
+    "peak_snapshot": {
+      "t": "2026-09-17T13:34:00+08:00",
+      "people": [
+        {
+          "id": 1,
+          "kp": [
+            [
+              0.547,
+              0.56,
+              0.9
+            ],
+            [
+              0.565,
+              0.56,
+              0.9
+            ],
+            [
+              0.599,
+              0.553,
+              0.9
+            ],
+            [
+              0.582,
+              0.498,
+              0.9
+            ],
+            [
+              0.633,
+              0.512,
+              0.9
+            ],
+            [
+              0.613,
+              0.452,
+              0.9
+            ],
+            [
+              0.52,
+              0.708,
+              0.9
+            ],
+            [
+              0.539,
+              0.708,
+              0.9
+            ],
+            [
+              0.514,
+              0.794,
+              0.9
+            ],
+            [
+              0.545,
+              0.794,
+              0.9
+            ],
+            [
+              0.507,
+              0.884,
+              0.9
+            ],
+            [
+              0.552,
+              0.884,
+              0.9
+            ]
+          ]
+        },
+        {
+          "id": 2,
+          "kp": [
+            [
+              0.582,
+              0.556,
+              0.9
+            ],
+            [
+              0.601,
+              0.556,
+              0.9
+            ],
+            [
+              0.552,
+              0.524,
+              0.9
+            ],
+            [
+              0.556,
+              0.512,
+              0.9
+            ],
+            [
+              0.556,
+              0.452,
+              0.9
+            ],
+            [
+              0.566,
+              0.443,
+              0.9
+            ],
+            [
+              0.564,
+              0.708,
+              0.9
+            ],
+            [
+              0.582,
+              0.708,
+              0.9
+            ],
+            [
+              0.585,
+              0.796,
+              0.9
+            ],
+            [
+              0.561,
+              0.796,
+              0.9
+            ],
+            [
+              0.59,
+              0.886,
+              0.9
+            ],
+            [
+              0.556,
+              0.886,
+              0.9
+            ]
+          ]
+        },
+        {
+          "id": 3,
+          "kp": [
+            [
+              0.916,
+              0.554,
+              0.9
+            ],
+            [
+              0.935,
+              0.554,
+              0.9
+            ],
+            [
+              0.94,
+              0.627,
+              0.9
+            ],
+            [
+              0.907,
+              0.624,
+              0.9
+            ],
+            [
+              0.947,
+              0.697,
+              0.9
+            ],
+            [
+              0.884,
+              0.683,
+              0.9
+            ],
+            [
+              0.925,
+              0.708,
+              0.9
+            ],
+            [
+              0.944,
+              0.708,
+              0.9
+            ],
+            [
+              0.95,
+              0.794,
+              0.9
+            ],
+            [
+              0.919,
+              0.794,
+              0.9
+            ],
+            [
+              0.957,
+              0.884,
+              0.9
+            ],
+            [
+              0.912,
+              0.884,
+              0.9
+            ]
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "incident_id": "INC-2026-00102",
+    "camera_id": "CAM-CT-04",
+    "location": "Syopz Mall food court",
+    "zone_type": "canteen",
+    "start_time": "2026-09-18T12:29:00+08:00",
+    "end_time": "2026-09-18T12:31:42+08:00",
+    "type": "crowd",
+    "level": "fight_likely",
+    "peak_score": 0.66,
+    "eta_seconds": 5,
+    "priority": 0.37,
+    "reason": "Eight people formed a ring in 4 s; two in the centre.",
+    "people_count": 6,
+    "action": "Send Guard A now",
+    "nearest_staff": "Guard A",
+    "pushed_to": "Guard A",
+    "pushed_at": "2026-09-18T12:29:01+08:00",
+    "acked_at": "2026-09-18T12:29:07+08:00",
+    "status": "resolved",
+    "staff_note": null,
+    "peak_snapshot": {
+      "t": "2026-09-18T12:29:00+08:00",
+      "people": [
+        {
+          "id": 1,
+          "kp": [
+            [
+              0.359,
+              0.553,
+              0.9
+            ],
+            [
+              0.378,
+              0.553,
+              0.9
+            ],
+            [
+              0.365,
+              0.631,
+              0.9
+            ],
+            [
+              0.376,
+              0.63,
+              0.9
+            ],
+            [
+              0.365,
+              0.702,
+              0.9
+            ],
+            [
+              0.387,
+              0.699,
+              0.9
+            ],
+            [
+              0.353,
+              0.708,
+              0.9
+            ],
+            [
+              0.372,
+              0.708,
+              0.9
+            ],
+            [
+              0.355,
+              0.798,
+              0.9
+            ],
+            [
+              0.37,
+              0.798,
+              0.9
+            ],
+            [
+              0.353,
+              0.888,
+              0.9
+            ],
+            [
+              0.372,
+              0.888,
+              0.9
+            ]
+          ]
+        },
+        {
+          "id": 2,
+          "kp": [
+            [
+              0.44,
+              0.554,
+              0.9
+            ],
+            [
+              0.459,
+              0.554,
+              0.9
+            ],
+            [
+              0.446,
+              0.631,
+              0.9
+            ],
+            [
+              0.461,
+              0.629,
+              0.9
+            ],
+            [
+              0.446,
+              0.703,
+              0.9
+            ],
+            [
+              0.478,
+              0.694,
+              0.9
+            ],
+            [
+              0.431,
+              0.708,
+              0.9
+            ],
+            [
+              0.45,
+              0.708,
+              0.9
+            ],
+            [
+              0.432,
+              0.797,
+              0.9
+            ],
+            [
+              0.449,
+              0.797,
+              0.9
+            ],
+            [
+              0.428,
+              0.887,
+              0.9
+            ],
+            [
+              0.453,
+              0.887,
+              0.9
+            ]
+          ]
+        },
+        {
+          "id": 3,
+          "kp": [
+            [
+              0.509,
+              0.553,
+              0.9
+            ],
+            [
+              0.528,
+              0.553,
+              0.9
+            ],
+            [
+              0.526,
+              0.629,
+              0.9
+            ],
+            [
+              0.534,
+              0.626,
+              0.9
+            ],
+            [
+              0.54,
+              0.697,
+              0.9
+            ],
+            [
+              0.564,
+              0.672,
+              0.9
+            ],
+            [
+              0.506,
+              0.708,
+              0.9
+            ],
+            [
+              0.525,
+              0.708,
+              0.9
+            ],
+            [
+              0.51,
+              0.798,
+              0.9
+            ],
+            [
+              0.521,
+              0.798,
+              0.9
+            ],
+            [
+              0.508,
+              0.888,
+              0.9
+            ],
+            [
+              0.523,
+              0.888,
+              0.9
+            ]
+          ]
+        },
+        {
+          "id": 4,
+          "kp": [
+            [
+              0.594,
+              0.554,
+              0.9
+            ],
+            [
+              0.613,
+              0.554,
+              0.9
+            ],
+            [
+              0.608,
+              0.631,
+              0.9
+            ],
+            [
+              0.594,
+              0.63,
+              0.9
+            ],
+            [
+              0.608,
+              0.703,
+              0.9
+            ],
+            [
+              0.58,
+              0.697,
+              0.9
+            ],
+            [
+              0.603,
+              0.708,
+              0.9
+            ],
+            [
+              0.622,
+              0.708,
+              0.9
+            ],
+            [
+              0.621,
+              0.797,
+              0.9
+            ],
+            [
+              0.604,
+              0.797,
+              0.9
+            ],
+            [
+              0.625,
+              0.887,
+              0.9
+            ],
+            [
+              0.6,
+              0.887,
+              0.9
+            ]
+          ]
+        },
+        {
+          "id": 5,
+          "kp": [
+            [
+              0.678,
+              0.553,
+              0.9
+            ],
+            [
+              0.697,
+              0.553,
+              0.9
+            ],
+            [
+              0.691,
+              0.631,
+              0.9
+            ],
+            [
+              0.68,
+              0.63,
+              0.9
+            ],
+            [
+              0.69,
+              0.702,
+              0.9
+            ],
+            [
+              0.669,
+              0.699,
+              0.9
+            ],
+            [
+              0.684,
+              0.708,
+              0.9
+            ],
+            [
+              0.703,
+              0.708,
+              0.9
+            ],
+            [
+              0.701,
+              0.798,
+              0.9
+            ],
+            [
+              0.687,
+              0.798,
+              0.9
+            ],
+            [
+              0.704,
+              0.888,
+              0.9
+            ],
+            [
+              0.684,
+              0.888,
+              0.9
+            ]
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "incident_id": "INC-2026-00103",
+    "camera_id": "CAM-SC-06",
+    "location": "Sports pitch",
+    "zone_type": "sports_court",
+    "start_time": "2026-09-20T12:50:00+08:00",
+    "end_time": "2026-09-20T12:51:38+08:00",
+    "type": "crowd",
+    "level": "fight",
+    "peak_score": 0.88,
+    "eta_seconds": null,
+    "priority": 0.26,
+    "reason": "Five people stopped and faced the same point for 4 s.",
+    "people_count": 5,
+    "action": "Send Guard C now; call the security lead",
+    "nearest_staff": "Guard C",
+    "pushed_to": "Guard C",
+    "pushed_at": "2026-09-20T12:50:01+08:00",
+    "acked_at": "2026-09-20T12:50:05+08:00",
+    "status": "confirmed",
+    "staff_note": null
+  },
+  {
+    "incident_id": "INC-2026-00104",
+    "camera_id": "CAM-SC-06",
+    "location": "Sports pitch",
+    "zone_type": "sports_court",
+    "start_time": "2026-09-21T16:12:00+08:00",
+    "end_time": "2026-09-21T16:12:32+08:00",
+    "type": "crowd",
+    "level": "tense",
+    "peak_score": 0.53,
+    "eta_seconds": null,
+    "priority": 0.06,
+    "reason": "Five people stopped and faced the same point for 4 s.",
+    "people_count": 5,
+    "action": "Watch this camera",
+    "nearest_staff": "Guard C",
+    "status": "resolved",
+    "staff_note": null
+  },
+  {
+    "incident_id": "INC-2026-00105",
+    "camera_id": "CAM-HC-01",
+    "location": "DK Senza, corridor L3",
+    "zone_type": "hostel_corridor",
+    "start_time": "2026-09-22T22:11:00+08:00",
+    "end_time": "2026-09-22T22:12:55+08:00",
+    "type": "crowd",
+    "level": "tense",
+    "peak_score": 0.54,
+    "eta_seconds": null,
+    "priority": 0.22,
+    "reason": "Eight people formed a ring in 4 s; two in the centre.",
+    "people_count": 4,
+    "action": "Watch this camera",
+    "nearest_staff": "Guard C",
+    "status": "resolved",
+    "staff_note": null,
+    "peak_snapshot": {
+      "t": "2026-09-22T22:11:00+08:00",
+      "people": [
+        {
+          "id": 1,
+          "kp": [
+            [
+              0.448,
+              0.553,
+              0.9
+            ],
+            [
+              0.467,
+              0.553,
+              0.9
+            ],
+            [
+              0.465,
+              0.63,
+              0.9
+            ],
+            [
+              0.473,
+              0.626,
+              0.9
+            ],
+            [
+              0.479,
+              0.697,
+              0.9
+            ],
+            [
+              0.493,
+              0.688,
+              0.9
+            ],
+            [
+              0.444,
+              0.708,
+              0.9
+            ],
+            [
+              0.463,
+              0.708,
+              0.9
+            ],
+            [
+              0.446,
+              0.798,
+              0.9
+            ],
+            [
+              0.46,
+              0.798,
+              0.9
+            ],
+            [
+              0.443,
+              0.888,
+              0.9
+            ],
+            [
+              0.463,
+              0.888,
+              0.9
+            ]
+          ]
+        },
+        {
+          "id": 2,
+          "kp": [
+            [
+              0.534,
+              0.553,
+              0.9
+            ],
+            [
+              0.553,
+              0.553,
+              0.9
+            ],
+            [
+              0.535,
+              0.629,
+              0.9
+            ],
+            [
+              0.532,
+              0.628,
+              0.9
+            ],
+            [
+              0.521,
+              0.696,
+              0.9
+            ],
+            [
+              0.515,
+              0.693,
+              0.9
+            ],
+            [
+              0.538,
+              0.708,
+              0.9
+            ],
+            [
+              0.556,
+              0.708,
+              0.9
+            ],
+            [
+              0.554,
+              0.798,
+              0.9
+            ],
+            [
+              0.54,
+              0.798,
+              0.9
+            ],
+            [
+              0.557,
+              0.888,
+              0.9
+            ],
+            [
+              0.537,
+              0.888,
+              0.9
+            ]
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "incident_id": "INC-2026-00106",
+    "camera_id": "CAM-BC-03",
+    "location": "Block C stairwell",
+    "zone_type": "stairwell",
+    "start_time": "2026-09-23T13:12:00+08:00",
+    "end_time": "2026-09-23T13:13:08+08:00",
+    "type": "fight",
+    "level": "fight_likely",
+    "peak_score": 0.7,
+    "eta_seconds": 4,
+    "priority": 0.41,
+    "reason": "Shove: sudden lunge; second person pushed back.",
+    "people_count": 3,
+    "action": "Send Guard B now",
+    "nearest_staff": "Guard B",
+    "pushed_to": "Guard B",
+    "pushed_at": "2026-09-23T13:12:01+08:00",
+    "acked_at": "2026-09-23T13:12:05+08:00",
+    "status": "confirmed",
+    "staff_note": null,
+    "peak_snapshot": {
+      "t": "2026-09-23T13:12:00+08:00",
+      "people": [
+        {
+          "id": 1,
+          "kp": [
+            [
+              0.547,
+              0.56,
+              0.9
+            ],
+            [
+              0.566,
+              0.56,
+              0.9
+            ],
+            [
+              0.598,
+              0.536,
+              0.9
+            ],
+            [
+              0.586,
+              0.502,
+              0.9
+            ],
+            [
+              0.63,
+              0.492,
+              0.9
+            ],
+            [
+              0.617,
+              0.456,
+              0.9
+            ],
+            [
+              0.521,
+              0.708,
+              0.9
+            ],
+            [
+              0.54,
+              0.708,
+              0.9
+            ],
+            [
+              0.515,
+              0.794,
+              0.9
+            ],
+            [
+              0.546,
+              0.794,
+              0.9
+            ],
+            [
+              0.509,
+              0.884,
+              0.9
+            ],
+            [
+              0.553,
+              0.884,
+              0.9
+            ]
+          ]
+        },
+        {
+          "id": 2,
+          "kp": [
+            [
+              0.584,
+              0.557,
+              0.9
+            ],
+            [
+              0.602,
+              0.557,
+              0.9
+            ],
+            [
+              0.553,
+              0.524,
+              0.9
+            ],
+            [
+              0.557,
+              0.512,
+              0.9
+            ],
+            [
+              0.557,
+              0.452,
+              0.9
+            ],
+            [
+              0.568,
+              0.443,
+              0.9
+            ],
+            [
+              0.564,
+              0.708,
+              0.9
+            ],
+            [
+              0.583,
+              0.708,
+              0.9
+            ],
+            [
+              0.586,
+              0.796,
+              0.9
+            ],
+            [
+              0.561,
+              0.796,
+              0.9
+            ],
+            [
+              0.591,
+              0.886,
+              0.9
+            ],
+            [
+              0.557,
+              0.886,
+              0.9
+            ]
+          ]
+        },
+        {
+          "id": 3,
+          "kp": [
+            [
+              0.888,
+              0.554,
+              0.9
+            ],
+            [
+              0.907,
+              0.554,
+              0.9
+            ],
+            [
+              0.912,
+              0.627,
+              0.9
+            ],
+            [
+              0.879,
+              0.624,
+              0.9
+            ],
+            [
+              0.919,
+              0.697,
+              0.9
+            ],
+            [
+              0.856,
+              0.683,
+              0.9
+            ],
+            [
+              0.897,
+              0.708,
+              0.9
+            ],
+            [
+              0.916,
+              0.708,
+              0.9
+            ],
+            [
+              0.922,
+              0.794,
+              0.9
+            ],
+            [
+              0.891,
+              0.794,
+              0.9
+            ],
+            [
+              0.929,
+              0.884,
+              0.9
+            ],
+            [
+              0.884,
+              0.884,
+              0.9
+            ]
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "incident_id": "INC-2026-00107",
+    "camera_id": "CAM-HC-01",
+    "location": "DK Senza, corridor L3",
+    "zone_type": "hostel_corridor",
+    "start_time": "2026-09-25T19:06:00+08:00",
+    "end_time": "2026-09-25T19:07:19+08:00",
+    "type": "play",
+    "level": "tense",
+    "peak_score": 0.56,
+    "eta_seconds": null,
+    "priority": 0.22,
+    "reason": "Rhythmic arm swings, no approach; ball in play. Sports-zone threshold applied.",
+    "people_count": 4,
+    "action": "Watch this camera",
+    "nearest_staff": "Guard C",
+    "status": "resolved",
+    "staff_note": null
+  },
+  {
+    "incident_id": "INC-2026-00108",
+    "camera_id": "CAM-CT-04",
+    "location": "Syopz Mall food court",
+    "zone_type": "canteen",
+    "start_time": "2026-09-26T15:31:00+08:00",
+    "end_time": "2026-09-26T15:32:49+08:00",
+    "type": "fight",
+    "level": "fight_likely",
+    "peak_score": 0.67,
+    "eta_seconds": 3,
+    "priority": 0.38,
+    "reason": "Fast whole-body motion while close, for 1.2 s.",
+    "people_count": 4,
+    "action": "Send Guard A now",
+    "nearest_staff": "Guard A",
+    "pushed_to": "Guard A",
+    "pushed_at": "2026-09-26T15:31:01+08:00",
+    "acked_at": "2026-09-26T15:31:06+08:00",
+    "status": "resolved",
+    "staff_note": null,
+    "peak_snapshot": {
+      "t": "2026-09-26T15:31:00+08:00",
+      "people": [
+        {
+          "id": 1,
+          "kp": [
+            [
+              0.547,
+              0.56,
+              0.9
+            ],
+            [
+              0.565,
+              0.56,
+              0.9
+            ],
+            [
+              0.599,
+              0.552,
+              0.9
+            ],
+            [
+              0.582,
+              0.498,
+              0.9
+            ],
+            [
+              0.633,
+              0.511,
+              0.9
+            ],
+            [
+              0.613,
+              0.452,
+              0.9
+            ],
+            [
+              0.52,
+              0.708,
+              0.9
+            ],
+            [
+              0.539,
+              0.708,
+              0.9
+            ],
+            [
+              0.514,
+              0.794,
+              0.9
+            ],
+            [
+              0.545,
+              0.794,
+              0.9
+            ],
+            [
+              0.508,
+              0.884,
+              0.9
+            ],
+            [
+              0.552,
+              0.884,
+              0.9
+            ]
+          ]
+        },
+        {
+          "id": 2,
+          "kp": [
+            [
+              0.582,
+              0.556,
+              0.9
+            ],
+            [
+              0.601,
+              0.556,
+              0.9
+            ],
+            [
+              0.552,
+              0.524,
+              0.9
+            ],
+            [
+              0.556,
+              0.512,
+              0.9
+            ],
+            [
+              0.556,
+              0.452,
+              0.9
+            ],
+            [
+              0.566,
+              0.443,
+              0.9
+            ],
+            [
+              0.564,
+              0.708,
+              0.9
+            ],
+            [
+              0.582,
+              0.708,
+              0.9
+            ],
+            [
+              0.585,
+              0.796,
+              0.9
+            ],
+            [
+              0.561,
+              0.796,
+              0.9
+            ],
+            [
+              0.59,
+              0.886,
+              0.9
+            ],
+            [
+              0.556,
+              0.886,
+              0.9
+            ]
+          ]
+        },
+        {
+          "id": 3,
+          "kp": [
+            [
+              0.914,
+              0.554,
+              0.9
+            ],
+            [
+              0.933,
+              0.554,
+              0.9
+            ],
+            [
+              0.939,
+              0.627,
+              0.9
+            ],
+            [
+              0.905,
+              0.624,
+              0.9
+            ],
+            [
+              0.945,
+              0.697,
+              0.9
+            ],
+            [
+              0.882,
+              0.683,
+              0.9
+            ],
+            [
+              0.923,
+              0.708,
+              0.9
+            ],
+            [
+              0.942,
+              0.708,
+              0.9
+            ],
+            [
+              0.948,
+              0.794,
+              0.9
+            ],
+            [
+              0.917,
+              0.794,
+              0.9
+            ],
+            [
+              0.955,
+              0.884,
+              0.9
+            ],
+            [
+              0.911,
+              0.884,
+              0.9
+            ]
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "incident_id": "INC-2026-00109",
+    "camera_id": "CAM-CT-04",
+    "location": "Syopz Mall food court",
+    "zone_type": "canteen",
+    "start_time": "2026-09-27T16:56:00+08:00",
+    "end_time": "2026-09-27T16:57:47+08:00",
+    "type": "play",
+    "level": "tense",
+    "peak_score": 0.57,
+    "eta_seconds": null,
+    "priority": 0.16,
+    "reason": "Fast arm movement but bodies stayed apart; no approach.",
+    "people_count": 4,
+    "action": "Watch this camera",
+    "nearest_staff": "Guard A",
+    "status": "dismissed",
+    "staff_note": "Football warm-up."
+  },
+  {
+    "incident_id": "INC-2026-00110",
+    "camera_id": "CAM-BC-03",
+    "location": "Block C stairwell",
+    "zone_type": "stairwell",
+    "start_time": "2026-09-28T13:05:00+08:00",
+    "end_time": "2026-09-28T13:05:48+08:00",
+    "type": "fight",
+    "level": "fight_likely",
+    "peak_score": 0.7,
+    "eta_seconds": 3,
+    "priority": 0.36,
+    "reason": "Arm above shoulder; second person leaning back.",
+    "people_count": 2,
+    "action": "Send Guard B now",
+    "nearest_staff": "Guard B",
+    "pushed_to": "Guard B",
+    "pushed_at": "2026-09-28T13:05:01+08:00",
+    "acked_at": "2026-09-28T13:05:05+08:00",
+    "status": "resolved",
+    "staff_note": null,
+    "peak_snapshot": {
+      "t": "2026-09-28T13:05:00+08:00",
+      "people": [
+        {
+          "id": 1,
+          "kp": [
+            [
+              0.545,
+              0.564,
+              0.9
+            ],
+            [
+              0.563,
+              0.564,
+              0.9
+            ],
+            [
+              0.598,
+              0.572,
+              0.9
+            ],
+            [
+              0.589,
+              0.516,
+              0.9
+            ],
+            [
+              0.636,
+              0.55,
+              0.9
+            ],
+            [
+              0.625,
+              0.485,
+              0.9
+            ],
+            [
+              0.512,
+              0.708,
+              0.9
+            ],
+            [
+              0.531,
+              0.708,
+              0.9
+            ],
+            [
+              0.504,
+              0.793,
+              0.9
+            ],
+            [
+              0.538,
+              0.793,
+              0.9
+            ],
+            [
+              0.497,
+              0.883,
+              0.9
+            ],
+            [
+              0.545,
+              0.883,
+              0.9
+            ]
+          ]
+        },
+        {
+          "id": 2,
+          "kp": [
+            [
+              0.592,
+              0.559,
+              0.9
+            ],
+            [
+              0.61,
+              0.559,
+              0.9
+            ],
+            [
+              0.567,
+              0.51,
+              0.9
+            ],
+            [
+              0.558,
+              0.548,
+              0.9
+            ],
+            [
+              0.566,
+              0.439,
+              0.9
+            ],
+            [
+              0.542,
+              0.482,
+              0.9
+            ],
+            [
+              0.566,
+              0.708,
+              0.9
+            ],
+            [
+              0.585,
+              0.708,
+              0.9
+            ],
+            [
+              0.589,
+              0.795,
+              0.9
+            ],
+            [
+              0.562,
+              0.795,
+              0.9
+            ],
+            [
+              0.595,
+              0.885,
+              0.9
+            ],
+            [
+              0.556,
+              0.885,
+              0.9
+            ]
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "incident_id": "INC-2026-00111",
+    "camera_id": "CAM-BC-03",
+    "location": "Block C stairwell",
+    "zone_type": "stairwell",
+    "start_time": "2026-09-29T13:39:00+08:00",
+    "end_time": "2026-09-29T13:40:59+08:00",
+    "type": "fight",
+    "level": "fight",
+    "peak_score": 0.89,
+    "eta_seconds": null,
+    "priority": 0.64,
+    "reason": "Repeated fast strikes toward head height.",
+    "people_count": 3,
+    "action": "Send Guard B now; call the security lead",
+    "nearest_staff": "Guard B",
+    "pushed_to": "Guard B",
+    "pushed_at": "2026-09-29T13:39:01+08:00",
+    "acked_at": "2026-09-29T13:39:10+08:00",
+    "status": "confirmed",
+    "staff_note": "Two people separated; referred on.",
+    "peak_snapshot": {
+      "t": "2026-09-29T13:39:00+08:00",
+      "people": [
+        {
+          "id": 1,
+          "kp": [
+            [
+              0.547,
+              0.56,
+              0.9
+            ],
+            [
+              0.566,
+              0.56,
+              0.9
+            ],
+            [
+              0.598,
+              0.537,
+              0.9
+            ],
+            [
+              0.585,
+              0.502,
+              0.9
+            ],
+            [
+              0.63,
+              0.493,
+              0.9
+            ],
+            [
+              0.616,
+              0.456,
+              0.9
+            ],
+            [
+              0.521,
+              0.708,
+              0.9
+            ],
+            [
+              0.54,
+              0.708,
+              0.9
+            ],
+            [
+              0.515,
+              0.794,
+              0.9
+            ],
+            [
+              0.546,
+              0.794,
+              0.9
+            ],
+            [
+              0.508,
+              0.884,
+              0.9
+            ],
+            [
+              0.553,
+              0.884,
+              0.9
+            ]
+          ]
+        },
+        {
+          "id": 2,
+          "kp": [
+            [
+              0.584,
+              0.557,
+              0.9
+            ],
+            [
+              0.602,
+              0.557,
+              0.9
+            ],
+            [
+              0.553,
+              0.524,
+              0.9
+            ],
+            [
+              0.557,
+              0.512,
+              0.9
+            ],
+            [
+              0.557,
+              0.452,
+              0.9
+            ],
+            [
+              0.568,
+              0.443,
+              0.9
+            ],
+            [
+              0.564,
+              0.708,
+              0.9
+            ],
+            [
+              0.583,
+              0.708,
+              0.9
+            ],
+            [
+              0.586,
+              0.796,
+              0.9
+            ],
+            [
+              0.561,
+              0.796,
+              0.9
+            ],
+            [
+              0.591,
+              0.886,
+              0.9
+            ],
+            [
+              0.556,
+              0.886,
+              0.9
+            ]
+          ]
+        },
+        {
+          "id": 3,
+          "kp": [
+            [
+              0.89,
+              0.554,
+              0.9
+            ],
+            [
+              0.909,
+              0.554,
+              0.9
+            ],
+            [
+              0.915,
+              0.627,
+              0.9
+            ],
+            [
+              0.881,
+              0.624,
+              0.9
+            ],
+            [
+              0.921,
+              0.697,
+              0.9
+            ],
+            [
+              0.858,
+              0.683,
+              0.9
+            ],
+            [
+              0.899,
+              0.708,
+              0.9
+            ],
+            [
+              0.918,
+              0.708,
+              0.9
+            ],
+            [
+              0.924,
+              0.794,
+              0.9
+            ],
+            [
+              0.893,
+              0.794,
+              0.9
+            ],
+            [
+              0.931,
+              0.884,
+              0.9
+            ],
+            [
+              0.887,
+              0.884,
+              0.9
+            ]
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "incident_id": "INC-2026-00112",
+    "camera_id": "CAM-HC-01",
+    "location": "DK Senza, corridor L3",
+    "zone_type": "hostel_corridor",
+    "start_time": "2026-09-29T22:01:00+08:00",
+    "end_time": "2026-09-29T22:01:40+08:00",
+    "type": "cornering",
+    "level": "fight",
+    "peak_score": 0.91,
+    "eta_seconds": null,
+    "priority": 0.81,
+    "reason": "One person against the wall, three within 2 torso-lengths for 7 s.",
+    "people_count": 3,
+    "action": "Send Guard C now; call the security lead",
+    "nearest_staff": "Guard C",
+    "pushed_to": "Guard C",
+    "pushed_at": "2026-09-29T22:01:01+08:00",
+    "acked_at": "2026-09-29T22:01:07+08:00",
+    "status": "dismissed",
+    "staff_note": null,
+    "peak_snapshot": {
+      "t": "2026-09-29T22:01:00+08:00",
+      "people": [
+        {
+          "id": 1,
+          "kp": [
+            [
+              0.547,
+              0.56,
+              0.9
+            ],
+            [
+              0.565,
+              0.56,
+              0.9
+            ],
+            [
+              0.599,
+              0.549,
+              0.9
+            ],
+            [
+              0.583,
+              0.498,
+              0.9
+            ],
+            [
+              0.632,
+              0.508,
+              0.9
+            ],
+            [
+              0.614,
+              0.452,
+              0.9
+            ],
+            [
+              0.52,
+              0.708,
+              0.9
+            ],
+            [
+              0.539,
+              0.708,
+              0.9
+            ],
+            [
+              0.514,
+              0.794,
+              0.9
+            ],
+            [
+              0.545,
+              0.794,
+              0.9
+            ],
+            [
+              0.508,
+              0.884,
+              0.9
+            ],
+            [
+              0.552,
+              0.884,
+              0.9
+            ]
+          ]
+        },
+        {
+          "id": 2,
+          "kp": [
+            [
+              0.583,
+              0.556,
+              0.9
+            ],
+            [
+              0.601,
+              0.556,
+              0.9
+            ],
+            [
+              0.552,
+              0.524,
+              0.9
+            ],
+            [
+              0.556,
+              0.512,
+              0.9
+            ],
+            [
+              0.556,
+              0.452,
+              0.9
+            ],
+            [
+              0.567,
+              0.443,
+              0.9
+            ],
+            [
+              0.564,
+              0.708,
+              0.9
+            ],
+            [
+              0.582,
+              0.708,
+              0.9
+            ],
+            [
+              0.585,
+              0.796,
+              0.9
+            ],
+            [
+              0.561,
+              0.796,
+              0.9
+            ],
+            [
+              0.59,
+              0.886,
+              0.9
+            ],
+            [
+              0.556,
+              0.886,
+              0.9
+            ]
+          ]
+        },
+        {
+          "id": 3,
+          "kp": [
+            [
+              0.91,
+              0.554,
+              0.9
+            ],
+            [
+              0.928,
+              0.554,
+              0.9
+            ],
+            [
+              0.934,
+              0.627,
+              0.9
+            ],
+            [
+              0.9,
+              0.624,
+              0.9
+            ],
+            [
+              0.941,
+              0.697,
+              0.9
+            ],
+            [
+              0.877,
+              0.683,
+              0.9
+            ],
+            [
+              0.919,
+              0.708,
+              0.9
+            ],
+            [
+              0.937,
+              0.708,
+              0.9
+            ],
+            [
+              0.944,
+              0.794,
+              0.9
+            ],
+            [
+              0.912,
+              0.794,
+              0.9
+            ],
+            [
+              0.95,
+              0.884,
+              0.9
+            ],
+            [
+              0.906,
+              0.884,
+              0.9
+            ]
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "incident_id": "INC-2026-00113",
+    "camera_id": "CAM-CT-04",
+    "location": "Syopz Mall food court",
+    "zone_type": "canteen",
+    "start_time": "2026-10-02T12:23:00+08:00",
+    "end_time": "2026-10-02T12:24:51+08:00",
+    "type": "crowd",
+    "level": "fight_likely",
+    "peak_score": 0.75,
+    "eta_seconds": 4,
+    "priority": 0.42,
+    "reason": "Five people stopped and faced the same point for 4 s.",
+    "people_count": 8,
+    "action": "Send Guard A now",
+    "nearest_staff": "Guard A",
+    "pushed_to": "Guard A",
+    "pushed_at": "2026-10-02T12:23:01+08:00",
+    "acked_at": "2026-10-02T12:23:05+08:00",
+    "status": "dismissed",
+    "staff_note": null,
+    "peak_snapshot": {
+      "t": "2026-10-02T12:23:00+08:00",
+      "people": [
+        {
+          "id": 1,
+          "kp": [
+            [
+              0.359,
+              0.553,
+              0.9
+            ],
+            [
+              0.378,
+              0.553,
+              0.9
+            ],
+            [
+              0.365,
+              0.631,
+              0.9
+            ],
+            [
+              0.376,
+              0.63,
+              0.9
+            ],
+            [
+              0.365,
+              0.702,
+              0.9
+            ],
+            [
+              0.387,
+              0.699,
+              0.9
+            ],
+            [
+              0.353,
+              0.708,
+              0.9
+            ],
+            [
+              0.372,
+              0.708,
+              0.9
+            ],
+            [
+              0.355,
+              0.798,
+              0.9
+            ],
+            [
+              0.37,
+              0.798,
+              0.9
+            ],
+            [
+              0.353,
+              0.888,
+              0.9
+            ],
+            [
+              0.372,
+              0.888,
+              0.9
+            ]
+          ]
+        },
+        {
+          "id": 2,
+          "kp": [
+            [
+              0.44,
+              0.554,
+              0.9
+            ],
+            [
+              0.459,
+              0.554,
+              0.9
+            ],
+            [
+              0.446,
+              0.631,
+              0.9
+            ],
+            [
+              0.461,
+              0.629,
+              0.9
+            ],
+            [
+              0.446,
+              0.703,
+              0.9
+            ],
+            [
+              0.478,
+              0.694,
+              0.9
+            ],
+            [
+              0.431,
+              0.708,
+              0.9
+            ],
+            [
+              0.45,
+              0.708,
+              0.9
+            ],
+            [
+              0.432,
+              0.797,
+              0.9
+            ],
+            [
+              0.449,
+              0.797,
+              0.9
+            ],
+            [
+              0.428,
+              0.887,
+              0.9
+            ],
+            [
+              0.453,
+              0.887,
+              0.9
+            ]
+          ]
+        },
+        {
+          "id": 3,
+          "kp": [
+            [
+              0.509,
+              0.553,
+              0.9
+            ],
+            [
+              0.528,
+              0.553,
+              0.9
+            ],
+            [
+              0.526,
+              0.629,
+              0.9
+            ],
+            [
+              0.534,
+              0.626,
+              0.9
+            ],
+            [
+              0.54,
+              0.697,
+              0.9
+            ],
+            [
+              0.564,
+              0.672,
+              0.9
+            ],
+            [
+              0.506,
+              0.708,
+              0.9
+            ],
+            [
+              0.525,
+              0.708,
+              0.9
+            ],
+            [
+              0.51,
+              0.798,
+              0.9
+            ],
+            [
+              0.521,
+              0.798,
+              0.9
+            ],
+            [
+              0.508,
+              0.888,
+              0.9
+            ],
+            [
+              0.523,
+              0.888,
+              0.9
+            ]
+          ]
+        },
+        {
+          "id": 4,
+          "kp": [
+            [
+              0.594,
+              0.554,
+              0.9
+            ],
+            [
+              0.613,
+              0.554,
+              0.9
+            ],
+            [
+              0.608,
+              0.631,
+              0.9
+            ],
+            [
+              0.594,
+              0.63,
+              0.9
+            ],
+            [
+              0.608,
+              0.703,
+              0.9
+            ],
+            [
+              0.58,
+              0.697,
+              0.9
+            ],
+            [
+              0.603,
+              0.708,
+              0.9
+            ],
+            [
+              0.622,
+              0.708,
+              0.9
+            ],
+            [
+              0.621,
+              0.797,
+              0.9
+            ],
+            [
+              0.604,
+              0.797,
+              0.9
+            ],
+            [
+              0.625,
+              0.887,
+              0.9
+            ],
+            [
+              0.6,
+              0.887,
+              0.9
+            ]
+          ]
+        },
+        {
+          "id": 5,
+          "kp": [
+            [
+              0.678,
+              0.553,
+              0.9
+            ],
+            [
+              0.697,
+              0.553,
+              0.9
+            ],
+            [
+              0.691,
+              0.631,
+              0.9
+            ],
+            [
+              0.68,
+              0.63,
+              0.9
+            ],
+            [
+              0.69,
+              0.702,
+              0.9
+            ],
+            [
+              0.669,
+              0.699,
+              0.9
+            ],
+            [
+              0.684,
+              0.708,
+              0.9
+            ],
+            [
+              0.703,
+              0.708,
+              0.9
+            ],
+            [
+              0.701,
+              0.798,
+              0.9
+            ],
+            [
+              0.687,
+              0.798,
+              0.9
+            ],
+            [
+              0.704,
+              0.888,
+              0.9
+            ],
+            [
+              0.684,
+              0.888,
+              0.9
+            ]
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "incident_id": "INC-2026-00114",
+    "camera_id": "CAM-CT-04",
+    "location": "Syopz Mall food court",
+    "zone_type": "canteen",
+    "start_time": "2026-10-03T17:29:00+08:00",
+    "end_time": "2026-10-03T17:30:18+08:00",
+    "type": "crowd",
+    "level": "fight_likely",
+    "peak_score": 0.63,
+    "eta_seconds": 3,
+    "priority": 0.32,
+    "reason": "Five people stopped and faced the same point for 4 s.",
+    "people_count": 3,
+    "action": "Send Guard A now",
+    "nearest_staff": "Guard A",
+    "pushed_to": "Guard A",
+    "pushed_at": "2026-10-03T17:29:01+08:00",
+    "acked_at": "2026-10-03T17:29:09+08:00",
+    "status": "dismissed",
+    "staff_note": null,
+    "peak_snapshot": {
+      "t": "2026-10-03T17:29:00+08:00",
+      "people": [
+        {
+          "id": 1,
+          "kp": [
+            [
+              0.359,
+              0.553,
+              0.9
+            ],
+            [
+              0.378,
+              0.553,
+              0.9
+            ],
+            [
+              0.365,
+              0.631,
+              0.9
+            ],
+            [
+              0.376,
+              0.63,
+              0.9
+            ],
+            [
+              0.365,
+              0.702,
+              0.9
+            ],
+            [
+              0.387,
+              0.699,
+              0.9
+            ],
+            [
+              0.353,
+              0.708,
+              0.9
+            ],
+            [
+              0.372,
+              0.708,
+              0.9
+            ],
+            [
+              0.355,
+              0.798,
+              0.9
+            ],
+            [
+              0.37,
+              0.798,
+              0.9
+            ],
+            [
+              0.353,
+              0.888,
+              0.9
+            ],
+            [
+              0.372,
+              0.888,
+              0.9
+            ]
+          ]
+        },
+        {
+          "id": 2,
+          "kp": [
+            [
+              0.44,
+              0.554,
+              0.9
+            ],
+            [
+              0.459,
+              0.554,
+              0.9
+            ],
+            [
+              0.446,
+              0.631,
+              0.9
+            ],
+            [
+              0.461,
+              0.629,
+              0.9
+            ],
+            [
+              0.446,
+              0.703,
+              0.9
+            ],
+            [
+              0.478,
+              0.694,
+              0.9
+            ],
+            [
+              0.431,
+              0.708,
+              0.9
+            ],
+            [
+              0.45,
+              0.708,
+              0.9
+            ],
+            [
+              0.432,
+              0.797,
+              0.9
+            ],
+            [
+              0.449,
+              0.797,
+              0.9
+            ],
+            [
+              0.428,
+              0.887,
+              0.9
+            ],
+            [
+              0.453,
+              0.887,
+              0.9
+            ]
+          ]
+        },
+        {
+          "id": 3,
+          "kp": [
+            [
+              0.509,
+              0.553,
+              0.9
+            ],
+            [
+              0.528,
+              0.553,
+              0.9
+            ],
+            [
+              0.526,
+              0.629,
+              0.9
+            ],
+            [
+              0.534,
+              0.626,
+              0.9
+            ],
+            [
+              0.54,
+              0.697,
+              0.9
+            ],
+            [
+              0.564,
+              0.672,
+              0.9
+            ],
+            [
+              0.506,
+              0.708,
+              0.9
+            ],
+            [
+              0.525,
+              0.708,
+              0.9
+            ],
+            [
+              0.51,
+              0.798,
+              0.9
+            ],
+            [
+              0.521,
+              0.798,
+              0.9
+            ],
+            [
+              0.508,
+              0.888,
+              0.9
+            ],
+            [
+              0.523,
+              0.888,
+              0.9
+            ]
+          ]
+        },
+        {
+          "id": 4,
+          "kp": [
+            [
+              0.594,
+              0.554,
+              0.9
+            ],
+            [
+              0.613,
+              0.554,
+              0.9
+            ],
+            [
+              0.608,
+              0.631,
+              0.9
+            ],
+            [
+              0.594,
+              0.63,
+              0.9
+            ],
+            [
+              0.608,
+              0.703,
+              0.9
+            ],
+            [
+              0.58,
+              0.697,
+              0.9
+            ],
+            [
+              0.603,
+              0.708,
+              0.9
+            ],
+            [
+              0.622,
+              0.708,
+              0.9
+            ],
+            [
+              0.621,
+              0.797,
+              0.9
+            ],
+            [
+              0.604,
+              0.797,
+              0.9
+            ],
+            [
+              0.625,
+              0.887,
+              0.9
+            ],
+            [
+              0.6,
+              0.887,
+              0.9
+            ]
+          ]
+        },
+        {
+          "id": 5,
+          "kp": [
+            [
+              0.678,
+              0.553,
+              0.9
+            ],
+            [
+              0.697,
+              0.553,
+              0.9
+            ],
+            [
+              0.691,
+              0.631,
+              0.9
+            ],
+            [
+              0.68,
+              0.63,
+              0.9
+            ],
+            [
+              0.69,
+              0.702,
+              0.9
+            ],
+            [
+              0.669,
+              0.699,
+              0.9
+            ],
+            [
+              0.684,
+              0.708,
+              0.9
+            ],
+            [
+              0.703,
+              0.708,
+              0.9
+            ],
+            [
+              0.701,
+              0.798,
+              0.9
+            ],
+            [
+              0.687,
+              0.798,
+              0.9
+            ],
+            [
+              0.704,
+              0.888,
+              0.9
+            ],
+            [
+              0.684,
+              0.888,
+              0.9
+            ]
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "incident_id": "INC-2026-00115",
+    "camera_id": "CAM-BC-03",
+    "location": "Block C stairwell",
+    "zone_type": "stairwell",
+    "start_time": "2026-10-05T13:48:00+08:00",
+    "end_time": "2026-10-05T13:49:06+08:00",
+    "type": "fight",
+    "level": "fight_likely",
+    "peak_score": 0.66,
+    "eta_seconds": 4,
+    "priority": 0.34,
+    "reason": "Repeated fast strikes toward head height.",
+    "people_count": 2,
+    "action": "Send Guard B now",
+    "nearest_staff": "Guard B",
+    "pushed_to": "Guard B",
+    "pushed_at": "2026-10-05T13:48:01+08:00",
+    "acked_at": "2026-10-05T13:48:08+08:00",
+    "status": "confirmed",
+    "staff_note": "Two people separated; referred on.",
+    "peak_snapshot": {
+      "t": "2026-10-05T13:48:00+08:00",
+      "people": [
+        {
+          "id": 1,
+          "kp": [
+            [
+              0.546,
+              0.56,
+              0.9
+            ],
+            [
+              0.565,
+              0.56,
+              0.9
+            ],
+            [
+              0.599,
+              0.567,
+              0.9
+            ],
+            [
+              0.579,
+              0.494,
+              0.9
+            ],
+            [
+              0.633,
+              0.53,
+              0.9
+            ],
+            [
+              0.609,
+              0.448,
+              0.9
+            ],
+            [
+              0.519,
+              0.708,
+              0.9
+            ],
+            [
+              0.538,
+              0.708,
+              0.9
+            ],
+            [
+              0.513,
+              0.794,
+              0.9
+            ],
+            [
+              0.544,
+              0.794,
+              0.9
+            ],
+            [
+              0.507,
+              0.884,
+              0.9
+            ],
+            [
+              0.551,
+              0.884,
+              0.9
+            ]
+          ]
+        },
+        {
+          "id": 2,
+          "kp": [
+            [
+              0.581,
+              0.556,
+              0.9
+            ],
+            [
+              0.6,
+              0.556,
+              0.9
+            ],
+            [
+              0.551,
+              0.523,
+              0.9
+            ],
+            [
+              0.555,
+              0.512,
+              0.9
+            ],
+            [
+              0.554,
+              0.452,
+              0.9
+            ],
+            [
+              0.565,
+              0.442,
+              0.9
+            ],
+            [
+              0.563,
+              0.708,
+              0.9
+            ],
+            [
+              0.582,
+              0.708,
+              0.9
+            ],
+            [
+              0.584,
+              0.796,
+              0.9
+            ],
+            [
+              0.56,
+              0.796,
+              0.9
+            ],
+            [
+              0.589,
+              0.886,
+              0.9
+            ],
+            [
+              0.555,
+              0.886,
+              0.9
+            ]
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "incident_id": "INC-2026-00116",
+    "camera_id": "CAM-HC-01",
+    "location": "DK Senza, corridor L3",
+    "zone_type": "hostel_corridor",
+    "start_time": "2026-10-07T22:08:00+08:00",
+    "end_time": "2026-10-07T22:08:53+08:00",
+    "type": "crowd",
+    "level": "fight_likely",
+    "peak_score": 0.75,
+    "eta_seconds": 3,
+    "priority": 0.54,
+    "reason": "Eight people formed a ring in 4 s; two in the centre.",
+    "people_count": 3,
+    "action": "Send Guard C now",
+    "nearest_staff": "Guard C",
+    "pushed_to": "Guard C",
+    "pushed_at": "2026-10-07T22:08:01+08:00",
+    "acked_at": "2026-10-07T22:08:09+08:00",
+    "status": "dismissed",
+    "staff_note": null,
+    "peak_snapshot": {
+      "t": "2026-10-07T22:08:00+08:00",
+      "people": [
+        {
+          "id": 1,
+          "kp": [
+            [
+              0.544,
+              0.567,
+              0.9
+            ],
+            [
+              0.562,
+              0.567,
+              0.9
+            ],
+            [
+              0.597,
+              0.571,
+              0.9
+            ],
+            [
+              0.594,
+              0.54,
+              0.9
+            ],
+            [
+              0.637,
+              0.561,
+              0.9
+            ],
+            [
+              0.633,
+              0.521,
+              0.9
+            ],
+            [
+              0.506,
+              0.708,
+              0.9
+            ],
+            [
+              0.525,
+              0.708,
+              0.9
+            ],
+            [
+              0.498,
+              0.793,
+              0.9
+            ],
+            [
+              0.534,
+              0.793,
+              0.9
+            ],
+            [
+              0.49,
+              0.882,
+              0.9
+            ],
+            [
+              0.541,
+              0.882,
+              0.9
+            ]
+          ]
+        },
+        {
+          "id": 2,
+          "kp": [
+            [
+              0.6,
+              0.563,
+              0.9
+            ],
+            [
+              0.619,
+              0.563,
+              0.9
+            ],
+            [
+              0.581,
+              0.503,
+              0.9
+            ],
+            [
+              0.566,
+              0.578,
+              0.9
+            ],
+            [
+              0.577,
+              0.432,
+              0.9
+            ],
+            [
+              0.534,
+              0.535,
+              0.9
+            ],
+            [
+              0.569,
+              0.708,
+              0.9
+            ],
+            [
+              0.588,
+              0.708,
+              0.9
+            ],
+            [
+              0.593,
+              0.795,
+              0.9
+            ],
+            [
+              0.564,
+              0.795,
+              0.9
+            ],
+            [
+              0.599,
+              0.884,
+              0.9
+            ],
+            [
+              0.558,
+              0.884,
+              0.9
+            ]
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "incident_id": "INC-2026-00117",
+    "camera_id": "CAM-HC-01",
+    "location": "DK Senza, corridor L3",
+    "zone_type": "hostel_corridor",
+    "start_time": "2026-10-08T22:25:00+08:00",
+    "end_time": "2026-10-08T22:25:32+08:00",
+    "type": "crowd",
+    "level": "fight",
+    "peak_score": 0.97,
+    "eta_seconds": null,
+    "priority": 0.97,
+    "reason": "Five people stopped and faced the same point for 4 s.",
+    "people_count": 4,
+    "action": "Send Guard C now; call the security lead",
+    "nearest_staff": "Guard C",
+    "pushed_to": "Guard C",
+    "pushed_at": "2026-10-08T22:25:01+08:00",
+    "acked_at": "2026-10-08T22:25:09+08:00",
+    "status": "confirmed",
+    "staff_note": null,
+    "peak_snapshot": {
+      "t": "2026-10-08T22:25:00+08:00",
+      "people": [
+        {
+          "id": 1,
+          "kp": [
+            [
+              0.545,
+              0.564,
+              0.9
+            ],
+            [
+              0.563,
+              0.564,
+              0.9
+            ],
+            [
+              0.598,
+              0.572,
+              0.9
+            ],
+            [
+              0.588,
+              0.516,
+              0.9
+            ],
+            [
+              0.636,
+              0.55,
+              0.9
+            ],
+            [
+              0.625,
+              0.485,
+              0.9
+            ],
+            [
+              0.512,
+              0.708,
+              0.9
+            ],
+            [
+              0.531,
+              0.708,
+              0.9
+            ],
+            [
+              0.504,
+              0.793,
+              0.9
+            ],
+            [
+              0.538,
+              0.793,
+              0.9
+            ],
+            [
+              0.497,
+              0.883,
+              0.9
+            ],
+            [
+              0.545,
+              0.883,
+              0.9
+            ]
+          ]
+        },
+        {
+          "id": 2,
+          "kp": [
+            [
+              0.592,
+              0.559,
+              0.9
+            ],
+            [
+              0.61,
+              0.559,
+              0.9
+            ],
+            [
+              0.567,
+              0.51,
+              0.9
+            ],
+            [
+              0.558,
+              0.547,
+              0.9
+            ],
+            [
+              0.566,
+              0.439,
+              0.9
+            ],
+            [
+              0.542,
+              0.481,
+              0.9
+            ],
+            [
+              0.566,
+              0.708,
+              0.9
+            ],
+            [
+              0.585,
+              0.708,
+              0.9
+            ],
+            [
+              0.589,
+              0.795,
+              0.9
+            ],
+            [
+              0.562,
+              0.795,
+              0.9
+            ],
+            [
+              0.595,
+              0.885,
+              0.9
+            ],
+            [
+              0.556,
+              0.885,
+              0.9
+            ]
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "incident_id": "INC-2026-00118",
+    "camera_id": "CAM-CT-04",
+    "location": "Syopz Mall food court",
+    "zone_type": "canteen",
+    "start_time": "2026-10-09T12:45:00+08:00",
+    "end_time": "2026-10-09T12:47:31+08:00",
+    "type": "crowd",
+    "level": "fight_likely",
+    "peak_score": 0.64,
+    "eta_seconds": 4,
+    "priority": 0.36,
+    "reason": "Five people stopped and faced the same point for 4 s.",
+    "people_count": 9,
+    "action": "Send Guard A now",
+    "nearest_staff": "Guard A",
+    "pushed_to": "Guard A",
+    "pushed_at": "2026-10-09T12:45:01+08:00",
+    "acked_at": "2026-10-09T12:45:04+08:00",
+    "status": "dismissed",
+    "staff_note": null,
+    "peak_snapshot": {
+      "t": "2026-10-09T12:45:00+08:00",
+      "people": [
+        {
+          "id": 1,
+          "kp": [
+            [
+              0.359,
+              0.553,
+              0.9
+            ],
+            [
+              0.378,
+              0.553,
+              0.9
+            ],
+            [
+              0.365,
+              0.631,
+              0.9
+            ],
+            [
+              0.376,
+              0.63,
+              0.9
+            ],
+            [
+              0.365,
+              0.702,
+              0.9
+            ],
+            [
+              0.387,
+              0.699,
+              0.9
+            ],
+            [
+              0.353,
+              0.708,
+              0.9
+            ],
+            [
+              0.372,
+              0.708,
+              0.9
+            ],
+            [
+              0.355,
+              0.798,
+              0.9
+            ],
+            [
+              0.37,
+              0.798,
+              0.9
+            ],
+            [
+              0.353,
+              0.888,
+              0.9
+            ],
+            [
+              0.372,
+              0.888,
+              0.9
+            ]
+          ]
+        },
+        {
+          "id": 2,
+          "kp": [
+            [
+              0.44,
+              0.554,
+              0.9
+            ],
+            [
+              0.459,
+              0.554,
+              0.9
+            ],
+            [
+              0.446,
+              0.631,
+              0.9
+            ],
+            [
+              0.461,
+              0.629,
+              0.9
+            ],
+            [
+              0.446,
+              0.703,
+              0.9
+            ],
+            [
+              0.478,
+              0.694,
+              0.9
+            ],
+            [
+              0.431,
+              0.708,
+              0.9
+            ],
+            [
+              0.45,
+              0.708,
+              0.9
+            ],
+            [
+              0.432,
+              0.797,
+              0.9
+            ],
+            [
+              0.449,
+              0.797,
+              0.9
+            ],
+            [
+              0.428,
+              0.887,
+              0.9
+            ],
+            [
+              0.453,
+              0.887,
+              0.9
+            ]
+          ]
+        },
+        {
+          "id": 3,
+          "kp": [
+            [
+              0.509,
+              0.553,
+              0.9
+            ],
+            [
+              0.528,
+              0.553,
+              0.9
+            ],
+            [
+              0.526,
+              0.629,
+              0.9
+            ],
+            [
+              0.534,
+              0.626,
+              0.9
+            ],
+            [
+              0.54,
+              0.697,
+              0.9
+            ],
+            [
+              0.564,
+              0.672,
+              0.9
+            ],
+            [
+              0.506,
+              0.708,
+              0.9
+            ],
+            [
+              0.525,
+              0.708,
+              0.9
+            ],
+            [
+              0.51,
+              0.798,
+              0.9
+            ],
+            [
+              0.521,
+              0.798,
+              0.9
+            ],
+            [
+              0.508,
+              0.888,
+              0.9
+            ],
+            [
+              0.523,
+              0.888,
+              0.9
+            ]
+          ]
+        },
+        {
+          "id": 4,
+          "kp": [
+            [
+              0.594,
+              0.554,
+              0.9
+            ],
+            [
+              0.613,
+              0.554,
+              0.9
+            ],
+            [
+              0.608,
+              0.631,
+              0.9
+            ],
+            [
+              0.594,
+              0.63,
+              0.9
+            ],
+            [
+              0.608,
+              0.703,
+              0.9
+            ],
+            [
+              0.58,
+              0.697,
+              0.9
+            ],
+            [
+              0.603,
+              0.708,
+              0.9
+            ],
+            [
+              0.622,
+              0.708,
+              0.9
+            ],
+            [
+              0.621,
+              0.797,
+              0.9
+            ],
+            [
+              0.604,
+              0.797,
+              0.9
+            ],
+            [
+              0.625,
+              0.887,
+              0.9
+            ],
+            [
+              0.6,
+              0.887,
+              0.9
+            ]
+          ]
+        },
+        {
+          "id": 5,
+          "kp": [
+            [
+              0.678,
+              0.553,
+              0.9
+            ],
+            [
+              0.697,
+              0.553,
+              0.9
+            ],
+            [
+              0.691,
+              0.631,
+              0.9
+            ],
+            [
+              0.68,
+              0.63,
+              0.9
+            ],
+            [
+              0.69,
+              0.702,
+              0.9
+            ],
+            [
+              0.669,
+              0.699,
+              0.9
+            ],
+            [
+              0.684,
+              0.708,
+              0.9
+            ],
+            [
+              0.703,
+              0.708,
+              0.9
+            ],
+            [
+              0.701,
+              0.798,
+              0.9
+            ],
+            [
+              0.687,
+              0.798,
+              0.9
+            ],
+            [
+              0.704,
+              0.888,
+              0.9
+            ],
+            [
+              0.684,
+              0.888,
+              0.9
+            ]
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "incident_id": "INC-2026-00119",
+    "camera_id": "CAM-BC-03",
+    "location": "Block C stairwell",
+    "zone_type": "stairwell",
+    "start_time": "2026-10-10T12:58:00+08:00",
+    "end_time": "2026-10-10T12:59:10+08:00",
+    "type": "fight",
+    "level": "fight_likely",
+    "peak_score": 0.72,
+    "eta_seconds": 5,
+    "priority": 0.37,
+    "reason": "Shove: sudden lunge; second person pushed back.",
+    "people_count": 2,
+    "action": "Send Guard B now",
+    "nearest_staff": "Guard B",
+    "pushed_to": "Guard B",
+    "pushed_at": "2026-10-10T12:58:01+08:00",
+    "acked_at": "2026-10-10T12:58:05+08:00",
+    "status": "resolved",
+    "staff_note": "Guard B separated two people at the landing.",
+    "peak_snapshot": {
+      "t": "2026-10-10T12:58:00+08:00",
+      "people": [
+        {
+          "id": 1,
+          "kp": [
+            [
+              0.547,
+              0.56,
+              0.9
+            ],
+            [
+              0.566,
+              0.56,
+              0.9
+            ],
+            [
+              0.599,
+              0.545,
+              0.9
+            ],
+            [
+              0.584,
+              0.5,
+              0.9
+            ],
+            [
+              0.632,
+              0.502,
+              0.9
+            ],
+            [
+              0.615,
+              0.454,
+              0.9
+            ],
+            [
+              0.521,
+              0.708,
+              0.9
+            ],
+            [
+              0.539,
+              0.708,
+              0.9
+            ],
+            [
+              0.514,
+              0.794,
+              0.9
+            ],
+            [
+              0.546,
+              0.794,
+              0.9
+            ],
+            [
+              0.508,
+              0.884,
+              0.9
+            ],
+            [
+              0.552,
+              0.884,
+              0.9
+            ]
+          ]
+        },
+        {
+          "id": 2,
+          "kp": [
+            [
+              0.583,
+              0.556,
+              0.9
+            ],
+            [
+              0.602,
+              0.556,
+              0.9
+            ],
+            [
+              0.553,
+              0.524,
+              0.9
+            ],
+            [
+              0.557,
+              0.512,
+              0.9
+            ],
+            [
+              0.556,
+              0.452,
+              0.9
+            ],
+            [
+              0.567,
+              0.443,
+              0.9
+            ],
+            [
+              0.564,
+              0.708,
+              0.9
+            ],
+            [
+              0.583,
+              0.708,
+              0.9
+            ],
+            [
+              0.586,
+              0.796,
+              0.9
+            ],
+            [
+              0.561,
+              0.796,
+              0.9
+            ],
+            [
+              0.591,
+              0.886,
+              0.9
+            ],
+            [
+              0.556,
+              0.886,
+              0.9
+            ]
+          ]
+        },
+        {
+          "id": 3,
+          "kp": [
+            [
+              0.902,
+              0.554,
+              0.9
+            ],
+            [
+              0.921,
+              0.554,
+              0.9
+            ],
+            [
+              0.927,
+              0.627,
+              0.9
+            ],
+            [
+              0.893,
+              0.624,
+              0.9
+            ],
+            [
+              0.934,
+              0.697,
+              0.9
+            ],
+            [
+              0.87,
+              0.683,
+              0.9
+            ],
+            [
+              0.912,
+              0.708,
+              0.9
+            ],
+            [
+              0.93,
+              0.708,
+              0.9
+            ],
+            [
+              0.937,
+              0.794,
+              0.9
+            ],
+            [
+              0.905,
+              0.794,
+              0.9
+            ],
+            [
+              0.943,
+              0.884,
+              0.9
+            ],
+            [
+              0.899,
+              0.884,
+              0.9
+            ]
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "incident_id": "INC-2026-00120",
+    "camera_id": "CAM-SC-06",
+    "location": "Sports pitch",
+    "zone_type": "sports_court",
+    "start_time": "2026-10-10T14:27:40+08:00",
+    "end_time": null,
+    "type": "play",
+    "level": "tense",
+    "peak_score": 0.53,
+    "eta_seconds": null,
+    "priority": 0.03,
+    "reason": "Rhythmic arm swings, no approach; ball in play. Sports-zone threshold applied.",
+    "people_count": 2,
+    "action": "No action; sports zone",
+    "nearest_staff": "Guard C",
+    "status": "new",
+    "staff_note": null,
+    "peak_snapshot": {
+      "t": "2026-10-10T14:27:40+08:00",
+      "people": [
+        {
+          "id": 1,
+          "kp": [
+            [
+              0.372,
+              0.554,
+              0.9
+            ],
+            [
+              0.391,
+              0.554,
+              0.9
+            ],
+            [
+              0.403,
+              0.486,
+              0.9
+            ],
+            [
+              0.389,
+              0.477,
+              0.9
+            ],
+            [
+              0.417,
+              0.419,
+              0.9
+            ],
+            [
+              0.396,
+              0.407,
+              0.9
+            ],
+            [
+              0.381,
+              0.708,
+              0.9
+            ],
+            [
+              0.4,
+              0.708,
+              0.9
+            ],
+            [
+              0.372,
+              0.792,
+              0.9
+            ],
+            [
+              0.41,
+              0.792,
+              0.9
+            ],
+            [
+              0.364,
+              0.881,
+              0.9
+            ],
+            [
+              0.417,
+              0.881,
+              0.9
+            ]
+          ]
+        },
+        {
+          "id": 2,
+          "kp": [
+            [
+              0.653,
+              0.553,
+              0.9
+            ],
+            [
+              0.672,
+              0.553,
+              0.9
+            ],
+            [
+              0.647,
+              0.626,
+              0.9
+            ],
+            [
+              0.64,
+              0.486,
+              0.9
+            ],
+            [
+              0.627,
+              0.688,
+              0.9
+            ],
+            [
+              0.627,
+              0.419,
+              0.9
+            ],
+            [
+              0.647,
+              0.708,
+              0.9
+            ],
+            [
+              0.666,
+              0.708,
+              0.9
+            ],
+            [
+              0.674,
+              0.793,
+              0.9
+            ],
+            [
+              0.639,
+              0.793,
+              0.9
+            ],
+            [
+              0.681,
+              0.882,
+              0.9
+            ],
+            [
+              0.632,
+              0.882,
+              0.9
+            ]
+          ]
+        }
+      ]
+    },
+    "snapshot": {
+      "t": "2026-10-10T14:27:40+08:00",
+      "people": [
+        {
+          "id": 1,
+          "kp": [
+            [
+              0.372,
+              0.554,
+              0.9
+            ],
+            [
+              0.391,
+              0.554,
+              0.9
+            ],
+            [
+              0.403,
+              0.486,
+              0.9
+            ],
+            [
+              0.389,
+              0.477,
+              0.9
+            ],
+            [
+              0.417,
+              0.419,
+              0.9
+            ],
+            [
+              0.396,
+              0.407,
+              0.9
+            ],
+            [
+              0.381,
+              0.708,
+              0.9
+            ],
+            [
+              0.4,
+              0.708,
+              0.9
+            ],
+            [
+              0.372,
+              0.792,
+              0.9
+            ],
+            [
+              0.41,
+              0.792,
+              0.9
+            ],
+            [
+              0.364,
+              0.881,
+              0.9
+            ],
+            [
+              0.417,
+              0.881,
+              0.9
+            ]
+          ]
+        },
+        {
+          "id": 2,
+          "kp": [
+            [
+              0.653,
+              0.553,
+              0.9
+            ],
+            [
+              0.672,
+              0.553,
+              0.9
+            ],
+            [
+              0.647,
+              0.626,
+              0.9
+            ],
+            [
+              0.64,
+              0.486,
+              0.9
+            ],
+            [
+              0.627,
+              0.688,
+              0.9
+            ],
+            [
+              0.627,
+              0.419,
+              0.9
+            ],
+            [
+              0.647,
+              0.708,
+              0.9
+            ],
+            [
+              0.666,
+              0.708,
+              0.9
+            ],
+            [
+              0.674,
+              0.793,
+              0.9
+            ],
+            [
+              0.639,
+              0.793,
+              0.9
+            ],
+            [
+              0.681,
+              0.882,
+              0.9
+            ],
+            [
+              0.632,
+              0.882,
+              0.9
+            ]
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "incident_id": "INC-2026-00121",
+    "camera_id": "CAM-CT-04",
+    "location": "Syopz Mall food court",
+    "zone_type": "canteen",
+    "start_time": "2026-10-10T14:29:22+08:00",
+    "end_time": null,
+    "type": "crowd",
+    "level": "tense",
+    "peak_score": 0.54,
+    "eta_seconds": null,
+    "priority": 0.1,
+    "reason": "Five people stopped and faced the same point for 4 s.",
+    "people_count": 5,
+    "action": "Watch this camera",
+    "nearest_staff": "Guard A",
+    "status": "new",
+    "staff_note": null,
+    "peak_snapshot": {
+      "t": "2026-10-10T14:29:22+08:00",
+      "people": [
+        {
+          "id": 1,
+          "kp": [
+            [
+              0.359,
+              0.553,
+              0.9
+            ],
+            [
+              0.378,
+              0.553,
+              0.9
+            ],
+            [
+              0.365,
+              0.631,
+              0.9
+            ],
+            [
+              0.376,
+              0.63,
+              0.9
+            ],
+            [
+              0.365,
+              0.702,
+              0.9
+            ],
+            [
+              0.387,
+              0.699,
+              0.9
+            ],
+            [
+              0.353,
+              0.708,
+              0.9
+            ],
+            [
+              0.372,
+              0.708,
+              0.9
+            ],
+            [
+              0.355,
+              0.798,
+              0.9
+            ],
+            [
+              0.37,
+              0.798,
+              0.9
+            ],
+            [
+              0.353,
+              0.888,
+              0.9
+            ],
+            [
+              0.372,
+              0.888,
+              0.9
+            ]
+          ]
+        },
+        {
+          "id": 2,
+          "kp": [
+            [
+              0.44,
+              0.554,
+              0.9
+            ],
+            [
+              0.459,
+              0.554,
+              0.9
+            ],
+            [
+              0.446,
+              0.631,
+              0.9
+            ],
+            [
+              0.461,
+              0.629,
+              0.9
+            ],
+            [
+              0.446,
+              0.703,
+              0.9
+            ],
+            [
+              0.478,
+              0.694,
+              0.9
+            ],
+            [
+              0.431,
+              0.708,
+              0.9
+            ],
+            [
+              0.45,
+              0.708,
+              0.9
+            ],
+            [
+              0.432,
+              0.797,
+              0.9
+            ],
+            [
+              0.449,
+              0.797,
+              0.9
+            ],
+            [
+              0.428,
+              0.887,
+              0.9
+            ],
+            [
+              0.453,
+              0.887,
+              0.9
+            ]
+          ]
+        },
+        {
+          "id": 3,
+          "kp": [
+            [
+              0.509,
+              0.553,
+              0.9
+            ],
+            [
+              0.528,
+              0.553,
+              0.9
+            ],
+            [
+              0.526,
+              0.629,
+              0.9
+            ],
+            [
+              0.534,
+              0.626,
+              0.9
+            ],
+            [
+              0.54,
+              0.697,
+              0.9
+            ],
+            [
+              0.564,
+              0.672,
+              0.9
+            ],
+            [
+              0.506,
+              0.708,
+              0.9
+            ],
+            [
+              0.525,
+              0.708,
+              0.9
+            ],
+            [
+              0.51,
+              0.798,
+              0.9
+            ],
+            [
+              0.521,
+              0.798,
+              0.9
+            ],
+            [
+              0.508,
+              0.888,
+              0.9
+            ],
+            [
+              0.523,
+              0.888,
+              0.9
+            ]
+          ]
+        },
+        {
+          "id": 4,
+          "kp": [
+            [
+              0.594,
+              0.554,
+              0.9
+            ],
+            [
+              0.613,
+              0.554,
+              0.9
+            ],
+            [
+              0.608,
+              0.631,
+              0.9
+            ],
+            [
+              0.594,
+              0.63,
+              0.9
+            ],
+            [
+              0.608,
+              0.703,
+              0.9
+            ],
+            [
+              0.58,
+              0.697,
+              0.9
+            ],
+            [
+              0.603,
+              0.708,
+              0.9
+            ],
+            [
+              0.622,
+              0.708,
+              0.9
+            ],
+            [
+              0.621,
+              0.797,
+              0.9
+            ],
+            [
+              0.604,
+              0.797,
+              0.9
+            ],
+            [
+              0.625,
+              0.887,
+              0.9
+            ],
+            [
+              0.6,
+              0.887,
+              0.9
+            ]
+          ]
+        },
+        {
+          "id": 5,
+          "kp": [
+            [
+              0.678,
+              0.553,
+              0.9
+            ],
+            [
+              0.697,
+              0.553,
+              0.9
+            ],
+            [
+              0.691,
+              0.631,
+              0.9
+            ],
+            [
+              0.68,
+              0.63,
+              0.9
+            ],
+            [
+              0.69,
+              0.702,
+              0.9
+            ],
+            [
+              0.669,
+              0.699,
+              0.9
+            ],
+            [
+              0.684,
+              0.708,
+              0.9
+            ],
+            [
+              0.703,
+              0.708,
+              0.9
+            ],
+            [
+              0.701,
+              0.798,
+              0.9
+            ],
+            [
+              0.687,
+              0.798,
+              0.9
+            ],
+            [
+              0.704,
+              0.888,
+              0.9
+            ],
+            [
+              0.684,
+              0.888,
+              0.9
+            ]
+          ]
+        }
+      ]
+    },
+    "snapshot": {
+      "t": "2026-10-10T14:29:22+08:00",
+      "people": [
+        {
+          "id": 1,
+          "kp": [
+            [
+              0.359,
+              0.553,
+              0.9
+            ],
+            [
+              0.378,
+              0.553,
+              0.9
+            ],
+            [
+              0.365,
+              0.631,
+              0.9
+            ],
+            [
+              0.376,
+              0.63,
+              0.9
+            ],
+            [
+              0.365,
+              0.702,
+              0.9
+            ],
+            [
+              0.387,
+              0.699,
+              0.9
+            ],
+            [
+              0.353,
+              0.708,
+              0.9
+            ],
+            [
+              0.372,
+              0.708,
+              0.9
+            ],
+            [
+              0.355,
+              0.798,
+              0.9
+            ],
+            [
+              0.37,
+              0.798,
+              0.9
+            ],
+            [
+              0.353,
+              0.888,
+              0.9
+            ],
+            [
+              0.372,
+              0.888,
+              0.9
+            ]
+          ]
+        },
+        {
+          "id": 2,
+          "kp": [
+            [
+              0.44,
+              0.554,
+              0.9
+            ],
+            [
+              0.459,
+              0.554,
+              0.9
+            ],
+            [
+              0.446,
+              0.631,
+              0.9
+            ],
+            [
+              0.461,
+              0.629,
+              0.9
+            ],
+            [
+              0.446,
+              0.703,
+              0.9
+            ],
+            [
+              0.478,
+              0.694,
+              0.9
+            ],
+            [
+              0.431,
+              0.708,
+              0.9
+            ],
+            [
+              0.45,
+              0.708,
+              0.9
+            ],
+            [
+              0.432,
+              0.797,
+              0.9
+            ],
+            [
+              0.449,
+              0.797,
+              0.9
+            ],
+            [
+              0.428,
+              0.887,
+              0.9
+            ],
+            [
+              0.453,
+              0.887,
+              0.9
+            ]
+          ]
+        },
+        {
+          "id": 3,
+          "kp": [
+            [
+              0.509,
+              0.553,
+              0.9
+            ],
+            [
+              0.528,
+              0.553,
+              0.9
+            ],
+            [
+              0.526,
+              0.629,
+              0.9
+            ],
+            [
+              0.534,
+              0.626,
+              0.9
+            ],
+            [
+              0.54,
+              0.697,
+              0.9
+            ],
+            [
+              0.564,
+              0.672,
+              0.9
+            ],
+            [
+              0.506,
+              0.708,
+              0.9
+            ],
+            [
+              0.525,
+              0.708,
+              0.9
+            ],
+            [
+              0.51,
+              0.798,
+              0.9
+            ],
+            [
+              0.521,
+              0.798,
+              0.9
+            ],
+            [
+              0.508,
+              0.888,
+              0.9
+            ],
+            [
+              0.523,
+              0.888,
+              0.9
+            ]
+          ]
+        },
+        {
+          "id": 4,
+          "kp": [
+            [
+              0.594,
+              0.554,
+              0.9
+            ],
+            [
+              0.613,
+              0.554,
+              0.9
+            ],
+            [
+              0.608,
+              0.631,
+              0.9
+            ],
+            [
+              0.594,
+              0.63,
+              0.9
+            ],
+            [
+              0.608,
+              0.703,
+              0.9
+            ],
+            [
+              0.58,
+              0.697,
+              0.9
+            ],
+            [
+              0.603,
+              0.708,
+              0.9
+            ],
+            [
+              0.622,
+              0.708,
+              0.9
+            ],
+            [
+              0.621,
+              0.797,
+              0.9
+            ],
+            [
+              0.604,
+              0.797,
+              0.9
+            ],
+            [
+              0.625,
+              0.887,
+              0.9
+            ],
+            [
+              0.6,
+              0.887,
+              0.9
+            ]
+          ]
+        },
+        {
+          "id": 5,
+          "kp": [
+            [
+              0.678,
+              0.553,
+              0.9
+            ],
+            [
+              0.697,
+              0.553,
+              0.9
+            ],
+            [
+              0.691,
+              0.631,
+              0.9
+            ],
+            [
+              0.68,
+              0.63,
+              0.9
+            ],
+            [
+              0.69,
+              0.702,
+              0.9
+            ],
+            [
+              0.669,
+              0.699,
+              0.9
+            ],
+            [
+              0.684,
+              0.708,
+              0.9
+            ],
+            [
+              0.703,
+              0.708,
+              0.9
+            ],
+            [
+              0.701,
+              0.798,
+              0.9
+            ],
+            [
+              0.687,
+              0.798,
+              0.9
+            ],
+            [
+              0.704,
+              0.888,
+              0.9
+            ],
+            [
+              0.684,
+              0.888,
+              0.9
+            ]
+          ]
+        }
+      ]
+    },
+    "top_features": [
+      {
+        "name": "people_close",
+        "value": 5
+      },
+      {
+        "name": "pair_motion_energy",
+        "value": 0.18
+      },
+      {
+        "name": "max_wrist_speed",
+        "value": 0.8
+      },
+      {
+        "name": "risk_score",
+        "value": 0.54
+      }
+    ]
+  }
+]

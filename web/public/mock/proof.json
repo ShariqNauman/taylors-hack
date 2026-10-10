@@ -1,0 +1,37 @@
+{
+  "datasets": [
+    "RLVS (300 fight, 300 calm)"
+  ],
+  "n_clips": 600,
+  "clip_auc": 0.876,
+  "clip_precision": 0.8,
+  "clip_recall": 0.82,
+  "fa_per_camera_hour": 0,
+  "own_footage_minutes": 0,
+  "airtlab_fp_rate": 0,
+  "lead_time_s": [],
+  "pushes_per_shift_target": 3,
+  "latency_ms": 0,
+  "ir_check": {
+    "frames": 0,
+    "skeletons_detected": 0,
+    "note": "Night and IR not measured.",
+    "image": ""
+  },
+  "model_card": {
+    "inputs": "12 body keypoints per person from YOLO26n-pose (no face points), 10 fps, torso-scaled",
+    "windows": "One window every 0.5 s; 1 s features over the last 1 s, 2 s features over the last 2 s; active pair = the two people whose wrists move fastest",
+    "classifier": "LightGBM, 10 features, num_leaves 15, learning_rate 0.02, n_estimators 400, min_child_samples 50 (best of 20 settings)",
+    "split": "5-fold GroupKFold by video on 600 RLVS clips; clip score = highest window score",
+    "threshold": "Live: smoothing alpha 0.4, TENSE 0.5, FIGHT 0.55, 1.0 s minimum, 2.0 s hold; tuned in simulation on RLVS clips (tune_live.py --rlvs), not on webcam footage",
+    "failure_modes": [
+      "One feature dominates (pair_motion_energy, 47% of gain); arm-only fights like V_1 are missed",
+      "Pair features missing 24–77% of the time when only one person is tracked",
+      "No own or CCTV footage; all numbers are on YouTube-style RLVS clips",
+      "Live thresholds tuned in simulation, not on the webcam",
+      "Tuned AUC is slightly optimistic (best of 20 on the same folds)"
+    ]
+  },
+  "disclosure": "Dataset numbers are real, from 600 public RLVS clips. Live room, CCTV angle, lead time and night are not measured yet, and this page says so.",
+  "note": "report-v2"
+}

@@ -1,0 +1,159 @@
+{
+ "_note": "Seed for the 3D campus. Geo positions are placed by hand on OpenStreetMap footprints of Taylor's University Lakeside Campus (© OpenStreetMap contributors, ODbL). Verify on site; the auditorium location is an assumption.",
+ "campus": {
+  "name": "Taylor's University Lakeside Campus",
+  "osm_way": 210350320,
+  "center": {
+   "lat": 3.0631104,
+   "lng": 101.6169899
+  },
+  "buildings_geojson": "taylors-lakeside-campus.geojson"
+ },
+ "cameras": [
+  {
+   "camera_id": "CAM-AU-01",
+   "location": "Auditorium",
+   "building": "Block A and B",
+   "zone_type": "auditorium",
+   "source": "live",
+   "floor": "ground floor, stage left",
+   "geo": {
+    "lat": 3.0645574,
+    "lng": 101.6170349,
+    "alt_m": 6
+   }
+  },
+  {
+   "camera_id": "CAM-BC-03",
+   "location": "Block C stairwell",
+   "building": "Block C",
+   "zone_type": "stairwell",
+   "source": "recorded",
+   "floor": "level 1 landing",
+   "geo": {
+    "lat": 3.0640871,
+    "lng": 101.6175477,
+    "alt_m": 8
+   }
+  },
+  {
+   "camera_id": "CAM-CT-04",
+   "location": "Syopz Mall food court",
+   "building": "Syopz Mall",
+   "zone_type": "canteen",
+   "source": "recorded",
+   "floor": "east entrance",
+   "geo": {
+    "lat": 3.0638158,
+    "lng": 101.6164681,
+    "alt_m": 8
+   }
+  },
+  {
+   "camera_id": "CAM-HC-01",
+   "location": "DK Senza, corridor L3",
+   "building": "DK Senza",
+   "zone_type": "hostel_corridor",
+   "source": "recorded",
+   "floor": "level 3",
+   "geo": {
+    "lat": 3.0601983,
+    "lng": 101.6173498,
+    "alt_m": 8
+   }
+  },
+  {
+   "camera_id": "CAM-HC-02",
+   "location": "DK Senza, corridor L5",
+   "building": "DK Senza",
+   "zone_type": "hostel_corridor",
+   "source": "black",
+   "floor": "level 5",
+   "geo": {
+    "lat": 3.059927,
+    "lng": 101.6170619,
+    "alt_m": 8
+   }
+  },
+  {
+   "camera_id": "CAM-SC-06",
+   "location": "Sports pitch",
+   "building": "Sports centre",
+   "zone_type": "sports_court",
+   "source": "recorded",
+   "floor": "pitch side",
+   "geo": {
+    "lat": 3.0617539,
+    "lng": 101.6172328,
+    "alt_m": 8
+   }
+  }
+ ],
+ "staff": [
+  {
+   "name": "Guard B",
+   "zone_type": "stairwell",
+   "on_duty": true,
+   "post": {
+    "lat": 3.0642137,
+    "lng": 101.6170619
+   }
+  },
+  {
+   "name": "Guard A",
+   "zone_type": "canteen",
+   "on_duty": true,
+   "post": {
+    "lat": 3.0631104,
+    "lng": 101.6163152
+   }
+  },
+  {
+   "name": "Guard C",
+   "zone_type": "hostel_corridor",
+   "on_duty": true,
+   "post": {
+    "lat": 3.0603973,
+    "lng": 101.6171249
+   }
+  },
+  {
+   "name": "Warden D",
+   "zone_type": "hostel_corridor",
+   "on_duty": false,
+   "post": null
+  }
+ ],
+ "patrol_posts": [
+  {
+   "slot": "P/01",
+   "location": "Block C stairwell",
+   "days": "Mon–Thu",
+   "hours": "13:00–14:00",
+   "geo": {
+    "lat": 3.0640148,
+    "lng": 101.6173947
+   }
+  },
+  {
+   "slot": "P/02",
+   "location": "DK Senza, corridor L3",
+   "days": "Sun–Thu",
+   "hours": "22:00–23:00",
+   "geo": {
+    "lat": 3.0602164,
+    "lng": 101.6173947
+   }
+  },
+  {
+   "slot": "P/03",
+   "location": "Syopz Mall food court",
+   "days": "Fri",
+   "hours": "12:00–13:00",
+   "geo": {
+    "lat": 3.063653,
+    "lng": 101.6165401
+   }
+  }
+ ]
+}

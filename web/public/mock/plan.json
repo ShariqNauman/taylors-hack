@@ -1,0 +1,33 @@
+{
+  "generated_at": "2026-10-10T14:30:00+08:00",
+  "slots": [
+    {
+      "location": "Block C stairwell",
+      "days": "Mon–Thu",
+      "hours": "13:00–14:00",
+      "incidents_4w": 5,
+      "expected_avoided_per_week": 0.75,
+      "avoided_per_patrol_hour": 0.19,
+      "rationale": "5 incidents in the same lunch hour, Monday to Thursday, in 4 weeks. One person at the level 1 landing covers both flights."
+    },
+    {
+      "location": "DK Senza, corridor L3",
+      "days": "Sun–Thu",
+      "hours": "22:00–23:00",
+      "incidents_4w": 4,
+      "expected_avoided_per_week": 0.6,
+      "avoided_per_patrol_hour": 0.12,
+      "rationale": "4 incidents after 22:00 in 4 weeks. The L5 camera is black, so L3 is the only eye on the block."
+    },
+    {
+      "location": "Syopz Mall food court",
+      "days": "Fri",
+      "hours": "12:00–13:00",
+      "incidents_4w": 3,
+      "expected_avoided_per_week": 0.45,
+      "avoided_per_patrol_hour": 0.45,
+      "rationale": "3 crowd gatherings at Friday lunch in 4 weeks. One hour a week, so the best return per patrol hour."
+    }
+  ],
+  "assumption": "60% of hotspot incidents are avoided when a person is present. Stated, not measured. Avoided = incidents in 4 weeks × 0.6."
+}
