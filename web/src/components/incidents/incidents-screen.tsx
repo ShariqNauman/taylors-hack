@@ -21,6 +21,7 @@ import { LevelPill } from "@/components/chrome/level-pill";
 import { TypeChip } from "@/components/chrome/type-chip";
 import { StatusChip } from "@/components/chrome/status-chip";
 import { CameraFrame, SkeletonView } from "@/components/skeleton/skeleton-view";
+import { IncidentMap } from "./incident-map";
 
 type Filter =
   "all" | "open" | "pushed" | "confirmed" | "dismissed" | "resolved";
@@ -47,6 +48,23 @@ function dayTime(iso: string) {
     .format(new Date(iso))
     .toUpperCase()
     .replace(",", " ·");
+}
+
+/** "Sat 10 Oct 2026, 22:13:51 to 22:14:54 · 1 min 3 s" */
+function happened(e: Event) {
+  const day = new Intl.DateTimeFormat("en-GB", {
+    timeZone: MYT_TZ,
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  })
+    .format(new Date(e.start_time))
+    .replace(",", "");
+  if (!e.end_time) return `${day}, from ${fmtTime(e.start_time)} · still open`;
+  const s = secondsBetween(e.start_time, e.end_time) ?? 0;
+  const dur = s >= 60 ? `${Math.floor(s / 60)} min ${s % 60} s` : `${s} s`;
+  return `${day}, ${fmtTime(e.start_time)} to ${fmtTime(e.end_time)} · ${dur}`;
 }
 
 export function IncidentsScreen() {
@@ -267,6 +285,9 @@ export function IncidentsScreen() {
             e={selected}
             site={site}
             camera={cameras?.find((c) => c.camera_id === selected.camera_id)}
+            clipEdge={
+              cameras?.find((c) => c.source === "live" && c.edge_url)?.edge_url
+            }
             onSave={save}
           />
         ) : (
@@ -322,11 +343,14 @@ function CaseView({
   e,
   site,
   camera,
+  clipEdge,
   onSave,
 }: {
   e: Event;
   site?: Site;
   camera?: Camera;
+  /** Every edge serves edge/clips/ on this laptop; use the one the on-site probe reached. */
+  clipEdge?: string | null;
   onSave: (e: Event, p: { status?: Status; staff_note?: string }) => void;
 }) {
   const view = useAppStore((s) => s.view);
@@ -334,7 +358,8 @@ function CaseView({
   const [clip, setClip] = useState(false);
   const [clipFailed, setClipFailed] = useState(false);
   useEffect(() => setNote(e.staff_note ?? ""), [e.staff_note]);
-  const onsite = view === "onsite" && !!camera?.edge_url;
+  const edge = clipEdge ?? camera?.edge_url;
+  const onsite = view === "onsite" && !!edge;
   const ack = secondsBetween(e.pushed_at, e.acked_at);
 
   const trail: { t: string; text: string; dot: string }[] = [
@@ -397,8 +422,8 @@ function CaseView({
     });
 
   const clipUrl =
-    onsite && camera?.edge_url
-      ? `${camera.edge_url.replace(/\/$/, "")}/clips/${encodeURIComponent(e.incident_id)}.mp4`
+    onsite && edge
+      ? `${edge.replace(/\/$/, "")}/clips/${encodeURIComponent(e.incident_id)}.mp4`
       : null;
 
   return (
@@ -414,23 +439,29 @@ function CaseView({
           {e.incident_id}
         </span>
       </div>
-      <div className="flex flex-col gap-1">
-        <h2 className="ee-display text-[40px]">{e.location}</h2>
-        <span className="font-mono text-[12px] uppercase text-ink-2">
-          {dayTime(e.start_time)} · {e.camera_id} ·{" "}
-          {zoneLabel(site, e.zone_type)} · priority {e.priority.toFixed(2)}
-        </span>
-        <span className="flex flex-wrap gap-x-4 text-[14px] font-bold">
-          <Link
-            href={`/cameras?cam=${encodeURIComponent(e.camera_id)}`}
-            className="text-signal"
-          >
-            Open this camera on the 3D campus
-          </Link>
-          <Link href="/" className="text-signal">
-            Back to Live
-          </Link>
-        </span>
+      <div className="grid items-start gap-3.5 sm:grid-cols-[minmax(0,1fr)_200px]">
+        <div className="flex flex-col gap-1">
+          <h2 className="ee-display text-[40px]">{e.location}</h2>
+          <span className="text-[17px] font-bold">
+            <time dateTime={e.start_time}>{happened(e)}</time>
+          </span>
+          <span className="font-mono text-[12px] uppercase text-ink-2">
+            {e.camera_id} · {zoneLabel(site, e.zone_type)} · priority{" "}
+            {e.priority.toFixed(2)}
+          </span>
+          <span className="flex flex-wrap gap-x-4 text-[14px] font-bold">
+            <Link
+              href={`/cameras?cam=${encodeURIComponent(e.camera_id)}`}
+              className="text-signal"
+            >
+              Open this camera on the 3D campus
+            </Link>
+            <Link href="/" className="text-signal">
+              Back to Live
+            </Link>
+          </span>
+        </div>
+        <IncidentMap camera={camera} />
       </div>
       <div className="grid gap-3.5 min-[1200px]:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
         <figure className="m-0 flex flex-col gap-2">
@@ -469,12 +500,12 @@ function CaseView({
                   }}
                   className="min-h-10 rounded-[2px] bg-signal px-3.5 text-[14px] font-extrabold text-white"
                 >
-                  {clip ? "Back to the peak frame" : "Play 10 s clip on site"}
+                  {clip ? "Back to the peak frame" : "Play the recording"}
                 </button>
                 <span>
                   {clipFailed
-                    ? "No clip for this incident on the edge laptop."
-                    : "10 s clip on the edge laptop · auto-deletes after [N] days · never uploaded"}
+                    ? "No recording of this incident on the edge laptop."
+                    : "The recording stays on the edge laptop. It is never uploaded."}
                 </span>
               </>
             ) : (

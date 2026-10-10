@@ -44,6 +44,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[1]
+CLIPS = Path(__file__).resolve().parent / "clips"  # <incident_id>.mp4, kept on this laptop, never uploaded
 MODEL_DIR = REPO / "model"
 MYT = timezone(timedelta(hours=8))
 
@@ -457,6 +458,46 @@ def make_handler(s: State):
             self.end_headers()
             self.wfile.write(data)
 
+        def _clip(self, name):
+            # Only <incident_id>.mp4 straight inside edge/clips/. Byte ranges so the browser can seek.
+            f = CLIPS / name
+            if "/" in name or not name.endswith(".mp4") or not f.is_file():
+                return self._json({"error": "no clip for this incident on this laptop"}, 404)
+            size = f.stat().st_size
+            start, end = 0, size - 1
+            rng = self.headers.get("Range", "")
+            if rng.startswith("bytes="):
+                a, _, b = rng[6:].split(",")[0].partition("-")
+                start = int(a) if a else max(0, size - int(b or 0))
+                end = min(int(b), size - 1) if a and b else end
+            if start > end:
+                self.send_response(416)
+                self._cors()
+                self.send_header("Content-Range", f"bytes */{size}")
+                self.end_headers()
+                return None
+            self.send_response(206 if rng else 200)
+            self._cors()
+            self.send_header("Content-Type", "video/mp4")
+            self.send_header("Accept-Ranges", "bytes")
+            self.send_header("Content-Length", str(end - start + 1))
+            if rng:
+                self.send_header("Content-Range", f"bytes {start}-{end}/{size}")
+            self.end_headers()
+            try:
+                with f.open("rb") as fh:
+                    fh.seek(start)
+                    left = end - start + 1
+                    while left > 0:
+                        chunk = fh.read(min(1 << 16, left))
+                        if not chunk:
+                            break
+                        self.wfile.write(chunk)
+                        left -= len(chunk)
+            except (BrokenPipeError, ConnectionResetError):
+                pass
+            return None
+
         def do_GET(self):
             path = self.path.split("?")[0]
             a = s.args
@@ -491,7 +532,7 @@ def make_handler(s: State):
                     pass
                 return None
             if path.startswith("/clips/"):
-                return self._json({"error": "clips are not recorded yet"}, 404)
+                return self._clip(path[len("/clips/"):])
             return self._json({"error": "not found"}, 404)
     return H
 
