@@ -42,6 +42,8 @@ const BUFFER = 24;
 /** `since` window: the API filters by start_time, so a window keeps recent incidents' updates flowing. */
 const SINCE_WINDOW_MS = 30 * 60_000;
 const SHIFT_MS = 8 * 3_600_000;
+/** When this page load started (demo mode counts pushes from here). */
+const DEMO_STARTED_AT = Date.now();
 
 export interface BufferEntry {
   at: number; // wall-clock ms when this version arrived
@@ -553,7 +555,8 @@ export function useLiveFeed(
   );
 
   const pushesThisShift = useMemo(() => {
-    const since = Date.now() - SHIFT_MS;
+    // Demo mode: the shift is this demo (since the page loaded), not the stored test history.
+    const since = usingMock ? Math.max(DEMO_STARTED_AT, Date.now() - SHIFT_MS) : Date.now() - SHIFT_MS;
     return events.filter((e) => e.pushed_at && Date.parse(e.pushed_at) >= since)
       .length;
   }, [events]);
