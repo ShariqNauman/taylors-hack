@@ -42,7 +42,7 @@ import { COLORS } from "./theme";
 import type { Campus3DProps } from "./types";
 import { GROUND_URL, geoToLocal, localise, parseGround, type GroundCollection, type XY } from "./geo";
 import { CameraRig, FOV, focusView, homeView, type FlyRequest, type RigApi, type View } from "./rig";
-import { buildingHeight, CampusScene } from "./scene";
+import { buildingHeight, CampusScene, POST_FIGURE_H } from "./scene";
 
 export const CREDIT = "Stylised model · footprints © OpenStreetMap contributors";
 const NARROW = 640;
@@ -282,7 +282,7 @@ export default function Campus3D({
   const columns = useMemo(
     () =>
       !compact && layer === "plan"
-        ? posts.map((p) => ({ id: p.id, at: geoToLocal(p.geo), base: columnBase(p), height: p.incidents4w * 9, count: p.incidents4w, selected: selPost?.id === p.id, onPick: () => setSel({ kind: "post", id: p.id }) }))
+        ? posts.map((p) => ({ id: p.id, at: geoToLocal(p.geo), base: columnBase(p), height: POST_FIGURE_H, count: p.incidents4w, people: 1, selected: selPost?.id === p.id, onPick: () => setSel({ kind: "post", id: p.id }) }))
         : [],
     [compact, layer, posts, selPost?.id, columnBase],
   );
@@ -378,8 +378,13 @@ export default function Campus3D({
           {!compact &&
             layer === "plan" &&
             posts.map((p) => (
-              <Html key={p.id} position={anchor(p.geo, columnBase(p) + p.incidents4w * 9 + 6)} zIndexRange={[20, 15]} style={{ pointerEvents: "none" }}>
-                <PostPin post={p} pos={ZERO} selected={sel?.kind === "post" && sel.id === p.id} onClick={() => setSel({ kind: "post", id: p.id })} />
+              <Html key={p.id} position={anchor(p.geo, columnBase(p) + POST_FIGURE_H + 7)} zIndexRange={[20, 15]} style={{ pointerEvents: "none" }}>
+                <div className="absolute left-0 top-0 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-1">
+                  <PostPin post={p} pos={ZERO} selected={sel?.kind === "post" && sel.id === p.id} onClick={() => setSel({ kind: "post", id: p.id })} />
+                  <span className="pointer-events-none mt-[34px] whitespace-nowrap border border-line bg-white/95 px-1.5 py-[2px] font-mono text-[10px] font-bold text-ink-2">
+                    1 PERSON HERE · {p.incidents4w} INCIDENT{p.incidents4w === 1 ? "" : "S"} IN 4 WKS
+                  </span>
+                </div>
               </Html>
             ))}
         </Canvas>

@@ -517,7 +517,7 @@ export interface SceneProps {
   /** Receives the building pick meshes so pins can be occluded by them. */
   registerOccluders?: (meshes: THREE.Object3D[]) => void;
   route?: [XY, number, XY, number] | null; // guard → camera, with heights
-  columns?: { at: XY; base: number; height: number; count: number; selected: boolean; id: string; onPick: () => void }[];
+  columns?: { at: XY; base: number; height: number; count: number; people: number; selected: boolean; id: string; onPick: () => void }[];
 }
 
 export function CampusScene({ campus, ground, selectedBuildingId, alarmBuildingId, pulse, compact, onPickBuilding, registerOccluders, route, columns }: SceneProps) {
@@ -699,18 +699,60 @@ export function CampusScene({ campus, ground, selectedBuildingId, alarmBuildingI
   );
 }
 
+export const POST_FIGURE_H = 16;
+
 /**
- * A patrol post as a readable bar: one 7 m block per incident in the last 4 weeks
- * (so five blocks = five incidents), on a round base plate, with a slim pole up
- * to the pin. Selected posts go darker and get an ink outline.
+ * A patrol post as a person-shaped marker: a low-poly figure (about 16 m tall at
+ * diorama scale, so it reads from the whole-island view) standing on a round
+ * base plate on the roof. One figure per person to station there. Selected
+ * posts go darker.
  */
-function PostStack({ at, base, count, height, selected, onPick }: { at: XY; base: number; count: number; height: number; selected: boolean; id: string; onPick: () => void }) {
-  const n = Math.max(1, count);
-  const step = height / n; // 9 m per incident
-  const block = step - 1.6;
+function PostStack({ at, base, people, selected, onPick }: { at: XY; base: number; count: number; height: number; people: number; selected: boolean; id: string; onPick: () => void }) {
   const colour = selected ? "#1F35B3" : M.column3d;
+  const skin = "#F3E3CF";
   const x = at[0];
   const z = -at[1];
+  const n = Math.max(1, people);
+  const Figure = ({ dx }: { dx: number }) => (
+    <group position={[x + dx, base + 1, z]}>
+      {/* legs */}
+      <mesh position={[-1.1, 2.6, 0]} castShadow>
+        <cylinderGeometry args={[0.85, 0.95, 5.2, 10]} />
+        <meshStandardMaterial color={colour} roughness={0.8} />
+      </mesh>
+      <mesh position={[1.1, 2.6, 0]} castShadow>
+        <cylinderGeometry args={[0.85, 0.95, 5.2, 10]} />
+        <meshStandardMaterial color={colour} roughness={0.8} />
+      </mesh>
+      {/* torso */}
+      <mesh position={[0, 8.2, 0]} castShadow>
+        <capsuleGeometry args={[2.1, 3.6, 4, 12]} />
+        <meshStandardMaterial color={colour} roughness={0.8} />
+      </mesh>
+      {/* arms */}
+      <mesh position={[-3.0, 8.0, 0]} rotation={[0, 0, 0.22]} castShadow>
+        <capsuleGeometry args={[0.65, 4.2, 3, 8]} />
+        <meshStandardMaterial color={colour} roughness={0.8} />
+      </mesh>
+      <mesh position={[3.0, 8.0, 0]} rotation={[0, 0, -0.22]} castShadow>
+        <capsuleGeometry args={[0.65, 4.2, 3, 8]} />
+        <meshStandardMaterial color={colour} roughness={0.8} />
+      </mesh>
+      {/* head and cap */}
+      <mesh position={[0, 13.0, 0]} castShadow>
+        <sphereGeometry args={[1.9, 16, 12]} />
+        <meshStandardMaterial color={skin} roughness={0.9} />
+      </mesh>
+      <mesh position={[0, 14.0, 0]} castShadow>
+        <sphereGeometry args={[1.95, 16, 8, 0, Math.PI * 2, 0, Math.PI * 0.5]} />
+        <meshStandardMaterial color={colour} roughness={0.8} />
+      </mesh>
+      <mesh position={[0, 13.2, 1.6]} rotation={[0.25, 0, 0]}>
+        <boxGeometry args={[3.2, 0.3, 1.6]} />
+        <meshStandardMaterial color={colour} roughness={0.8} />
+      </mesh>
+    </group>
+  );
   return (
     <group
       onClick={(e) => {
@@ -724,32 +766,17 @@ function PostStack({ at, base, count, height, selected, onPick }: { at: XY; base
         document.body.style.cursor = "";
       }}
     >
-      {/* base plate */}
       <mesh position={[x, base + 0.4, z]} castShadow receiveShadow>
-        <cylinderGeometry args={[7.5, 7.5, 0.8, 32]} />
+        <cylinderGeometry args={[6 + n * 1.5, 6 + n * 1.5, 0.8, 32]} />
         <meshStandardMaterial color="#DDE3FB" roughness={0.9} />
       </mesh>
       <mesh position={[x, base + 0.85, z]}>
-        <cylinderGeometry args={[6.2, 6.2, 0.3, 32]} />
+        <cylinderGeometry args={[4.6 + n * 1.5, 4.6 + n * 1.5, 0.3, 32]} />
         <meshStandardMaterial color={colour} roughness={0.8} />
       </mesh>
-      {/* one block per incident */}
       {Array.from({ length: n }, (_, i) => (
-        <mesh key={i} position={[x, base + 1 + i * step + block / 2, z]} castShadow receiveShadow>
-          <boxGeometry args={[6.5, block, 6.5]} />
-          <meshStandardMaterial color={colour} roughness={0.75} />
-          <Edges threshold={15} color={selected ? "#0B0D10" : "#1F35B3"} lineWidth={1.2} />
-        </mesh>
+        <Figure key={i} dx={(i - (n - 1) / 2) * 6} />
       ))}
-      {/* pole up to the pin */}
-      <mesh position={[x, base + 1 + height + 1.5, z]}>
-        <cylinderGeometry args={[0.25, 0.25, 4, 8]} />
-        <meshStandardMaterial color="#FFFFFF" roughness={0.6} />
-      </mesh>
-      <mesh position={[x, base + 1 + height + 3.6, z]}>
-        <sphereGeometry args={[0.9, 12, 10]} />
-        <meshStandardMaterial color={colour} roughness={0.6} />
-      </mesh>
     </group>
   );
 }
