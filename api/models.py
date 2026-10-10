@@ -322,6 +322,20 @@ class CCTVDomain(BaseModel):
     recall: float
 
 
+class OwnCamera(BaseModel):
+    """Our own recorded videos, scored by the model team (model/proof.json `own_camera`)."""
+    label: Optional[str] = None
+    videos: int
+    fights: int
+    fights_caught: int
+    false_alarms_outside_fights: int
+    minutes_outside_fights: float
+    false_alarms_per_min: float
+    running_segments_to_fight: Optional[str] = None
+    first_fight_lead_time_s: list[float] = Field(default_factory=list)  # negative = warning after the fight began
+    note: Optional[str] = None
+
+
 class Proof(BaseModel):
     datasets: list[str]
     n_clips: int
@@ -341,6 +355,7 @@ class Proof(BaseModel):
     model_card: ModelCard
     disclosure: str
     note: Optional[str] = None
+    own_camera: Optional[OwnCamera] = None
 
 
 # ── Staff ─────────────────────────────────────────────────────────────────────

@@ -389,6 +389,68 @@ export function ProofScreen() {
         </HowItWorks>
       </div>
 
+      {/* ── Measured on our own footage (GET /proof own_camera) ── */}
+      {proof?.own_camera && (() => {
+        const o = proof.own_camera;
+        const after = o.first_fight_lead_time_s.filter((x) => x < 0).map((x) => -x);
+        const before = o.first_fight_lead_time_s.length - after.length;
+        const range = after.length
+          ? `${Math.min(...after)}${Math.max(...after) !== Math.min(...after) ? `–${Math.max(...after)}` : ""} s`
+          : null;
+        return (
+          <section
+            aria-labelledby="own-h"
+            className="flex flex-col gap-3 rounded-[2px] border-2 border-ink bg-white p-4 sm:p-5"
+          >
+            <div className="flex flex-wrap items-center gap-2.5">
+              <h2 id="own-h" className="ee-display text-[30px] leading-none sm:text-[34px]">
+                Tested on our own campus footage
+              </h2>
+              <span className={CHIP_DASHED}>
+                MEASURED · {proof.source === "api" ? "FROM THE API" : "BUNDLED COPY"}
+              </span>
+            </div>
+            <div className="grid gap-2 sm:grid-cols-3">
+              {[
+                {
+                  v: `${o.fights_caught} of ${o.fights}`,
+                  k: `staged fights caught, in ${plural(o.videos, "video")}`,
+                },
+                {
+                  v: `${o.false_alarms_per_min}`,
+                  k: `false alarms a minute outside the fights (${o.false_alarms_outside_fights} in ${o.minutes_outside_fights} min)`,
+                },
+                {
+                  v: range ?? "—",
+                  k: range
+                    ? `after the fight began, the first warning (${after.length} of ${o.first_fight_lead_time_s.length} videos)`
+                    : "first warning: not measured",
+                },
+              ].map((h) => (
+                <div key={h.k} className="flex flex-col gap-0.5 rounded-[2px] border border-line px-3 py-2.5">
+                  <span className="ee-display text-[30px] leading-none" style={{ textTransform: "none" }}>
+                    {h.v}
+                  </span>
+                  <span className="text-[14px] text-ink-2">{h.k}</span>
+                </div>
+              ))}
+            </div>
+            <p className="m-0 text-[14px] leading-[1.5] text-ink-2">
+              Scored by the model team with the live model, each video left out of training.
+              {range ? " The warning comes as the fight starts, not before it: early warning is not shown yet." : ""}
+              {before ? ` In ${plural(before, "video")} the camera was already tense before the fight; that was the scene, not a prediction.` : ""}{" "}
+              {o.note ? `${o.note.charAt(0).toUpperCase()}${o.note.slice(1)}.` : ""}
+            </p>
+          </section>
+        );
+      })()}
+
+      {synthetic && (
+        <p className="m-0 -mb-2 font-mono text-[12px] font-bold uppercase tracking-[0.06em] text-ink-2">
+          Below: what your desk&apos;s answers show once it runs · demo data
+        </p>
+      )}
+
       {/* ── The answer ── */}
       <section
         aria-label="The answer"
@@ -471,8 +533,8 @@ export function ProofScreen() {
                 <span className="font-extrabold">
                   about {testDots} of every 10 fights
                 </span>{" "}
-                ({(testCaught * 100).toFixed(1)}% of {testClips} held-out
-                clips). These are videos it never trained on.
+                ({(testCaught * 100).toFixed(1)}% on the phone-video clips of a{" "}
+                {testClips}-clip hold-out). These are videos it never trained on.
               </span>
               {cctvCaught != null && (
                 <span className="text-[15px] leading-[1.45]">

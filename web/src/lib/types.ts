@@ -234,6 +234,20 @@ export interface Proof {
   };
   disclosure: string;
   note?: string; // "placeholder" until real numbers land; "report-v2" once they do
+  own_camera?: OwnCamera | null; // our own recorded videos, scored by the model team
+}
+
+export interface OwnCamera {
+  label?: string;
+  videos: number;
+  fights: number;
+  fights_caught: number;
+  false_alarms_outside_fights: number;
+  minutes_outside_fights: number;
+  false_alarms_per_min: number;
+  running_segments_to_fight?: string;
+  first_fight_lead_time_s: number[]; // negative = first warning came after the fight began
+  note?: string;
 }
 
 export type Outcome = "sorted" | "hurt" | "backup" | "nothing";

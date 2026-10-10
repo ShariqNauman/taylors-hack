@@ -130,7 +130,24 @@ export const getSite = () => getJson<Site>("/site", "site");
 export const getCameras = () => getJson<Camera[]>("/cameras", "cameras");
 export const getHotspots = () => getJson<Hotspot[]>("/hotspots", "hotspots");
 export const getPatrolPlan = () => getJson<PatrolPlan>("/plan", "plan");
-export const getProof = () => getJson<Proof>("/proof", "proof");
+/**
+ * GET /proof. Test results are the same for every site, so ask the backend even in demo mode
+ * (it serves model/proof.json); the bundled copy is the fallback. `source` says which one answered.
+ */
+export async function getProof(): Promise<Proof & { source: "api" | "bundled" }> {
+  try {
+    const r = await fetch(`${API_URL || "https://earl-eye-backend.onrender.com"}/proof`, {
+      cache: "no-store",
+      signal: AbortSignal.timeout(API_TIMEOUT_MS * 3),
+    });
+    if (r.ok) return { ...((await r.json()) as Proof), source: "api" };
+  } catch {
+    // fall through to the bundled copy
+  }
+  const r = await fetch(mockUrl("proof"), { cache: "no-store" });
+  if (!r.ok) throw new Error(`mock proof failed: ${r.status}`);
+  return { ...((await r.json()) as Proof), source: "bundled" };
+}
 export const getReplay = () => getJson<Event[]>("/replay", "replay");
 
 /** GET /events?since=. The API filters by start_time only (brief §11), so callers also poll without `since`. */
