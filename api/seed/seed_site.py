@@ -56,23 +56,23 @@ def seed():
     """Insert site config into Supabase. Upserts to be idempotent."""
     sb = get_supabase()
 
-    print("Seeding site…")
+    print("Seeding site...")
     sb.table("sites").upsert(SITE, on_conflict="site_id").execute()
 
-    print(f"Seeding {len(ZONES)} zones…")
+    print(f"Seeding {len(ZONES)} zones...")
     # Delete existing zones first (no natural key), then insert
     sb.table("zones").delete().eq("site_id", "TAYLORS-LK").execute()
     sb.table("zones").insert(ZONES).execute()
 
-    print(f"Seeding {len(CAMERAS)} cameras…")
+    print(f"Seeding {len(CAMERAS)} cameras...")
     for cam in CAMERAS:
         sb.table("cameras").upsert(cam, on_conflict="camera_id").execute()
 
-    print(f"Seeding {len(STAFF)} staff…")
+    print(f"Seeding {len(STAFF)} staff...")
     for s in STAFF:
         sb.table("staff").upsert(s, on_conflict="staff_id").execute()
 
-    print("✅ Site seed complete.")
+    print("[OK] Site seed complete.")
 
 
 if __name__ == "__main__":

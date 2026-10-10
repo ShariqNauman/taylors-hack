@@ -75,7 +75,7 @@ def seed():
     }
 
     sb.table("proof").upsert(row, on_conflict="id").execute()
-    print("✅ Proof seed complete! (Marked with note: 'placeholder')")
+    print("[OK] Proof seed complete! (Marked with note: 'placeholder')")
 
 
 if __name__ == "__main__":

@@ -6,11 +6,15 @@ Never commit actual values.
 """
 
 import os
+from dotenv import load_dotenv
+
+# Load local .env if present
+load_dotenv()
 
 
 # ── Supabase ──────────────────────────────────────────────────────────────────
 SUPABASE_URL: str = os.getenv("SUPABASE_URL", "")
-SUPABASE_KEY: str = os.getenv("SUPABASE_KEY", "")  # service-role key
+SUPABASE_KEY: str = os.getenv("SUPABASE_KEY", "")  # service-role or anon key
 
 # ── Anthropic (SHOULD: weekly report only) ────────────────────────────────────
 ANTHROPIC_API_KEY: str = os.getenv("ANTHROPIC_API_KEY", "")

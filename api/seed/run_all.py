@@ -24,7 +24,7 @@ from api.seed.seed_site import seed as seed_site
 
 def run_all():
     print("========================================")
-    print("🚀 EarlyEye: Starting Full Database Seed")
+    print("EarlyEye: Starting Full Database Seed")
     print("========================================")
 
     print("\n[Step 1/3] Seeding Site, Zones, Cameras & Staff...")
@@ -37,7 +37,7 @@ def run_all():
     seed_history()
 
     print("\n========================================")
-    print("🎉 All seeds executed successfully!")
+    print("[SUCCESS] All seeds executed successfully!")
     print("========================================")
 
 

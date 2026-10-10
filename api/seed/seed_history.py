@@ -195,7 +195,7 @@ def seed():
         print(f"Inserting batch {i//batch_size + 1} ({len(batch)} rows)...")
         sb.table("events").insert(batch).execute()
 
-    print("✅ Seed history complete! Planted patterns ready for demo.")
+    print("[OK] Seed history complete! Planted patterns ready for demo.")
 
 
 if __name__ == "__main__":
