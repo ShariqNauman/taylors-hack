@@ -1,6 +1,9 @@
 import { promises as fs } from "fs";
 import path from "path";
 import { NextResponse } from "next/server";
+import { readStore } from "@/lib/server/local-store";
+import { withStore } from "@/lib/server/mock-plan";
+import type { PatrolPlan } from "@/lib/types";
 
 const ALLOWED = new Set([
   "site",
@@ -77,8 +80,17 @@ export async function GET(
     return NextResponse.json({ error: "unknown mock" }, { status: 404 });
   }
   const file = path.join(process.cwd(), "public", "mock", `${name}.json`);
-  const data = JSON.parse(await fs.readFile(file, "utf8"));
-  return NextResponse.json(rebase(name, data), {
+  let data = rebase(name, JSON.parse(await fs.readFile(file, "utf8")));
+  // Shared demo store: labels and guard taps made on any device that uses this server.
+  if (name === "events" && Array.isArray(data)) {
+    const { events } = await readStore();
+    data = data.map((e: Json) => {
+      const o = events[String(e.incident_id)];
+      return o ? { ...e, ...o } : e;
+    });
+  }
+  if (name === "plan") data = await withStore(data as PatrolPlan);
+  return NextResponse.json(data, {
     headers: { "Cache-Control": "no-store" },
   });
 }
