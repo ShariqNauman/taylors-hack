@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>EarlyEye push card</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Mono:wght@400;500;700&amp;family=Atkinson+Hyperlegible+Next:wght@400;500;700;800&amp;display=swap">
+<style>
+body{margin:0;background:#FFFFFF}
+a{color:#1E3A8A}a:hover{color:#142A66}
+button{font-family:inherit}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; overflow: hidden; font-family: 'Atkinson Hyperlegible Next', system-ui, sans-serif; color: #0F1419; background: #FFFFFF; display: flex; flex-direction: column">
+
+<div style="padding: 14px 18px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #D9DDE3">
+<div style="display: flex; align-items: center; gap: 8px">
+<svg width="24" height="24" viewBox="0 0 32 32" aria-hidden="true"><path d="M3 16c3.5-6 8-9 13-9s9.5 3 13 9c-3.5 6-8 9-13 9s-9.5-3-13-9z" fill="none" stroke="#0F1419" stroke-width="2.5" stroke-linejoin="round"></path><circle cx="16" cy="16" r="4.5" fill="#0F1419"></circle></svg>
+<span style="font-size: 17px; font-weight: 800">EarlyEye</span>
+</div>
+<span style="font-size: 14px; color: #3A4350">Guard B · on duty</span>
+</div>
+
+<sc-if value="{{isWaiting}}" hint-placeholder-val="{{ true }}">
+<div style="flex: 1 1 auto; display: flex; flex-direction: column">
+<div style="background: #C8241B; color: #FFFFFF; padding: 20px 18px; display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; align-items: center; justify-content: space-between; gap: 8px">
+<span style="display: inline-flex; align-items: center; gap: 10px; font-size: 30px; font-weight: 800; line-height: 1"><svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 22 12 12 22 2 12z" fill="#FFFFFF"></path></svg>Fight likely</span>
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 14px; font-weight: 700">14:31:06</span>
+</div>
+<div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap">
+<span style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 6px; border: 2px solid #FFFFFF; font-size: 15px; font-weight: 800"><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linejoin="round"></path></svg>Fight</span>
+<span style="font-size: 16px; font-weight: 700">in ~6 s</span>
+</div>
+</div>
+
+<div style="padding: 18px; display: flex; flex-direction: column; gap: 14px; flex: 1 1 auto">
+<div style="display: flex; flex-direction: column; gap: 4px">
+<div style="font-size: 32px; font-weight: 800; line-height: 1.1">Block C stairwell</div>
+<div style="font-size: 16px; color: #3A4350">~40 m from you · 2 people</div>
+</div>
+<p style="margin: 0; font-size: 20px; line-height: 1.4; font-weight: 500">Wrist speed spiked; distance below 0.5 torso-lengths for 1.2 s.</p>
+<div style="font-size: 18px; font-weight: 800">Go now. Call the security lead if it spreads.</div>
+
+<div style="display: flex; align-items: center; gap: 14px; margin-top: auto">
+<svg width="76" height="76" viewBox="0 0 80 80" role="img" aria-label="{{ringAria}}">
+<circle cx="40" cy="40" r="34" fill="none" stroke="#EEF0F3" stroke-width="8"></circle>
+<circle cx="40" cy="40" r="34" fill="none" stroke="#0F1419" stroke-width="8" stroke-linecap="round" stroke-dasharray="213.6" stroke-dashoffset="{{ringOffset}}" transform="rotate(-90 40 40)"></circle>
+<text x="40" y="47" text-anchor="middle" font-family="'Atkinson Hyperlegible Mono', monospace" font-size="22" font-weight="700" fill="#0F1419">{{left}}</text>
+</svg>
+<div style="font-size: 15px; line-height: 1.4; color: #3A4350">seconds to answer. Only you were pushed; the desk sees your answer.</div>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 10px">
+<button type="button" onClick="{{confirm}}" style="min-height: 64px; border-radius: 12px; border: none; background: #0F1419; color: #FFFFFF; font-size: 21px; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 10px"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path></svg>Confirm: going</button>
+<button type="button" onClick="{{dismiss}}" style="min-height: 64px; border-radius: 12px; border: 2px solid #0F1419; background: #FFFFFF; color: #0F1419; font-size: 21px; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 10px"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="#0F1419" stroke-width="3" stroke-linecap="round"></path></svg>Dismiss: false alarm</button>
+</div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{isDone}}" hint-placeholder-val="{{ false }}">
+<div style="flex: 1 1 auto; padding: 28px 22px; display: flex; flex-direction: column; gap: 18px; justify-content: center; background: {{doneBg}}">
+<div style="width: 88px; height: 88px; border-radius: 50%; background: {{doneIconBg}}; display: flex; align-items: center; justify-content: center">
+<svg width="44" height="44" viewBox="0 0 24 24" aria-hidden="true"><path d="{{doneIcon}}" fill="none" stroke="{{doneIconFg}}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+</div>
+<div style="font-size: 32px; font-weight: 800; line-height: 1.15">{{doneTitle}}</div>
+<p style="margin: 0; font-size: 19px; line-height: 1.45; color: #3A4350">{{doneBody}}</p>
+<div style="font-size: 15px; color: #3A4350; border-top: 1px solid #D9DDE3; padding-top: 14px">Block C stairwell · INC-2026-00142</div>
+</div>
+</sc-if>
+
+<div style="padding: 12px 18px 16px; border-top: 1px solid #D9DDE3; display: flex; align-items: center; justify-content: space-between; gap: 10px">
+<span style="font-size: 13px; color: #5A6472">Prototype control</span>
+<button type="button" onClick="{{replay}}" style="min-height: 44px; padding: 0 14px; border-radius: 8px; border: 1px dashed #8A93A0; background: #FFFFFF; font-size: 14px; font-weight: 700; cursor: pointer">Replay push with 10 s countdown</button>
+</div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"view":{"editor":"enum","options":["waiting","confirmed","dismissed","timeout"],"default":"waiting"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { view: (props && props.view) || 'waiting', left: 7 };
+  }
+  componentDidUpdate(prev) {
+    if (prev.view !== this.props.view) { this.stop(); this.setState({ view: this.props.view || 'waiting', left: 7 }); }
+  }
+  componentWillUnmount() { this.stop(); }
+  stop() { if (this.timer) { clearInterval(this.timer); this.timer = null; } }
+  run() {
+    this.stop();
+    this.setState({ view: 'waiting', left: 10 });
+    this.timer = setInterval(() => {
+      const l = this.state.left - 1;
+      if (l <= 0) { this.stop(); this.setState({ left: 0, view: 'timeout' }); return; }
+      this.setState({ left: l });
+    }, 1000);
+  }
+  renderVals() {
+    const v = this.state.view;
+    const left = this.state.left;
+    const C = 213.6;
+    const DONE = {
+      confirmed: { title: 'Confirmed. The desk knows you are going.', body: 'Saved as a real incident for this camera. Tell the desk what happened when you can.', icon: 'M4 12.5l5 5L20 6.5', bg: '#FFFFFF', iconBg: '#0F1419', iconFg: '#FFFFFF' },
+      dismissed: { title: 'Dismissed. Thank you.', body: 'Saved as a false alarm. Labels like this one retune this camera so it pings you less.', icon: 'M6 6l12 12M18 6L6 18', bg: '#FFFFFF', iconBg: '#EEF0F3', iconFg: '#0F1419' },
+      timeout: { title: 'No answer in 10 s.', body: 'The desk can see you did not answer and will call you by radio.', icon: 'M12 7v6M12 16.5v.5', bg: '#F4F5F7', iconBg: '#FFFFFF', iconFg: '#0F1419' }
+    };
+    const d = DONE[v] || DONE.confirmed;
+    return {
+      isWaiting: v === 'waiting', isDone: v !== 'waiting',
+      left: String(left), ringOffset: String(Math.round(C * (1 - left / 10) * 10) / 10),
+      ringAria: left + ' seconds left to answer',
+      doneTitle: d.title, doneBody: d.body, doneIcon: d.icon, doneBg: d.bg, doneIconBg: d.iconBg, doneIconFg: d.iconFg,
+      confirm: () => { this.stop(); this.setState({ view: 'confirmed' }); },
+      dismiss: () => { this.stop(); this.setState({ view: 'dismissed' }); },
+      replay: () => this.run()
+    };
+  }
+}
+</script>
+</body>
+</html>

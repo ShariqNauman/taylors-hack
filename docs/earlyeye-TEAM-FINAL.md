@@ -131,6 +131,8 @@ Edge may set everything **except** `pushed_to, pushed_at, acked_at, status, staf
 
 **Heartbeat** (`POST /cameras/heartbeat`, every 10 s from the edge): `{ camera_id, last_frame_at, black: false }`. `black_since` is computed on read: `now − last_frame_at > 60 s` or `black: true`. Seeded demo cameras without a laptop carry fixed values; one is black 3 days.
 
+**v3 optional additions (10 Oct design handoff; the dashboard renders without them):** Event `snapshot` and `peak_snapshot` = `{ t, people: [{ id, kp: [[x, y, conf] × 12] }] }`, x and y normalised 0–1, the 12 body keypoints only (no face points). Event `top_features` = `[{ name, value }]`. Heartbeat may add `people_count` and `edge_url` (that laptop's edge app on the local network: `/health`, `/stream.mjpg`, `/clips/<incident_id>.mp4`); Camera returns both, and the dashboard uses `edge_url` only in the on-site view. Cameras are 4 real laptop webcams (laptop 1 = `CAM-BC-03`, the live demo camera) plus `CAM-HC-02` seeded black; no recorded or stock video anywhere. Camera `map: { x, y, heading_deg? }` and Site `map: { image, width, height }` plus `staff[].post: { x, y }` position cameras and posts on the schematic site plan (`design/assets/site-plan-taylors-lakeside.svg`). Seed values are in `docs/frontend-build-brief.md`.
+
 **Site** (`GET /site`): `{ site_id, name, site_type, zones: [{zone_type, label, risk}], staff: [{name, zone_type, on_duty}] }`. Edge fetches this at startup for `zone_risk` and `nearest_staff` (the on-duty person assigned to that zone, else the first on duty).
 
 **Labels / ack** (`PATCH /events/:id`): operator on Live sends `status: confirmed|dismissed|resolved` (+ `staff_note`); the phone sends `acked_at` only. Response time = `acked_at − pushed_at`.

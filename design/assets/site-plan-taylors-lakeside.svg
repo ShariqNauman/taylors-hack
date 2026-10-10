@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 480" width="800" height="480" role="img" aria-label="Schematic site plan of the demo site, not to scale">
+  <!-- Schematic only, not to scale. Camera and guard positions are NOT drawn here: the dashboard
+       overlays them from cameras[].map and site.staff[].post (0–1 of this 800 x 480 frame). -->
+  <rect x="0" y="0" width="800" height="480" fill="#F7F8FA"/>
+  <path d="M0 230H800M330 0V480M580 0V300" stroke="#E6E8EC" stroke-width="18" fill="none"/>
+  <path d="M600 330C640 300 740 300 780 340C800 380 770 450 700 460C640 465 600 430 595 390C592 365 590 345 600 330Z" fill="#E3ECF6" stroke="#C7D5E6" stroke-width="2"/>
+  <text x="672" y="398" font-family="Atkinson Hyperlegible Mono, ui-monospace, monospace" font-size="13" font-weight="700" fill="#5D6672">LAKE</text>
+  <rect x="40" y="40" width="260" height="150" fill="#FFFFFF" stroke="#B4BAC3" stroke-width="2"/>
+  <path d="M40 115H300" stroke="#DCDFE4" stroke-width="2" stroke-dasharray="6 4"/>
+  <text x="52" y="64" font-family="Atkinson Hyperlegible Mono, ui-monospace, monospace" font-size="13" font-weight="700" fill="#3A414B">HOSTEL U BLOCK</text>
+  <text x="52" y="178" font-family="Atkinson Hyperlegible Mono, ui-monospace, monospace" font-size="11" fill="#5D6672">CORRIDORS L3 AND L5</text>
+  <rect x="360" y="40" width="200" height="160" fill="#FFFFFF" stroke="#B4BAC3" stroke-width="2"/>
+  <path d="M515 150h45v50h-45zM515 160h45M515 170h45M515 180h45M515 190h45" stroke="#B4BAC3" stroke-width="1.5" fill="none"/>
+  <text x="372" y="64" font-family="Atkinson Hyperlegible Mono, ui-monospace, monospace" font-size="13" font-weight="700" fill="#3A414B">BLOCK C</text>
+  <text x="452" y="146" font-family="Atkinson Hyperlegible Mono, ui-monospace, monospace" font-size="11" fill="#5D6672">STAIRS</text>
+  <rect x="360" y="260" width="200" height="130" fill="#FFFFFF" stroke="#B4BAC3" stroke-width="2"/>
+  <text x="372" y="284" font-family="Atkinson Hyperlegible Mono, ui-monospace, monospace" font-size="13" font-weight="700" fill="#3A414B">CANTEEN</text>
+  <rect x="600" y="40" width="170" height="230" fill="#FFFFFF" stroke="#B4BAC3" stroke-width="2" stroke-dasharray="8 5"/>
+  <path d="M620 80h40M620 110h40M620 140h40M620 170h40M620 200h40M710 80h40M710 110h40M710 140h40M710 170h40M710 200h40" stroke="#DCDFE4" stroke-width="2"/>
+  <text x="612" y="64" font-family="Atkinson Hyperlegible Mono, ui-monospace, monospace" font-size="13" font-weight="700" fill="#3A414B">CAR PARK B</text>
+  <rect x="40" y="270" width="260" height="170" fill="#FFFFFF" stroke="#B4BAC3" stroke-width="2"/>
+  <path d="M60 290h220v130h-220zM170 290v130" stroke="#DCDFE4" stroke-width="2" fill="none"/>
+  <circle cx="170" cy="355" r="22" fill="none" stroke="#DCDFE4" stroke-width="2"/>
+  <text x="52" y="460" font-family="Atkinson Hyperlegible Mono, ui-monospace, monospace" font-size="13" font-weight="700" fill="#3A414B">SPORTS COURT</text>
+</svg>

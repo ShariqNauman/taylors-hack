@@ -1,0 +1,339 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>EarlyEye v3 Proof</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Mono:wght@400;500;700&amp;family=Atkinson+Hyperlegible+Next:wght@400;500;700;800&amp;family=Saira+Condensed:wght@600;700;800&amp;display=swap">
+<style>
+body{margin:0;background:#F1F2F4}
+a{color:#2742D9}a:hover{color:#1F35B3}
+button{font-family:inherit}
+</style>
+</helmet>
+<div style="font-family: 'Atkinson Hyperlegible Next', system-ui, sans-serif; color: #0B0D10; background: #F1F2F4; min-height: 100vh; box-sizing: border-box">
+
+<header style="background: #FFFFFF; border-bottom: 1px solid #DCDFE4">
+<div style="max-width: 1680px; margin: 0 auto; padding: 10px 24px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 22px">
+<a href="L3Live.dc.html" style="display: flex; align-items: center; gap: 10px; text-decoration: none; color: #0B0D10">
+<svg width="28" height="28" viewBox="0 0 32 32" aria-hidden="true"><path d="M3 16c3.5-6 8-9 13-9s9.5 3 13 9c-3.5 6-8 9-13 9s-9.5-3-13-9z" fill="none" stroke="#0B0D10" stroke-width="2.5" stroke-linejoin="round"></path><circle cx="16" cy="16" r="4.5" fill="#0B0D10"></circle></svg>
+<span style="font-family: 'Saira Condensed', sans-serif; font-size: 26px; font-weight: 800; letter-spacing: 0.04em">EARLYEYE</span>
+</a>
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 13px; color: #5D6672">TAYLOR'S LAKESIDE · 6 CAMERAS</span>
+<nav aria-label="Main" style="display: flex; gap: 2px; flex-wrap: wrap">
+<a href="L3Live.dc.html" style="font-size: 15px; font-weight: 700; padding: 10px 14px; color: #3A414B; text-decoration: none">Live</a>
+<a href="L3Cameras.dc.html" style="font-size: 15px; font-weight: 700; padding: 10px 14px; color: #3A414B; text-decoration: none">Cameras</a>
+<a href="L3Plan.dc.html" style="font-size: 15px; font-weight: 700; padding: 10px 14px; color: #3A414B; text-decoration: none">Plan</a>
+<a href="L3Incidents.dc.html" style="font-size: 15px; font-weight: 700; padding: 10px 14px; color: #3A414B; text-decoration: none">Incidents</a>
+<a href="L3Proof.dc.html" aria-current="page" style="font-size: 15px; font-weight: 700; padding: 10px 14px; border-radius: 2px; background: #0B0D10; color: #FFFFFF; text-decoration: none">Proof</a>
+</nav>
+</div>
+</header>
+
+<div role="note" style="background: #FFFFFF; border-bottom: 1px solid #DCDFE4">
+<div style="max-width: 1680px; margin: 0 auto; padding: 12px 24px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px">
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; padding: 4px 10px; background: #0B0D10; color: #FFFFFF; border-radius: 1px">SOURCE: MODEL REPORT V2</span>
+<span style="font-size: 15px">Dataset numbers are real, from 600 public RLVS clips. Live room, CCTV angle, lead time and night are not measured yet, and this page says so.</span>
+</div>
+</div>
+
+<main style="max-width: 1680px; margin: 0 auto; padding: 24px 24px 56px; display: flex; flex-direction: column; gap: 24px">
+
+<div style="display: flex; flex-direction: column; gap: 6px; max-width: 980px">
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; color: #5D6672; letter-spacing: 0.08em">EVIDENCE · WHAT IS PROVEN, WHAT IS NOT</span>
+<h1 style="margin: 0; font-family: 'Saira Condensed', sans-serif; font-size: 64px; font-weight: 800; text-transform: uppercase; line-height: 0.92">Can we prove it?</h1>
+<p style="margin: 0; font-size: 17px; line-height: 1.5; color: #3A414B">Proven numbers on the left, honest gaps on the right. A dataset score says nothing about your camera until we measure it there.</p>
+</div>
+
+<section aria-labelledby="proven-h" style="display: flex; flex-direction: column; gap: 10px">
+<h2 id="proven-h" style="margin: 0; font-family: 'Saira Condensed', sans-serif; font-size: 30px; font-weight: 800; text-transform: uppercase">Proven on public clips</h2>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 10px">
+<sc-for list="{{proven}}" as="t" hint-placeholder-count="5">
+<div style="background: #FFFFFF; border: {{t.border}}; border-radius: 2px; padding: 16px; display: flex; flex-direction: column; gap: 6px">
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; color: #5D6672">{{t.k}}</span>
+<span style="font-family: 'Saira Condensed', sans-serif; font-size: 52px; font-weight: 800; line-height: 0.9">{{t.v}}</span>
+<span style="font-size: 13px; line-height: 1.45; color: #3A414B">{{t.sub}}</span>
+</div>
+</sc-for>
+</div>
+</section>
+
+<section aria-labelledby="gap-h" style="display: flex; flex-direction: column; gap: 10px">
+<h2 id="gap-h" style="margin: 0; font-family: 'Saira Condensed', sans-serif; font-size: 30px; font-weight: 800; text-transform: uppercase">Not measured yet</h2>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 10px">
+<sc-for list="{{gaps}}" as="g" hint-placeholder-count="5">
+<div style="background: repeating-linear-gradient(135deg, #FFFFFF 0 10px, #F4F5F7 10px 20px); border: 1px dashed #5D6672; border-radius: 2px; padding: 16px; display: flex; flex-direction: column; gap: 6px">
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; color: #3A414B">{{g.k}}</span>
+<span style="font-family: 'Saira Condensed', sans-serif; font-size: 34px; font-weight: 800; line-height: 1; color: #3A414B">NOT MEASURED</span>
+<span style="font-size: 13px; line-height: 1.45; background: #FFFFFF; padding: 4px 6px">{{g.need}}</span>
+</div>
+</sc-for>
+</div>
+</section>
+
+<section aria-labelledby="ins-h" style="background: #FFFFFF; border: 1px solid #DCDFE4; border-radius: 2px; padding: 16px; display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 10px">
+<h2 id="ins-h" style="margin: 0; font-family: 'Saira Condensed', sans-serif; font-size: 30px; font-weight: 800; text-transform: uppercase">Watch the model</h2>
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; color: #5D6672">CAUGHT, MISSED, AND NOT TESTED</span>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start">
+<figure style="flex: 3 1 520px; min-width: 0; margin: 0; display: flex; flex-direction: column; gap: 10px">
+<div style="position: relative">
+<span style="position: absolute; left: -5px; top: -5px; width: 18px; height: 18px; border-left: 2px solid #0B0D10; border-top: 2px solid #0B0D10"></span>
+<span style="position: absolute; right: -5px; top: -5px; width: 18px; height: 18px; border-right: 2px solid #0B0D10; border-top: 2px solid #0B0D10"></span>
+<span style="position: absolute; left: -5px; bottom: -5px; width: 18px; height: 18px; border-left: 2px solid #0B0D10; border-bottom: 2px solid #0B0D10"></span>
+<span style="position: absolute; right: -5px; bottom: -5px; width: 18px; height: 18px; border-right: 2px solid #0B0D10; border-bottom: 2px solid #0B0D10"></span>
+<svg viewBox="0 0 640 360" role="img" aria-label="{{cur.aria}}" style="display: block; width: 100%; height: auto">
+<rect x="0" y="0" width="640" height="360" fill="#0E1217"></rect>
+<path d="{{grid}}" stroke="#1A2028" stroke-width="1" fill="none"></path>
+<line x1="0" y1="318" x2="640" y2="318" stroke="#36404C" stroke-width="2"></line>
+<rect x="{{cur.boxX}}" y="{{cur.boxY}}" width="{{cur.boxW}}" height="{{cur.boxH}}" fill="none" stroke="{{cur.boxColor}}" stroke-width="2.5" stroke-dasharray="{{cur.dash}}"></rect>
+<path d="{{cur.cyan}}" stroke="#7FE0FF" stroke-width="4" stroke-linecap="round" fill="none"></path>
+<path d="{{cur.violet}}" stroke="#C9A7FF" stroke-width="4" stroke-linecap="round" fill="none"></path>
+<path d="{{cur.joints}}" fill="#FFFFFF"></path>
+<text x="18" y="34" font-family="'Atkinson Hyperlegible Mono', monospace" font-size="13" font-weight="700" fill="#ECEFF3">{{cur.source}}</text>
+<text x="622" y="34" text-anchor="end" font-family="'Atkinson Hyperlegible Mono', monospace" font-size="13" font-weight="700" fill="{{cur.boxColor}}">{{cur.verdict}}</text>
+<text x="18" y="342" font-family="'Atkinson Hyperlegible Mono', monospace" font-size="12" fill="#AEB7C2">ILLUSTRATION · REAL KEYPOINTS LOAD FROM THE TEST SET</text>
+</svg>
+</div>
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px">
+<button type="button" onClick="{{play}}" style="min-width: 96px; height: 40px; padding: 0 14px; border-radius: 2px; border: none; background: #2742D9; color: #FFFFFF; font-size: 14px; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px"><svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{playIcon}}" fill="#FFFFFF"></path></svg>{{playLabel}}</button>
+<div style="flex: 1 1 200px; position: relative; height: 8px; background: #DCDFE4; border-radius: 1px"><span style="position: absolute; left: 0; top: 0; bottom: 0; width: {{progress}}; background: #2742D9"></span></div>
+</div>
+</figure>
+<div style="flex: 2 1 320px; min-width: 0; display: flex; flex-direction: column; gap: 10px">
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px">
+<div style="background: #F7F8FA; border: 1px solid #DCDFE4; border-radius: 2px; padding: 12px; display: flex; flex-direction: column; gap: 4px"><span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 11px; font-weight: 700; color: #5D6672; letter-spacing: 0.06em">GROUND TRUTH</span><span style="font-size: 20px; font-weight: 800">{{cur.truth}}</span></div>
+<div style="background: #F7F8FA; border: 2px solid {{cur.modelBorder}}; border-radius: 2px; padding: 12px; display: flex; flex-direction: column; gap: 4px"><span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 11px; font-weight: 700; color: #5D6672; letter-spacing: 0.06em">MODEL SAID</span><span style="font-size: 18px; font-weight: 800">{{cur.model}}</span></div>
+</div>
+<div style="background: #F7F8FA; border: 1px solid #DCDFE4; border-radius: 2px; padding: 12px; display: flex; flex-direction: column; gap: 6px">
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 11px; font-weight: 700; color: #5D6672; letter-spacing: 0.06em">WHY</span>
+<span style="font-size: 15px; line-height: 1.45">{{cur.why}}</span>
+</div>
+</div>
+</div>
+<div role="group" aria-label="Test clips" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 8px">
+<sc-for list="{{clips}}" as="c" hint-placeholder-count="5">
+<button type="button" onClick="{{c.pick}}" aria-pressed="{{c.pressed}}" style="text-align: left; padding: 8px; border-radius: 2px; border: {{c.border}}; background: #FFFFFF; color: #0B0D10; cursor: pointer; display: flex; flex-direction: column; gap: 6px">
+<svg viewBox="0 0 640 360" aria-hidden="true" style="display: block; width: 100%; height: auto; background: #0E1217">
+<path d="{{c.cyan}}" stroke="#7FE0FF" stroke-width="8" stroke-linecap="round" fill="none"></path>
+<path d="{{c.violet}}" stroke="#C9A7FF" stroke-width="8" stroke-linecap="round" fill="none"></path>
+</svg>
+<span style="font-size: 14px; font-weight: 800">{{c.name}}</span>
+<span style="align-self: flex-start; font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 11px; font-weight: 700; padding: 1px 6px; border-radius: 1px; background: {{c.tagBg}}; color: {{c.tagFg}}">{{c.tag}}</span>
+</button>
+</sc-for>
+</div>
+</section>
+
+<section aria-label="Explain" style="display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-start">
+<div style="flex: 1 1 520px; min-width: 0; background: #FFFFFF; border: 1px solid #DCDFE4; border-radius: 2px; padding: 18px; display: flex; flex-direction: column; gap: 12px">
+<h2 style="margin: 0; font-family: 'Saira Condensed', sans-serif; font-size: 28px; font-weight: 800; text-transform: uppercase">What the model leans on</h2>
+<span style="font-size: 13px; color: #3A414B">Share of LightGBM gain. This is where the reason sentence on each alert comes from.</span>
+<sc-for list="{{importance}}" as="f" hint-placeholder-count="5">
+<div style="display: grid; grid-template-columns: 170px minmax(0, 1fr) 48px; gap: 10px; align-items: center">
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 13px">{{f.name}}</span>
+<span style="height: 14px; background: #F1F2F4"><span style="display: block; height: 14px; width: {{f.w}}; background: #0B0D10"></span></span>
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 14px; font-weight: 700; text-align: right">{{f.v}}</span>
+</div>
+</sc-for>
+<span style="font-size: 13px; color: #3A414B">One feature carries almost half the weight. That is why arm-only fights get missed.</span>
+</div>
+<div style="flex: 1 1 520px; min-width: 0; background: #FFFFFF; border: 1px solid #DCDFE4; border-radius: 2px; padding: 18px; display: flex; flex-direction: column; gap: 12px">
+<h2 style="margin: 0; font-family: 'Saira Condensed', sans-serif; font-size: 28px; font-weight: 800; text-transform: uppercase">Dataset against live room</h2>
+<div style="overflow-x: auto">
+<table style="width: 100%; min-width: 480px; border-collapse: collapse; font-size: 14px">
+<thead><tr style="text-align: left; border-bottom: 2px solid #0B0D10">
+<th scope="col" style="padding: 8px 10px; font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 11px; color: #5D6672">TEST</th>
+<th scope="col" style="padding: 8px 10px; font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 11px; color: #5D6672">FIGHTS CAUGHT</th>
+<th scope="col" style="padding: 8px 10px; font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 11px; color: #5D6672">CALM FLAGGED</th>
+</tr></thead>
+<tbody>
+<tr style="border-bottom: 1px solid #DCDFE4"><th scope="row" style="padding: 10px; text-align: left">RLVS clips, split by video</th><td style="padding: 10px; font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace">82%</td><td style="padding: 10px; font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace">~20%</td></tr>
+<tr style="border-bottom: 1px solid #DCDFE4"><th scope="row" style="padding: 10px; text-align: left">Live logic replayed on RLVS</th><td style="padding: 10px; font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace">75.7%</td><td style="padding: 10px; font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace">13.7%</td></tr>
+<tr style="border-bottom: 1px solid #DCDFE4; background: #F7F8FA"><th scope="row" style="padding: 10px; text-align: left">Our venue, live camera</th><td style="padding: 10px; color: #5D6672">not measured</td><td style="padding: 10px; color: #5D6672">not measured</td></tr>
+<tr style="background: #F7F8FA"><th scope="row" style="padding: 10px; text-align: left">CCTV angle, held out</th><td style="padding: 10px; color: #5D6672">not measured</td><td style="padding: 10px; color: #5D6672">not measured</td></tr>
+</tbody>
+</table>
+</div>
+<div style="display: flex; gap: 10px; align-items: flex-start; border: 1px solid #0B0D10; border-radius: 2px; padding: 10px 12px">
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 11px; font-weight: 700; padding: 3px 8px; background: #0B0D10; color: #FFFFFF; border-radius: 1px; white-space: nowrap">LESSON</span>
+<span style="font-size: 14px; line-height: 1.5">Practice run: 100% on KTH, zero live until retuned. RLVS clips are 5 s long; a continuous camera is not.</span>
+</div>
+</div>
+</section>
+
+<section aria-label="Limits" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 12px">
+<div style="background: #FFFFFF; border: 1px solid #DCDFE4; border-radius: 2px; padding: 16px; display: flex; flex-direction: column; gap: 8px">
+<h2 style="margin: 0; font-family: 'Saira Condensed', sans-serif; font-size: 26px; font-weight: 800; text-transform: uppercase">Known weaknesses</h2>
+<ol style="margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 6px; font-size: 14px; line-height: 1.45">
+<li>One feature carries 47% of the gain. Arm-only fights get missed.</li>
+<li>Pair features are missing 24% to 77% of the time when only one person is tracked.</li>
+<li>No own or CCTV clips. No hug-against-fight evidence.</li>
+<li>Live thresholds were tuned in simulation on RLVS, not on a webcam.</li>
+<li>0.876 is the best of 20 settings on the same folds, so slightly optimistic.</li>
+</ol>
+</div>
+<div style="background: #FFFFFF; border: 2px solid #0B0D10; border-radius: 2px; padding: 16px; display: flex; flex-direction: column; gap: 8px">
+<h2 style="margin: 0; font-family: 'Saira Condensed', sans-serif; font-size: 26px; font-weight: 800; text-transform: uppercase">We claim</h2>
+<ul style="margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 6px; font-size: 14px; line-height: 1.45">
+<li>Physical fights from body pose, 0.876 clip AUC on held-out public clips.</li>
+<li>12 body keypoints per person. No face points, no identities.</li>
+<li>The site's video stays on site.</li>
+</ul>
+</div>
+<div style="background: #FFFFFF; border: 1px dashed #5D6672; border-radius: 2px; padding: 16px; display: flex; flex-direction: column; gap: 8px">
+<h2 style="margin: 0; font-family: 'Saira Condensed', sans-serif; font-size: 26px; font-weight: 800; text-transform: uppercase">We do not claim</h2>
+<ul style="margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 6px; font-size: 14px; line-height: 1.45; color: #3A414B">
+<li>Early warning before a shove, until lead time is measured.</li>
+<li>Any live-room accuracy or false-alarm rate yet.</li>
+<li>Verbal or online bullying. Night or IR. Weapons.</li>
+</ul>
+</div>
+</section>
+
+<section aria-labelledby="card-h" style="background: #FFFFFF; border: 1px solid #DCDFE4; border-radius: 2px; padding: 18px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px">
+<h2 id="card-h" style="margin: 0; font-family: 'Saira Condensed', sans-serif; font-size: 28px; font-weight: 800; text-transform: uppercase">Model card</h2>
+<button type="button" onClick="{{toggleCard}}" aria-expanded="{{cardExpanded}}" style="min-height: 40px; padding: 0 14px; border-radius: 2px; border: 1px solid #B4BAC3; background: #FFFFFF; font-size: 14px; font-weight: 700; cursor: pointer">{{cardButton}}</button>
+</div>
+<sc-if value="{{cardOpen}}" hint-placeholder-val="{{ true }}">
+<dl style="margin: 0; display: grid; grid-template-columns: minmax(110px, 160px) minmax(0, 1fr); gap: 10px 16px; font-size: 14px; line-height: 1.5">
+<dt style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; font-weight: 700; color: #5D6672">POSE</dt><dd style="margin: 0">YOLO26n-pose with ByteTrack. 12 body keypoints, face points dropped. About 65 pose fps on an Intel iGPU via OpenVINO.</dd>
+<dt style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; font-weight: 700; color: #5D6672">WINDOWS</dt><dd style="margin: 0">Scored every 0.5 s. 1 s and 2 s feature windows, resampled to 10 fps. The active pair is the two people whose wrists move fastest.</dd>
+<dt style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; font-weight: 700; color: #5D6672">CLASSIFIER</dt><dd style="margin: 0">LightGBM, 10 features, 15 leaves, 400 trees, learning rate 0.02.</dd>
+<dt style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; font-weight: 700; color: #5D6672">SPLIT</dt><dd style="margin: 0">5-fold GroupKFold by video. Clip score is the highest window score.</dd>
+<dt style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; font-weight: 700; color: #5D6672">LIVE LEVELS</dt><dd style="margin: 0">Calm, tense at 0.5, fight at 0.55 held for 1 s. Fight likely, ETA, type and reason are not built in the live code yet.</dd>
+<dt style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; font-weight: 700; color: #5D6672">DATA</dt><dd style="margin: 0">RLVS, 300 fight and 300 calm clips. RWF-2000 withdrawn and not used.</dd>
+</dl>
+</sc-if>
+</section>
+
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2200}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { clip: 0, t: 9, playing: false, cardOpen: false };
+  }
+  componentWillUnmount() { this.stop(); }
+  stop() { if (this.timer) { clearInterval(this.timer); this.timer = null; } }
+  toggle(range) {
+    if (this.state.playing) { this.stop(); this.setState({ playing: false }); return; }
+    this.setState({ playing: true, t: range[0] });
+    this.timer = setInterval(() => {
+      let nt = Math.round((this.state.t + 0.1) * 1000) / 1000;
+      if (nt > range[1]) nt = range[0];
+      this.setState({ t: nt });
+    }, 100);
+  }
+  fig(p, T, G) {
+    const rad = (d) => d * Math.PI / 180;
+    const legL = 0.58 * T;
+    const hip = [p.x, G - 2 * legL * 0.97];
+    const L = rad(p.lean || 0);
+    const neck = [hip[0] + p.dir * T * Math.sin(L), hip[1] - T * Math.cos(L)];
+    const head = [neck[0] + p.dir * 0.34 * T * Math.sin(L), neck[1] - 0.34 * T * Math.cos(L)];
+    const arm = (a, e) => { const A = rad(a), E = rad(a + e); const el = [neck[0] + p.dir * 0.5 * T * Math.sin(A), neck[1] + 0.5 * T * Math.cos(A)]; return [el, [el[0] + p.dir * 0.46 * T * Math.sin(E), el[1] + 0.46 * T * Math.cos(E)]]; };
+    const leg = (s) => { const S = rad(s), S2 = rad(s * 0.4); const k = [hip[0] + p.dir * legL * Math.sin(S), hip[1] + legL * Math.cos(S)]; return [k, [k[0] + p.dir * legL * Math.sin(S2), k[1] + legL * Math.cos(S2)]]; };
+    const r = arm(p.ra[0], p.ra[1]), l = arm(p.la[0], p.la[1]);
+    const st = p.stride == null ? 8 : p.stride;
+    const rl = leg(st), ll = leg(-st);
+    const f = (n) => Math.round(n * 10) / 10;
+    const seg = (a, b) => 'M' + f(a[0]) + ' ' + f(a[1]) + 'L' + f(b[0]) + ' ' + f(b[1]);
+    const hr = 0.2 * T;
+    const circ = (c, rr) => 'M' + f(c[0] - rr) + ' ' + f(c[1]) + 'a' + f(rr) + ' ' + f(rr) + ' 0 1 0 ' + f(2 * rr) + ' 0a' + f(rr) + ' ' + f(rr) + ' 0 1 0 ' + f(-2 * rr) + ' 0';
+    return {
+      bones: [seg(hip, neck), seg(neck, r[0]), seg(r[0], r[1]), seg(neck, l[0]), seg(l[0], l[1]), seg(hip, rl[0]), seg(rl[0], rl[1]), seg(hip, ll[0]), seg(ll[0], ll[1])].join('') + circ(head, hr),
+      joints: [neck, r[0], r[1], l[0], l[1], hip, rl[0], rl[1], ll[0], ll[1]].map((q) => circ(q, 2.8)).join(''),
+      top: head[1] - hr
+    };
+  }
+  renderVals() {
+    const s = this.state;
+    const T = 56, G = 318;
+    const PA = [
+      [296, 2, 12, 8, -8, 6, 7], [313, 10, 105, 55, 95, 60, 8], [288, 0, 165, 5, -5, 5, 8], [300, 6, 30, 20, 25, 20, 12],
+      [305, 8, 80, 60, 25, 20, 14], [307, 10, 100, 35, 35, 30, 14], [309, 12, 125, 15, 45, 40, 16], [311, 14, 155, 5, 60, 50, 16],
+      [315, 10, 145, 10, 135, 15, 16], [327, 28, 95, 0, 90, 0, 22], [338, 18, 150, -20, 80, 40, 18], [342, 16, 120, 10, 150, -10, 18]
+    ];
+    const PB = [
+      [350, 2, 15, 10, -6, 8, 7], [337, 10, 105, 55, 95, 60, 8], [342, 0, 165, 5, -5, 5, 8], [336, 4, 28, 20, 22, 20, 12],
+      [334, 2, 30, 30, 20, 20, 10], [335, 0, 40, 40, 20, 20, 10], [334, -4, 60, 70, 30, 30, 10], [338, -14, 70, 80, 40, 40, 14],
+      [332, -10, 120, 70, 110, 70, 14], [372, -24, 60, 40, 150, 20, 18], [366, -12, 125, 70, 115, 70, 14], [369, -14, 125, 70, 115, 70, 14]
+    ];
+    const lerp = (P, t, dir) => { const a = Math.floor(t), b = Math.min(P.length - 1, a + 1), k = t - a; const m = (i) => P[a][i] + (P[b][i] - P[a][i]) * k; return { x: m(0), dir: dir, lean: m(1), ra: [m(2), m(3)], la: [m(4), m(5)], stride: m(6) }; };
+    const CLIPS = [
+      { name: 'Fight caught · V_71', tag: 'CAUGHT', tagBg: '#C8241B', tagFg: '#FFFFFF', range: [6, 11], box: '#FF5A4F', dash: 'none', verdict: 'FIGHT AT ~2 S', truth: 'Fight', model: 'Fight, about 2 s in', border: '#C8241B', why: 'Smoke test of the full live pipeline. V_71 was in training, so this proves the pipeline works, not its accuracy.' },
+      { name: 'Fight missed · V_1', tag: 'MISSED', tagBg: '#0B0D10', tagFg: '#FFFFFF', range: [0, 0], arms: true, box: '#AEB7C2', dash: '6 5', verdict: 'MAX SCORE 0.39', truth: 'Fight', model: 'Missed, peak 0.39', border: '#0B0D10', why: 'Mostly arms move while the bodies stay still. The model leans on whole-body motion, so it misses this kind of fight.' },
+      { name: 'Calm clip', tag: '13.7% FLAGGED', tagBg: '#F5B323', tagFg: '#1A1200', range: [0, 0], box: '#3FB27A', dash: 'none', verdict: 'CALM', truth: 'Not a fight', model: 'Calm here; 13.7% of calm clips still reach fight', border: '#F5B323', why: 'In the live-logic replay, about one calm clip in seven still triggers fight. The two-tier alert keeps most of that silent.' },
+      { name: 'Hug', tag: 'NOT TESTED', tagBg: '#F1F2F4', tagFg: '#3A414B', range: [1, 1], box: 'none', dash: 'none', verdict: 'NOT TESTED', truth: 'Not a fight', model: 'Not tested', border: '#B4BAC3', why: 'No own clips were recorded, so there is no hug-against-fight evidence yet. This is the clip judges will ask about.' },
+      { name: 'CCTV angle', tag: 'NOT TESTED', tagBg: '#F1F2F4', tagFg: '#3A414B', range: [9, 9], box: 'none', dash: 'none', verdict: 'NOT TESTED', truth: 'Fight', model: 'Not tested', border: '#B4BAC3', why: 'All training and test clips are YouTube-style RLVS. A high, wide CCTV angle has not been tried.' }
+    ];
+    const build = (c, tt) => {
+      let pa, pb;
+      if (c.arms) {
+        const w = Math.sin(tt * 3) * 40;
+        pa = { x: 290, dir: 1, lean: 2, ra: [110 + w, 20], la: [30, 20], stride: 8 };
+        pb = { x: 352, dir: -1, lean: 0, ra: [40, 60], la: [20, 20], stride: 8 };
+      } else {
+        const t2 = c.range[0] === c.range[1] ? c.range[0] : tt;
+        pa = lerp(PA, t2, 1); pb = lerp(PB, t2, -1);
+      }
+      const A = this.fig(pa, T, G), B = this.fig(pb, T, G);
+      return { cyan: A.bones, violet: B.bones, joints: A.joints + B.joints, x0: pa.x, x1: pb.x, top: Math.min(A.top, B.top) };
+    };
+    const c = CLIPS[s.clip];
+    const t = Math.max(c.range[0], Math.min(c.range[1] === c.range[0] ? c.range[0] + 3 : c.range[1], s.t));
+    const sc = build(c, t);
+    let grid = '';
+    for (let x = 0; x <= 640; x += 40) grid += 'M' + x + ' 0L' + x + ' 360';
+    for (let y = 0; y <= 360; y += 40) grid += 'M0 ' + y + 'L640 ' + y;
+    const minX = Math.min(sc.x0, sc.x1) - 0.85 * T, maxX = Math.max(sc.x0, sc.x1) + 0.85 * T, top = sc.top - 10;
+    const range = c.range[1] === c.range[0] ? [c.range[0], c.range[0] + 3] : c.range;
+    const open = s.cardOpen;
+    return {
+      proven: [
+        { k: 'CLIP ROC-AUC', v: '0.876', sub: '600 RLVS clips, 5-fold split by video. Best of 20 settings, so slightly optimistic.', border: '2px solid #0B0D10' },
+        { k: 'FIGHTS CAUGHT', v: '82%', sub: 'At about a 20% false-alarm rate on the same clips.', border: '1px solid #DCDFE4' },
+        { k: 'LIVE LOGIC REPLAY', v: '75.7%', sub: 'Fight clips that reach the fight level after smoothing and the 1 s hold. Calm clips: 13.7%.', border: '1px solid #DCDFE4' },
+        { k: 'WEBCAM RESOLUTION', v: '0.902', sub: 'Clip AUC on 241 to 480p clips, the webcam range.', border: '1px solid #DCDFE4' },
+        { k: 'TIME TO FIGHT LEVEL', v: '2.1 s', sub: 'Mean delay after a fight starts, in the replay. Detection, not early warning.', border: '1px solid #DCDFE4' }
+      ],
+      gaps: [
+        { k: 'LEAD TIME BEFORE THE SHOVE', need: 'Needs 5 escalation clips filmed in the venue. This is the "predict early" proof.' },
+        { k: 'FALSE ALARMS PER CAMERA-HOUR', need: 'Needs 30 minutes of normal footage from our camera.' },
+        { k: 'HUGS AND HIGH-FIVES', need: 'Needs a few own clips. record_clips.py already exists.' },
+        { k: 'CCTV-ANGLE ROW', need: 'Needs keypoints from a CCTV-angle set, held out from training.' },
+        { k: 'NIGHT AND IR', need: 'Needs one real IR frame through the pose model.' }
+      ],
+      grid: grid,
+      cur: {
+        aria: c.name + ', skeleton illustration', source: c.name.toUpperCase(), verdict: c.verdict, truth: c.truth, model: c.model, why: c.why, modelBorder: c.border,
+        boxX: Math.round(minX), boxY: Math.round(top), boxW: Math.round(maxX - minX), boxH: Math.round(G + 4 - top), boxColor: c.box === 'none' ? '#AEB7C2' : c.box, dash: c.box === 'none' ? '2 8' : c.dash,
+        cyan: sc.cyan, violet: sc.violet, joints: sc.joints
+      },
+      clips: CLIPS.map((x, i) => { const th = build(x, x.range[0] === 6 ? 9 : x.range[0]); return { name: x.name, tag: x.tag, tagBg: x.tagBg, tagFg: x.tagFg, cyan: th.cyan, violet: th.violet, pressed: i === s.clip ? 'true' : 'false', border: i === s.clip ? '2px solid #2742D9' : '1px solid #DCDFE4', pick: () => { this.stop(); this.setState({ clip: i, t: x.range[0] === 6 ? 9 : x.range[0], playing: false }); } }; }),
+      progress: Math.round((t - range[0]) / (range[1] - range[0]) * 100) + '%',
+      playLabel: s.playing ? 'Pause' : 'Play', playIcon: s.playing ? 'M6 4h4v16H6zM14 4h4v16h-4z' : 'M7 4l13 8-13 8z',
+      play: () => this.toggle(range),
+      importance: [
+        { name: 'pair_motion_energy', v: '47%', w: '100%' },
+        { name: 'max_wrist_speed', v: '13%', w: '28%' },
+        { name: 'wrist_peaks_per_s', v: '7%', w: '15%' },
+        { name: 'max_wrist_accel', v: '6%', w: '13%' },
+        { name: 'each of the other 6', v: '3–5%', w: '9%' }
+      ],
+      cardOpen: open, cardExpanded: open ? 'true' : 'false', cardButton: open ? 'Hide' : 'Show', toggleCard: () => this.setState({ cardOpen: !open })
+    };
+  }
+}
+</script>
+</body>
+</html>

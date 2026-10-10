@@ -4,6 +4,8 @@ You own everything the judges see on screen, the deployed link, the slides and t
 
 The dashboard is **site-agnostic**: a campus, a mall, a factory, a school hostel. Nothing in the UI says "school" except the demo site's zone names. Copy uses *site*, *zone*, *operator*, *person on duty*.
 
+**Visual and screen spec: v3 Light Console, in `docs/frontend-build-brief.md`.** Where it differs from the screen notes below, the brief wins. It adds a Cameras page with a site map, live and replay evidence on Live, the alarm pulse, and the shift handover. Design source files: `design/canvas/L3*.dc.html`.
+
 ## Stack
 
 | | Choice | Notes |
@@ -22,6 +24,7 @@ The dashboard is **site-agnostic**: a campus, a mall, a factory, a school hostel
 web/
   src/app/
     page.tsx                  live: alert queue + current alert card + camera tiles (with health)
+    cameras/page.tsx          all cameras: site map with pins + grid + detail panel (v3)
     plan/page.tsx             heatmap + hotspots + PATROL PLAN (the weekly decision screen)
     incidents/page.tsx        table of the history (fake + live), confirm/dismiss labels
     proof/page.tsx            lead time, FA/hour, CCTV-domain row, dataset vs live, IR frame, model card, disclosure
@@ -42,9 +45,14 @@ type IncidentType = "fight" | "cornering" | "crowd" | "play";
 type Level = "calm" | "tense" | "fight_likely" | "fight";
 type Status = "new" | "pushed" | "confirmed" | "dismissed" | "resolved";
 
-interface Site { site_id: string; name: string; site_type: SiteType; zones: { zone_type: string; label: string; risk: number }[]; staff: { name: string; zone_type: string; on_duty: boolean }[]; }
+// v3 optional additions (10 Oct, design handoff). Every screen must render without them.
+type Keypoint = [x: number, y: number, conf: number];          // x, y normalised 0–1 in the camera frame
+interface PoseFrame { t: string; people: { id: number; kp: Keypoint[] }[] }   // kp = 12 body keypoints, order: l_shoulder, r_shoulder, l_elbow, r_elbow, l_wrist, r_wrist, l_hip, r_hip, l_knee, r_knee, l_ankle, r_ankle (COCO 5–16, no face points)
+interface MapPoint { x: number; y: number }                     // 0–1 on the site plan image
 
-interface Camera { camera_id: string; location: string; zone_type: string; online: boolean; last_frame_at: string; black_since?: string; }
+interface Site { site_id: string; name: string; site_type: SiteType; zones: { zone_type: string; label: string; risk: number }[]; staff: { name: string; zone_type: string; on_duty: boolean; post?: MapPoint }[]; map?: { image: string; width: number; height: number }; }
+
+interface Camera { camera_id: string; location: string; zone_type: string; online: boolean; last_frame_at: string; black_since?: string; people_count?: number; map?: MapPoint & { heading_deg?: number }; edge_url?: string; }   // edge_url: that laptop's edge app on the local network (stream, clips, health); on-site view only, never shown remotely
 
 interface Event {
   incident_id: string; camera_id: string; location: string; zone_type: string;
@@ -56,6 +64,9 @@ interface Event {
   pushed_to?: string; pushed_at?: string;                // two-tier: only fight_likely+ gets pushed; API sets these
   acked_at?: string;                                     // phone tap; response time = acked_at − pushed_at
   status: Status; staff_note: string | null;             // operator sets on Live; edge never overwrites
+  snapshot?: PoseFrame;                                  // v3: latest keypoints, refreshed on each 0.5 s post; remote live skeletons
+  peak_snapshot?: PoseFrame;                             // v3: keypoints at peak_score; Incidents thumbnail and push card
+  top_features?: { name: string; value: number }[];      // v3: model features behind this window; "what the model saw"
 }
 
 interface Hotspot { location: string; zone_type: string; weekday: number; hour: number; count: number; last_seen: string; }
@@ -137,7 +148,7 @@ Write `public/mock/*.json` yourself in the first hour. Demo site = **Taylor's La
 | 08:30–10:00 | Rehearse 3× timed with the live camera. Test alarm audio in the pitch room. Q&A drill. |
 
 ## Rules for yourself
-- Light theme only; no animations beyond a 300 ms colour transition on the level pill.
+- Light theme only. Motion: a 300 ms colour transition on the level pill, plus the alarm pulse (1 Hz red pulse on the banner, screen edge, alert card and that camera's tile, only while the alarm sounds; static red under `prefers-reduced-motion`). Nothing else moves.
 - Every screen renders from mock with the API down. Test it once by stopping the API.
 - Live is the product, Plan is the decision, Proof is the evidence. Time split 50 / 20 / 20 / 10 (incidents + push).
 - No school-specific words in the UI chrome. Zone names come from `site.json`.
@@ -147,4 +158,4 @@ Write `public/mock/*.json` yourself in the first hour. Demo site = **Taylor's La
 ## Demo moments you own (rehearse until boring)
 1. Negatives: hug → high-five → chat close, pill stays green. Say nothing; let it sit.
 2. Escalation: amber + "fight likely in ~6 s" **before** the shove, then red + alarm + "Pushed to Guard B" on the phone in your hand. Pause 2 s on amber.
-3. Plan: "Block C stairwell, Mon–Thu lunch, ~3 avoided a week. That's this building." → Proof: lead time in big type, the CCTV-domain row, the IR frame.
+3. Plan: "Block C stairwell, Mon–Thu lunch, ~3 avoided a month. That's this building." → Proof: lead time in big type, the CCTV-domain row, the IR frame.

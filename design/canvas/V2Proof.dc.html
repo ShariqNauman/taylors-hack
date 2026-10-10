@@ -1,0 +1,360 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>EarlyEye v2 Proof</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Mono:wght@400;500;700&amp;family=Atkinson+Hyperlegible+Next:wght@400;500;700;800&amp;family=Saira+Condensed:wght@600;700;800&amp;display=swap">
+<style>
+body{margin:0;background:#0A0D11}
+a{color:#8EA2FF}a:hover{color:#B7C4FF}
+button{font-family:inherit}
+</style>
+</helmet>
+<div style="font-family: 'Atkinson Hyperlegible Next', system-ui, sans-serif; color: #ECEFF3; background: #0A0D11; min-height: 100vh; box-sizing: border-box">
+
+<header style="border-bottom: 1px solid #232A33">
+<div style="max-width: 1680px; margin: 0 auto; padding: 10px 24px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 22px">
+<a href="V2Live.dc.html" style="display: flex; align-items: center; gap: 10px; text-decoration: none; color: #ECEFF3">
+<svg width="28" height="28" viewBox="0 0 32 32" aria-hidden="true"><path d="M3 16c3.5-6 8-9 13-9s9.5 3 13 9c-3.5 6-8 9-13 9s-9.5-3-13-9z" fill="none" stroke="#ECEFF3" stroke-width="2.5" stroke-linejoin="round"></path><circle cx="16" cy="16" r="4.5" fill="#ECEFF3"></circle></svg>
+<span style="font-family: 'Saira Condensed', sans-serif; font-size: 26px; font-weight: 800; letter-spacing: 0.04em">EARLYEYE</span>
+</a>
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 13px; color: #808A97">TAYLOR'S LAKESIDE · 6 CAMERAS</span>
+<nav aria-label="Main" style="display: flex; gap: 2px; flex-wrap: wrap">
+<a href="V2Live.dc.html" style="font-size: 15px; font-weight: 700; padding: 10px 14px; color: #AEB7C2; text-decoration: none">Live</a>
+<a href="V2Plan.dc.html" style="font-size: 15px; font-weight: 700; padding: 10px 14px; color: #AEB7C2; text-decoration: none">Plan</a>
+<a href="V2Incidents.dc.html" style="font-size: 15px; font-weight: 700; padding: 10px 14px; color: #AEB7C2; text-decoration: none">Incidents</a>
+<a href="V2Proof.dc.html" aria-current="page" style="font-size: 15px; font-weight: 700; padding: 10px 14px; border-radius: 2px; background: #171D25; color: #ECEFF3; text-decoration: none; box-shadow: inset 0 -2px 0 #8EA2FF">Proof</a>
+</nav>
+</div>
+</header>
+
+<sc-if value="{{placeholder}}" hint-placeholder-val="{{ true }}">
+<div role="note" style="background: repeating-linear-gradient(135deg, #11161C 0 10px, #1A2028 10px 20px); border-bottom: 1px dashed #AEB7C2">
+<div style="max-width: 1680px; margin: 0 auto; padding: 12px 24px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px">
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; padding: 4px 10px; background: #ECEFF3; color: #0A0D11; border-radius: 1px">PLACEHOLDER NUMBERS</span>
+<span style="font-size: 15px; font-weight: 700; background: #0A0D11; padding: 3px 8px">Bracketed values fill in from proof.json. Skeleton clips are illustrations until the real keypoints are loaded.</span>
+</div>
+</div>
+</sc-if>
+
+<main style="max-width: 1680px; margin: 0 auto; padding: 24px 24px 56px; display: flex; flex-direction: column; gap: 24px">
+
+<div style="display: flex; flex-direction: column; gap: 6px; max-width: 980px">
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; color: #808A97; letter-spacing: 0.08em">EVIDENCE · DATASET AND LIVE ROOM, SIDE BY SIDE</span>
+<h1 style="margin: 0; font-family: 'Saira Condensed', sans-serif; font-size: 64px; font-weight: 800; text-transform: uppercase; line-height: 0.92">Can we prove it?</h1>
+<p style="margin: 0; font-size: 17px; line-height: 1.5; color: #AEB7C2">Watch what the model saw on real test clips, then read the numbers. The gap between dataset and live room is the real engineering problem, so both are here.</p>
+</div>
+
+<section aria-labelledby="ins-h" style="background: #11161C; border: 1px solid #232A33; border-radius: 4px; padding: 16px; display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 10px">
+<h2 id="ins-h" style="margin: 0; font-family: 'Saira Condensed', sans-serif; font-size: 32px; font-weight: 800; text-transform: uppercase">Watch the model</h2>
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; color: #808A97">SKELETON REPLAY · GROUND TRUTH AGAINST MODEL</span>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start">
+<figure style="flex: 3 1 520px; min-width: 0; margin: 0; display: flex; flex-direction: column; gap: 10px">
+<div style="position: relative; background: #0E1217; border: 1px solid #232A33">
+<span style="position: absolute; left: 6px; top: 6px; width: 18px; height: 18px; border-left: 2px solid #8EA2FF; border-top: 2px solid #8EA2FF"></span>
+<span style="position: absolute; right: 6px; top: 6px; width: 18px; height: 18px; border-right: 2px solid #8EA2FF; border-top: 2px solid #8EA2FF"></span>
+<span style="position: absolute; left: 6px; bottom: 6px; width: 18px; height: 18px; border-left: 2px solid #8EA2FF; border-bottom: 2px solid #8EA2FF"></span>
+<span style="position: absolute; right: 6px; bottom: 6px; width: 18px; height: 18px; border-right: 2px solid #8EA2FF; border-bottom: 2px solid #8EA2FF"></span>
+<svg viewBox="0 0 640 360" role="img" aria-label="{{cur.aria}}" style="display: block; width: 100%; height: auto">
+<rect x="0" y="0" width="640" height="360" fill="#0E1217"></rect>
+<path d="{{grid}}" stroke="#1A2028" stroke-width="1" fill="none"></path>
+<line x1="0" y1="318" x2="640" y2="318" stroke="#36404C" stroke-width="2"></line>
+<rect x="{{cur.boxX}}" y="{{cur.boxY}}" width="{{cur.boxW}}" height="{{cur.boxH}}" fill="none" stroke="{{cur.boxColor}}" stroke-width="2.5"></rect>
+<path d="{{cur.grey}}" stroke="#C9CED6" stroke-width="4" stroke-linecap="round" fill="none"></path>
+<path d="{{cur.cyan}}" stroke="#7FE0FF" stroke-width="4" stroke-linecap="round" fill="none"></path>
+<path d="{{cur.violet}}" stroke="#C9A7FF" stroke-width="4" stroke-linecap="round" fill="none"></path>
+<path d="{{cur.joints}}" fill="#FFFFFF"></path>
+<path d="{{cur.ball}}" fill="none" stroke="#ECEFF3" stroke-width="2.5"></path>
+<text x="18" y="34" font-family="'Atkinson Hyperlegible Mono', monospace" font-size="13" font-weight="700" fill="#ECEFF3">{{cur.source}}</text>
+<text x="622" y="34" text-anchor="end" font-family="'Atkinson Hyperlegible Mono', monospace" font-size="13" font-weight="700" fill="{{cur.levelColor}}">{{cur.levelText}}</text>
+<text x="18" y="342" font-family="'Atkinson Hyperlegible Mono', monospace" font-size="12" fill="#AEB7C2">ILLUSTRATION · REAL KEYPOINTS LOAD FROM THE TEST SET</text>
+</svg>
+</div>
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px">
+<button type="button" onClick="{{play}}" style="min-width: 96px; height: 40px; padding: 0 14px; border-radius: 2px; border: none; background: #3B55E6; color: #FFFFFF; font-size: 14px; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px"><svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><path d="{{playIcon}}" fill="#FFFFFF"></path></svg>{{playLabel}}</button>
+<div style="flex: 1 1 200px; position: relative; height: 8px; background: #232A33; border-radius: 1px"><span style="position: absolute; left: 0; top: 0; bottom: 0; width: {{progress}}; background: #8EA2FF"></span></div>
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; color: #AEB7C2">{{frameLabel}}</span>
+</div>
+</figure>
+<div style="flex: 2 1 320px; min-width: 0; display: flex; flex-direction: column; gap: 10px">
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px">
+<div style="background: #0A0D11; border: 1px solid #232A33; border-radius: 2px; padding: 12px; display: flex; flex-direction: column; gap: 4px"><span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 11px; font-weight: 700; color: #808A97; letter-spacing: 0.06em">GROUND TRUTH</span><span style="font-size: 20px; font-weight: 800">{{cur.truth}}</span></div>
+<div style="background: #0A0D11; border: 1px dashed #AEB7C2; border-radius: 2px; padding: 12px; display: flex; flex-direction: column; gap: 4px"><span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 11px; font-weight: 700; color: #808A97; letter-spacing: 0.06em">MODEL SAID</span><span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 18px; font-weight: 700">{{cur.model}}</span></div>
+</div>
+<div style="background: #0A0D11; border: 1px solid #232A33; border-radius: 2px; padding: 12px; display: flex; flex-direction: column; gap: 6px">
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 11px; font-weight: 700; color: #808A97; letter-spacing: 0.06em">WHY IT MATTERS</span>
+<span style="font-size: 15px; line-height: 1.45">{{cur.why}}</span>
+</div>
+<div style="background: #0A0D11; border: 1px solid #232A33; border-radius: 2px; padding: 12px; display: flex; flex-direction: column; gap: 6px">
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 11px; font-weight: 700; color: #808A97; letter-spacing: 0.06em">SOURCE · SPLIT</span>
+<span style="font-size: 14px; line-height: 1.45; color: #AEB7C2">{{cur.split}}</span>
+</div>
+</div>
+</div>
+<div role="group" aria-label="Test clips" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 8px">
+<sc-for list="{{clips}}" as="c" hint-placeholder-count="6">
+<button type="button" onClick="{{c.pick}}" aria-pressed="{{c.pressed}}" style="text-align: left; padding: 8px; border-radius: 2px; border: {{c.border}}; background: #0A0D11; color: #ECEFF3; cursor: pointer; display: flex; flex-direction: column; gap: 6px">
+<svg viewBox="0 0 640 360" aria-hidden="true" style="display: block; width: 100%; height: auto; background: #0E1217">
+<path d="{{c.grey}}" stroke="#C9CED6" stroke-width="8" stroke-linecap="round" fill="none"></path>
+<path d="{{c.cyan}}" stroke="#7FE0FF" stroke-width="8" stroke-linecap="round" fill="none"></path>
+<path d="{{c.violet}}" stroke="#C9A7FF" stroke-width="8" stroke-linecap="round" fill="none"></path>
+<path d="{{c.ball}}" fill="none" stroke="#ECEFF3" stroke-width="5"></path>
+</svg>
+<span style="font-size: 14px; font-weight: 800">{{c.name}}</span>
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 11px; color: #808A97">{{c.tag}}</span>
+</button>
+</sc-for>
+</div>
+</section>
+
+<section aria-labelledby="lead-h" style="background: #11161C; border: 2px solid #ECEFF3; border-radius: 4px; padding: 22px; display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-end">
+<div style="flex: 1 1 420px; display: flex; flex-direction: column; gap: 8px">
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; color: #808A97; letter-spacing: 0.08em">EARLY-WARNING LEAD TIME · 5 ESCALATION CLIPS · OUR VENUE</span>
+<h2 id="lead-h" style="margin: 0; font-family: 'Saira Condensed', sans-serif; font-size: 52px; font-weight: 800; text-transform: uppercase; line-height: 0.95">Warned <span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; border-bottom: 3px dashed #AEB7C2">[mean]</span> s before the shove</h2>
+<span style="font-size: 15px; color: #AEB7C2">Seconds between the first amber and the shove. This is the "predict early" number.</span>
+</div>
+<div role="img" aria-label="Lead time per clip, placeholder" style="flex: 1 1 380px; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; align-items: end; height: 170px">
+<sc-for list="{{leads}}" as="l" hint-placeholder-count="5">
+<div style="display: flex; flex-direction: column; gap: 6px; height: 100%; justify-content: flex-end">
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 13px; font-weight: 700; text-align: center">[t{{l}}] s</span>
+<div style="height: 110px; border: 2px dashed #AEB7C2; background: repeating-linear-gradient(135deg, #11161C 0 6px, #232A33 6px 12px)"></div>
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 11px; color: #808A97; text-align: center">CLIP {{l}}</span>
+</div>
+</sc-for>
+</div>
+</section>
+
+<section aria-label="Metrics" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 10px">
+<sc-for list="{{tiles}}" as="t" hint-placeholder-count="7">
+<div style="background: #11161C; border: 1px solid {{t.border}}; border-radius: 2px; padding: 16px; display: flex; flex-direction: column; gap: 6px">
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; color: #808A97">{{t.k}}</span>
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 32px; font-weight: 700; line-height: 1">{{t.v}}</span>
+<span style="font-size: 13px; line-height: 1.45; color: #AEB7C2">{{t.sub}}</span>
+</div>
+</sc-for>
+</section>
+
+<section aria-label="Tables" style="display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start">
+<div style="flex: 999 1 600px; min-width: 0; background: #11161C; border: 1px solid #232A33; border-radius: 4px; padding: 18px; display: flex; flex-direction: column; gap: 12px">
+<h2 style="margin: 0; font-family: 'Saira Condensed', sans-serif; font-size: 28px; font-weight: 800; text-transform: uppercase">Dataset against the live room</h2>
+<div style="overflow-x: auto">
+<table style="width: 100%; min-width: 600px; border-collapse: collapse; font-size: 15px">
+<thead><tr style="text-align: left; border-bottom: 1px solid #ECEFF3">
+<th scope="col" style="padding: 10px 12px; font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 11px; color: #808A97">METRIC</th>
+<th scope="col" style="padding: 10px 12px; font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 11px; color: #808A97">PUBLIC CLIPS · SPLIT BY VIDEO</th>
+<th scope="col" style="padding: 10px 12px; font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 11px; color: #808A97">CCTV ANGLE · HELD OUT</th>
+<th scope="col" style="padding: 10px 12px; font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 11px; color: #B7C4FF; background: #1B2550">OUR VENUE · LIVE ROOM</th>
+</tr></thead>
+<tbody style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace">
+<tr style="border-bottom: 1px solid #232A33"><th scope="row" style="padding: 12px; text-align: left; font-family: 'Atkinson Hyperlegible Next', sans-serif">Precision</th><td style="padding: 12px">[P]</td><td style="padding: 12px">[P]</td><td style="padding: 12px; background: #141B33">[P]</td></tr>
+<tr style="border-bottom: 1px solid #232A33"><th scope="row" style="padding: 12px; text-align: left; font-family: 'Atkinson Hyperlegible Next', sans-serif">Recall</th><td style="padding: 12px">[R]</td><td style="padding: 12px">[R]</td><td style="padding: 12px; background: #141B33">[R]</td></tr>
+<tr style="border-bottom: 1px solid #232A33"><th scope="row" style="padding: 12px; text-align: left; font-family: 'Atkinson Hyperlegible Next', sans-serif">AUC</th><td style="padding: 12px">[AUC]</td><td style="padding: 12px">[AUC]</td><td style="padding: 12px; background: #141B33; color: #808A97">not measured</td></tr>
+<tr><th scope="row" style="padding: 12px; text-align: left; font-family: 'Atkinson Hyperlegible Next', sans-serif">False alarms / camera-hour</th><td style="padding: 12px; color: #808A97">n/a</td><td style="padding: 12px; color: #808A97">n/a</td><td style="padding: 12px; background: #141B33">[FA]</td></tr>
+</tbody>
+</table>
+</div>
+<div style="display: flex; gap: 12px; align-items: flex-start; border: 1px solid #36404C; border-radius: 2px; padding: 12px 14px">
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 11px; font-weight: 700; padding: 3px 8px; background: #ECEFF3; color: #0A0D11; border-radius: 1px; white-space: nowrap">LESSON</span>
+<span style="font-size: 15px; line-height: 1.5">Practice run: 100% on the KTH dataset, zero live until we retuned on our own footage. A dataset score says nothing about your camera.</span>
+</div>
+</div>
+<div style="flex: 1 1 340px; min-width: 0; background: #11161C; border: 1px solid #232A33; border-radius: 4px; padding: 18px; display: flex; flex-direction: column; gap: 12px">
+<h2 style="margin: 0; font-family: 'Saira Condensed', sans-serif; font-size: 28px; font-weight: 800; text-transform: uppercase">Clip-level confusion</h2>
+<div style="display: grid; grid-template-columns: 90px repeat(2, minmax(0, 1fr)); gap: 4px; font-size: 13px">
+<span></span><span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 11px; color: #808A97; text-align: center">MODEL: FIGHT</span><span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 11px; color: #808A97; text-align: center">MODEL: NOT</span>
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 11px; color: #808A97; align-self: center">TRUE FIGHT</span>
+<span style="height: 70px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #1B2550; border: 1px solid #3B55E6; font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace"><b style="font-size: 20px">[TP]</b><span style="font-size: 11px; color: #B7C4FF">caught</span></span>
+<span style="height: 70px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #0A0D11; border: 1px dashed #AEB7C2; font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace"><b style="font-size: 20px">[FN]</b><span style="font-size: 11px; color: #AEB7C2">missed</span></span>
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 11px; color: #808A97; align-self: center">NOT A FIGHT</span>
+<span style="height: 70px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #0A0D11; border: 1px dashed #AEB7C2; font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace"><b style="font-size: 20px">[FP]</b><span style="font-size: 11px; color: #AEB7C2">false alarm</span></span>
+<span style="height: 70px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #1B2550; border: 1px solid #3B55E6; font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace"><b style="font-size: 20px">[TN]</b><span style="font-size: 11px; color: #B7C4FF">correct calm</span></span>
+</div>
+<span style="font-size: 13px; color: #AEB7C2; line-height: 1.45">One row per clip, max window score, GroupKFold by video. In the build, each cell links to its clips in the inspector above.</span>
+</div>
+</section>
+
+<section aria-label="Limits" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 12px">
+<figure style="margin: 0; background: #11161C; border: 1px solid #232A33; border-radius: 4px; padding: 16px; display: flex; flex-direction: column; gap: 10px">
+<div style="aspect-ratio: 16 / 9; background: #000000; border: 1px solid #232A33; display: flex; align-items: center; justify-content: center; font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; color: #808A97">IR FRAME PLACEHOLDER · ir-frame.jpg</div>
+<figcaption style="font-size: 14px; line-height: 1.45"><b>One real IR frame:</b> <span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace">[k] of [n]</span> skeletons found. Night and IR are untested beyond this. Next model, not a claim.</figcaption>
+</figure>
+<div style="background: #11161C; border: 1px solid #ECEFF3; border-radius: 4px; padding: 16px; display: flex; flex-direction: column; gap: 8px">
+<h2 style="margin: 0; font-family: 'Saira Condensed', sans-serif; font-size: 26px; font-weight: 800; text-transform: uppercase">We claim</h2>
+<ul style="margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 6px; font-size: 15px; line-height: 1.45">
+<li>Physical aggression and crowding, from body pose.</li>
+<li>A warning before the shove on our 5 escalation clips.</li>
+<li>False alarms per camera-hour on our own normal footage.</li>
+<li>Our model sees skeletons, never faces. The site's video stays on site.</li>
+</ul>
+</div>
+<div style="background: #11161C; border: 1px dashed #36404C; border-radius: 4px; padding: 16px; display: flex; flex-direction: column; gap: 8px">
+<h2 style="margin: 0; font-family: 'Saira Condensed', sans-serif; font-size: 26px; font-weight: 800; text-transform: uppercase">We do not claim</h2>
+<ul style="margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 6px; font-size: 15px; line-height: 1.45; color: #AEB7C2">
+<li>Verbal or online bullying.</li>
+<li>Night or IR performance.</li>
+<li>Weapons. That is a different product.</li>
+<li>That we would have prevented any specific past case.</li>
+</ul>
+</div>
+</section>
+
+<section aria-labelledby="card-h" style="background: #11161C; border: 1px solid #232A33; border-radius: 4px; padding: 18px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px">
+<h2 id="card-h" style="margin: 0; font-family: 'Saira Condensed', sans-serif; font-size: 28px; font-weight: 800; text-transform: uppercase">Model card</h2>
+<button type="button" onClick="{{toggleCard}}" aria-expanded="{{cardExpanded}}" style="min-height: 40px; padding: 0 14px; border-radius: 2px; border: 1px solid #36404C; background: transparent; color: #ECEFF3; font-size: 14px; font-weight: 700; cursor: pointer">{{cardButton}}</button>
+</div>
+<sc-if value="{{cardOpen}}" hint-placeholder-val="{{ true }}">
+<dl style="margin: 0; display: grid; grid-template-columns: minmax(110px, 160px) minmax(0, 1fr); gap: 10px 16px; font-size: 14px; line-height: 1.5">
+<dt style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; font-weight: 700; color: #808A97">INPUTS</dt><dd style="margin: 0">17 COCO keypoints per person from YOLO26n-pose, torso-scaled. No faces, no identities.</dd>
+<dt style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; font-weight: 700; color: #808A97">WINDOWS</dt><dd style="margin: 0">1 s windows, stride 0.5 s. Pairwise features for any pair of people, not tracked IDs.</dd>
+<dt style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; font-weight: 700; color: #808A97">CLASSIFIER</dt><dd style="margin: 0">Random forest or LightGBM. Types are rules on top of the score.</dd>
+<dt style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; font-weight: 700; color: #808A97">SPLIT</dt><dd style="margin: 0">GroupKFold by video. Clip-level precision, recall and AUC. Calibrated.</dd>
+<dt style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; font-weight: 700; color: #808A97">THRESHOLD</dt><dd style="margin: 0">Tuned on our venue footage for 1 false alarm or fewer per camera-hour. 1 s persistence.</dd>
+<dt style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; font-weight: 700; color: #808A97">DATA</dt><dd style="margin: 0">RLVS and AIRTLab for training. CCTV-angle sets held out. RWF-2000 withdrawn, not used.</dd>
+<dt style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; font-weight: 700; color: #808A97">FAILS ON</dt><dd style="margin: 0">Occlusion. Low light and IR. Sports play outside sports zones. Tracker ID swaps, which is why we score pairs.</dd>
+</dl>
+</sc-if>
+</section>
+
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"placeholder":{"editor":"boolean","default":true},"$preview":{"width":1440,"height":2100}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { clip: 0, t: 6, playing: false, cardOpen: false };
+  }
+  componentWillUnmount() { this.stop(); }
+  stop() { if (this.timer) { clearInterval(this.timer); this.timer = null; } }
+  toggle(range) {
+    if (this.state.playing) { this.stop(); this.setState({ playing: false }); return; }
+    this.setState({ playing: true, t: range[0] });
+    this.timer = setInterval(() => {
+      let nt = Math.round((this.state.t + 0.1) * 1000) / 1000;
+      if (nt > range[1]) nt = range[0];
+      this.setState({ t: nt });
+    }, 100);
+  }
+  fig(p, T, G) {
+    const rad = (d) => d * Math.PI / 180;
+    const legL = 0.58 * T;
+    const hip = [p.x, G - 2 * legL * 0.97];
+    const L = rad(p.lean || 0);
+    const neck = [hip[0] + p.dir * T * Math.sin(L), hip[1] - T * Math.cos(L)];
+    const head = [neck[0] + p.dir * 0.34 * T * Math.sin(L), neck[1] - 0.34 * T * Math.cos(L)];
+    const arm = (a, e) => {
+      const A = rad(a), E = rad(a + e);
+      const el = [neck[0] + p.dir * 0.5 * T * Math.sin(A), neck[1] + 0.5 * T * Math.cos(A)];
+      return [el, [el[0] + p.dir * 0.46 * T * Math.sin(E), el[1] + 0.46 * T * Math.cos(E)]];
+    };
+    const leg = (s) => {
+      const S = rad(s), S2 = rad(s * 0.4);
+      const k = [hip[0] + p.dir * legL * Math.sin(S), hip[1] + legL * Math.cos(S)];
+      return [k, [k[0] + p.dir * legL * Math.sin(S2), k[1] + legL * Math.cos(S2)]];
+    };
+    const r = arm(p.ra[0], p.ra[1]), l = arm(p.la[0], p.la[1]);
+    const st = p.stride == null ? 8 : p.stride;
+    const rl = leg(st), ll = leg(-st);
+    const f = (n) => Math.round(n * 10) / 10;
+    const seg = (a, b) => 'M' + f(a[0]) + ' ' + f(a[1]) + 'L' + f(b[0]) + ' ' + f(b[1]);
+    const hr = 0.2 * T;
+    const circ = (c, rr) => 'M' + f(c[0] - rr) + ' ' + f(c[1]) + 'a' + f(rr) + ' ' + f(rr) + ' 0 1 0 ' + f(2 * rr) + ' 0a' + f(rr) + ' ' + f(rr) + ' 0 1 0 ' + f(-2 * rr) + ' 0';
+    return {
+      bones: [seg(hip, neck), seg(neck, r[0]), seg(r[0], r[1]), seg(neck, l[0]), seg(l[0], l[1]), seg(hip, rl[0]), seg(rl[0], rl[1]), seg(hip, ll[0]), seg(ll[0], ll[1])].join('') + circ(head, hr),
+      joints: [neck, r[0], r[1], l[0], l[1], hip, rl[0], rl[1], ll[0], ll[1]].map((q) => circ(q, 2.8)).join(''),
+      top: head[1] - hr
+    };
+  }
+  renderVals() {
+    const s = this.state;
+    const T = 56, G = 318;
+    const PA = [
+      [296, 2, 12, 8, -8, 6, 7], [313, 10, 105, 55, 95, 60, 8], [288, 0, 165, 5, -5, 5, 8], [300, 6, 30, 20, 25, 20, 12],
+      [305, 8, 80, 60, 25, 20, 14], [307, 10, 100, 35, 35, 30, 14], [309, 12, 125, 15, 45, 40, 16], [311, 14, 155, 5, 60, 50, 16],
+      [315, 10, 145, 10, 135, 15, 16], [327, 28, 95, 0, 90, 0, 22], [338, 18, 150, -20, 80, 40, 18], [342, 16, 120, 10, 150, -10, 18]
+    ];
+    const PB = [
+      [350, 2, 15, 10, -6, 8, 7], [337, 10, 105, 55, 95, 60, 8], [342, 0, 165, 5, -5, 5, 8], [336, 4, 28, 20, 22, 20, 12],
+      [334, 2, 30, 30, 20, 20, 10], [335, 0, 40, 40, 20, 20, 10], [334, -4, 60, 70, 30, 30, 10], [338, -14, 70, 80, 40, 40, 14],
+      [332, -10, 120, 70, 110, 70, 14], [372, -24, 60, 40, 150, 20, 18], [366, -12, 125, 70, 115, 70, 14], [369, -14, 125, 70, 115, 70, 14]
+    ];
+    const LVL = ['calm', 'calm', 'calm', 'tense', 'tense', 'tense', 'likely', 'likely', 'likely', 'fight', 'fight', 'fight'];
+    const COL = { calm: '#3FB27A', tense: '#F5B323', likely: '#FF5A4F', fight: '#FF8A80' };
+    const lerp = (P, t, dir, dx) => {
+      const a = Math.floor(t), b = Math.min(P.length - 1, a + 1), k = t - a;
+      const m = (i) => P[a][i] + (P[b][i] - P[a][i]) * k;
+      return { x: m(0) + (dx || 0), dir: dir, lean: m(1), ra: [m(2), m(3)], la: [m(4), m(5)], stride: m(6) };
+    };
+    const CLIPS = [
+      { name: 'Escalation clip 1', tag: 'OUR VENUE · FIGHT', range: [0, 11], truth: 'Fight at the shove', model: 'Amber at [t] s · alarm at [t] s', why: 'The lead-time number comes from clips like this: first amber, then the shove.', split: 'Own venue footage, high camera mount. Never used for training; used to tune the threshold and measure lead time.' },
+      { name: 'Hug', tag: 'AIRTLAB · HARD NEGATIVE', range: [0, 1], truth: 'Not a fight', model: 'Peak [s] · [result]', why: 'Close contact with arms around shoulders. A good model keeps this calm.', split: 'AIRTLab non-violent clips. Held-out fold, split by video.' },
+      { name: 'High-five', tag: 'OUR VENUE · NEGATIVE', range: [0, 2], truth: 'Not a fight', model: 'Peak [s] · [result]', why: 'One fast arm, but the distance stays above 0.8 torso-lengths.', split: 'Own venue footage, shown live on stage as a negative.' },
+      { name: 'Chat close', tag: 'OUR VENUE · NEGATIVE', range: [0, 0], truth: 'Not a fight', model: 'Peak [s] · [result]', why: 'Two people standing close and talking. No speed, no reach.', split: 'Own venue footage, part of the false-alarm minutes.' },
+      { name: 'CCTV-angle fight', tag: 'HELD-OUT DOMAIN', range: [6, 10], truth: 'Fight', model: 'Peak [s] · [result]', why: 'High, wide camera like a real site. The unfamiliar-data test.', split: 'Surveillance Camera Fight and SCVD, held out from training entirely.' },
+      { name: 'Ball game in a corridor', tag: 'KNOWN FAILURE MODE', range: [2, 2], truth: 'Not a fight', model: 'Peak [s] · [result]', why: 'Sports play outside a sports zone can look like strikes. Listed as a known failure.', split: 'Own venue footage. Reported even if the model gets it wrong.' }
+    ];
+    const ci = s.clip;
+    const clip = CLIPS[ci];
+    const t = Math.max(clip.range[0], Math.min(clip.range[1], s.t));
+    const build = (idx, tt) => {
+      if (idx === 5) {
+        const a = this.fig({ x: 250, dir: 1, lean: -6, ra: [170, 0], la: [150, 10], stride: 22 }, T, G);
+        const b = this.fig({ x: 420, dir: -1, lean: -4, ra: [150, 10], la: [20, 10], stride: 20 }, T, G);
+        return { cyan: a.bones, violet: b.bones, grey: '', joints: a.joints + b.joints, ball: 'M321 112a14 14 0 1 0 28 0a14 14 0 1 0 -28 0', x0: 250, x1: 420, top: Math.min(a.top, b.top), level: 'calm' };
+      }
+      const pa = lerp(PA, tt, 1, idx === 4 ? -10 : 0), pb = lerp(PB, tt, -1, idx === 4 ? -10 : 0);
+      const a = this.fig(pa, idx === 4 ? 44 : T, G), b = this.fig(pb, idx === 4 ? 44 : T, G);
+      return { cyan: a.bones, violet: b.bones, grey: '', joints: a.joints + b.joints, ball: '', x0: pa.x, x1: pb.x, top: Math.min(a.top, b.top), level: idx === 0 || idx === 4 ? LVL[Math.min(11, Math.floor(tt + 1e-6))] : 'calm' };
+    };
+    const sc = build(ci, t);
+    let grid = '';
+    for (let x = 0; x <= 640; x += 40) grid += 'M' + x + ' 0L' + x + ' 360';
+    for (let y = 0; y <= 360; y += 40) grid += 'M0 ' + y + 'L640 ' + y;
+    const minX = Math.min(sc.x0, sc.x1) - 0.85 * T, maxX = Math.max(sc.x0, sc.x1) + 0.85 * T, top = sc.top - 10;
+    const clips = CLIPS.map((c, i) => {
+      const thumb = build(i, i === 0 ? 9 : (i === 4 ? 9 : c.range[1]));
+      return { name: c.name, tag: c.tag, cyan: thumb.cyan, violet: thumb.violet, grey: thumb.grey, ball: thumb.ball,
+        pressed: i === ci ? 'true' : 'false', border: i === ci ? '2px solid #8EA2FF' : '1px solid #232A33',
+        pick: () => { this.stop(); this.setState({ clip: i, t: i === 0 ? 6 : (i === 4 ? 9 : c.range[1]), playing: false }); } };
+    });
+    const span = clip.range[1] - clip.range[0];
+    const open = s.cardOpen;
+    return {
+      placeholder: this.props.placeholder == null ? true : !!this.props.placeholder,
+      grid: grid, clips: clips,
+      cur: {
+        aria: clip.name + ', skeleton illustration', source: clip.tag + ' · ' + clip.name.toUpperCase(),
+        levelText: sc.level === 'calm' ? 'MODEL: [CALM?]' : 'MODEL: ' + (sc.level === 'likely' ? 'FIGHT LIKELY' : sc.level.toUpperCase()), levelColor: COL[sc.level],
+        boxX: Math.round(minX), boxY: Math.round(top), boxW: Math.round(maxX - minX), boxH: Math.round(G + 4 - top), boxColor: COL[sc.level],
+        cyan: sc.cyan, violet: sc.violet, grey: sc.grey, joints: sc.joints, ball: sc.ball,
+        truth: clip.truth, model: clip.model, why: clip.why, split: clip.split
+      },
+      progress: span > 0 ? Math.round((t - clip.range[0]) / span * 100) + '%' : '100%',
+      frameLabel: span > 0 ? 'FRAME ' + Math.round((t - clip.range[0]) * 10) + ' / ' + Math.round(span * 10) : 'SINGLE FRAME',
+      playLabel: s.playing ? 'Pause' : 'Play', playIcon: s.playing ? 'M6 4h4v16H6zM14 4h4v16h-4z' : 'M7 4l13 8-13 8z',
+      play: () => this.toggle(clip.range),
+      leads: [1, 2, 3, 4, 5],
+      tiles: [
+        { k: 'CLIP AUC', v: '[AUC]', sub: 'Phone-video sets · split by video · [n] clips', border: '#232A33' },
+        { k: 'PRECISION · RECALL', v: '[P] · [R]', sub: 'Clip level, same split', border: '#232A33' },
+        { k: 'CCTV ANGLE · HELD OUT', v: '[AUC]', sub: 'Never seen in training · P [P] · R [R]', border: '#3B55E6' },
+        { k: 'FALSE ALARMS / CAM-HOUR', v: '[FA]', sub: 'On [N] min of own normal footage · target 1 or fewer', border: '#ECEFF3' },
+        { k: 'HARD NEGATIVES', v: '[x]%', sub: 'AIRTLab false-positive rate: hugs, claps, high-fives', border: '#232A33' },
+        { k: 'LATENCY', v: '[ms] ms', sub: 'Per frame on the edge laptop', border: '#232A33' },
+        { k: 'PUSHES PER SHIFT', v: '3', sub: 'Target per site per shift. A design target, not a measurement.', border: '#232A33' }
+      ],
+      cardOpen: open, cardExpanded: open ? 'true' : 'false', cardButton: open ? 'Hide' : 'Show', toggleCard: () => this.setState({ cardOpen: !open })
+    };
+  }
+}
+</script>
+</body>
+</html>

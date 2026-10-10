@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>EarlyEye v3 duty phone</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Mono:wght@400;500;700&amp;family=Atkinson+Hyperlegible+Next:wght@400;500;700;800&amp;family=Saira+Condensed:wght@600;700;800&amp;display=swap">
+<style>
+body{margin:0;background:#F1F2F4}
+a{color:#2742D9}a:hover{color:#1F35B3}
+button{font-family:inherit}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; overflow: hidden; font-family: 'Atkinson Hyperlegible Next', system-ui, sans-serif; color: {{fg}}; background: {{screenBg}}; display: flex; flex-direction: column">
+
+<div style="padding: 14px 18px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid {{topLine}}">
+<div style="display: flex; align-items: center; gap: 8px">
+<svg width="22" height="22" viewBox="0 0 32 32" aria-hidden="true"><path d="M3 16c3.5-6 8-9 13-9s9.5 3 13 9c-3.5 6-8 9-13 9s-9.5-3-13-9z" fill="none" stroke="{{fg}}" stroke-width="2.5" stroke-linejoin="round"></path><circle cx="16" cy="16" r="4.5" fill="{{fg}}"></circle></svg>
+<span style="font-family: 'Saira Condensed', sans-serif; font-size: 20px; font-weight: 800; letter-spacing: 0.04em">EARLYEYE</span>
+</div>
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; font-weight: 700">GUARD B</span>
+</div>
+
+<sc-if value="{{isOff}}" hint-placeholder-val="{{ false }}">
+<div style="flex: 1 1 auto; padding: 28px 22px; display: flex; flex-direction: column; justify-content: center; gap: 18px">
+<div style="font-family: 'Saira Condensed', sans-serif; font-size: 46px; font-weight: 800; text-transform: uppercase; line-height: 0.95">Start your shift</div>
+<p style="margin: 0; font-size: 17px; line-height: 1.45; color: #3A414B">One tap turns on sound, keeps the screen awake and goes full screen. This phone only rings at fight likely.</p>
+<button type="button" onClick="{{goOnDuty}}" style="min-height: 84px; border-radius: 2px; border: none; background: #0B0D10; color: #FFFFFF; font-family: 'Saira Condensed', sans-serif; font-size: 36px; font-weight: 800; text-transform: uppercase; cursor: pointer">I'm on duty</button>
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; color: #5D6672">OPENED FROM /push?staff=Guard%20B</span>
+</div>
+</sc-if>
+
+<sc-if value="{{isIdle}}" hint-placeholder-val="{{ false }}">
+<div style="flex: 1 1 auto; padding: 24px 22px; display: flex; flex-direction: column; gap: 16px">
+<div style="display: flex; align-items: center; gap: 10px">
+<span style="width: 14px; height: 14px; border-radius: 50%; background: #2E8B57"></span>
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 13px; font-weight: 700">ON DUTY · SCREEN STAYS AWAKE</span>
+</div>
+<div style="font-family: 'Saira Condensed', sans-serif; font-size: 50px; font-weight: 800; text-transform: uppercase; line-height: 0.92">No alerts.<br>All quiet.</div>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px">
+<div style="background: #FFFFFF; border: 1px solid #DCDFE4; border-radius: 2px; padding: 12px; display: flex; flex-direction: column; gap: 2px"><span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 24px; font-weight: 700">1/3</span><span style="font-size: 12px; color: #3A414B">pushes this shift</span></div>
+<div style="background: #FFFFFF; border: 1px solid #DCDFE4; border-radius: 2px; padding: 12px; display: flex; flex-direction: column; gap: 2px"><span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 24px; font-weight: 700">5/6</span><span style="font-size: 12px; color: #3A414B">cameras live</span></div>
+</div>
+<div style="background: #FFFFFF; border: 1px solid #DCDFE4; border-radius: 2px; padding: 12px; display: flex; flex-direction: column; gap: 4px">
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 11px; font-weight: 700; color: #5D6672; letter-spacing: 0.06em">YOUR PATROL SLOT TODAY</span>
+<span style="font-size: 18px; font-weight: 800">Block C stairwell · 13:00–14:00</span>
+<span style="font-size: 13px; color: #3A414B">From this week's patrol plan.</span>
+</div>
+<p style="margin: 0; font-size: 14px; line-height: 1.45; color: #3A414B">Tense alerts stay on the desk screen. You are pushed only when a fight is likely, and only you.</p>
+</div>
+</sc-if>
+
+<sc-if value="{{isPushed}}" hint-placeholder-val="{{ true }}">
+<div style="flex: 1 1 auto; padding: 16px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; align-items: center; justify-content: space-between; gap: 8px">
+<span style="display: inline-flex; align-items: center; gap: 10px; font-family: 'Saira Condensed', sans-serif; font-size: 40px; font-weight: 800; text-transform: uppercase; line-height: 1"><svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 22 12 12 22 2 12z" fill="#FFFFFF"></path></svg>Fight likely</span>
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 13px; font-weight: 700">14:31:06</span>
+</div>
+<div style="background: #FFFFFF; color: #0B0D10; border-radius: 2px; padding: 14px; display: flex; flex-direction: column; gap: 10px">
+<div style="font-family: 'Saira Condensed', sans-serif; font-size: 38px; font-weight: 800; text-transform: uppercase; line-height: 0.95">Block C stairwell</div>
+<div style="display: flex; flex-wrap: wrap; gap: 6px; align-items: center">
+<span style="display: inline-flex; align-items: center; gap: 6px; min-height: 28px; padding: 0 8px; border: 2px solid #0B0D10; border-radius: 2px; font-size: 14px; font-weight: 800"><svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z" fill="none" stroke="#0B0D10" stroke-width="2" stroke-linejoin="round"></path></svg>Fight</span>
+<span style="font-size: 15px; font-weight: 700">in ~6 s · ~40 m · 2 people</span>
+</div>
+<svg viewBox="0 0 640 360" role="img" aria-label="Skeleton snapshot of two people, one with an arm raised" style="display: block; width: 100%; height: auto; background: #0E1217">
+<path d="{{grid}}" stroke="#1A2028" stroke-width="1.5" fill="none"></path>
+<rect x="{{boxX}}" y="{{boxY}}" width="{{boxW}}" height="{{boxH}}" fill="none" stroke="#FF5A4F" stroke-width="4"></rect>
+<path d="{{A}}" stroke="#7FE0FF" stroke-width="6" stroke-linecap="round" fill="none"></path>
+<path d="{{B}}" stroke="#C9A7FF" stroke-width="6" stroke-linecap="round" fill="none"></path>
+<text x="18" y="40" font-family="'Atkinson Hyperlegible Mono', monospace" font-size="22" font-weight="700" fill="#ECEFF3">SKELETON SNAPSHOT · NO VIDEO</text>
+</svg>
+<p style="margin: 0; font-size: 18px; line-height: 1.35; font-weight: 500">Fast whole-body motion while close, for 1.2 s.</p>
+</div>
+<div style="display: flex; align-items: center; gap: 14px; margin-top: auto">
+<svg width="72" height="72" viewBox="0 0 80 80" role="img" aria-label="{{ringAria}}">
+<circle cx="40" cy="40" r="34" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="8"></circle>
+<circle cx="40" cy="40" r="34" fill="none" stroke="#FFFFFF" stroke-width="8" stroke-linecap="round" stroke-dasharray="213.6" stroke-dashoffset="{{ringOffset}}" transform="rotate(-90 40 40)"></circle>
+<text x="40" y="47" text-anchor="middle" font-family="'Atkinson Hyperlegible Mono', monospace" font-size="22" font-weight="700" fill="#FFFFFF">{{left}}</text>
+</svg>
+<span style="font-size: 15px; line-height: 1.4">seconds to answer. Only you were pushed.</span>
+</div>
+<button type="button" onClick="{{ack}}" style="min-height: 80px; border-radius: 2px; border: none; background: #FFFFFF; color: #0B0D10; font-family: 'Saira Condensed', sans-serif; font-size: 36px; font-weight: 800; text-transform: uppercase; cursor: pointer">On my way</button>
+</div>
+</sc-if>
+
+<sc-if value="{{isDone}}" hint-placeholder-val="{{ false }}">
+<div style="flex: 1 1 auto; padding: 28px 22px; display: flex; flex-direction: column; justify-content: center; gap: 16px">
+<div style="width: 80px; height: 80px; border-radius: 50%; border: 3px solid {{doneColor}}; background: #FFFFFF; display: flex; align-items: center; justify-content: center">
+<svg width="40" height="40" viewBox="0 0 24 24" aria-hidden="true"><path d="{{doneIcon}}" fill="none" stroke="{{doneColor}}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+</div>
+<div style="font-family: 'Saira Condensed', sans-serif; font-size: 46px; font-weight: 800; text-transform: uppercase; line-height: 0.95; color: {{doneColor}}">{{doneTitle}}</div>
+<p style="margin: 0; font-size: 17px; line-height: 1.45; color: #3A414B">{{doneBody}}</p>
+<div style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; color: #5D6672; border-top: 1px solid #DCDFE4; padding-top: 12px">BLOCK C STAIRWELL · INC-2026-00142</div>
+</div>
+</sc-if>
+
+<div style="padding: 10px 16px 14px; border-top: 1px solid {{topLine}}; display: flex; align-items: center; justify-content: space-between; gap: 8px; background: #FFFFFF; color: #0B0D10">
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 11px; color: #5D6672">PROTOTYPE CONTROL</span>
+<button type="button" onClick="{{replay}}" style="min-height: 40px; padding: 0 12px; border-radius: 2px; border: 1px dashed #5D6672; background: #FFFFFF; color: #0B0D10; font-size: 13px; font-weight: 700; cursor: pointer">Send a test push</button>
+</div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"view":{"editor":"enum","options":["offduty","idle","pushed","acked","timeout"],"default":"pushed"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { view: (props && props.view) || 'pushed', left: 7, took: 4 };
+  }
+  componentDidUpdate(prev) { if (prev.view !== this.props.view) { this.stop(); this.setState({ view: this.props.view || 'pushed', left: 7 }); } }
+  componentWillUnmount() { this.stop(); if (this.back) clearTimeout(this.back); }
+  stop() { if (this.timer) { clearInterval(this.timer); this.timer = null; } }
+  run() {
+    this.stop();
+    if (this.back) clearTimeout(this.back);
+    this.setState({ view: 'pushed', left: 10 });
+    this.timer = setInterval(() => {
+      const l = this.state.left - 1;
+      if (l <= 0) { this.stop(); this.setState({ left: 0, view: 'timeout' }); return; }
+      this.setState({ left: l });
+    }, 1000);
+  }
+  fig(p) {
+    const T = 56, G = 318, rad = (d) => d * Math.PI / 180, legL = 0.58 * T;
+    const hip = [p.x, G - 2 * legL * 0.97], L = rad(p.lean);
+    const neck = [hip[0] + p.dir * T * Math.sin(L), hip[1] - T * Math.cos(L)];
+    const head = [neck[0] + p.dir * 0.34 * T * Math.sin(L), neck[1] - 0.34 * T * Math.cos(L)];
+    const arm = (a, e) => { const A = rad(a), E = rad(a + e); const el = [neck[0] + p.dir * 0.5 * T * Math.sin(A), neck[1] + 0.5 * T * Math.cos(A)]; return [el, [el[0] + p.dir * 0.46 * T * Math.sin(E), el[1] + 0.46 * T * Math.cos(E)]]; };
+    const leg = (s) => { const S = rad(s), S2 = rad(s * 0.4); const k = [hip[0] + p.dir * legL * Math.sin(S), hip[1] + legL * Math.cos(S)]; return [k, [k[0] + p.dir * legL * Math.sin(S2), k[1] + legL * Math.cos(S2)]]; };
+    const r = arm(p.ra[0], p.ra[1]), l = arm(p.la[0], p.la[1]), rl = leg(p.stride), ll = leg(-p.stride);
+    const f = (n) => Math.round(n * 10) / 10, seg = (a, b) => 'M' + f(a[0]) + ' ' + f(a[1]) + 'L' + f(b[0]) + ' ' + f(b[1]);
+    const hr = 0.2 * T;
+    return { d: [seg(hip, neck), seg(neck, r[0]), seg(r[0], r[1]), seg(neck, l[0]), seg(l[0], l[1]), seg(hip, rl[0]), seg(rl[0], rl[1]), seg(hip, ll[0]), seg(ll[0], ll[1])].join('') + 'M' + f(head[0] - hr) + ' ' + f(head[1]) + 'a' + f(hr) + ' ' + f(hr) + ' 0 1 0 ' + f(2 * hr) + ' 0a' + f(hr) + ' ' + f(hr) + ' 0 1 0 ' + f(-2 * hr) + ' 0', top: head[1] - hr };
+  }
+  renderVals() {
+    const v = this.state.view, left = this.state.left;
+    const A = this.fig({ x: 309, dir: 1, lean: 12, ra: [125, 15], la: [45, 40], stride: 16 });
+    const B = this.fig({ x: 334, dir: -1, lean: -4, ra: [60, 70], la: [30, 30], stride: 10 });
+    const top = Math.round(Math.min(A.top, B.top) - 10);
+    let grid = '';
+    for (let x = 0; x <= 640; x += 64) grid += 'M' + x + ' 0L' + x + ' 360';
+    for (let y = 0; y <= 360; y += 60) grid += 'M0 ' + y + 'L640 ' + y;
+    const DONE = {
+      acked: { title: 'Acknowledged in ' + this.state.took + ' s', body: 'The desk can see you are on the way. Back to on-duty in 5 s.', icon: 'M4 12.5l5 5L20 6.5', color: '#17663D' },
+      timeout: { title: 'No answer in 10 s', body: 'The desk can see you did not answer and will call you by radio.', icon: 'M12 6v8M12 18v.5', color: '#0B0D10' }
+    };
+    const d = DONE[v] || DONE.acked;
+    const pushed = v === 'pushed';
+    return {
+      screenBg: pushed ? '#C8241B' : (v === 'acked' ? '#E4F3EA' : '#F1F2F4'), fg: pushed ? '#FFFFFF' : '#0B0D10',
+      topLine: pushed ? 'rgba(255,255,255,0.35)' : '#DCDFE4',
+      isOff: v === 'offduty', isIdle: v === 'idle', isPushed: pushed, isDone: v === 'acked' || v === 'timeout',
+      A: A.d, B: B.d, grid: grid, boxX: 261, boxY: top, boxW: 121, boxH: 322 - top,
+      left: String(left), ringOffset: String(Math.round(213.6 * (1 - left / 10) * 10) / 10), ringAria: left + ' seconds left to answer',
+      doneTitle: d.title, doneBody: d.body, doneIcon: d.icon, doneColor: d.color,
+      goOnDuty: () => this.setState({ view: 'idle' }),
+      ack: () => {
+        this.stop();
+        this.setState({ view: 'acked', took: Math.max(1, 10 - this.state.left) });
+        this.back = setTimeout(() => this.setState({ view: 'idle' }), 5000);
+      },
+      replay: () => this.run()
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,462 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>EarlyEye Live</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Mono:wght@400;500;700&amp;family=Atkinson+Hyperlegible+Next:wght@400;500;700;800&amp;display=swap">
+<style>
+body{margin:0;background:#F4F5F7}
+a{color:#1E3A8A}a:hover{color:#142A66}
+button{font-family:inherit}
+</style>
+</helmet>
+<div style="font-family: 'Atkinson Hyperlegible Next', system-ui, sans-serif; color: #0F1419; background: #F4F5F7; min-height: 100vh; box-sizing: border-box; position: relative">
+
+<header style="background: #FFFFFF; border-bottom: 1px solid #D9DDE3">
+<div style="max-width: 1600px; margin: 0 auto; padding: 12px 24px; display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px">
+<a href="Live.dc.html" style="display: flex; align-items: center; gap: 10px; text-decoration: none; color: #0F1419">
+<svg width="30" height="30" viewBox="0 0 32 32" aria-hidden="true"><path d="M3 16c3.5-6 8-9 13-9s9.5 3 13 9c-3.5 6-8 9-13 9s-9.5-3-13-9z" fill="none" stroke="#0F1419" stroke-width="2.5" stroke-linejoin="round"></path><circle cx="16" cy="16" r="4.5" fill="#0F1419"></circle></svg>
+<span style="font-size: 22px; font-weight: 800; letter-spacing: -0.01em">EarlyEye</span>
+</a>
+<span style="font-size: 15px; color: #5A6472">Taylor's Lakeside campus</span>
+<nav aria-label="Main" style="display: flex; gap: 4px; flex-wrap: wrap">
+<a href="Live.dc.html" aria-current="page" style="font-size: 15px; font-weight: 700; padding: 10px 14px; border-radius: 6px; background: #0F1419; color: #FFFFFF; text-decoration: none">Live</a>
+<a href="Plan.dc.html" style="font-size: 15px; font-weight: 700; padding: 10px 14px; border-radius: 6px; color: #3A4350; text-decoration: none">Plan</a>
+<a href="Incidents.dc.html" style="font-size: 15px; font-weight: 700; padding: 10px 14px; border-radius: 6px; color: #3A4350; text-decoration: none">Incidents</a>
+<a href="Proof.dc.html" style="font-size: 15px; font-weight: 700; padding: 10px 14px; border-radius: 6px; color: #3A4350; text-decoration: none">Proof</a>
+</nav>
+<div style="margin-left: auto; display: flex; flex-wrap: wrap; align-items: center; gap: 10px">
+<button type="button" onClick="{{armSound}}" style="display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 12px; border-radius: 6px; border: 1px solid {{soundBorder}}; background: {{soundBg}}; color: #0F1419; font-size: 14px; font-weight: 700; cursor: pointer">
+<svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z" fill="none" stroke="#0F1419" stroke-width="2" stroke-linejoin="round"></path><path d="{{soundIcon}}" fill="none" stroke="#0F1419" stroke-width="2" stroke-linecap="round"></path></svg>{{soundLabel}}</button>
+<span style="display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 12px; border-radius: 6px; background: #EEF0F3; font-size: 14px; font-weight: 700">
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 16px">{{pushes}} of 3</span> pushes this shift</span>
+<span style="display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 0 12px; border-radius: 6px; border: 1px dashed #8A93A0; font-size: 13px; font-weight: 700; color: #3A4350">Source: replay</span>
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 16px; font-weight: 700">{{clock}} <span style="font-size: 12px; color: #5A6472">MYT</span></span>
+</div>
+</div>
+</header>
+
+<sc-if value="{{bannerOn}}" hint-placeholder-val="{{ true }}">
+<div role="alert" style="background: {{bannerBg}}; color: #FFFFFF">
+<div style="max-width: 1600px; margin: 0 auto; padding: 14px 24px; display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px">
+<svg width="30" height="30" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 2h8l6 6v8l-6 6H8l-6-6V8z" fill="#FFFFFF"></path><path d="M12 7v6M12 16.5v.5" stroke="{{bannerBg}}" stroke-width="2.6" stroke-linecap="round"></path></svg>
+<div style="font-size: 26px; font-weight: 800; letter-spacing: 0.01em">{{bannerTitle}}</div>
+<div style="font-size: 18px; font-weight: 500">{{bannerSub}}</div>
+<div style="margin-left: auto; display: flex; align-items: center; gap: 12px">
+<sc-if value="{{alarmSounding}}" hint-placeholder-val="{{ true }}">
+<span style="display: inline-flex; align-items: center; gap: 8px; font-size: 16px; font-weight: 700"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4zM16 9a4 4 0 0 1 0 6M18.5 6.5a7.5 7.5 0 0 1 0 11" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>Alarm sounding</span>
+<button type="button" onClick="{{silence}}" style="min-height: 44px; padding: 0 18px; border-radius: 6px; border: 2px solid #FFFFFF; background: transparent; color: #FFFFFF; font-size: 16px; font-weight: 800; cursor: pointer">Silence</button>
+</sc-if>
+<sc-if value="{{alarmQuiet}}" hint-placeholder-val="{{ false }}">
+<span style="font-size: 16px; font-weight: 700">Alarm silenced</span>
+</sc-if>
+</div>
+</div>
+</div>
+</sc-if>
+
+<main style="max-width: 1600px; margin: 0 auto; padding: 20px 24px 40px; display: flex; flex-direction: column; gap: 20px">
+
+<section aria-label="Replay controls" style="background: #FFFFFF; border: 1px dashed #8A93A0; border-radius: 10px; padding: 12px 16px; display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px">
+<div style="display: flex; flex-direction: column; gap: 2px; min-width: 200px">
+<div style="font-size: 15px; font-weight: 800">Replay escalation</div>
+<div style="font-size: 13px; color: #5A6472">Canned events from replay.json · {{speedLabel}}</div>
+</div>
+<div style="display: flex; gap: 6px">
+<button type="button" onClick="{{back}}" aria-label="Step back" style="width: 44px; height: 44px; border-radius: 6px; border: 1px solid #B8BFC9; background: #FFFFFF; cursor: pointer; display: inline-flex; align-items: center; justify-content: center"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="#0F1419" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"></path></svg></button>
+<button type="button" onClick="{{play}}" style="min-width: 104px; height: 44px; padding: 0 14px; border-radius: 6px; border: none; background: #1E3A8A; color: #FFFFFF; font-size: 15px; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px"><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="{{playIcon}}" fill="#FFFFFF"></path></svg>{{playLabel}}</button>
+<button type="button" onClick="{{next}}" aria-label="Step forward" style="width: 44px; height: 44px; border-radius: 6px; border: 1px solid #B8BFC9; background: #FFFFFF; cursor: pointer; display: inline-flex; align-items: center; justify-content: center"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="#0F1419" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"></path></svg></button>
+<button type="button" onClick="{{reset}}" style="height: 44px; padding: 0 14px; border-radius: 6px; border: 1px solid #B8BFC9; background: #FFFFFF; font-size: 15px; font-weight: 700; cursor: pointer">Reset</button>
+</div>
+<div role="group" aria-label="Replay timeline" style="display: flex; flex-wrap: wrap; gap: 4px; align-items: center">
+<sc-for list="{{dots}}" as="d" hint-placeholder-count="12">
+<button type="button" onClick="{{d.go}}" aria-label="{{d.aria}}" style="width: 32px; height: 44px; border-radius: 6px; border: none; background: {{d.bg}}; outline: {{d.outline}}; outline-offset: -2px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center"><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="{{d.glyph}}" fill="{{d.fill}}" stroke="{{d.stroke}}" stroke-width="1.5"></path></svg></button>
+</sc-for>
+</div>
+<div style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 14px; font-weight: 700; color: #3A4350">Event {{stepLabel}} / 12</div>
+</section>
+
+<div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start">
+
+<section aria-label="Current alert" style="flex: 3 1 620px; min-width: 0; box-sizing: border-box; background: {{card.tint}}; border: 2px solid {{card.border}}; border-radius: 12px; padding: 28px; display: flex; flex-direction: column; gap: 24px; transition: background-color 300ms">
+
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 14px">
+<div style="display: inline-flex; align-items: center; gap: 14px; padding: 12px 26px 12px 20px; border-radius: 999px; background: {{card.pillBg}}; color: {{card.pillFg}}; transition: background-color 300ms">
+<svg width="36" height="36" viewBox="0 0 24 24" aria-hidden="true"><path d="{{card.glyph}}" fill="{{card.pillFg}}"></path></svg>
+<span style="font-size: 46px; font-weight: 800; line-height: 1">{{card.label}}</span>
+</div>
+<sc-if value="{{card.showType}}" hint-placeholder-val="{{ true }}">
+<span style="display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 14px; border-radius: 6px; border: 2px solid #0F1419; background: #FFFFFF; font-size: 20px; font-weight: 800">
+<svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="{{card.typeIcon}}" fill="none" stroke="#0F1419" stroke-width="2" stroke-linejoin="round"></path></svg>{{card.typeLabel}}</span>
+</sc-if>
+<span style="margin-left: auto; display: inline-flex; align-items: center; gap: 8px; min-height: 36px; padding: 0 12px; border-radius: 6px; background: {{card.statusBg}}; color: {{card.statusFg}}; font-size: 15px; font-weight: 700">{{card.statusText}}</span>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 6px">
+<div style="font-size: 44px; font-weight: 800; line-height: 1.05">{{card.etaText}}</div>
+<div style="font-size: 17px; color: #3A4350">{{card.etaSub}}</div>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 6px">
+<div style="display: flex; align-items: center; gap: 10px">
+<svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z" fill="none" stroke="#0F1419" stroke-width="2"></path><circle cx="12" cy="9.5" r="2.5" fill="#0F1419"></circle></svg>
+<h1 style="margin: 0; font-size: 36px; font-weight: 800; line-height: 1.1">{{card.loc}}</h1>
+</div>
+<div style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 15px; color: #3A4350">{{card.meta}}</div>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 6px; background: #FFFFFF; border: 1px solid #D9DDE3; border-radius: 10px; padding: 18px 20px">
+<div style="font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #5A6472">Why</div>
+<p style="margin: 0; font-size: 26px; line-height: 1.35; font-weight: 500">{{card.reason}}</p>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px">
+<div style="background: #FFFFFF; border: 1px solid #D9DDE3; border-radius: 10px; padding: 18px 20px; display: flex; flex-direction: column; gap: 6px">
+<div style="font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #5A6472">Do this</div>
+<div style="font-size: 24px; font-weight: 800; line-height: 1.25">{{card.action}}</div>
+</div>
+<div style="background: #FFFFFF; border: 1px solid #D9DDE3; border-radius: 10px; padding: 18px 20px; display: flex; flex-direction: column; gap: 6px">
+<div style="font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #5A6472">Nearest person</div>
+<div style="display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap">
+<span style="font-size: 24px; font-weight: 800">{{card.nearest}}</span>
+<span style="font-size: 16px; color: #3A4350">{{card.dist}}</span>
+</div>
+<div style="font-size: 15px; color: #3A4350">{{card.nearestState}} <sc-if value="{{card.pushed}}" hint-placeholder-val="{{ true }}">· <a href="Push.dc.html">Open their phone card</a></sc-if></div>
+</div>
+</div>
+
+<div style="background: #FFFFFF; border: 1px solid #D9DDE3; border-radius: 10px; padding: 16px 20px 12px; display: flex; flex-direction: column; gap: 8px">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; align-items: baseline">
+<div style="font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #5A6472">Build-up, last 12 readings</div>
+<div style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 14px; color: #3A4350">{{card.scoreLine}}</div>
+</div>
+<svg viewBox="0 0 600 120" role="img" aria-label="{{card.sparkAria}}" style="width: 100%; height: 120px; display: block" preserveAspectRatio="none">
+<line x1="0" y1="70" x2="600" y2="70" stroke="#E5A41C" stroke-width="1.5" stroke-dasharray="6 5"></line>
+<line x1="0" y1="45" x2="600" y2="45" stroke="#C8241B" stroke-width="1.5" stroke-dasharray="6 5"></line>
+<polyline points="{{card.spark}}" fill="none" stroke="#0F1419" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"></polyline>
+<circle cx="{{card.cx}}" cy="{{card.cy}}" r="7" fill="{{card.pillBg}}" stroke="#0F1419" stroke-width="2"></circle>
+</svg>
+<div style="display: flex; gap: 18px; flex-wrap: wrap; font-size: 13px; color: #3A4350">
+<span style="display: inline-flex; align-items: center; gap: 6px"><span style="width: 18px; border-top: 2px dashed #E5A41C"></span>Tense line (silent)</span>
+<span style="display: inline-flex; align-items: center; gap: 6px"><span style="width: 18px; border-top: 2px dashed #C8241B"></span>Alarm line (1 s persistence)</span>
+</div>
+</div>
+
+<sc-if value="{{card.isCalm}}" hint-placeholder-val="{{ false }}">
+<div style="font-size: 18px; color: #3A4350; background: #FFFFFF; border: 1px dashed #B8BFC9; border-radius: 10px; padding: 16px 20px">Nothing to do. Chats, hugs and high-fives stay calm by design.</div>
+</sc-if>
+<sc-if value="{{card.showPushNow}}" hint-placeholder-val="{{ false }}">
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px">
+<button type="button" onClick="{{card.onPush}}" style="min-height: 64px; border-radius: 10px; border: none; background: #0F1419; color: #FFFFFF; font-size: 22px; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 10px"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="2.5" fill="none" stroke="#FFFFFF" stroke-width="2"></rect><path d="M10 18h4" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"></path></svg>Push {{card.nearest}} now</button>
+<button type="button" onClick="{{card.onDismiss}}" style="min-height: 64px; border-radius: 10px; border: 2px solid #0F1419; background: #FFFFFF; color: #0F1419; font-size: 22px; font-weight: 800; cursor: pointer">Dismiss</button>
+</div>
+</sc-if>
+<sc-if value="{{card.showConfirm}}" hint-placeholder-val="{{ true }}">
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px">
+<button type="button" onClick="{{card.onConfirm}}" style="min-height: 64px; border-radius: 10px; border: none; background: #0F1419; color: #FFFFFF; font-size: 22px; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 10px"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path></svg>Confirm: it is real</button>
+<button type="button" onClick="{{card.onDismiss}}" style="min-height: 64px; border-radius: 10px; border: 2px solid #0F1419; background: #FFFFFF; color: #0F1419; font-size: 22px; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 10px"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="#0F1419" stroke-width="3" stroke-linecap="round"></path></svg>Dismiss: false alarm</button>
+</div>
+</sc-if>
+<sc-if value="{{card.decided}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px; background: #FFFFFF; border: 2px solid #0F1419; border-radius: 10px; padding: 16px 20px">
+<svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5" fill="none" stroke="#0F1419" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+<span style="font-size: 20px; font-weight: 800">{{card.decidedText}}</span>
+<span style="font-size: 15px; color: #3A4350">Saved as a label for this camera.</span>
+<button type="button" onClick="{{card.onUndo}}" style="margin-left: auto; min-height: 44px; padding: 0 16px; border-radius: 6px; border: 1px solid #B8BFC9; background: #FFFFFF; font-size: 15px; font-weight: 700; cursor: pointer">Undo</button>
+</div>
+</sc-if>
+
+<div style="display: flex; flex-wrap: wrap; gap: 6px 16px; font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 13px; color: #5A6472">
+<span>{{card.id}}</span><span>Skeleton features only · no video on this screen</span>
+</div>
+</section>
+
+<div style="flex: 2 1 380px; min-width: 0; display: flex; flex-direction: column; gap: 20px">
+
+<section aria-labelledby="queue-h" style="background: #FFFFFF; border: 1px solid #D9DDE3; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; align-items: baseline; justify-content: space-between; gap: 8px; flex-wrap: wrap">
+<h2 id="queue-h" style="margin: 0; font-size: 22px; font-weight: 800">Active now</h2>
+<span style="font-size: 14px; color: #5A6472">Highest priority first · all cameras</span>
+</div>
+<sc-if value="{{queueEmpty}}" hint-placeholder-val="{{ false }}">
+<div style="font-size: 16px; color: #3A4350; padding: 18px; border: 1px dashed #B8BFC9; border-radius: 8px">No active incidents. Tense and above appear here.</div>
+</sc-if>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<sc-for list="{{queue}}" as="q" hint-placeholder-count="3">
+<button type="button" onClick="{{q.pick}}" aria-pressed="{{q.selected}}" style="text-align: left; width: 100%; box-sizing: border-box; border-radius: 8px; border: {{q.border}}; background: {{q.bg}}; padding: 12px 14px; cursor: pointer; display: grid; grid-template-columns: 28px minmax(0, 1fr) auto; gap: 4px 12px; align-items: center; color: #0F1419">
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 20px; font-weight: 700; grid-row: span 2">{{q.rank}}</span>
+<span style="display: flex; align-items: center; gap: 8px; min-width: 0">
+<span style="display: inline-flex; align-items: center; gap: 6px; padding: 3px 9px 3px 7px; border-radius: 999px; background: {{q.pillBg}}; color: {{q.pillFg}}; font-size: 14px; font-weight: 800; white-space: nowrap"><svg width="13" height="13" viewBox="0 0 24 24" aria-hidden="true"><path d="{{q.glyph}}" fill="{{q.pillFg}}"></path></svg>{{q.label}}</span>
+<span style="font-size: 16px; font-weight: 800; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{q.loc}}</span>
+</span>
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 18px; font-weight: 700; text-align: right">{{q.prio}}</span>
+<span style="display: flex; align-items: center; gap: 8px; font-size: 14px; color: #3A4350; min-width: 0">
+<svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="{{q.typeIcon}}" fill="none" stroke="#3A4350" stroke-width="2" stroke-linejoin="round"></path></svg>
+<span style="white-space: nowrap">{{q.typeLabel}}</span><span style="color: #5A6472">· since {{q.since}}</span>
+</span>
+<span style="width: 72px; height: 6px; background: #EEF0F3; border-radius: 3px; overflow: hidden; justify-self: end"><span style="display: block; height: 6px; width: {{q.bar}}; background: #0F1419"></span></span>
+</button>
+</sc-for>
+</div>
+<div style="font-size: 13px; color: #5A6472; line-height: 1.4">Priority = severity × confidence × zone risk × people. Zone risk comes from this site's zone table.</div>
+</section>
+
+<section aria-labelledby="cams-h" style="background: #FFFFFF; border: 1px solid #D9DDE3; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; align-items: baseline; justify-content: space-between; gap: 8px; flex-wrap: wrap">
+<h2 id="cams-h" style="margin: 0; font-size: 22px; font-weight: 800">Cameras</h2>
+<span style="font-size: 14px; color: #5A6472">5 live · 1 black</span>
+</div>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
+<sc-for list="{{cams}}" as="c" hint-placeholder-count="6">
+<div style="border-radius: 8px; border: 1px solid {{c.border}}; background: {{c.bg}}; color: {{c.fg}}; padding: 12px; display: flex; flex-direction: column; gap: 6px; min-width: 0">
+<div style="display: flex; align-items: center; justify-content: space-between; gap: 6px">
+<span style="font-family: 'Atkinson Hyperlegible Mono', ui-monospace, monospace; font-size: 12px; font-weight: 700">{{c.id}}</span>
+<sc-if value="{{c.online}}" hint-placeholder-val="{{ true }}">
+<span style="display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 700"><span style="width: 8px; height: 8px; border-radius: 50%; background: #0F1419"></span>Live</span>
+</sc-if>
+<sc-if value="{{c.black}}" hint-placeholder-val="{{ false }}">
+<span style="display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 800; padding: 2px 8px; border-radius: 4px; background: #FFFFFF; color: #0F1419"><svg width="13" height="13" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3l18 18M10.5 6H15v3.5l4-2.5v10M15 15.5V18H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2" fill="none" stroke="#0F1419" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"></path></svg>{{c.blackFor}}</span>
+</sc-if>
+</div>
+<div style="font-size: 15px; font-weight: 800; line-height: 1.25">{{c.loc}}</div>
+<div style="font-size: 13px; opacity: 0.85">{{c.zone}} · risk {{c.risk}}</div>
+<div style="display: flex; align-items: center; justify-content: space-between; gap: 6px; font-size: 13px">
+<sc-if value="{{c.online}}" hint-placeholder-val="{{ true }}">
+<span style="display: inline-flex; align-items: center; gap: 5px; font-weight: 700"><svg width="12" height="12" viewBox="0 0 24 24" aria-hidden="true"><path d="{{c.glyph}}" fill="{{c.dot}}" stroke="#0F1419" stroke-width="1.5"></path></svg>{{c.levelLabel}}</span>
+</sc-if>
+<span style="opacity: 0.85">{{c.last}}</span>
+</div>
+</div>
+</sc-for>
+</div>
+</section>
+
+</div>
+</div>
+</main>
+
+<sc-if value="{{toastOn}}" hint-placeholder-val="{{ true }}">
+<div role="status" style="position: fixed; right: 24px; bottom: 24px; z-index: 10; max-width: 380px; background: #0F1419; color: #FFFFFF; border-radius: 10px; padding: 16px 18px; display: flex; gap: 14px; align-items: flex-start">
+<svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" style="flex-shrink: 0"><rect x="6" y="2" width="12" height="20" rx="2.5" fill="none" stroke="#FFFFFF" stroke-width="2"></rect><path d="M10 18h4" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"></path></svg>
+<div style="display: flex; flex-direction: column; gap: 4px">
+<div style="font-size: 18px; font-weight: 800">{{toastText}}</div>
+<div style="font-size: 14px; opacity: 0.85">One person only. They have 10 s to answer.</div>
+<a href="Push.dc.html" style="color: #FFFFFF; font-size: 14px; font-weight: 700">Open their phone card</a>
+</div>
+<button type="button" onClick="{{closeToast}}" aria-label="Close" style="margin-left: auto; width: 36px; height: 36px; border: none; border-radius: 6px; background: transparent; cursor: pointer; display: inline-flex; align-items: center; justify-content: center"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round"></path></svg></button>
+</div>
+</sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"startState":{"editor":"enum","options":["calm","tense","fight_likely","fight"],"default":"fight_likely"},"replaySpeed":{"editor":"enum","options":["0.5","1","2"],"default":"1","unit":"s per event"},"$preview":{"width":1440,"height":1240}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = this.initial(props, null);
+  }
+  initial(props, step) {
+    const map = { calm: 1, tense: 4, fight_likely: 6, fight: 10 };
+    const st = (props && props.startState) || 'fight_likely';
+    return {
+      step: step == null ? (map[st] == null ? 6 : map[st]) : step,
+      playing: false, dec: {}, manual: {}, silenced: false, toastClosed: false,
+      toastManual: null, sel: null, sound: false
+    };
+  }
+  componentDidUpdate(prev) {
+    if (prev.startState !== this.props.startState) { this.stop(); this.setState(this.initial(this.props, null)); }
+  }
+  componentWillUnmount() { this.stop(); }
+  stop() { if (this.timer) { clearInterval(this.timer); this.timer = null; } }
+  go(i) { this.stop(); this.setState({ step: Math.max(0, Math.min(11, i)), playing: false }); }
+  togglePlay(speedMs) {
+    if (this.state.playing) { this.stop(); this.setState({ playing: false }); return; }
+    const start = this.state.step >= 11 ? 0 : this.state.step;
+    const patch = { playing: true, step: start };
+    if (this.state.step >= 11) { Object.assign(patch, { dec: {}, manual: {}, silenced: false, toastClosed: false, toastManual: null, sel: null }); }
+    this.setState(patch);
+    this.timer = setInterval(() => {
+      if (this.state.step >= 11) { this.stop(); this.setState({ playing: false }); return; }
+      this.setState({ step: this.state.step + 1 });
+    }, speedMs);
+  }
+  renderVals() {
+    const s = this.state;
+    const speed = parseFloat(this.props.replaySpeed == null ? '1' : this.props.replaySpeed) || 1;
+    const speedMs = Math.round(speed * 1000);
+    const GLYPH = {
+      calm: 'M12 4a8 8 0 1 1-0.01 0z',
+      tense: 'M12 3 22 20H2z',
+      fight_likely: 'M12 2 22 12 12 22 2 12z',
+      fight: 'M8 2h8l6 6v8l-6 6H8l-6-6V8z'
+    };
+    const LV = {
+      calm: { label: 'Calm', pillBg: '#E4F3EA', pillFg: '#17663D', tint: '#FFFFFF', border: '#D9DDE3' },
+      tense: { label: 'Tense', pillBg: '#F5B323', pillFg: '#1A1200', tint: '#FFF8E6', border: '#E5A41C' },
+      fight_likely: { label: 'Fight likely', pillBg: '#C8241B', pillFg: '#FFFFFF', tint: '#FDEDEB', border: '#C8241B' },
+      fight: { label: 'Fight', pillBg: '#7F1310', pillFg: '#FFFFFF', tint: '#FBE3E0', border: '#7F1310' }
+    };
+    const TYPE = { fight: 'Fight', cornering: 'Cornering', crowd: 'Crowd gathering', play: 'Play / sports' };
+    const TICON = {
+      fight: 'M13 2 4 14h7l-1 8 9-12h-7z',
+      cornering: 'M4 12a3 3 0 1 0 6 0a3 3 0 1 0-6 0M15 5a2 2 0 1 0 4 0a2 2 0 1 0-4 0M17 12a2 2 0 1 0 4 0a2 2 0 1 0-4 0M15 19a2 2 0 1 0 4 0a2 2 0 1 0-4 0',
+      crowd: 'M10.2 4.5a1.8 1.8 0 1 0 3.6 0a1.8 1.8 0 1 0-3.6 0M16.2 8a1.8 1.8 0 1 0 3.6 0a1.8 1.8 0 1 0-3.6 0M16.2 16a1.8 1.8 0 1 0 3.6 0a1.8 1.8 0 1 0-3.6 0M10.2 19.5a1.8 1.8 0 1 0 3.6 0a1.8 1.8 0 1 0-3.6 0M4.2 16a1.8 1.8 0 1 0 3.6 0a1.8 1.8 0 1 0-3.6 0M4.2 8a1.8 1.8 0 1 0 3.6 0a1.8 1.8 0 1 0-3.6 0',
+      play: 'M12 3a9 9 0 1 1-0.01 0zM3 12h18M12 3c3.5 3 3.5 15 0 18M12 3c-3.5 3-3.5 15 0 18'
+    };
+    const R = [
+      ['calm', 'play', 0.12, null, 0.01, 'Two people chatting at 0.9 torso-lengths; no fast movement.', 'No action'],
+      ['calm', 'play', 0.15, null, 0.01, 'Brief hug; arms around shoulders, no strike pattern.', 'No action'],
+      ['calm', 'play', 0.18, null, 0.01, 'High-five; single fast arm, distance stayed above 0.8 torso-lengths.', 'No action'],
+      ['tense', 'fight', 0.46, 12, 0.12, 'Distance dropped to 0.6 torso-lengths; both torsos squared up.', 'Watch this camera; Guard B is nearest (~40 m)'],
+      ['tense', 'fight', 0.52, 9, 0.13, 'One step closer; arm raised to chest height for 0.6 s.', 'Watch this camera; Guard B is nearest (~40 m)'],
+      ['tense', 'fight', 0.58, 8, 0.15, 'Wrist speed rising; distance 0.5 torso-lengths for 1.0 s.', 'Watch this camera; Guard B is nearest (~40 m)'],
+      ['fight_likely', 'fight', 0.71, 6, 0.36, 'Wrist speed spiked; distance below 0.5 torso-lengths for 1.2 s.', 'Send Guard B now (~40 m)'],
+      ['fight_likely', 'fight', 0.78, 4, 0.40, 'Arm above shoulder height; second person leaned back.', 'Send Guard B now (~40 m)'],
+      ['fight_likely', 'fight', 0.84, 2, 0.43, 'Both arms raised; distance 0.3 torso-lengths.', 'Send Guard B now (~40 m)'],
+      ['fight', 'fight', 0.93, null, 0.60, 'Shove: upper-body lunge, second person displaced 0.7 torso-lengths.', 'Send Guard B now (~40 m); call the security lead'],
+      ['fight', 'fight', 0.95, null, 0.61, 'Repeated strikes toward head height.', 'Send Guard B now (~40 m); call the security lead'],
+      ['fight', 'fight', 0.91, null, 0.58, 'Strikes continuing; third person approaching.', 'Send Guard B now (~40 m); call the security lead']
+    ].map((r) => ({ level: r[0], type: r[1], score: r[2], eta: r[3], priority: r[4], reason: r[5], action: r[6] }));
+    const pad = (n) => String(n).padStart(2, '0');
+    const clock = '14:31:' + pad(s.step);
+    const cur = R[s.step];
+    const RID = 'INC-2026-00142';
+    const autoPushed = s.step >= 6;
+    const items = [
+      {
+        id: RID, cam: 'CAM-BC-03', loc: 'Block C stairwell', zone: 'Stairwell', risk: '0.8',
+        type: cur.type, level: cur.level, score: cur.score, eta: cur.eta, priority: cur.priority,
+        people: s.step >= 11 ? 3 : 2, reason: cur.reason, action: cur.action, nearest: 'Guard B', dist: '~40 m away',
+        since: '14:31:00', pushed: autoPushed || !!s.manual[RID], pushedAt: autoPushed ? '14:31:06' : s.manual[RID],
+        hist: R.slice(0, s.step + 1).map((r) => r.score), replay: true
+      },
+      {
+        id: 'INC-2026-00141', cam: 'CAM-CT-04', loc: 'Canteen, east entrance', zone: 'Canteen', risk: '0.7',
+        type: 'crowd', level: 'tense', score: 0.44, eta: null, priority: 0.10, people: 5,
+        reason: 'Five people stopped and faced the same point for 4 s.', action: 'Watch this camera; Guard A is nearest (~60 m)',
+        nearest: 'Guard A', dist: '~60 m away', since: '14:30:22', pushed: !!s.manual['INC-2026-00141'], pushedAt: s.manual['INC-2026-00141'],
+        hist: [0.18, 0.21, 0.26, 0.30, 0.33, 0.37, 0.40, 0.42, 0.44]
+      },
+      {
+        id: 'INC-2026-00140', cam: 'CAM-SC-06', loc: 'Sports court, north', zone: 'Sports court', risk: '0.3',
+        type: 'play', level: 'tense', score: 0.41, eta: null, priority: 0.03, people: 6,
+        reason: 'Fast arm swings with no approach; ball in play. Sports-zone threshold applied.', action: 'No action; sports zone',
+        nearest: 'Guard C', dist: '~25 m away', since: '14:28:40', pushed: !!s.manual['INC-2026-00140'], pushedAt: s.manual['INC-2026-00140'],
+        hist: [0.36, 0.40, 0.38, 0.42, 0.39, 0.41, 0.40, 0.42, 0.41, 0.40, 0.41, 0.41]
+      }
+    ];
+    items.forEach((it) => { it.decision = s.dec[it.id] || null; });
+    const replayItem = items[0];
+    const active = items.filter((it) => it.level !== 'calm' && it.decision !== 'dismissed')
+      .sort((a, b) => b.priority - a.priority);
+    let cardItem = null;
+    if (s.sel) cardItem = items.find((it) => it.id === s.sel) || null;
+    if (cardItem && cardItem.replay && cardItem.level === 'calm') cardItem = null;
+    if (!cardItem) cardItem = active[0] || replayItem;
+    const it = cardItem;
+    const lv = LV[it.level];
+    const isCalm = it.level === 'calm';
+    const isAlarm = it.level === 'fight_likely' || it.level === 'fight';
+    const dec = it.decision;
+    const statusBg = dec ? '#0F1419' : (it.pushed ? '#E8EEFB' : '#FFFFFF');
+    const statusFg = dec ? '#FFFFFF' : (it.pushed ? '#1E3A8A' : '#3A4350');
+    const W = 600;
+    const pts = it.hist.map((v, i) => ({ x: Math.round(10 + i * ((W - 20) / 11)), y: Math.round(115 - v * 100) }));
+    const last = pts[pts.length - 1];
+    const set = (patch) => () => this.setState(patch);
+    const card = {
+      id: it.id, loc: it.loc, reason: it.reason, action: it.action, nearest: it.nearest, dist: it.dist,
+      label: lv.label, pillBg: lv.pillBg, pillFg: lv.pillFg, tint: lv.tint, border: lv.border,
+      glyph: GLYPH[it.level], typeLabel: TYPE[it.type], typeIcon: TICON[it.type],
+      showType: !isCalm, isCalm: isCalm, pushed: !!it.pushed,
+      etaText: it.eta != null ? ('Fight likely in ~' + it.eta + ' s') : (it.level === 'fight' ? 'Fight in progress' : (isCalm ? 'No build-up' : 'Watching · no ETA yet')),
+      etaSub: isCalm ? 'Score is flat and low on this camera.' : (it.level === 'tense' ? 'Silent. Nobody is pushed at tense.' : 'Alarm on. One person pushed. Confirm or dismiss below.'),
+      meta: it.zone + ' · zone risk ' + it.risk + ' · ' + it.cam + ' · ' + it.people + ' people · since ' + it.since,
+      statusText: dec === 'confirmed' ? 'Confirmed · label: real' : (dec === 'dismissed' ? 'Dismissed · label: false alarm' : (it.pushed ? ('Pushed to ' + it.nearest + ' · ' + it.pushedAt) : (isCalm ? 'Nothing to do' : 'Silent · nobody pushed'))),
+      statusBg: statusBg, statusFg: statusFg,
+      nearestState: it.pushed ? ('Pushed at ' + it.pushedAt) : (isCalm ? 'On patrol' : 'Not pushed; tense is silent'),
+      scoreLine: 'score ' + it.score.toFixed(2) + ' · priority ' + it.priority.toFixed(2),
+      spark: pts.map((p) => p.x + ',' + p.y).join(' '), cx: last.x, cy: last.y,
+      sparkAria: 'Risk score rising to ' + it.score.toFixed(2),
+      showPushNow: !isCalm && !it.pushed && !dec,
+      showConfirm: !isCalm && !!it.pushed && !dec,
+      decided: !!dec,
+      decidedText: dec === 'confirmed' ? 'Confirmed: real incident' : 'Dismissed: false alarm',
+      onPush: () => {
+        const m = Object.assign({}, s.manual); m[it.id] = clock;
+        this.setState({ manual: m, sel: it.id, toastManual: 'Pushed to ' + it.nearest + ' · ' + clock, toastClosed: false });
+      },
+      onConfirm: () => { const d = Object.assign({}, s.dec); d[it.id] = 'confirmed'; this.setState({ dec: d, sel: it.id, silenced: it.replay ? true : s.silenced, toastClosed: true, toastManual: null }); },
+      onDismiss: () => { const d = Object.assign({}, s.dec); d[it.id] = 'dismissed'; this.setState({ dec: d, sel: it.id, toastClosed: true, toastManual: null }); },
+      onUndo: () => { const d = Object.assign({}, s.dec); delete d[it.id]; this.setState({ dec: d }); }
+    };
+    const queue = active.map((q, i) => {
+      const l = LV[q.level];
+      const selected = q.id === it.id;
+      return {
+        rank: i + 1, loc: q.loc, label: l.label, pillBg: l.pillBg, pillFg: l.pillFg, glyph: GLYPH[q.level],
+        typeLabel: TYPE[q.type], typeIcon: TICON[q.type], since: q.since, prio: q.priority.toFixed(2),
+        bar: Math.max(4, Math.round(q.priority * 100)) + '%', selected: selected ? 'true' : 'false',
+        bg: selected ? l.tint : '#FFFFFF', border: selected ? ('2px solid ' + l.border) : '1px solid #D9DDE3',
+        pick: set({ sel: q.id })
+      };
+    });
+    const camLevel = (id, base) => { const x = items.find((q) => q.id === id); return x && x.decision === 'dismissed' ? 'calm' : base; };
+    const camsRaw = [
+      { id: 'CAM-HC-01', loc: 'Hostel U Block, corridor L3', zone: 'Hostel corridor', risk: '1.0', level: 'calm', last: '2 s ago' },
+      { id: 'CAM-HC-02', loc: 'Hostel U Block, corridor L5', zone: 'Hostel corridor', risk: '1.0', black: true, blackFor: 'Black for 3 days', last: 'Last frame Thu 02:00' },
+      { id: 'CAM-BC-03', loc: 'Block C stairwell', zone: 'Stairwell', risk: '0.8', level: camLevel(RID, cur.level), last: '1 s ago' },
+      { id: 'CAM-CT-04', loc: 'Canteen, east entrance', zone: 'Canteen', risk: '0.7', level: camLevel('INC-2026-00141', 'tense'), last: '3 s ago' },
+      { id: 'CAM-CP-05', loc: 'Car park B, level 2', zone: 'Car park', risk: '0.6', level: 'calm', last: '2 s ago' },
+      { id: 'CAM-SC-06', loc: 'Sports court, north', zone: 'Sports court', risk: '0.3', level: camLevel('INC-2026-00140', 'tense'), last: '2 s ago' }
+    ];
+    const cams = camsRaw.map((c) => c.black
+      ? Object.assign({}, c, { online: false, black: true, bg: '#0F1419', fg: '#FFFFFF', border: '#0F1419', glyph: '', dot: '', levelLabel: '' })
+      : Object.assign({}, c, { online: true, black: false, bg: '#FFFFFF', fg: '#0F1419', border: '#D9DDE3', blackFor: '', glyph: GLYPH[c.level], dot: LV[c.level].pillBg, levelLabel: LV[c.level].label }));
+    const dots = R.map((r, i) => {
+      const l = LV[r.level];
+      const here = i === s.step;
+      return {
+        glyph: GLYPH[r.level], fill: l.pillBg, stroke: r.level === 'calm' ? '#17663D' : l.pillBg,
+        bg: here ? '#E8EEFB' : (i < s.step ? '#F4F5F7' : '#FFFFFF'),
+        outline: here ? '2px solid #1E3A8A' : '1px solid #D9DDE3',
+        aria: 'Event ' + (i + 1) + ': ' + l.label, go: () => this.go(i)
+      };
+    });
+    const rDec = replayItem.decision;
+    const bannerOn = (cur.level === 'fight_likely' || cur.level === 'fight') && rDec !== 'dismissed';
+    const alarmSounding = bannerOn && !s.silenced && rDec !== 'confirmed';
+    const pushes = 1 + items.filter((q) => q.pushed).length;
+    const autoToast = autoPushed && !s.toastClosed && !rDec ? 'Pushed to Guard B · 14:31:06' : null;
+    const toastText = s.toastManual || autoToast;
+    return {
+      clock: clock, pushes: pushes,
+      soundLabel: s.sound ? 'Alarm sound armed' : 'Click to arm alarm sound',
+      soundBg: s.sound ? '#FFFFFF' : '#FFF8E6', soundBorder: s.sound ? '#D9DDE3' : '#E5A41C',
+      soundIcon: s.sound ? 'M16 9a4 4 0 0 1 0 6' : 'M16 9l5 6M21 9l-5 6',
+      armSound: set({ sound: true }),
+      bannerOn: bannerOn, alarmSounding: alarmSounding, alarmQuiet: bannerOn && !alarmSounding,
+      bannerBg: cur.level === 'fight' ? '#7F1310' : '#C8241B',
+      bannerTitle: (cur.level === 'fight' ? 'FIGHT' : 'FIGHT LIKELY') + ' · Block C stairwell',
+      bannerSub: rDec === 'confirmed' ? 'Confirmed by desk · Guard B en route' : 'Guard B pushed at 14:31:06',
+      silence: set({ silenced: true }),
+      speedLabel: speed + ' s per event',
+      playLabel: s.playing ? 'Pause' : 'Play', playIcon: s.playing ? 'M6 4h4v16H6zM14 4h4v16h-4z' : 'M7 4l13 8-13 8z',
+      play: () => this.togglePlay(speedMs), back: () => this.go(s.step - 1), next: () => this.go(s.step + 1),
+      reset: () => { this.stop(); this.setState(this.initial(this.props, 0)); },
+      dots: dots, stepLabel: pad(s.step + 1),
+      card: card, queue: queue, queueEmpty: queue.length === 0, cams: cams,
+      toastOn: !!toastText, toastText: toastText || '',
+      closeToast: set({ toastClosed: true, toastManual: null })
+    };
+  }
+}
+</script>
+</body>
+</html>
