@@ -10,12 +10,16 @@ Supersedes `EarlyEye_Project_Plan.pdf` (which assumed 33h and a 13:00 submit) an
 
 ## 1. One paragraph
 
-> **EarlyEye: bullying and violence early warning for Malaysian school hostels, on the cameras they already own.**
-> A pose model watches body movement (skeletons, never faces). A classifier scores the *build-up*, not just the fight, and says what kind of incident it is, how urgent, why, and who to send. Every alert becomes a record; over a term the heatmap tells the warden where and when to stand. Video never leaves the school.
+> **EarlyEye: physical-aggression early warning for any site that already has cameras and a security desk.** Campuses and hostels, schools, malls, factories, transit.
+> A pose model watches body movement (skeletons, never faces). A classifier scores the *build-up*, not just the fight, and says what kind of incident it is, how urgent, why, and who to send. Every alert becomes a record; over weeks the heatmap turns into a **patrol plan**: where to put one person, when, and how many incidents that avoids. Video never leaves the site.
 
-**Users:** (live) the guard/warden at the screen: one alarm, one sentence, one action. (weekly) the discipline teacher: heatmap + hotspot list. (buyer) school management.
+**Claim discipline:** we detect *physical* aggression and crowding. We do **not** claim to detect verbal or online bullying; say on stage: "We catch the physical part; the heatmap shows where the rest clusters." Use "bullying" only for the school segment's weekly layer.
 
-**Framing, said once:** "The government is putting CCTV in 533 hostels at RM15k a set. In the ministry's own audit, only 24 of 54 boarding schools had cameras that worked, and nobody watches them at 11 PM. We make the camera watch itself."
+**Users (same product, every site type):** (live) the control-room operator / guard: one alarm, one sentence, one action. (weekly) the security or site manager: heatmap, hotspots, patrol plan, camera health. (buyer) management: incidents avoided, staff hours, duty-of-care evidence.
+
+**Segments, in sales order:** 1) **universities + their hostels** (adults, 24/7 control room already staffed, campus owns IP cameras, security manager has opex: *pilot at Taylor's Lakeside*) → 2) private/international schools, daytime campuses → 3) malls, factories, transit, stadiums (same engine, different zone thresholds) → 4) government school hostels via the RM15k programme, once IR/night numbers exist. School hostels are the **vision slide**, not the first customer.
+
+**Framing, said once:** "One operator watches 30 screens. Malaysia's own school audit found most hostel cameras don't even work, and nobody is watching the ones that do. We make the camera watch itself, and tell the one person on duty where to go."
 
 **Say before a judge does:** cases rose 3,883 → 7,681 (2022–24) and **fell to 5,038 in 2025**. Use "7,681 cases in 2024, over 70% in secondary schools"; don't say "rising."
 
@@ -27,12 +31,12 @@ Supersedes `EarlyEye_Project_Plan.pdf` (which assumed 33h and a 13:00 submit) an
 |---|---|
 | **Detect** | Per-second risk score from pose features; **time-to-incident** from the rising trend ("fight likely in ~6 s") |
 | **Categorize** (what *type*, not just abnormal) | Four **types**, not severity levels: **Fight** (two-party strikes) · **Cornering / bullying** (1 vs 3+, >5 s) · **Crowd gathering** (ring forming) · **Play / sports** (benign, suppressed in sports zones). Severity (tense → fight likely → fight) is a second axis |
-| **Prioritize** | `priority = severity × confidence × zone_risk × people_count`; zone_risk is highest for hostel corridors at night. Alert queue across cameras sorted by priority; cost exposure shown ("hostel night incident: high") |
+| **Prioritize** | `priority = severity × confidence × zone_risk × people_count`; `zone_risk` comes from a per-site zone table (hostel corridor at night = 1.0, canteen at recess = 0.7, sports court = 0.3, car park = 0.6). Queue across cameras sorted by priority. Weekly: hotspots ranked by **expected incidents avoided per patrol hour** |
 | **Explain** | One sentence from the top features: "wrist speed spiked; distance dropped below 0.5 torso-lengths for 1.2 s" + recommended action + nearest warden |
-| **Decide** | Action table per level; weekly hotspot list → "place a warden at Asrama Puteri L3, Mon–Thu 22:00–23:30" |
+| **Decide** | Live: action table per level, one named person to send. Weekly: **patrol plan** = top-3 hotspots → "Place one guard at Block C stairwell, Mon–Thu 13:00–14:00: 5 incidents in 4 weeks, ~3 avoided/week." Ranked by incidents per patrol hour. This is the decision product; the alarm is the sale |
 | **Prove it** | Video-level GroupKFold metrics on public clips · **false alarms per camera-hour** on our own normal footage · AIRTLab hard negatives · **early-warning lead time** (seconds between amber and the shove) on our own escalation clips · latency ms/frame |
-| Minimize false alarms | "Tense" is silent; alarm only at fight-likely+; 1-s persistence; sports-zone threshold; false-alarms/camera-day is the headline metric |
-| Robust on unfamiliar data | Train on public clips, **report live-room numbers separately** (our practice run showed the gap; we show it, not hide it) |
+| Minimize false alarms | **Two-tier alerting:** tense → dashboard only, silent. fight_likely/fight → alarm + push to *one* nearest person, with a 10-second **Confirm / Dismiss** that becomes a label. Target ≤3 pushes per site per shift; say the number. 1-s persistence; zone thresholds; false-alarms/camera-hour is the headline metric |
+| Robust on unfamiliar data | Train on phone-video clips (RLVS, AIRTLab); **hold out the CCTV-angle sets (Surveillance Camera Fight, SCVD) as a separate domain test** and report that row. Then live-room numbers. Night/IR: one real IR frame on a slide showing what the pose model does with it; "next step", not a claim |
 | Measurable impact | Guard-post cost RM103k/yr vs RM11–27k/yr software; enrolment break-even 0.55 student/yr (market doc) |
 
 ---
@@ -43,7 +47,9 @@ Supersedes `EarlyEye_Project_Plan.pdf` (which assumed 33h and a 13:00 submit) an
 1. **Live detection**: webcam/phone → YOLO-pose + tracking → window features → classifier + rules → level, type, score, ETA, reason, action
 2. **Alert card** on the dashboard: camera, location, type, severity, ETA, reason, action, nearest warden; alarm sound + red banner at fight-likely+
 3. **Incident log**: every alert → a record (contract in §6) → database
-4. **Heatmap + hotspots** over a fake term of 300–500 incidents (2–3 planted patterns), hotspot rule: ≥3 incidents, same location, same hour-of-week window, within 4 weeks
+4. **Heatmap + hotspots + patrol plan** over a fake 8-week history of 300–500 incidents (2–3 planted patterns), hotspot rule: ≥3 incidents, same location, same hour-of-week window, within 4 weeks. Patrol plan = top-3 hotspots with "place one person here, these hours" and expected incidents avoided/week (= hotspot rate × 0.6, assumption stated). SQL + one formula; no model.
+4b. **Camera health** on the camera tiles: online dot, last frame time, "black for 3 days" badge. Trivial, and the reason the dashboard stays open on a quiet week.
+4c. **Two-tier alert**: tense silent on the dashboard; fight_likely+ triggers alarm + a push card to the nearest person (mock phone view or `wa.me` link) with Confirm / Dismiss; the tap writes `status` and a label row.
 5. **Deployed dashboard** (Vercel) reading the database: live alert queue, incident list, heatmap, proof page. The camera laptop POSTs events to it. The judge opens the URL and sees the alert appear.
 6. **Proof page**: dataset metrics (video-level split), false alarms/camera-hour on own footage, AIRTLab negatives, lead-time on 5 escalation clips, latency, model card, **domain-shift disclosure**
 7. **Negatives shown on stage**: hug, high-five, chat close → green
@@ -56,7 +62,7 @@ Supersedes `EarlyEye_Project_Plan.pdf` (which assumed 33h and a 13:00 submit) an
 ### CUT (do not build; one closing-slide line each)
 pgvector / knowledge bank · agent tool loop / staff chat · patrol-plan generator · notification sending · clip storage as a feature (just dump last 10 s locally) · multi-school · auth
 
-**Cut order if behind at 23:00:** SHOULD → second camera → cornering → heatmap down to a static image → ETA (keep level + reason). Never cut: live detection, alert card, deployed dashboard, proof page.
+**Cut order if behind at 23:00:** SHOULD → second camera → cornering → push card (keep Confirm/Dismiss on the dashboard) → ETA (keep level + reason) → heatmap to a static image (keep the patrol-plan list). Never cut: live detection, alert card, deployed dashboard, patrol plan list, proof page.
 
 ---
 
@@ -95,6 +101,8 @@ Video never leaves the laptop. Only the event record goes up.
 4. **Classifier:** RF (200 trees, balanced) or LightGBM. **GroupKFold by video**, never by window. Report precision/recall/AUC at clip level (max window score per clip). Calibrate.
 5. **Type head:** rule-based on top of score: fight (2 parties, strikes) · cornering (1 vs ≥3 within 2 torso-lengths, >5 s) · crowd (≥5 within 3 torso-lengths, low motion) · play/sports (zone = sports **or** rhythmic motion variance). Document as rules; don't call it a model.
 6. **Threshold:** tune on **our own normal footage** (30 min of chatting/walking/hugs in the venue) for ≤1 false alarm per camera-hour. Report the number.
+6b. **Domain test:** train on RLVS + AIRTLab only; test on Surveillance Camera Fight + SCVD (CCTV angle) as a held-out domain. Report clip AUC/precision/recall for that row separately. If it's bad, it's still the most honest "unfamiliar data" number in the room; then retrain with CCTV sets included and report both.
+6c. **IR check (15 min):** run the pose model on 3 IR/greyscale CCTV frames (any public night-CCTV still). Screenshot the skeletons or the failure. One slide: "night works / night needs an IR-trained model". No claims beyond the screenshot.
 7. **ETA:** moving-average score, linear fit over last 3 s, extrapolate to threshold. Report **lead time** on 5 escalation clips: seconds between amber and the shove. This is the "predict early" proof.
 8. **Domain-shift disclosure:** proof page shows dataset metrics and live-room metrics side by side. The practice run (100% on KTH, zero live until retuned) goes on the model card as a known failure mode and what we did about it.
 9. Save `model.pkl`, `thresholds.json`, `proof.json`; numbers to Pitch by **20:00**.
@@ -154,13 +162,13 @@ Everyone at 14:00: lock the contracts; deploy hello-world to Vercel + Render; op
 
 | Time | Slide | Say |
 |---|---|---|
-| 0:00–0:20 | Hook: hostel corridor at night | "RM8 million of CCTV going into 533 hostels. The ministry's own audit found most don't work and nobody's watching at 11 PM. EarlyEye makes the camera watch itself." |
+| 0:00–0:20 | Hook: a control-room wall of 30 screens | "One person, thirty screens. Malaysia's own school audit found most hostel cameras don't even work, and nobody watches the ones that do. EarlyEye makes the camera watch itself, on any site: campus, mall, factory, hostel." |
 | 0:20–0:40 | Problem: 7,681 cases in 2024, >70% secondary; new Penal Code s.507 (Jul 2025); hostels at night | "Cameras today are for the police report afterwards." |
 | 0:40–0:55 | What it is: camera → skeleton → risk → type → priority → action → heatmap | "Skeletons, never faces. Video never leaves the school." |
 | 0:55–2:05 | **Live** (deployed dashboard on screen, phone camera mounted high, two actors in the taped zone): negatives first (hug, high-five, chat close → green) → escalation (talk → step closer → arms up → fake shove): amber **before** the shove, "fight likely in ~6 s", red + alarm → alert card: type, priority, reason, "send Warden B" → heatmap: "Asrama Puteri L3, weeknights after 10 PM" | pause 2 s at amber. That's the product. |
 | 2:05–2:30 | Proof: video-level split metrics; **lead time on our 5 escalations**; false alarms/camera-hour on 30 min of our own footage; AIRTLab negatives; dataset vs live-room numbers side by side | "We show both numbers because the gap is the real engineering problem." |
-| 2:30–2:50 | Business: RM45/camera/month on existing CCTV; guard post RM103k/yr vs RM11–27k; 533 government hostels + 348 international schools; Hikvision/Dahua give an alarm, we give a type, a priority, a reason and a plan | |
-| 2:50–3:00 | Next: cornering/bullying type live, multi-camera, pilot with one boarding school, weekly warden report | |
+| 2:30–2:50 | Business: one engine, every site with cameras and a desk. First customer: university campuses and hostels (24/7 control room, adults, opex budget) → private schools → malls/factories/transit → government hostels (533 sites funded). RM45/camera/month private, per-site inside the RM15k government set. Guard post RM103k/yr vs RM11–27k. Hikvision/Dahua give an alarm; we give a type, a priority, a reason, a person to send, and a patrol plan. | "Pilot: this campus. Block C stairwell." |
+| 2:50–3:00 | Next: IR/night model (show the IR frame), cornering live, multi-camera, Taylor's Lakeside pilot | |
 
 **Phase 2 (video call):** do **not** act live over a call. Screen-share: 60-second recorded escalation video (venue lighting) + the live deployed dashboard receiving the recorded events replayed by a script (`edge/replay.py`). Same alarm, zero lighting risk.
 
@@ -179,6 +187,11 @@ Everyone at 14:00: lock the contracts; deploy hello-world to Vercel + Render; op
 | False alarms? | "Tense is silent. Alarm needs multiple signals for over a second. We measured X false alarms per camera-hour on 30 minutes of our own normal footage and tested on AIRTLab's hugs and claps." |
 | Accuracy? | "Precision X / recall Y on a video-level split. Live-room numbers are lower and we show them; the practice run taught us a dataset score says nothing about your camera." |
 | Why would a school pay? | "One guard post costs ~RM103k a year and can't watch 40 screens. 40 cameras cost ~RM27k. For a private school, one retained student pays for it." |
+| Most bullying isn't physical. | "Correct, and we don't claim it. We catch the physical part in real time; the heatmap shows where everything clusters so a person is there. For the rest you need counsellors, not cameras." |
+| Why not hostels at night first? | "Because the warden is asleep and the camera is IR. We start where there's a 24/7 control room and daylight: campuses, malls, factories. Here's what the pose model does on an IR frame today (slide). Night is the next model, not a claim." |
+| Does it work at night / on IR? | "Untested beyond this frame. We say so. Daytime CCTV angles: here's the held-out CCTV-domain row." |
+| Alert fatigue? | "Tense never pings anyone. Fight-likely pings one person with a 10-second confirm. Target: three pushes per site per shift, and every tap is a label that retunes that camera." |
+| Why would a mall or factory care? | "Same engine, different zones: loading bays, car parks, queues. Fights, crowding, and someone cornered look the same to a skeleton. The control room is already there; we rank its screens." |
 | What about the Zara Qairina case? | "The inquest is ongoing; we don't claim we'd have prevented it. It showed the gap: hostel, night, no witnesses, nobody watching." |
 | Deployed link? | "The dashboard is live at [URL] with a term of incident history and the proof page; the camera at the venue is posting to it right now." |
 
@@ -186,8 +199,10 @@ Everyone at 14:00: lock the contracts; deploy hello-world to Vercel + Render; op
 
 ## 11. Business (one slide; from the market doc, all "illustrative")
 
-- **Buyers:** private/international/boarding schools (own budget, reputation) → government hostel programme (533 sites, ~RM15k/set already funded) → universities, hostels → later malls/transit.
-- **Price:** RM45/camera/month on existing CCTV + setup. 40 cameras ≈ RM1,800/month. 66% below Volt AI (~RM132), 34% below Verkada's licence alone.
+- **Buyers, in order:** 1) universities and their hostels (24/7 control room, adults, security manager with opex, campus-owned IP cameras; pilot at Taylor's Lakeside) → 2) private/international day schools (own budget, reputation) → 3) malls, factories, transit, stadiums (same engine, zone thresholds differ; control room exists) → 4) government school hostels via the RM15k programme (533 sites funded) once IR numbers and a pilot exist.
+- **Why not schools first:** ministry tenders, vendor-bundled analytics in the RM15k sets, IR night footage, and the warden is asleep at 2 AM. Keep it as the vision.
+- **Price:** RM45/camera/month on existing CCTV + setup for private sites; **per-site** pricing inside the RM15k government set. 40 cameras ≈ RM1,800/month. 66% below Volt AI (~RM132), 34% below Verkada's licence alone.
+- **Wedge feature:** camera health. The audit found 24 of 54 boarding schools with working CCTV. "This camera has been black for 3 days" is boring, sellable, and keeps the dashboard open.
 - **Serviceable market:** ~881 sites, ~RM12.1M/yr at full penetration (illustrative).
 - **Unit economics:** hardware is a real cost (edge box ~RM2k per 4 streams, unbenchmarked); 17–26 month payback on subscription alone, 6–10 months with a setup fee.
 - **Moat:** every confirmed/dismissed alert is a labelled sample from that school; skeleton-only design is easier to approve for children.

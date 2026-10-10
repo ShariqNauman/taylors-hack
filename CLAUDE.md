@@ -9,11 +9,13 @@ Read this first. Full plan: `docs/earlyeye-TEAM-FINAL.md`. Rubric and judges ver
 - Rubric (judges' words): every solution must **Detect, Categorize, Prioritize, Explain**. Strong = specific real problem, clear user, supports decisions, robust on noisy/unfamiliar data, minimizes false alarms, clear recommendations, measurable impact with realistic assumptions. Core question: **"Does your model help someone make a better decision, and can you prove it?"**
 
 ## The product
-EarlyEye: bullying and violence early warning for Malaysian school hostels, on cameras they already own. Pose model → skeleton features (never faces) → classifier scores the build-up → **type** (fight / cornering / crowd / play) + **severity** (tense / fight_likely / fight) + **ETA** ("fight likely in ~6 s") + **priority** across cameras + one-sentence **reason** + **action** + nearest warden. Every alert is an incident record; the heatmap tells the warden where and when to stand. Video never leaves the laptop; only the event JSON goes up.
+EarlyEye: **physical-aggression early warning for any site with cameras and a security desk** (campuses + hostels, schools, malls, factories, transit). Pose model → skeleton features (never faces) → classifier scores the build-up → **type** (fight / cornering / crowd / play) + **severity** (tense / fight_likely / fight) + **ETA** ("fight likely in ~6 s") + **priority** across cameras (zone risk from a per-site table) + one-sentence **reason** + **action** + nearest person. **Two-tier alerts:** tense is silent; fight_likely+ pushes one person with Confirm/Dismiss (a label). Every alert is an incident record; weekly, hotspots become a **patrol plan** ("one person at Block C stairwell, Mon–Thu 13:00–14:00, ~3 avoided/week"). Camera-health tile ("black for 3 days"). Video never leaves the laptop; only the event JSON goes up.
 
-Users: guard/warden (live: one alarm, one sentence, one action) · discipline teacher (weekly: heatmap, hotspots) · management (buyer).
+Claim discipline: we detect *physical* aggression and crowding; never claim verbal/online bullying. UI is site-agnostic (site, zone, operator); the demo site is **Taylor's Lakeside campus**.
 
-Say first, before a judge does: cases 7,681 in 2024 (>70% secondary), **fell to 5,038 in 2025**. Hook is "RM8M of hostel CCTV, 533 sites, audit found most don't work, nobody watches at 11 PM."
+Segments in order: universities + hostels (24/7 control room, adults, opex) → private day schools → malls/factories/transit → government school hostels (vision slide; IR/night untested, say so).
+
+Say first, before a judge does: school bullying cases 7,681 in 2024, **fell to 5,038 in 2025**; the ministry audit found 24 of 54 boarding schools with working CCTV. Hook: "one operator, thirty screens."
 
 ## Stack
 ```
@@ -37,10 +39,10 @@ Secrets only in Render/Vercel env vars. `grep -r sk-ant` and Supabase keys befor
 - Score any pair of people, not tracked IDs (IDs swap mid-fight).
 
 ## Scope
-- MUST: live detection · alert card (type, severity, ETA, priority, reason, action, nearest warden, alarm) · incident log → DB · heatmap + hotspot rule (≥3 same location, same hour-of-week window, within 4 weeks) · **deployed dashboard** with fake term history · proof page · negatives shown on stage (hug, high-five, chat close → green).
+- MUST: live detection · alert card (type, severity, ETA, priority, reason, action, nearest person, alarm) · two-tier alert with Confirm/Dismiss · camera-health tiles · incident log → DB · heatmap + hotspot rule (≥3 same location, same hour-of-week window, within 4 weeks) + **patrol plan** (top-3, expected avoided/week, assumption stated) · **deployed dashboard** with fake 8-week history · proof page incl. held-out **CCTV-domain row** and one **IR frame** · negatives shown on stage (hug, high-five, chat close → green).
 - SHOULD (after 23:00 checkpoint): weekly report (one Claude call over SQL) · cornering live · second camera.
 - CUT: pgvector / knowledge bank, agent tool loop, staff chat, patrol generator, notification sending, clip storage as a feature, multi-school, auth, dark mode.
-- Cut order if behind: SHOULD → second camera → cornering → heatmap to a static image → ETA. Never cut: live detection, alert card, deployed dashboard, proof page.
+- Cut order if behind: SHOULD → second camera → cornering → push card (keep Confirm/Dismiss on the dashboard) → ETA → heatmap to a static image (keep the patrol-plan list). Never cut: live detection, alert card, deployed dashboard, patrol plan list, proof page.
 - Web B (Kayla) is scope enforcer at 19:00 and 23:00. The pitch claims only what ran in the 03:00 run-through.
 
 ## Checkpoints
