@@ -1,0 +1,292 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+/* shadcn ships dark: variants; bind them to a .dark class that is never set, so the OS dark mode cannot flip the console. */
+@custom-variant dark (&:is(.dark *));
+
+/* ── Light Console tokens (docs/frontend-build-brief.md §3). Light theme only. ── */
+:root {
+  --background: #f1f2f4;
+  --foreground: #0b0d10;
+  --card: #ffffff;
+  --card-foreground: #0b0d10;
+  --popover: #ffffff;
+  --popover-foreground: #0b0d10;
+  --primary: #0b0d10;
+  --primary-foreground: #ffffff;
+  --secondary: #ffffff;
+  --secondary-foreground: #0b0d10;
+  --muted: #f7f8fa;
+  --muted-foreground: #5d6672;
+  --accent: #e7ebfd;
+  --accent-foreground: #1f35b3;
+  --destructive: #c8241b;
+  --border: #dcdfe4;
+  --input: #b4bac3;
+  --ring: #2742d9;
+  --radius: 0.125rem;
+
+  --chart-1: #2742d9;
+  --chart-2: #6e86e8;
+  --chart-3: #afbdf3;
+  --chart-4: #5d6672;
+  --chart-5: #b4bac3;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #0b0d10;
+  --sidebar-primary: #0b0d10;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #f7f8fa;
+  --sidebar-accent-foreground: #0b0d10;
+  --sidebar-border: #dcdfe4;
+  --sidebar-ring: #2742d9;
+
+  --ink: #0b0d10;
+  --ink-2: #3a414b;
+  --muted-ink: #5d6672;
+  --line: #dcdfe4;
+  --line-strong: #b4bac3;
+  --raised: #f7f8fa;
+  --ground: #f1f2f4;
+  --signal: #2742d9;
+  --signal-tint: #e7ebfd;
+  --signal-ink: #1f35b3;
+  --frame: #161b22;
+  --frame-remote: #0e1217;
+  --frame-line: #2a323c;
+  --grid-line: #1a2028;
+  --person-a: #7fe0ff;
+  --person-b: #c9a7ff;
+  --person-c: #c9ced6;
+  --calm: #e4f3ea;
+  --calm-fg: #17663d;
+  --calm-line: #9fd3b4;
+  --calm-box: #3fb27a;
+  --tense: #f5b323;
+  --tense-fg: #1a1200;
+  --tense-line: #e5a41c;
+  --tense-tint: #fff8e6;
+  --likely: #c8241b;
+  --likely-fg: #ffffff;
+  --likely-tint: #fdedeb;
+  --likely-box: #ff5a4f;
+  --fight: #7f1310;
+  --fight-fg: #ffffff;
+  --fight-tint: #fbe3e0;
+  --fight-box: #ff8a80;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-muted-ink: var(--muted-ink);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-raised: var(--raised);
+  --color-ground: var(--ground);
+  --color-signal: var(--signal);
+  --color-signal-tint: var(--signal-tint);
+  --color-signal-ink: var(--signal-ink);
+  --color-frame: var(--frame);
+  --color-frame-remote: var(--frame-remote);
+  --color-frame-line: var(--frame-line);
+  --color-grid-line: var(--grid-line);
+  --color-person-a: var(--person-a);
+  --color-person-b: var(--person-b);
+  --color-person-c: var(--person-c);
+  --color-calm: var(--calm);
+  --color-calm-fg: var(--calm-fg);
+  --color-calm-line: var(--calm-line);
+  --color-calm-box: var(--calm-box);
+  --color-tense: var(--tense);
+  --color-tense-fg: var(--tense-fg);
+  --color-tense-line: var(--tense-line);
+  --color-tense-tint: var(--tense-tint);
+  --color-likely: var(--likely);
+  --color-likely-fg: var(--likely-fg);
+  --color-likely-tint: var(--likely-tint);
+  --color-likely-box: var(--likely-box);
+  --color-fight: var(--fight);
+  --color-fight-fg: var(--fight-fg);
+  --color-fight-tint: var(--fight-tint);
+  --color-fight-box: var(--fight-box);
+
+  --font-display: var(--font-saira);
+  --font-sans: var(--font-atkinson);
+  --font-mono: var(--font-atkinson-mono);
+  --font-heading: var(--font-saira);
+
+  --radius-sm: 1px;
+  --radius-md: 2px;
+  --radius-lg: 2px;
+  --radius-xl: 2px;
+  --radius-2xl: 4px;
+  --radius-3xl: 4px;
+  --radius-4xl: 4px;
+}
+
+/* Alarm pulse: 1 Hz, only while the alarm sounds. Under 3 flashes per second (WCAG 2.3.1). */
+@keyframes ee-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgb(200 36 27 / 0);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgb(200 36 27 / 0.45);
+  }
+}
+@keyframes ee-edge {
+  0%,
+  100% {
+    opacity: 0.2;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+@keyframes ee-banner {
+  0%,
+  100% {
+    filter: brightness(1);
+  }
+  50% {
+    filter: brightness(1.35);
+  }
+}
+.ee-pulse {
+  animation: ee-pulse 1s ease-in-out infinite;
+}
+.ee-edge {
+  animation: ee-edge 1s ease-in-out infinite;
+}
+.ee-banner {
+  animation: ee-banner 1s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ee-pulse,
+  .ee-edge,
+  .ee-banner {
+    animation: none;
+  }
+  .ee-edge {
+    opacity: 1;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    color-scheme: light only;
+  }
+  body {
+    @apply bg-ground text-ink;
+    font-family: var(--font-sans), system-ui, sans-serif;
+  }
+  button,
+  input,
+  select,
+  textarea {
+    font-family: inherit;
+  }
+  :focus-visible {
+    outline: 2px solid var(--signal);
+    outline-offset: 2px;
+  }
+}
+
+/* Display type: Saira Condensed, uppercase, tight leading. */
+.ee-display {
+  font-family: var(--font-saira), sans-serif;
+  font-weight: 800;
+  text-transform: uppercase;
+  line-height: 0.95;
+}
+/* Mono uppercase label: 11–12 px / 700, tracked. */
+.ee-label {
+  font-family: var(--font-atkinson-mono), ui-monospace, monospace;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted-ink);
+}
+/* Corner brackets on camera frames: four 16–18 px L-shapes, 2 px ink, 5 px outside. */
+.ee-brackets {
+  position: relative;
+}
+.ee-brackets::before,
+.ee-brackets::after,
+.ee-brackets > .ee-bracket-b::before,
+.ee-brackets > .ee-bracket-b::after {
+  content: "";
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  pointer-events: none;
+}
+.ee-brackets::before {
+  left: -5px;
+  top: -5px;
+  border-left: 2px solid var(--ink);
+  border-top: 2px solid var(--ink);
+}
+.ee-brackets::after {
+  right: -5px;
+  top: -5px;
+  border-right: 2px solid var(--ink);
+  border-top: 2px solid var(--ink);
+}
+.ee-brackets > .ee-bracket-b::before {
+  left: -5px;
+  bottom: -5px;
+  border-left: 2px solid var(--ink);
+  border-bottom: 2px solid var(--ink);
+}
+.ee-brackets > .ee-bracket-b::after {
+  right: -5px;
+  bottom: -5px;
+  border-right: 2px solid var(--ink);
+  border-bottom: 2px solid var(--ink);
+}
+/* Hatched background means "not measured". */
+.ee-hatch {
+  background-image: repeating-linear-gradient(
+    135deg,
+    transparent 0 6px,
+    rgb(93 102 114 / 0.12) 6px 7px
+  );
+}

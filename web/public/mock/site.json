@@ -1,0 +1,73 @@
+{
+  "site_id": "taylors-lakeside",
+  "name": "Taylor's Lakeside",
+  "site_type": "campus",
+  "zones": [
+    {
+      "zone_type": "hostel_corridor",
+      "label": "U Residence corridors",
+      "risk": 1
+    },
+    {
+      "zone_type": "stairwell",
+      "label": "Block C stairwell",
+      "risk": 0.8
+    },
+    {
+      "zone_type": "canteen",
+      "label": "Syopz Mall food court",
+      "risk": 0.7
+    },
+    {
+      "zone_type": "auditorium",
+      "label": "Grand Hall",
+      "risk": 0.5
+    },
+    {
+      "zone_type": "sports_court",
+      "label": "Sports pitch",
+      "risk": 0.3
+    }
+  ],
+  "staff": [
+    {
+      "name": "Guard B",
+      "zone_type": "stairwell",
+      "on_duty": true,
+      "post": {
+        "lat": 3.0642137,
+        "lng": 101.6170619
+      }
+    },
+    {
+      "name": "Guard A",
+      "zone_type": "canteen",
+      "on_duty": true,
+      "post": {
+        "lat": 3.0631104,
+        "lng": 101.6163152
+      }
+    },
+    {
+      "name": "Guard C",
+      "zone_type": "hostel_corridor",
+      "on_duty": true,
+      "post": {
+        "lat": 3.06406,
+        "lng": 101.6165401
+      }
+    },
+    {
+      "name": "Warden D",
+      "zone_type": "hostel_corridor",
+      "on_duty": false
+    }
+  ],
+  "campus": {
+    "center": {
+      "lat": 3.0631104,
+      "lng": 101.6169899
+    },
+    "buildings": "/campus/taylors-lakeside-campus.geojson"
+  }
+}

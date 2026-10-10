@@ -1,15 +1,16 @@
 # EarlyEye model
 
 Detects fights from a camera using body keypoints only (no faces, no video stored).
-Pipeline: webcam → YOLO26n-pose + ByteTrack → 12 body keypoints → features over the last 2 s
-(resampled to 10 fps, scaled by torso length) → LightGBM → smoothed score → CALM / TENSE / FIGHT.
+Pipeline: webcam → YOLO26n-pose + ByteTrack → 17 keypoints + boxes → last 2 s at 10 fps (torso-scaled) →
+LightGBM (23 features) + 1D-CNN (keypoint sequence), averaged → smoothed score → CALM / TENSE / FIGHT.
+Hold-out clip AUC 0.929 (470 clips never used for any choice); see REPORT.md Part A0.
 
 Results and limits: [REPORT.md](REPORT.md). Proof-page numbers for the backend: [proof.json](proof.json).
 
 ## Run the live demo (no datasets needed)
 
-Needs Python 3.11 and a webcam. The trained model (`violence_model.joblib`) is in the repo; the pose
-weights download automatically the first time.
+Needs Python 3.11 and a webcam. The trained models (`violence_model.joblib`, `seq_model.onnx`) are in the
+repo; the pose weights download automatically the first time.
 
 ```powershell
 cd model
@@ -39,7 +40,8 @@ venv\Scripts\python tune_live.py --log session1.csv            # report
 venv\Scripts\python tune_live.py --log session1.csv --apply    # write the best thresholds
 ```
 
-Thresholds are constants at the top of `live_detector.py` (`SMOOTH_ALPHA`, `TENSE_AT`, `FIGHT_AT`,
+Scoring mode is `MODE` at the top of `predict.py`: `"ensemble"` (default) or `"lgbm"` (fallback, LightGBM
+only). Thresholds are constants at the top of `live_detector.py` (`FIGHT_AT` for the ensemble, `FIGHT_AT_LGBM`) (`SMOOTH_ALPHA`, `TENSE_AT`, `FIGHT_AT`,
 `MIN_DURATION`, `FIGHT_HOLD`).
 
 ## Retrain (needs the datasets)
@@ -53,16 +55,21 @@ Thresholds are constants at the top of `live_detector.py` (`SMOOTH_ALPHA`, `TENS
    ```powershell
    venv\Scripts\python list_videos.py              # data/ -> videos.csv
    venv\Scripts\python extract_keypoints_v2.py     # videos -> keypoints_v2/ (resumable; --device 0 on an NVIDIA GPU)
-   venv\Scripts\python train.py                    # -> violence_model.joblib, metrics_v2.json, proof.json
+   venv\Scripts\python train.py                    # v3-style LightGBM report
    ```
+   The v4 ensemble is built by the steps in `TRAINING_PLAN.md`: `make_holdout.py`, `analyze_features.py`,
+   `tune_lgbm.py`, `seq_dataset.py` + `seq_train.py` (GPU), `compare_candidates.py`, `evaluate_holdout.py`,
+   `seq_final.py` (GPU), `finalize_model.py`.
 
 ## Files
 
 | File | What it does |
 |---|---|
 | `live_detector.py` | Live webcam demo and labelled-session recorder |
-| `predict.py` | `predict(features)`: the single scoring entry point |
-| `features.py` | Features from keypoints, shared by training and live |
+| `predict.py` | `predict(features, sequence)`: the single scoring entry point (`MODE`) |
+| `features.py` | LightGBM features from keypoints, shared by training and live |
+| `seq_features.py` | Sequence-model input, and `window_inputs()` (both inputs from one pass) |
+| `seq_model.onnx` | The trained 1D-CNN (run with OpenVINO) |
 | `tune_live.py` | Picks live thresholds from a labelled session |
 | `list_videos.py` | Scans `data/` and writes `videos.csv` (labels, groups) |
 | `extract_keypoints_v2.py` | YOLO pose + tracking → raw keypoint CSVs |
