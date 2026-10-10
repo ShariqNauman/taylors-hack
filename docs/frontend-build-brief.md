@@ -339,53 +339,31 @@ Never show: `peak_score`, priority, zone risk, keypoint or skeleton jargon, rule
    - **Footer:** "Reference INC-…", the camera's plain name, **See it on the campus map**, **How EarlyEye decides** (to `/proof`).
 6. Deep links: `?status=`, `?cam=`, `?id=`.
 
-### 6.4 Plan (`/plan`), design file `L3Plan.dc.html`, use case `L3PlanStory.dc.html`
+### 6.4 Plan (`/plan`), design file `L3Plan.dc.html`
 
-**Who uses it and why.** The security supervisor, every Monday morning, to decide where to put people this week. The page must end in an action: each post has a person, and the roster goes to the team. Plain words only: no "avoided per patrol hour", no "slot", no "P/01" codes in headings, no 7 × 24 number grid.
+**Who uses it and why.** The security supervisor, once a week, to put one person at each of the 3 posts. Keep it simple: no steps strip, no roster to copy, no calendar, no team list. Picking a person **sends the post to their phone** (section 6.6), and the page shows when they have seen it.
 
-**Layout, top to bottom:**
-1. **Title block:** kicker `PATROL PLAN · WEEK OF MON 12 OCT` from `plan.generated_at`, H1 "Where to put people this week", and one line: "EarlyEye found 3 places and times where trouble keeps happening. Put one person at each, and fewer incidents should happen."
-   - On the right: "N of 3 posts covered" and **Share the roster**.
-2. **Three steps:** "Check the 3 posts", "Pick who goes (N of 3)", "Share the roster". Each gets a tick when done.
-3. **Post cards (left) and map (right):**
-   - **Sort posts:** Most incidents (default) · Quick wins first (most prevented for each hour a guard spends there, `incidents_4w × 0.6 ÷ hours a week`) · Nobody yet first. One plain line under the buttons says what the order means.
-   - Each card shows the rank, the place in Saira, and "Mon–Thu · 13:00–14:00 · 4 hours this week".
-   - The why, in one sentence: "5 incidents here in the last 4 weeks, all on weekdays at lunch."
-   - "Should prevent about N incidents a month", where N = round(incidents_4w × 0.6).
-   - **When it happened:** one chip per past incident in the post's window, with its date ("Wed 7 Oct"), oldest first, linking to `/incidents`. Below: the count per weekday ("Mon 1 · Tue 1 · Wed 2 · Thu 1") and this week's dates ("This week: Mon 12, Tue 13, Wed 14, Thu 15 Oct").
-   - **Who goes:**
-     - Assigned: a guard chip, "On shift for all 4 hours", and **Change**.
-     - Unassigned: **Send Guard C**, suggested because that guard is on shift then and works nearby, plus **Choose someone else**.
-     - The chooser lists the whole team. Anyone not free is greyed out with the reason: "Not working on Sun", "Shift starts at 14:00", or "Already at post 1 then".
-   - "At the post:" one practical tip, then **See it on the map** and **See the N incidents** (links to `/incidents`).
-   - Under the cards, in small text: the estimate in plain words ("we assume a person on the spot stops about 6 in 10 of these incidents; an estimate, not a measurement").
-   - The map is `<Campus3D mode="plan">`, with guard names on the post pins once they are assigned.
-   - Under the map, the black-camera note in plain words, with **Report the repair**.
-4. **Your week at a glance:** this replaces the heatmap.
-   - **By weekday** first: 7 tiles, one per day, with this week's date ("WED 14 Oct"), the number of incidents on that weekday in the last 4 weeks, and "Busiest 13:00", "Spread out" when no hour repeats, or "One, at 22:00". Order: Mon to Sun or Busiest first.
-   - Picking a day opens a panel: "Wednesdays: 5 incidents in the last 4 weeks", the busiest hour and place (only when one repeats), the dates ("Wed 30 Sep (2)"), and "This Wednesday, 14 Oct" with that day's posts and who covers them. The day's column is highlighted in the calendar, and clicking any calendar cell picks its day.
-   - Everything follows the place chips.
-   - Columns are Mon to Sun and rows are 07:00 to 23:00.
-   - Cell shading is the incidents at that hour in the last 4 weeks, light to darker blue, with no numbers in the cells. Counts go in the tooltip.
-   - Posts are drawn on top: "1 · Guard B" with a solid ink border, or "2 · Nobody yet" with a dashed border. Clicking one focuses its card.
-   - Place chips filter the shading.
-5. **Your team this week:**
-   - One row per person: name, role, "On duty now" or "Off duty", shift, the posts assigned, and the hours this week.
-   - Footer: "No personal profiles. EarlyEye only needs a name, a shift and a duty phone."
-6. **Did last week's plan work?**
-   - One plain line for the total.
-   - Per post: who covered it and on how many of the planned days, the result against the baseline, and a verdict ("Working. Keep it." or "Cover every night this week.").
-   - Footer: "One week is too short to be sure."
-7. **Share the roster** opens a plain-text roster (place, days, hours, person, tip) with **Copy roster** and **Print**. Nothing is sent from the app. Each guard also sees their own post on the `/push` idle screen ("Your post this week").
+**Layout:**
+1. Kicker `PATROL PLAN · WEEK OF MON 12 OCT`, H1 "Where to put people this week", and the line "Pick who goes to each post. It goes straight to their phone, and you see when they've read it."
+2. One status line, "2 of 3 posts have someone · 1 seen on the phone", then one line about last week with a **Details** button. Details opens three short lines, one per post: covered days, the dated result and a verdict.
+3. Two columns:
+   - **Left:** `<Campus3D mode="plan">`, with guard names on the post pins, and the black-camera note under it.
+   - **Right:** three post cards. Each card shows:
+     - the rank, the place, and "Mon–Thu, 13:00–14:00 · 12–15 Oct" (this week's dates);
+     - one sentence, "5 incidents here at lunchtime in the last 4 weeks.", with a **Why here?** link;
+     - Why here? opens the dates of those incidents as chips, "Mon 1 · Tue 1 · Wed 2 · Thu 1 · should prevent about 3 a month", the at-the-post tip, and **See the 5 incidents**;
+     - who goes, which is either:
+       - the person's chip, the phone status ("✓ Seen on their phone · Sun 18:02" or "Sent to their phone · not seen yet") and **Change**; or
+       - **Send Guard C** (the suggestion), why they were suggested, and **Someone else**.
+     - The chooser lists everyone. Anyone not free is greyed out with the reason. "Nobody" takes the post off that person's phone.
+4. One folded section, **When trouble happens, by weekday**. Its summary line names the busiest weekday. Opened, it shows 7 day tiles with this week's dates and counts, and a day panel with that day's dates, busiest hour and place, and this week's posts that day.
 
 **Data:**
-- All counts and dates come from real incidents (status `confirmed` or `resolved`) in the last 28 days: `GET /events?since=`, or the mock 8-week history. Never count false alarms.
-- Shifts and roles come from `site.staff[].role` and `site.staff[].shift`.
-- Assignments come from `plan.slots[].assigned_to` if the API has it. Otherwise keep them in `localStorage`, keyed by week and slot, and show "Saved on this computer".
-- "Did last week's plan work?" uses `plan.review` if present. Otherwise use mock data, and keep the synthetic-history chip visible.
-- The suggestion rule: the free person whose base zone matches the post, then the fewest hours this week.
-
-**Wording:** "about 3 a month" for Block C. Never "a week".
+- Counts and dates come from real incidents (`confirmed` or `resolved`) in the last 28 days.
+- Assigning calls `PATCH /plan/slots/:rank {assigned_to}`.
+- The phone status comes from `seen_at` on the slot.
+- Coverage comes from the guards' check-ins.
+- Until Web A adds those routes, mock them and show "Saved on this computer".
 
 ### 6.5 Proof (`/proof`), design file `L3Proof.dc.html`
 
@@ -409,18 +387,21 @@ Show **real numbers from `model/REPORT.md` v2** and say clearly what is not meas
 
 **Data:** read `GET /proof` and map it. Show a metric as **not measured** when its source is missing: `own_footage_minutes === 0`, an empty `lead_time_s`, no `cctv_domain`, or `ir_check.frames === 0`. The report-only figures (75.7%, 13.7%, 0.902, 2.1 s, feature gains) are not in the contract. Keep them in `web/src/lib/model-report.ts` with a `// source: model/REPORT.md v2` comment. Never invent a number. A slot with no source says "not measured".
 
-### 6.6 Push (`/push?staff=Guard%20B`), design file `L3Push.dc.html`
+### 6.6 Guard phone (`/push?staff=Guard%20B`), design files `GuardPhone.dc.html` and `L3GuardFlow.dc.html`
 
-A phone layout at 390 px. States:
-1. **Off duty:** "START YOUR SHIFT", one line of explanation, and **I'M ON DUTY** (84 px, ink). The tap plays and pauses the alarm to unlock audio, calls `navigator.wakeLock.request("screen")`, then `requestFullscreen()`.
-2. **On duty, idle:** green dot, "ON DUTY · SCREEN STAYS AWAKE", "NO ALERTS. ALL QUIET.", pushes `1/3`, cameras live `5/6`, "Your patrol slot today", and a line about two tiers.
-3. **Pushed:** the whole screen turns `#C8241B`. "FIGHT LIKELY" in Saira with a diamond and time. A white card holds the location in Saira, type chip, "in ~6 s · ~40 m · 2 people", a **skeleton snapshot** from `peak_snapshot` or `snapshot` labelled "SKELETON SNAPSHOT · NO VIDEO", and the reason. Then a 10 s countdown ring and **ON MY WAY** (80 px white). Play the looped alarm and call `navigator.vibrate?.([500,200,500,200,800])`.
-4. **Acknowledged:** green "ACKNOWLEDGED IN N S", then back to idle after 5 s.
-5. **Timeout:** "NO ANSWER IN 10 S. The desk can see you did not answer and will call you by radio."
+**The phone runs the guard's whole shift, not just the alarm.** It is 390 px, with big buttons only, and no chat or profiles. Every tap tells the desk something:
 
-Poll every 2 s for an event where `pushed_to === staff && status === "pushed" && !acked_at`.
+| Screen | What the guard sees | What the desk gets |
+|---|---|---|
+| Start | "Guard B · Day shift 10:00–18:00" and **Start my shift** (72 px). The tap unlocks audio, keeps the screen awake and goes fullscreen. | `on_duty = true` |
+| Today | A "New from your supervisor" card with **Got it** when a post is new. **Next** shows the post, time, tip and **I'm at my post**. Below: today's timeline and "My week". | Plan shows "Seen" (`seen_at`) |
+| At the post | "Block C stairwell · until 14:00 · 58 min left", "✓ Checked in at 13:02", and the tip | A check-in, which is how Plan counts covered days |
+| Alarm | Full red screen: level, place, "Level 1 landing · about 10 m from you", the reason in plain words, and **On my way** (96 px). Looped sound and vibration. | `acked_at`. With no answer in 20 s, the desk sees the next nearest guard. |
+| On the way | Place, "Camera now: Still tense" (live level), a small map from you to the spot, and **I'm here** | `arrived_at` |
+| What did you find? | Four big buttons: **Sorted, nobody hurt** · **Sorted, someone hurt** · **Need backup** · **Nothing there**. Optional quick notes. | `outcome`, `outcome_at`. Need backup turns the desk banner red with the next guard. |
+| Done | "Thanks. The desk has it.", what you reported, "Camera: calm for 30 seconds", and **Back to my post** | The Live card shows "Sorted · camera agrees: calm". The desk confirms with one tap. |
 
----
+Poll every 2 s: `GET /events?since=` for alerts with `pushed_to === staff`, and `GET /plan` for posts assigned to this person. No external notification service is used. The page is the channel, which is why the guard keeps it open during the shift.
 
 ## 7. Alarm and two-tier state machine
 

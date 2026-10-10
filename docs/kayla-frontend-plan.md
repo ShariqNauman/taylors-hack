@@ -63,6 +63,7 @@ interface Event {
   action: string; nearest_staff: string | null;
   pushed_to?: string; pushed_at?: string;                // two-tier: only fight_likely+ gets pushed; API sets these
   acked_at?: string;                                     // phone tap; response time = acked_at − pushed_at
+  arrived_at?: string; outcome?: 'sorted' | 'hurt' | 'backup' | 'nothing'; outcome_at?: string;   // v3 guard phone: I'm here, What did you find?
   status: Status; staff_note: string | null;             // operator sets on Live; edge never overwrites
   snapshot?: PoseFrame;                                  // v3: latest keypoints, refreshed on each 0.5 s post; remote live skeletons
   peak_snapshot?: PoseFrame;                             // v3: keypoints at peak_score; Incidents thumbnail and push card
@@ -71,7 +72,7 @@ interface Event {
 
 interface Hotspot { location: string; zone_type: string; weekday: number; hour: number; count: number; last_seen: string; }
 
-interface PatrolSlot { location: string; days: string; hours: string; incidents_4w: number; expected_avoided_per_week: number; avoided_per_patrol_hour: number; rationale: string; assigned_to?: string | null; tip?: string; }   // v3: assigned_to = staff name; days index 0 = Mon in staff.shift.days; from/to are hours, to may exceed 24 for night shifts
+interface PatrolSlot { location: string; days: string; hours: string; incidents_4w: number; expected_avoided_per_week: number; avoided_per_patrol_hour: number; rationale: string; assigned_to?: string | null; tip?: string; seen_at?: string | null; checkins?: { staff: string; at: string }[]; }   // v3: assigned_to = staff name; days index 0 = Mon in staff.shift.days; from/to are hours, to may exceed 24 for night shifts
 interface PatrolPlan { generated_at: string; slots: PatrolSlot[]; assumption: string; review?: { location: string; assigned_to: string | null; covered_days: number; planned_days: number; incidents_during_post: number; baseline_per_week: number; verdict: string }[]; }   // top-3 ranked by expected_avoided_per_week; Block C = 5 × 0.6 / 4 = 0.75/week ("~3 a month"); assumption = "60% of hotspot incidents avoided when a person is present (stated, not measured)"
 
 interface Proof {
@@ -91,7 +92,7 @@ interface Proof {
 }
 ```
 
-Endpoints: `GET /site` · `GET /cameras` · `GET /events?since=<iso>` · `PATCH /events/:id {status?, staff_note?, acked_at?}` · `GET /hotspots` · `GET /plan` · `GET /proof`. (`POST /events`, `POST /cameras/heartbeat` are edge → API; the dashboard never calls them.)
+Endpoints: `GET /site` · `GET /cameras` · `GET /events?since=<iso>` · `PATCH /events/:id {status?, staff_note?, acked_at?, arrived_at?, outcome?, outcome_at?}` · v3 (Web A, optional): `PATCH /plan/slots/:rank {assigned_to? , seen_at?}` · `POST /plan/slots/:rank/checkins {staff}` · `GET /hotspots` · `GET /plan` · `GET /proof`. (`POST /events`, `POST /cameras/heartbeat` are edge → API; the dashboard never calls them.)
 
 Replay rule: `?replay=1` and `replay.json` events are played **by timestamp** (`start_time` deltas), not at a fixed 0.5 s, so "fight likely in ~6 s" is true on screen. `replay.json` therefore needs realistic timestamps: tense at t=0, fight_likely at t≈4 s with eta 6, fight at t≈10 s.
 
