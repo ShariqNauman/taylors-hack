@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from datetime import datetime
 from enum import Enum
-from typing import Optional
+from typing import Any, Optional
 
 from pydantic import BaseModel, Field
 
@@ -90,6 +90,10 @@ class EventCreate(BaseModel):
     nearest_staff: Optional[str] = None
     status: Status = Status.new
     staff_note: Optional[str] = None
+    # v3 optional (contract): keypoints only, never pixels. Stored when the columns exist.
+    snapshot: Optional[dict[str, Any]] = None
+    peak_snapshot: Optional[dict[str, Any]] = None
+    top_features: Optional[list[dict[str, Any]]] = None
 
 
 class Event(BaseModel):
@@ -111,14 +115,19 @@ class Event(BaseModel):
     nearest_staff: Optional[str] = None
     pushed_to: Optional[str] = None
     pushed_at: Optional[str] = None
+    acked_at: Optional[str] = None
     status: Status
     staff_note: Optional[str] = None
+    snapshot: Optional[dict[str, Any]] = None
+    peak_snapshot: Optional[dict[str, Any]] = None
+    top_features: Optional[list[dict[str, Any]]] = None
 
 
 class EventPatch(BaseModel):
-    """PATCH body for confirming / dismissing / resolving an event."""
-    status: Status
+    """PATCH body. The desk sends status (+ staff_note); the duty phone sends acked_at only."""
+    status: Optional[Status] = None
     staff_note: Optional[str] = None
+    acked_at: Optional[str] = None
 
 
 # ── Hotspot & Patrol Plan ─────────────────────────────────────────────────────
@@ -184,7 +193,7 @@ class Proof(BaseModel):
     cctv_domain: Optional[CCTVDomain] = None
     live_precision: Optional[float] = None
     live_recall: Optional[float] = None
-    fa_per_camera_hour: float
+    fa_per_camera_hour: Optional[float] = None      # null until own footage is measured
     own_footage_minutes: float
     airtlab_fp_rate: float
     lead_time_s: list[float]

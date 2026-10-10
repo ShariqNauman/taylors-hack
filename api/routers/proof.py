@@ -8,6 +8,9 @@ team can update them via PUT.
 
 from __future__ import annotations
 
+import json
+from pathlib import Path
+
 from fastapi import APIRouter, HTTPException
 
 from api.db import get_supabase
@@ -48,6 +51,17 @@ _PLACEHOLDER = Proof(
 )
 
 
+# The model team's real numbers, written by model/train.py.
+_MODEL_PROOF = Path(__file__).resolve().parents[2] / "model" / "proof.json"
+
+
+def _model_proof() -> dict | None:
+    try:
+        return json.loads(_MODEL_PROOF.read_text())
+    except Exception:
+        return None
+
+
 # ── GET /proof ────────────────────────────────────────────────────────────────
 
 @router.get("/proof", response_model=Proof)
@@ -58,15 +72,17 @@ async def get_proof():
     JSONB column.  If no row exists yet, a hardcoded placeholder is
     returned so the frontend always has something to render.
     """
-    sb = get_supabase()
-    result = sb.table("proof").select("data").limit(1).execute()
+    row = None
+    try:
+        result = get_supabase().table("proof").select("data").limit(1).execute()
+        row = result.data[0]["data"] if result.data else None
+    except Exception:
+        row = None
 
-    if result.data:
-        # The `data` column is JSONB and already contains the full Proof shape
-        return result.data[0]["data"]
-
-    # No row in the table yet — return safe defaults
-    return _PLACEHOLDER
+    # A row the ML team PUT wins, unless it is still the placeholder; then model/proof.json.
+    if row and row.get("note") != "placeholder":
+        return row
+    return _model_proof() or row or _PLACEHOLDER
 
 
 # ── PUT /proof ────────────────────────────────────────────────────────────────
