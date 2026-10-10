@@ -68,7 +68,7 @@ def test_all():
         "zone_type": "stairwell",
         "start_time": "2026-10-10T14:45:00+08:00",
         "type": "fight",
-        "level": "fight",
+        "level": "fight_likely",
         "peak_score": 0.88,
         "eta_seconds": 6,
         "reason": "wrist speed spiked; distance dropped below 0.5 torso-lengths for 1.4 s",
