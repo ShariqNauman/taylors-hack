@@ -1,0 +1,15 @@
+/* Alarm pulse for the alarming pin, 1 Hz (under 3 flashes per second, WCAG 2.3.1).
+   The shell defines .ee-pulse globally; this scoped copy keeps the map correct on its own. */
+@keyframes ee-campus-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgb(200 36 27 / 0); }
+  50% { box-shadow: 0 0 0 8px rgb(200 36 27 / 0.45); }
+}
+.ee-campus-pulse { animation: ee-campus-pulse 1s ease-in-out infinite; }
+.ee-campus-focus:focus-visible { outline: 2px solid #2742d9; outline-offset: 2px; }
+.ee-campus-sheet { right: 12px; top: 12px; width: 340px; max-width: calc(100% - 24px); max-height: calc(100% - 24px); }
+@media (max-width: 640px) {
+  .ee-campus-sheet { left: 0; right: 0; top: auto; bottom: 0; width: auto; max-width: none; max-height: 70%; border-bottom: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ee-campus-pulse { animation: none; }
+}

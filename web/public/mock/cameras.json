@@ -1,20 +1,20 @@
 [
   {
     "camera_id": "CAM-AU-01",
-    "location": "Auditorium, Block A and B",
+    "location": "Grand Hall",
     "zone_type": "auditorium",
     "online": true,
     "last_frame_at": "2026-10-10T14:29:59+08:00",
     "people_count": 2,
-    "geo": {
-      "lat": 3.0645574,
-      "lng": 101.6170349,
-      "alt_m": 6,
-      "building": "Block A and B",
-      "floor": "ground floor, stage left"
-    },
     "source": "live",
-    "edge_url": "http://127.0.0.1:8765"
+    "edge_url": "http://127.0.0.1:8765",
+    "geo": {
+      "lat": 3.06465,
+      "lng": 101.6175,
+      "alt_m": 10,
+      "building": "Block B (OSM footprint: Block A and Block B)",
+      "floor": "level 2, stage left"
+    }
   },
   {
     "camera_id": "CAM-BC-03",
@@ -23,85 +23,87 @@
     "online": true,
     "last_frame_at": "2026-10-10T14:29:59+08:00",
     "people_count": 1,
+    "source": "recorded",
+    "recorded_at": "2026-10-10T16:20:00+08:00",
+    "edge_url": "http://127.0.0.1:8766",
     "geo": {
       "lat": 3.0640871,
       "lng": 101.6175477,
       "alt_m": 8,
       "building": "Block C",
       "floor": "level 1 landing"
-    },
-    "source": "recorded",
-    "recorded_at": "2026-10-10T16:20:00+08:00",
-    "edge_url": "http://127.0.0.1:8766"
+    }
   },
   {
     "camera_id": "CAM-CT-04",
     "location": "Syopz Mall food court",
     "zone_type": "canteen",
     "online": true,
-    "last_frame_at": "2026-10-10T14:29:59+08:00",
+    "last_frame_at": "2026-10-10T14:29:57+08:00",
     "people_count": 14,
+    "source": "recorded",
+    "recorded_at": "2026-10-10T16:32:00+08:00",
+    "edge_url": "http://127.0.0.1:8767",
     "geo": {
       "lat": 3.0638158,
-      "lng": 101.6164681,
+      "lng": 101.61643,
       "alt_m": 8,
       "building": "Syopz Mall",
       "floor": "east entrance"
-    },
-    "source": "recorded",
-    "recorded_at": "2026-10-10T16:35:00+08:00",
-    "edge_url": "http://127.0.0.1:8767"
+    }
   },
   {
     "camera_id": "CAM-HC-01",
-    "location": "DK Senza, corridor L3",
+    "location": "U Residence, corridor L3",
     "zone_type": "hostel_corridor",
     "online": true,
-    "last_frame_at": "2026-10-10T14:29:59+08:00",
+    "last_frame_at": "2026-10-10T14:29:58+08:00",
     "people_count": 1,
-    "geo": {
-      "lat": 3.0601983,
-      "lng": 101.6173498,
-      "alt_m": 8,
-      "building": "DK Senza",
-      "floor": "level 3"
-    },
     "source": "recorded",
-    "recorded_at": "2026-10-10T16:50:00+08:00",
-    "edge_url": "http://127.0.0.1:8768"
-  },
-  {
-    "camera_id": "CAM-HC-02",
-    "location": "DK Senza, corridor L5",
-    "zone_type": "hostel_corridor",
-    "online": false,
-    "last_frame_at": "2026-10-07T14:30:00+08:00",
-    "black_since": "2026-10-07T14:30:00+08:00",
+    "recorded_at": "2026-10-10T16:45:00+08:00",
+    "edge_url": "http://127.0.0.1:8768",
     "geo": {
-      "lat": 3.059927,
-      "lng": 101.6170619,
-      "alt_m": 8,
-      "building": "DK Senza",
-      "floor": "level 5"
-    },
-    "edge_url": ""
+      "lat": 3.0642137,
+      "lng": 101.6160904,
+      "alt_m": 16,
+      "building": "U Residence, above Syopz Mall",
+      "floor": "residence level 3"
+    }
   },
   {
     "camera_id": "CAM-SC-06",
     "location": "Sports pitch",
     "zone_type": "sports_court",
     "online": true,
-    "last_frame_at": "2026-10-10T14:29:59+08:00",
+    "last_frame_at": "2026-10-10T14:29:58+08:00",
     "people_count": 6,
+    "source": "recorded",
+    "recorded_at": "2026-10-10T16:58:00+08:00",
+    "edge_url": "http://127.0.0.1:8769",
     "geo": {
       "lat": 3.0617539,
       "lng": 101.6172328,
       "alt_m": 8,
       "building": "Sports centre",
-      "floor": "pitch side"
-    },
+      "floor": "football pitch side"
+    }
+  },
+  {
+    "camera_id": "CAM-HC-02",
+    "location": "U Residence, corridor L5",
+    "zone_type": "hostel_corridor",
+    "online": false,
+    "last_frame_at": "2026-10-07T14:30:00+08:00",
+    "black_since": "2026-10-07T14:30:00+08:00",
+    "people_count": 0,
     "source": "recorded",
-    "recorded_at": "2026-10-10T17:05:00+08:00",
-    "edge_url": "http://127.0.0.1:8769"
+    "edge_url": "",
+    "geo": {
+      "lat": 3.0643042,
+      "lng": 101.6162883,
+      "alt_m": 22,
+      "building": "U Residence, above Syopz Mall",
+      "floor": "residence level 5"
+    }
   }
 ]
