@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { useSyncExternalStore } from "react";
 import { usingMock } from "@/lib/api";
 import { useAppStore } from "@/lib/store/app-store";
 import { Logo } from "./logo";
@@ -35,6 +36,9 @@ export function SiteHeader({
   const replay = params.get("replay") === "1";
   const apiDown = useAppStore((s) => s.apiDown);
   const view = useAppStore((s) => s.view);
+  // A deployed build (not this laptop or the hotspot) without NEXT_PUBLIC_API_URL: the shared
+  // demo store lives in one serverless instance, so it only syncs devices on the same server.
+  const deployedDemo = useDeployedDemo();
 
   return (
     <>
@@ -87,17 +91,26 @@ export function SiteHeader({
                   ? "REMOTE LINK"
                   : "DETECTING…"}
             </span>
-            {(usingMock || apiDown) && (
+            {deployedDemo ? (
               <span
                 className="inline-flex min-h-7 items-center rounded-[1px] border border-dashed border-line-strong bg-white px-2 font-mono text-[11px] font-bold tracking-[0.06em] text-ink-2"
-                title={
-                  apiDown
-                    ? "API failed; showing mock data"
-                    : "No API configured; showing mock data"
-                }
+                title="This deployed link has no API: demo data. What you change is kept by this server, not shared with other people or devices reliably."
               >
-                MOCK DATA
+                DEMO DATA · CHANGES STAY ON THIS DEVICE
               </span>
+            ) : (
+              (usingMock || apiDown) && (
+                <span
+                  className="inline-flex min-h-7 items-center rounded-[1px] border border-dashed border-line-strong bg-white px-2 font-mono text-[11px] font-bold tracking-[0.06em] text-ink-2"
+                  title={
+                    apiDown
+                      ? "API failed; showing mock data"
+                      : "No API configured; showing mock data"
+                  }
+                >
+                  MOCK DATA
+                </span>
+              )
             )}
             {replay && (
               <span className="inline-flex min-h-7 items-center rounded-[1px] border border-ink bg-white px-2 font-mono text-[11px] font-bold tracking-[0.06em]">
@@ -109,5 +122,14 @@ export function SiteHeader({
       </header>
       <AlarmBanner />
     </>
+  );
+}
+
+const LOCAL_HOST = /^(localhost|127\.|\[::1\]|10\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.)|\.local$|\.localhost$|\.trycloudflare\.com$/;
+function useDeployedDemo(): boolean {
+  return useSyncExternalStore(
+    () => () => {},
+    () => usingMock && !LOCAL_HOST.test(window.location.hostname),
+    () => false,
   );
 }
