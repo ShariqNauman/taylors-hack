@@ -6,17 +6,17 @@
     "SCVD"
   ],
   "n_clips": 470,
-  "clip_auc": 0.944,
-  "clip_precision": 0.882,
-  "clip_recall": 0.853,
+  "clip_auc": 0.942,
+  "clip_precision": 0.928,
+  "clip_recall": 0.696,
   "cctv_domain": {
     "datasets": [
       "SCF",
       "SCVD"
     ],
-    "auc": 0.865,
-    "precision": 0.892,
-    "recall": 0.569
+    "auc": 0.813,
+    "precision": 0.903,
+    "recall": 0.483
   },
   "live_precision": null,
   "live_recall": null,
@@ -25,7 +25,7 @@
   "airtlab_fp_rate": 0.111,
   "lead_time_s": [],
   "pushes_per_shift_target": 3,
-  "latency_ms": 36,
+  "latency_ms": 39,
   "ir_check": {
     "frames": 0,
     "skeletons_detected": 0,
@@ -35,17 +35,56 @@
   "model_card": {
     "inputs": "17 keypoints + person box from YOLO26n-pose + ByteTrack (no video stored; face points only as head position)",
     "windows": "last 2 s at 10 fps, scored every 0.5 s; torso-scaled, pair-centred",
-    "classifier": "ensemble: average of LightGBM (23 hand-made features) and a 51k-parameter 1D-CNN over the active pair's keypoint sequence; weights {'num_leaves': 31, 'learning_rate': 0.05, 'n_estimators': 400, 'min_child_samples': 100, 'subsample': 0.8, 'colsample_bytree': 1.0, 'reg_lambda': 0.0, 'w_airtlab': 2.0, 'w_cctv': 2.0, 'hug_mult': 5.0}",
+    "classifier": "ensemble: average of LightGBM (24 features, clipped to the training 1st-99th percentile) and a 51k-parameter 1D-CNN over the active pair's keypoint sequence; trained on full, waist-up and chest-up copies of every clip plus one-person / close-to-camera negatives",
     "split": "15% of groups locked as a hold-out (stratified by dataset and kind) and evaluated once; tuning by GroupKFold on the other 85%; AIRTLab camera pairs kept together",
-    "threshold": "alarm when the smoothed score (alpha 0.6) stays >= 0.6579 for 1.0 s; FIGHT_AT fixed on the training part at 9% normal-clip false alarms, not yet tuned on own footage",
+    "threshold": "alarm when the smoothed score (alpha 0.6) stays >= 0.6562 for 1.0 s with at least 2 people tracked; FIGHT_AT fixed on the training part at 9% normal-clip false alarms",
     "failure_modes": [
-      "hugs and close contact: 18 hold-out hug/clap clips, 2 raised an alarm",
+      "hugs and close contact: 2 of 18 hold-out hug/clap clips raised an alarm",
       "very short clips (SCF, ~2 s) can't hold the 1 s alarm persistence",
       "small or distant people on CCTV: pair features often missing",
       "weapons are not recognised as objects; only the body motion is scored",
-      "night / IR footage untested"
+      "night / IR footage untested",
+      "a fight where only one person is tracked can't raise FIGHT (1.7% of fight clips in training)"
     ]
   },
-  "disclosure": "Official numbers are from a hold-out set of 470 clips that no tuning, threshold or model choice ever saw. clip_* = RLVS + AIRTLab hold-out clips; cctv_domain = SCF + SCVD hold-out clips. The final model also trains on other SCF/SCVD clips, so that row is not a pure domain test: the earlier model trained without any CCTV scored AUC 0.709 on CCTV. Dataset clips are 2-5 s long, so false alarms per camera-hour are not measured yet; live-room numbers come from our own labelled footage. Practice-run lesson: 100% on KTH, zero live until retuned. We detect physical aggression from body motion only; we do not claim verbal or online bullying, weapon recognition, or night vision.",
-  "note": "partly placeholder: dataset numbers are real (hold-out); live_precision/recall, fa_per_camera_hour, lead_time_s and ir_check need own-venue footage"
+  "disclosure": "Official numbers are from a second look at a hold-out set of 470 clips that no tuning, threshold or model choice ever saw. clip_* = RLVS + AIRTLab hold-out clips; cctv_domain = SCF + SCVD hold-out clips. The final model also trains on other SCF/SCVD clips, so that row is not a pure domain test: the earlier model trained without any CCTV scored AUC 0.709 on CCTV. Dataset clips are 2-5 s long, so false alarms per camera-hour are not measured yet; live-room numbers come from our own labelled footage. Practice-run lesson: 100% on KTH, zero live until retuned. We detect physical aggression from body motion only; we do not claim verbal or online bullying, weapon recognition, or night vision.",
+  "note": "partly placeholder: dataset numbers are real (hold-out); live_precision/recall, fa_per_camera_hour, lead_time_s and ir_check need own-venue footage",
+  "robustness": {
+    "full": {
+      "auc": 0.9168,
+      "fights%": 64.5,
+      "normal%": 5.2,
+      "hugs%": 11.1,
+      "any FIGHT%": 36.0
+    },
+    "waist-up": {
+      "auc": 0.9221,
+      "fights%": 64.9,
+      "normal%": 4.3,
+      "hugs%": 5.6,
+      "any FIGHT%": 35.5
+    },
+    "chest-up": {
+      "auc": 0.9276,
+      "fights%": 62.4,
+      "normal%": 5.2,
+      "hugs%": 11.1,
+      "any FIGHT%": 34.9
+    },
+    "single": {
+      "auc": 0.7167,
+      "fights%": 0.0,
+      "normal%": 0.0,
+      "hugs%": 0.0,
+      "any FIGHT%": 0.0
+    },
+    "close": {
+      "auc": 0.7103,
+      "fights%": 0.0,
+      "normal%": 0.0,
+      "hugs%": 0.0,
+      "any FIGHT%": 0.0
+    }
+  },
+  "holdout_use": "second look: this hold-out was also used once for the v4 model"
 }

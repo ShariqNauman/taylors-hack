@@ -18,7 +18,7 @@ from tqdm import tqdm
 
 from features import LONG_S, SHORT_S
 from seq_features import sequence_input
-from train import STEP_S, VIDEOS_CSV, kp_path
+from train import STEP_S, VIDEOS_CSV, load_kp, with_crops
 
 # ---------------- Tunable constants ----------------
 HOLDOUT_CSV = Path("holdout_groups.csv")
@@ -29,7 +29,7 @@ N_JOBS = max(1, (os.cpu_count() or 2) - 1)
 
 def video_sequences(path):
     """Same window ends as train.video_windows."""
-    kp = pd.read_csv(kp_path(path))
+    kp = load_kp(path)
     tmax = kp["time_s"].max() if len(kp) else SHORT_S
     ends = np.arange(SHORT_S, max(tmax, SHORT_S) + 0.1 + 1e-6, STEP_S)
     xs = [sequence_input(kp[(kp["time_s"] > e - LONG_S - 0.1) & (kp["time_s"] <= e)], e) for e in ends]
@@ -37,7 +37,7 @@ def video_sequences(path):
 
 
 def main():
-    videos = pd.read_csv(VIDEOS_CSV)
+    videos = with_crops(pd.read_csv(VIDEOS_CSV), synthetic=True)   # full + half-body + single / close copies
     hold = set(pd.read_csv(HOLDOUT_CSV)["path"])
     with ProcessPoolExecutor(max_workers=N_JOBS) as pool:
         results = list(tqdm(pool.map(video_sequences, videos["path"], chunksize=8),
@@ -48,7 +48,8 @@ def main():
     np.savez_compressed(OUT_NPZ, X=np.concatenate([x for _, _, x in results]),
                         path=paths, end_s=np.concatenate([e for _, e, _ in results]),
                         label=m["label"].to_numpy(), dataset=m["dataset"].to_numpy(), kind=m["kind"].to_numpy(),
-                        group_id=m["group_id"].to_numpy(), holdout=np.isin(paths, list(hold)).astype(np.int8))
+                        group_id=m["group_id"].to_numpy(), crop=m["crop"].to_numpy(),
+                        holdout=np.isin([p.split("#")[0] for p in paths], list(hold)).astype(np.int8))
     print(f"{len(paths)} windows from {len(videos)} clips -> {OUT_NPZ}")
 
 

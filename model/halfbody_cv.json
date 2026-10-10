@@ -1,0 +1,154 @@
+{
+  "thresholds": {
+    "LightGBM": 0.67,
+    "CNN": 0.7072,
+    "ensemble": 0.6562
+  },
+  "results": {
+    "LightGBM": {
+      "full": {
+        "clips": 2661,
+        "auc": 0.8742,
+        "fights%": 61.3,
+        "normal%": 9.0,
+        "hugs%": 10.8,
+        "weapon%": 43.8,
+        "any FIGHT%": 36.1
+      },
+      "waist-up": {
+        "clips": 2661,
+        "auc": 0.8662,
+        "fights%": 59.1,
+        "normal%": 8.0,
+        "hugs%": 12.7,
+        "weapon%": 43.8,
+        "any FIGHT%": 34.6
+      },
+      "chest-up": {
+        "clips": 2661,
+        "auc": 0.8586,
+        "fights%": 61.4,
+        "normal%": 10.0,
+        "hugs%": 12.7,
+        "weapon%": 41.0,
+        "any FIGHT%": 36.6
+      },
+      "single": {
+        "clips": 1288,
+        "auc": null,
+        "fights%": null,
+        "normal%": 0.0,
+        "hugs%": 0.0,
+        "weapon%": null,
+        "any FIGHT%": 0.0
+      },
+      "close": {
+        "clips": 1288,
+        "auc": null,
+        "fights%": null,
+        "normal%": 0.0,
+        "hugs%": 0.0,
+        "weapon%": null,
+        "any FIGHT%": 0.0
+      }
+    },
+    "CNN": {
+      "full": {
+        "clips": 2661,
+        "auc": 0.8797,
+        "fights%": 63.7,
+        "normal%": 9.0,
+        "hugs%": 11.8,
+        "weapon%": 56.2,
+        "any FIGHT%": 37.3
+      },
+      "waist-up": {
+        "clips": 2661,
+        "auc": 0.881,
+        "fights%": 66.5,
+        "normal%": 9.7,
+        "hugs%": 10.8,
+        "weapon%": 63.8,
+        "any FIGHT%": 39.0
+      },
+      "chest-up": {
+        "clips": 2661,
+        "auc": 0.8838,
+        "fights%": 65.6,
+        "normal%": 10.5,
+        "hugs%": 5.9,
+        "weapon%": 66.7,
+        "any FIGHT%": 38.8
+      },
+      "single": {
+        "clips": 1288,
+        "auc": null,
+        "fights%": null,
+        "normal%": 0.0,
+        "hugs%": 0.0,
+        "weapon%": null,
+        "any FIGHT%": 0.0
+      },
+      "close": {
+        "clips": 1288,
+        "auc": null,
+        "fights%": null,
+        "normal%": 0.0,
+        "hugs%": 0.0,
+        "weapon%": null,
+        "any FIGHT%": 0.0
+      }
+    },
+    "ensemble": {
+      "full": {
+        "clips": 2661,
+        "auc": 0.8946,
+        "fights%": 64.5,
+        "normal%": 8.9,
+        "hugs%": 6.9,
+        "weapon%": 51.4,
+        "any FIGHT%": 37.5
+      },
+      "waist-up": {
+        "clips": 2661,
+        "auc": 0.8986,
+        "fights%": 66.4,
+        "normal%": 8.1,
+        "hugs%": 8.8,
+        "weapon%": 52.4,
+        "any FIGHT%": 38.2
+      },
+      "chest-up": {
+        "clips": 2661,
+        "auc": 0.8929,
+        "fights%": 65.6,
+        "normal%": 9.1,
+        "hugs%": 6.9,
+        "weapon%": 55.2,
+        "any FIGHT%": 38.2
+      },
+      "single": {
+        "clips": 1288,
+        "auc": null,
+        "fights%": null,
+        "normal%": 0.0,
+        "hugs%": 0.0,
+        "weapon%": null,
+        "any FIGHT%": 0.0
+      },
+      "close": {
+        "clips": 1288,
+        "auc": null,
+        "fights%": null,
+        "normal%": 0.0,
+        "hugs%": 0.0,
+        "weapon%": null,
+        "any FIGHT%": 0.0
+      }
+    }
+  },
+  "single_person_cost": {
+    "fight windows with < 2 people %": 6.1,
+    "fight clips with < 2 people in every window %": 1.7
+  }
+}
