@@ -129,6 +129,9 @@ export function useLiveFeed(
     for (const x of edgeLive) {
       const inc = x.incident;
       if (!inc) continue;
+      // Recordings are CCTV feeds for the wall (REC), not alarms: they never alarm or push a
+      // guard. Only the live webcam does (brief §8.1; the loops would ring the phone forever).
+      if (x.source === "recorded") continue;
       const api = byId.get(inc.incident_id);
       byId.set(inc.incident_id, {
         ...inc,

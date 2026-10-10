@@ -48,7 +48,7 @@
       "floor": "east entrance"
     },
     "source": "recorded",
-    "edge_url": ""
+    "edge_url": "http://127.0.0.1:8767"
   },
   {
     "camera_id": "CAM-HC-01",

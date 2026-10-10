@@ -1,5 +1,5 @@
 {
-  "_note": "Cameras for edge/run_edge.sh all and run_edge.bat all. The live webcam is the only camera that posts to the API. Recordings are sample CCTV clips (not filmed on campus). Checked with the v5 model on 10 Oct (45-60 s each): clip 5 max 0.41, clip 2 max 0.48, clip 3 max 0.20, all calm. Not used: clip 1 (restaurant) and clip 4 (umbrellas) reach FIGHT under v5; clip 6 shows a real kick.",
+  "_note": "Cameras for edge/run_edge.sh all and run_edge.bat all. The live webcam is the only camera that posts to the API. Only non-fight footage loops on the wall: Block C and the food court are our own calm campus clips (10 Oct, 22:14 and 22:13, the food court with the grab cut out); U Residence L3 and the Sports pitch are calm sample CCTV clips (clip 2, clip 3). The staged fight videos (22:13:44 lawn, 22:14:17 hall, 22:15:28 crowd) are incidents only, served from edge/clips/, never on a camera.",
   "live": {
     "camera": "0",
     "camera_id": "CAM-AU-01",
@@ -11,13 +11,22 @@
   },
   "recordings": [
     {
-      "file": "edge/recordings/clip5.mp4",
+      "file": "edge/recordings/campus_blockc_stairwell.mp4",
       "camera_id": "CAM-BC-03",
       "location": "Block C stairwell",
       "zone": "stairwell",
       "zone_risk": 0.8,
       "staff": "Guard B",
       "port": 8766
+    },
+    {
+      "file": "edge/recordings/campus_foodcourt.mp4",
+      "camera_id": "CAM-CT-04",
+      "location": "Syopz Mall food court",
+      "zone": "canteen",
+      "zone_risk": 0.7,
+      "staff": "Guard A",
+      "port": 8767
     },
     {
       "file": "edge/recordings/clip2.mp4",
