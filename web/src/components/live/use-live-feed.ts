@@ -7,7 +7,9 @@ import {
   getEvents,
   getReplay,
   mergeEvents,
+  mirrorEvent,
   patchEvent,
+  usingMock,
   type EdgeLive,
 } from "@/lib/api";
 import { useAppStore } from "@/lib/store/app-store";
@@ -16,6 +18,21 @@ import { isAlarmLevel, LEVEL_ORDER, normaliseStatus } from "@/lib/format";
 import { useAlarmStore } from "@/lib/store/alarm-store";
 import type { Event, Level, PoseFrame, Status, TopFeature } from "@/lib/types";
 import { pushToast } from "@/components/alarm/push-toast";
+
+/** Fields only the guard's phone writes; they ride along onto the replay and edge copies. */
+const GUARD_FIELDS = ["acked_at", "arrived_at", "outcome", "outcome_at", "staff_note"] as const;
+function guardFields(from: Partial<Event> | undefined): Partial<Event> {
+  const out: Partial<Event> = {};
+  if (!from) return out;
+  for (const k of GUARD_FIELDS) if (from[k] != null) (out as Record<string, unknown>)[k] = from[k];
+  return out;
+}
+/** What the guard's phone needs from a live incident (no local bookkeeping fields). */
+function plainEvent(e: LiveEvent): Event {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { etaAt, isReplay, isEdge, ...plain } = e;
+  return plain;
+}
 
 /** A push older than this at first sight is history, not a transition: no sound, no toast. */
 const FRESH_MS = 15_000;
@@ -111,6 +128,9 @@ export function useLiveFeed(replayOn: boolean, edgeUrls: string[] = []) {
               pushed_at: api.pushed_at,
               acked_at: api.acked_at,
               staff_note: api.staff_note,
+              arrived_at: api.arrived_at,
+              outcome: api.outcome,
+              outcome_at: api.outcome_at,
             }
           : { status: normaliseStatus(inc.status) }),
         isEdge: true,
@@ -189,6 +209,7 @@ export function useLiveFeed(replayOn: boolean, edgeUrls: string[] = []) {
       seenAlarm.current.delete(replayId);
       lastLevel.current.delete(replayId);
       toasted.current.delete(replayId);
+      mirrored.current.delete(replayId);
     }
     lastIndex.current = replay.index;
   }, [replay.index, replayId]);
@@ -202,8 +223,10 @@ export function useLiveFeed(replayOn: boolean, edgeUrls: string[] = []) {
       return { ...e, etaAt: etaAnchors.current.get(e.incident_id)!.at };
     });
     if (replayIncident) {
+      // The guard's taps on the replay incident come back through the poll.
+      const fromPoll = list.find((e) => e.incident_id === replayIncident.incident_id);
       list = list.filter((e) => e.incident_id !== replayIncident.incident_id);
-      list.push(replayIncident);
+      list.push(replayIncident.pushed_to ? { ...replayIncident, ...guardFields(fromPoll) } : replayIncident);
     }
     return list.map((e) => {
       const o = overrides[e.incident_id];
@@ -273,6 +296,19 @@ export function useLiveFeed(replayOn: boolean, edgeUrls: string[] = []) {
     [replayIncident, replayEvents, replay.startedAt, bufferTick],
   );
 
+  // Mirrored pushes: keep the guard's "camera now" in step with the level.
+  const mirrored = useRef(new Map<string, string>());
+  const resetOnce = useRef(new Set<string>());
+  useEffect(() => {
+    for (const e of events) {
+      const was = mirrored.current.get(e.incident_id);
+      const nowKey = `${e.level}|${e.end_time}`;
+      if (was == null || was === nowKey) continue;
+      mirrored.current.set(e.incident_id, nowKey);
+      void mirrorEvent({ ...plainEvent(e), status: "pushed" });
+    }
+  }, [events]);
+
   // Two-tier alarm: sound + toast on the transition into fight_likely / fight.
   const upsert = useAlarmStore((s) => s.upsert);
   const retain = useAlarmStore((s) => s.retain);
@@ -319,6 +355,15 @@ export function useLiveFeed(replayOn: boolean, edgeUrls: string[] = []) {
           : true;
         if (fresh)
           pushToast(e.pushed_to, e.pushed_at ?? new Date(), e.location);
+        // Without the API, copy the push to the shared store so the guard's phone rings.
+        if (fresh && usingMock && (e.isReplay || e.isEdge)) {
+          mirrored.current.set(e.incident_id, `${e.level}|${e.end_time}`);
+          // The replay loops every few seconds; clear the guard's earlier taps only once per
+          // page load, so a guard who is already on the way stays on the way.
+          const reset = !!e.isReplay && !resetOnce.current.has(e.incident_id);
+          resetOnce.current.add(e.incident_id);
+          void mirrorEvent({ ...plainEvent(e), status: "pushed" }, reset);
+        }
         // Same-browser demo: let an open /push tab see the replay's simulated push.
         if (fresh && e.isReplay && typeof BroadcastChannel !== "undefined") {
           const ch = new BroadcastChannel("earlyeye-push");
@@ -359,8 +404,51 @@ export function useLiveFeed(replayOn: boolean, edgeUrls: string[] = []) {
       await act(e, "pushed", { pushed_to: name, pushed_at: at });
       toasted.current.add(e.incident_id);
       pushToast(name, at, e.location);
+      if (usingMock) {
+        mirrored.current.set(e.incident_id, `${e.level}|${e.end_time}`);
+        void mirrorEvent({ ...plainEvent(e), status: "pushed", pushed_to: name, pushed_at: at });
+      }
     },
     [act],
+  );
+
+  // Without the API nobody else applies the two-tier rule to the live webcam: push the
+  // nearest person once when an edge incident reaches fight likely.
+  const autoPushed = useRef(new Set<string>());
+  useEffect(() => {
+    if (!usingMock) return;
+    for (const e of events) {
+      if (!e.isEdge || e.pushed_to || !isAlarmLevel(e.level) || e.end_time != null) continue;
+      if (e.status !== "new" || !e.nearest_staff || autoPushed.current.has(e.incident_id)) continue;
+      autoPushed.current.add(e.incident_id);
+      void pushNow(e);
+    }
+  }, [events, pushNow]);
+
+  /** Desk sends another guard: a backup incident on the same camera, pushed to them. */
+  const pushBackup = useCallback(
+    async (e: LiveEvent, name: string) => {
+      const at = new Date().toISOString();
+      const id = `${e.incident_id}-B`;
+      pushToast(name, at, e.location);
+      await mirrorEvent(
+        {
+          ...plainEvent(e),
+          incident_id: id,
+          pushed_to: name,
+          pushed_at: at,
+          nearest_staff: name,
+          status: "pushed",
+          acked_at: null,
+          arrived_at: null,
+          outcome: null,
+          outcome_at: null,
+          action: `Back up ${e.pushed_to ?? "the first guard"} at ${e.location}`,
+        },
+        true,
+      );
+    },
+    [],
   );
 
   const label = useCallback(
@@ -421,6 +509,7 @@ export function useLiveFeed(replayOn: boolean, edgeUrls: string[] = []) {
     replayEvents,
     replayIncident,
     pushNow,
+    pushBackup,
     label,
     undo,
     pushesThisShift,

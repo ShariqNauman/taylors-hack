@@ -1,0 +1,16 @@
+{
+  "name": "EarlyEye for guards",
+  "short_name": "EarlyEye",
+  "description": "Alerts, posts and your shift, for the security team on duty.",
+  "id": "/guard",
+  "start_url": "/guard",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#F1F2F4",
+  "theme_color": "#F1F2F4",
+  "icons": [
+    { "src": "/guard/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "/guard/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

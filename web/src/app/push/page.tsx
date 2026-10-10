@@ -1,18 +1,12 @@
-import { Suspense } from "react";
-import type { Metadata, Viewport } from "next";
-import { PushScreen } from "@/components/push/push-screen";
+import { redirect } from "next/navigation";
 
-export const metadata: Metadata = { title: "Duty phone" };
-export const viewport: Viewport = {
-  themeColor: "#F1F2F4",
-  width: "device-width",
-  initialScale: 1,
-};
-
-export default function PushPage() {
-  return (
-    <Suspense fallback={null}>
-      <PushScreen />
-    </Suspense>
-  );
+/** Old duty-phone link (/push?staff=Guard B) → the guard app, same person. */
+export default async function PushPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const sp = await searchParams;
+  const staff = typeof sp.staff === "string" ? sp.staff : null;
+  redirect(staff ? `/guard?staff=${encodeURIComponent(staff)}` : "/guard");
 }
