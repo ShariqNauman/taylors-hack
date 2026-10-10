@@ -54,3 +54,6 @@ failed_videos*.txt
 session*.csv
 # ship the trained model so the live demo runs from a fresh clone
 !model/violence_model.joblib
+
+# backups of earlier models and metrics
+backup_*/
