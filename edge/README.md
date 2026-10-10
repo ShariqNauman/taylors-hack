@@ -11,20 +11,30 @@ that code read-only, and adds what the dashboard needs:
 | `GET /live.json` | Level, score, people, current incident with `snapshot` + `top_features` | On-site Live screen, polled every 0.5 s |
 | `POST <API>/events` | The event record (contract in `docs/kayla-frontend-plan.md`) | Render API → remote dashboard, phone |
 
-## Run on the demo laptop (Python 3.11)
+## Run on the demo laptop
 
-```bash
-python3.11 -m venv edge/.venv
-edge/.venv/bin/python -m pip install -r model/requirements.txt       # Windows: edge\.venv\Scripts\python
-edge/.venv/bin/python edge/earlyeye_edge.py                           # webcam 0 = CAM-AU-01, Grand Hall
-```
+One command per OS. The first run creates `edge/.venv` (Python 3.11) and installs `edge/requirements.txt`
+(same pins as `model/requirements.txt`); later runs start straight away. The pose weights download once.
 
-Then open the dashboard **on the same laptop** (Vercel link or `npm start` in `web/`). The header shows
-`ON-SITE DESK` and the Live screen follows the webcam.
+| Laptop | Command | Pose runs on |
+|---|---|---|
+| Windows (Intel) | `edge\run_edge.bat` | OpenVINO on the Intel GPU, then CPU (the model team's loader) |
+| MacBook, Apple Silicon | `edge/run_edge.sh` | PyTorch on the Apple GPU (`mps`), then CPU |
+| MacBook, Intel | `edge/run_edge.sh` | PyTorch on CPU (`--device openvino` if you install openvino) |
+
+Needs Python 3.11: Windows from python.org (tick "Add to PATH"), macOS `brew install python@3.11`.
+macOS also needs `brew install libomp` for LightGBM, and asks once for camera permission for the terminal
+(System Settings → Privacy & Security → Camera). Windows opens the webcam through DirectShow.
+
+Options go after the command, for example `edge/run_edge.sh --camera 1` or `edge\run_edge.bat --fake`.
+
+Then open the dashboard **on the same laptop** in **Chrome or Edge** (Vercel link, or `npm run build && npm start`
+in `web/` for http://localhost:3000). The header shows `ON-SITE DESK` and Live follows the webcam. Safari blocks an
+https page from reading `http://127.0.0.1`, so on a Mac use Chrome, or the local `npm start` dashboard.
 
 - Recordings: `--camera clip.mp4 --loop --source recorded --camera-id CAM-BC-03 --location "Block C stairwell" --zone stairwell --zone-risk 0.8 --port 8766` (ports 8766–8769 match `web/public/mock/cameras.json`).
 - No camera, no model: `--fake` plays calm → tense → fight → calm on a loop. Use it to rehearse the dashboard.
-- Post nothing: `--no-post`. Other API: `--api https://…` or `EARLYEYE_API`.
+- Post nothing: `--no-post`. Other API: `--api https://…` or `EARLYEYE_API`. Pose backend: `--device auto|openvino|mps|cuda|cpu`.
 
 ## Posting rule
 

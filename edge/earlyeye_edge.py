@@ -197,6 +197,9 @@ def run_model(s: State):
     import numpy as np
     import pandas as pd
 
+    a = s.args
+    # Resolve a video path against where the user ran the command, before moving into model/.
+    src = int(a.camera) if str(a.camera).isdigit() else str(Path(a.camera).expanduser().resolve())
     os.chdir(MODEL_DIR)                      # model code uses relative paths (joblib, tracker yaml)
     sys.path.insert(0, str(MODEL_DIR))
     import live_detector as ld               # noqa: E402  (model/live_detector.py, not modified)
@@ -204,10 +207,7 @@ def run_model(s: State):
     from predict import predict              # noqa: E402
 
     a = s.args
-    src = int(a.camera) if str(a.camera).isdigit() else str(Path(a.camera).resolve()) if not Path(a.camera).is_absolute() else a.camera
-    if isinstance(src, str) and not Path(src).exists():
-        src = str((REPO / a.camera).resolve())
-    cap = cv2.VideoCapture(src)
+    cap = open_capture(cv2, src)
     if not cap.isOpened():
         raise SystemExit(f"Cannot open camera/video: {a.camera}")
     is_file = not isinstance(src, int)
@@ -216,7 +216,7 @@ def run_model(s: State):
         cap.set(cv2.CAP_PROP_FRAME_HEIGHT, ld.CAM_H)
         cap.set(cv2.CAP_PROP_FPS, ld.CAM_FPS)
     file_fps = cap.get(cv2.CAP_PROP_FPS) or 30.0
-    model, model_name, device = ld.load_pose_model(ld.IMGSZ)
+    model, model_name, device = load_pose(ld, a.device)
     print(f"Pose model: {model_name}", flush=True)
     start = time.time()
 
@@ -288,6 +288,41 @@ def run_model(s: State):
             s.level, s.score, s.feats, s.updated_at = level, float(smooth), feats, iso_now()
             tick_incident(s, time.time())
     cap.release()
+
+
+def open_capture(cv2, src):
+    """Webcam backends that open fast and reliably per OS; files use the default."""
+    if isinstance(src, int):
+        if sys.platform == "win32":
+            cap = cv2.VideoCapture(src, cv2.CAP_DSHOW)          # DirectShow: fast open on Windows
+            if cap.isOpened():
+                return cap
+            return cv2.VideoCapture(src, cv2.CAP_MSMF)
+        if sys.platform == "darwin":
+            return cv2.VideoCapture(src, cv2.CAP_AVFOUNDATION)  # macOS asks for camera permission once
+    return cv2.VideoCapture(src)
+
+
+def load_pose(ld, want: str):
+    """Pose model per machine. auto: Windows/Linux use the model team's loader (OpenVINO on the
+    Intel GPU, then CPU, then PyTorch); macOS uses PyTorch on Apple's GPU (mps), then CPU."""
+    import numpy as np
+    from ultralytics import YOLO
+
+    def torch_on(device):
+        m = YOLO(ld.MODEL_PT)
+        m.predict(np.zeros((ld.CAM_H, ld.CAM_W, 3), np.uint8), imgsz=ld.IMGSZ, device=device, verbose=False)
+        return m, f"PyTorch {device} {ld.IMGSZ}", device
+
+    if want == "openvino" or (want == "auto" and sys.platform != "darwin"):
+        return ld.load_pose_model(ld.IMGSZ)
+    order = [want] if want not in ("auto",) else ["mps", "cpu"]
+    for device in dict.fromkeys(order + ["cpu"]):
+        try:
+            return torch_on(device)
+        except Exception as e:  # mps missing on Intel Macs, cuda missing, etc.
+            print(f"PyTorch on {device} failed ({str(e).splitlines()[0]})", flush=True)
+    raise SystemExit("No pose backend worked")
 
 
 def draw(frame, people, level, score, a):
@@ -419,6 +454,8 @@ def main():
     ap.add_argument("--no-post", action="store_true", help="do not post events to the API")
     ap.add_argument("--upsert", action="store_true", help="API upserts by incident_id: post every 0.5 s")
     ap.add_argument("--fake", action="store_true", help="scripted escalation, no camera or model")
+    ap.add_argument("--device", default="auto", choices=["auto", "openvino", "mps", "cuda", "cpu"],
+                    help="pose backend; auto = OpenVINO on Windows/Linux, Apple GPU (mps) on macOS")
     args = ap.parse_args()
 
     s = State(args)
