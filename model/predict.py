@@ -68,7 +68,9 @@ def _cnn(sequence: np.ndarray) -> float:
         _seq_clip = json.loads(SEQ_CLIP_PATH.read_text()) if SEQ_CLIP_PATH.exists() else None
     x = sequence[None].astype(np.float32)
     if _seq_clip:
-        np.clip(x[..., :2], _seq_clip["lo"], _seq_clip["hi"], out=x[..., :2])
+        from seq_features import COORD_CHANNELS
+        for c in COORD_CHANNELS if x.shape[-1] > 4 else (0, 1):
+            np.clip(x[..., c], _seq_clip["lo"], _seq_clip["hi"], out=x[..., c])
     logit = float(np.asarray(_seq(x)[0]).ravel()[0])
     return 1.0 / (1.0 + math.exp(-logit))
 

@@ -43,6 +43,18 @@ MIN_ARM_SPEED = 0.5      # arm symmetry is only measured when the arms move fast
 DUP_IOU = 0.7            # two boxes overlapping this much in one frame = one person detected twice
 ZOOM = 2.0               # "close to camera" variant: person scaled up this much around the shoulders
 MIN_TRACK_S = 1.0        # live guard: a person counts once tracked this long inside the window
+# v6 "violence, not speed" features
+MOVE_MIN = 0.3           # pair alignment only counts frames where both bodies move faster than this (torso/s)
+MIN_PATH = 0.2           # path straightness needs at least this much body-centre travel (torso lengths)
+PERIOD_LAGS = (2, 8)     # rhythm: autocorrelation peak over these lags (frames at FEATURE_FPS = 0.2-0.8 s)
+MIN_PERIOD_SAMPLES = 10  # rhythm needs this many valid speed samples
+IMPACT_SPEED = 3.0       # a limb entering the other body faster than this (torso/s) can be an impact
+DECEL_S = 0.2            # ... and must slow to DECEL_FRAC of that speed within DECEL_S
+DECEL_FRAC = 0.5
+REACT_S = 0.3            # reaction: within REACT_S the hit body speeds up away from the hitter ...
+REACT_MIN = 1.0          # ... by at least this much (torso/s)
+PUSH_S = 0.5             # push displacement: how far the hit body moves away within PUSH_S
+HEAD_RADIUS = 0.25       # head circle radius (torso lengths)
 # ---------------------------------------------------
 
 FEATURE_NAMES = [
@@ -76,6 +88,20 @@ FEATURE_NAMES += [
     "contact_count",       # number of separate close contacts
     "box_iou_max",         # largest YOLO box overlap between the pair
     "visible_body_frac",   # share of the 17 keypoints tracked (1 = full body, ~0.5 = upper body only)
+    # v6: violence, not speed (active pair, or everyone when there is no pair; last 2 s)
+    "limb_rel_speed_max",  # wrist / ankle speed relative to the person's own body centre (strikes, not running)
+    "limb_rel_speed_mean",
+    "centre_speed_max",    # body-centre travel speed of the faster person
+    "path_straightness",   # net displacement / path length of the body centre (running ~1, fighting low)
+    "limb_periodicity",    # autocorrelation peak of limb speed (steady gait or dance high, fighting low)
+    "limb_toward_rel",     # wrist / ankle velocity toward the other torso, relative to own body centre
+    "pair_alignment",      # cosine of the two body-centre velocities (+1 same direction, -1 opposing)
+    # v6: collision / impact (limb or head into the other person's torso or head)
+    "impact_count",        # fast entries that decelerate sharply
+    "max_impact_speed",
+    "impact_with_reaction_count",  # ... where the hit body then jolts away from the hitter
+    "max_reaction_jolt",
+    "push_displacement",   # furthest the hit body moved away from the hitter within PUSH_S
 ]
 
 SIDES = ("l", "r")
@@ -365,8 +391,9 @@ def compute_features(win: pd.DataFrame, t_end: float = None, people: dict = None
     names = JOINTS + HEAD_POINTS
     feats["visible_body_frac"] = float(np.mean([np.isfinite(np.stack([p.joints[n][:, 0] for n in names])).mean()
                                                 for p in people.values()]))
-
     pair = _active_pair(people)
+    feats.update(_motion_features([pair[0], pair[1]] if pair else list(people.values())))
+
     if pair is None:
         return feats
     a, b, common = pair
@@ -424,7 +451,154 @@ def compute_features(win: pd.DataFrame, t_end: float = None, people: dict = None
         feats["close_motion"] = float(np.nanmean(e[close]))
 
     feats.update(_body_features(a, b, ia, ib, dist))
+    feats.update(_pair_motion(a, b, ia, ib))
+    feats.update(_impacts(a, b, ia, ib))
     return feats
+
+
+def _centre_vel(p):
+    """Body-centre velocity (N-1, 2) in torso lengths / s, NaN across long gaps."""
+    v = np.diff(p.centre, axis=0) / p.dt[:, None] / p.scale
+    v[~p.gap_ok] = np.nan
+    return v
+
+
+def _motion_features(persons):
+    """Limb speed relative to the body, travel speed, path straightness and rhythm of these people."""
+    f = {}
+    rel, travel, straight, period = [], [], [], []
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", RuntimeWarning)
+        for p in persons:
+            if len(p.t) < 3:
+                continue
+            vc = _centre_vel(p)
+            sc = np.linalg.norm(vc, axis=1)
+            travel.append(np.nanmean(sc))
+            for limb in ("l_wrist", "r_wrist", "l_ankle", "r_ankle"):
+                rel.extend(np.linalg.norm(p.vel(limb) - vc, axis=1))
+            c = p.centre[np.isfinite(p.centre).all(axis=1)]
+            if len(c) >= 3:
+                path = np.linalg.norm(np.diff(c, axis=0), axis=1).sum() / p.scale
+                if path >= MIN_PATH:
+                    straight.append(np.linalg.norm(c[-1] - c[0]) / p.scale / path)
+            peaks = []
+            for limb in ("l_wrist", "r_wrist", "l_ankle", "r_ankle"):
+                s = np.linalg.norm(p.vel(limb), axis=1)
+                ok = np.isfinite(s)
+                if ok.sum() < MIN_PERIOD_SAMPLES:
+                    continue
+                s = np.where(ok, s - np.nanmean(s), 0.0)
+                den = np.dot(s, s)
+                if den > 0:
+                    lags = range(PERIOD_LAGS[0], min(PERIOD_LAGS[1], len(s) - 2) + 1)
+                    peaks.append(max(np.dot(s[:-k], s[k:]) / den for k in lags))
+            if peaks:
+                period.append(max(peaks))
+        rel = np.array(rel, float)
+        f["limb_rel_speed_max"] = _nanmax(rel)
+        f["limb_rel_speed_mean"] = float(np.nanmean(rel)) if np.isfinite(rel).any() else np.nan
+        f["centre_speed_max"] = _nanmax(travel)
+        f["path_straightness"] = float(np.mean(straight)) if straight else np.nan
+        f["limb_periodicity"] = float(np.mean(period)) if period else np.nan
+    return f
+
+
+def _pair_motion(a, b, ia, ib):
+    """Limb velocity toward the other torso relative to own body, and how the two bodies move together."""
+    f = {}
+    toward = []
+    for me, i_me, other, i_other in ((a, ia, b, ib), (b, ib, a, ia)):
+        vc = _centre_vel(me)
+        for limb in ("l_wrist", "r_wrist", "l_ankle", "r_ankle"):
+            vl = me.vel(limb) - vc
+            for k_me, k_other in zip(i_me, i_other):
+                if k_me == 0:
+                    continue
+                v = vl[k_me - 1]
+                to_other = other.centre[k_other] - me.joints[limb][k_me]
+                n = np.linalg.norm(to_other)
+                if n > 0 and np.isfinite(v).all():
+                    toward.append(np.dot(v, to_other / n))
+    f["limb_toward_rel"] = _nanmax(toward)
+    va, vb = _centre_vel(a), _centre_vel(b)
+    cos = []
+    for ka, kb in zip(ia, ib):
+        if ka == 0 or kb == 0:
+            continue
+        x, y = va[ka - 1], vb[kb - 1]
+        nx, ny = np.linalg.norm(x), np.linalg.norm(y)
+        if np.isfinite(nx) and np.isfinite(ny) and nx > MOVE_MIN and ny > MOVE_MIN:
+            cos.append(np.dot(x, y) / (nx * ny))
+    f["pair_alignment"] = float(np.mean(cos)) if cos else np.nan
+    return f
+
+
+def _in_quad(pt, q):
+    """Point inside the polygon q (4 x 2), ray casting; False if anything is NaN."""
+    if not (np.isfinite(pt).all() and np.isfinite(q).all()):
+        return False
+    inside, j = False, len(q) - 1
+    for i in range(len(q)):
+        if (q[i, 1] > pt[1]) != (q[j, 1] > pt[1]):
+            if pt[0] < (q[j, 0] - q[i, 0]) * (pt[1] - q[i, 1]) / (q[j, 1] - q[i, 1]) + q[i, 0]:
+                inside = not inside
+        j = i
+    return inside
+
+
+def _impacts(a, b, ia, ib):
+    """Limb-to-body impacts between the active pair: a wrist, elbow, ankle or head of one person enters the
+    other's torso polygon (shoulders + hips) or head circle faster than IMPACT_SPEED, then slows sharply
+    within DECEL_S. A reaction = the hit body speeds up away from the hitter within REACT_S. Hands meeting
+    hands (high-fives, handshakes) never count: only the other person's torso or head is a target."""
+    t = a.t[ia]
+    n = len(t)
+    scale = (a.scale + b.scale) / 2
+    speeds, reacts, jolts, pushes = [], 0, [], []
+    for hit, i_hit, tgt, i_tgt in ((a, ia, b, ib), (b, ib, a, ia)):
+        sh_l, sh_r = tgt.joints["l_shoulder"][i_tgt], tgt.joints["r_shoulder"][i_tgt]
+        down = np.array([0.0, tgt.scale])
+        hip_l = np.where(np.isfinite(tgt.joints["l_hip"][i_tgt]), tgt.joints["l_hip"][i_tgt], sh_l + down)
+        hip_r = np.where(np.isfinite(tgt.joints["r_hip"][i_tgt]), tgt.joints["r_hip"][i_tgt], sh_r + down)
+        head, cen = tgt.joints["head"][i_tgt], tgt.centre[i_tgt]
+        hit_cen = hit.centre[i_hit]
+        for limb in ("l_wrist", "r_wrist", "l_elbow", "r_elbow", "l_ankle", "r_ankle", "head"):
+            P = hit.joints[limb][i_hit]
+            inside = np.array([_in_quad(P[k], np.stack([sh_l[k], sh_r[k], hip_r[k], hip_l[k]]))
+                               or (np.isfinite(P[k]).all() and np.isfinite(head[k]).all()
+                                   and np.linalg.norm(P[k] - head[k]) <= HEAD_RADIUS * tgt.scale)
+                               for k in range(n)])
+            dt = np.diff(t)
+            spd = np.linalg.norm(np.diff(P, axis=0), axis=1) / dt / scale
+            spd[dt > MAX_GAP_S] = np.nan
+            for k in range(1, n):
+                s = spd[k - 1]
+                if not (inside[k] and not inside[k - 1] and np.isfinite(s) and s >= IMPACT_SPEED):
+                    continue
+                later = [j for j in range(k + 1, n) if t[j] - t[k] <= DECEL_S + 1e-6]
+                if not any(np.isfinite(spd[j - 1]) and spd[j - 1] <= DECEL_FRAC * s for j in later):
+                    continue
+                speeds.append(s)
+                away = cen[k] - hit_cen[k]
+                norm = np.linalg.norm(away)
+                if not (np.isfinite(norm) and norm > 0):
+                    continue
+                away = away / norm
+                vel = lambda j: np.dot(cen[j] - cen[j - 1], away) / (t[j] - t[j - 1]) / scale
+                before = vel(k) if np.isfinite(cen[k - 1]).all() and np.isfinite(cen[k]).all() else 0.0
+                after = [vel(j) for j in range(k + 1, n) if t[j] - t[k] <= REACT_S + 1e-6
+                         and np.isfinite(cen[j]).all() and np.isfinite(cen[j - 1]).all()]
+                if after:
+                    jolt = max(after) - before
+                    jolts.append(jolt)
+                    reacts += jolt >= REACT_MIN
+                ends = [j for j in range(k + 1, n) if t[j] - t[k] <= PUSH_S + 1e-6 and np.isfinite(cen[j]).all()]
+                if ends and np.isfinite(cen[k]).all():
+                    pushes.append(np.dot(cen[ends[-1]] - cen[k], away) / scale)
+    return {"impact_count": len(speeds), "max_impact_speed": _nanmax(speeds),
+            "impact_with_reaction_count": int(reacts), "max_reaction_jolt": _nanmax(jolts),
+            "push_displacement": _nanmax(pushes)}
 
 
 def _angle(p, q, r):

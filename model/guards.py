@@ -7,7 +7,8 @@ Per scored window (every 0.5 s): smooth the model score; the window is "hot" whe
   ONE_PERSON  fewer than 2 people tracked (single-person rule, always on)
   MIN_TRACK   with min_track: fewer than 2 people tracked for >= features.MIN_TRACK_S
   PROX        with prox_max: the pair never came within prox_max torso lengths in the last 2 s
-  TWO_KEY     with two_key: neither a wrist moving toward the other person (>= wrist_toward_min) nor contact
+  TWO_KEY     with two_key: no physical cue: cue "wrist" = a wrist moving toward the other person
+              (>= wrist_toward_min) or contact; cue "impact" = an impact with a reaction in the window
   K_OF_N      with k_of_n = (k, n): fewer than k of the last n windows hot. It blocks the persistence count
               too, so FIGHT then needs ~2 s of hot windows (k=3 of n=4) instead of MIN_DURATION alone
 FIGHT starts after MIN_DURATION of unblocked hot windows, is held FIGHT_HOLD, and is never shown with
@@ -30,6 +31,7 @@ class Config:
     prox_max: float = None          # torso lengths, None = guard off
     two_key: bool = False
     wrist_toward_min: float = 3.0   # torso lengths / s (same as a "strike" peak in features.py)
+    two_key_cue: str = "wrist"      # TWO_KEY physical cue: "wrist" (toward / contact) or "impact" (impact + reaction)
     k_of_n: tuple = None            # (k, n), None = guard off
 
 
@@ -52,9 +54,13 @@ class LevelLogic:
             blocked.append("MIN_TRACK" if c.min_track and f.get("n_people", 0) >= 2 else "ONE_PERSON")
         if c.prox_max is not None and not (f.get("pair_min_dist", np.nan) <= c.prox_max):
             blocked.append("PROX")
-        if c.two_key and not (f.get("wrist_toward_speed", np.nan) >= c.wrist_toward_min
-                              or f.get("contact_s", 0) > 0):
-            blocked.append("TWO_KEY")
+        if c.two_key:
+            if c.two_key_cue == "impact":
+                cue = f.get("impact_with_reaction_count", 0) >= 1
+            else:
+                cue = f.get("wrist_toward_speed", np.nan) >= c.wrist_toward_min or f.get("contact_s", 0) > 0
+            if not cue:
+                blocked.append("TWO_KEY")
         if c.k_of_n and sum(self.recent) < c.k_of_n[0]:
             blocked.append("K_OF_N")
         if hot and not blocked:

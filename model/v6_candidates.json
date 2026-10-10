@@ -1,0 +1,200 @@
+{
+  "results": {
+    "v6 (LightGBM)": {
+      "FIGHT_AT": 0.6527,
+      "clip_auc": 0.8898,
+      "fights%": 62.9,
+      "normal%": 9.1,
+      "hugs%": 9.8,
+      "weapon%": 41.9,
+      "KTH%": 0.0,
+      "own non-violent%": 33.3,
+      "fast slice FIGHT% (windows)": 18.7,
+      "normal FIGHT% (windows)": 4.5
+    },
+    "v6 + CNN": {
+      "FIGHT_AT": 0.5523,
+      "clip_auc": 0.9127,
+      "fights%": 63.8,
+      "normal%": 9.1,
+      "hugs%": 8.8,
+      "weapon%": 46.7,
+      "KTH%": 0.0,
+      "own non-violent%": 33.3,
+      "fast slice FIGHT% (windows)": 15.1,
+      "normal FIGHT% (windows)": 4.0
+    },
+    "v6-no-speed (LightGBM)": {
+      "FIGHT_AT": 0.6564,
+      "clip_auc": 0.8822,
+      "fights%": 62.4,
+      "normal%": 9.0,
+      "hugs%": 11.8,
+      "weapon%": 41.9,
+      "KTH%": 0.0,
+      "own non-violent%": 100.0,
+      "fast slice FIGHT% (windows)": 18.2,
+      "normal FIGHT% (windows)": 4.5
+    },
+    "v6-no-speed + CNN": {
+      "FIGHT_AT": 0.5465,
+      "clip_auc": 0.9087,
+      "fights%": 64.7,
+      "normal%": 9.0,
+      "hugs%": 6.9,
+      "weapon%": 47.6,
+      "KTH%": 0.0,
+      "own non-violent%": 66.7,
+      "fast slice FIGHT% (windows)": 15.3,
+      "normal FIGHT% (windows)": 4.3
+    },
+    "v6-hn3 (LightGBM)": {
+      "FIGHT_AT": 0.5862,
+      "clip_auc": 0.8912,
+      "fights%": 63.2,
+      "normal%": 9.0,
+      "hugs%": 13.7,
+      "weapon%": 43.8,
+      "KTH%": 0.0,
+      "own non-violent%": 66.7,
+      "fast slice FIGHT% (windows)": 14.6,
+      "normal FIGHT% (windows)": 4.3
+    },
+    "v6-hn3 + CNN": {
+      "FIGHT_AT": 0.5249,
+      "clip_auc": 0.9135,
+      "fights%": 64.5,
+      "normal%": 9.0,
+      "hugs%": 9.8,
+      "weapon%": 46.7,
+      "KTH%": 0.0,
+      "own non-violent%": 0.0,
+      "fast slice FIGHT% (windows)": 12.8,
+      "normal FIGHT% (windows)": 4.0
+    },
+    "v6-hn4 (LightGBM)": {
+      "FIGHT_AT": 0.5686,
+      "clip_auc": 0.8889,
+      "fights%": 63.7,
+      "normal%": 9.1,
+      "hugs%": 13.7,
+      "weapon%": 42.9,
+      "KTH%": 0.0,
+      "own non-violent%": 33.3,
+      "fast slice FIGHT% (windows)": 13.3,
+      "normal FIGHT% (windows)": 4.1
+    },
+    "v6-hn4 + CNN": {
+      "FIGHT_AT": 0.5075,
+      "clip_auc": 0.9133,
+      "fights%": 65.2,
+      "normal%": 9.0,
+      "hugs%": 8.8,
+      "weapon%": 46.7,
+      "KTH%": 0.0,
+      "own non-violent%": 0.0,
+      "fast slice FIGHT% (windows)": 12.4,
+      "normal FIGHT% (windows)": 4.1
+    },
+    "v6-hn5 (LightGBM)": {
+      "FIGHT_AT": 0.5603,
+      "clip_auc": 0.8888,
+      "fights%": 62.9,
+      "normal%": 9.0,
+      "hugs%": 13.7,
+      "weapon%": 43.8,
+      "KTH%": 0.0,
+      "own non-violent%": 66.7,
+      "fast slice FIGHT% (windows)": 12.1,
+      "normal FIGHT% (windows)": 4.1
+    },
+    "v6-hn5 + CNN": {
+      "FIGHT_AT": 0.4999,
+      "clip_auc": 0.9132,
+      "fights%": 65.0,
+      "normal%": 9.1,
+      "hugs%": 8.8,
+      "weapon%": 47.6,
+      "KTH%": 0.0,
+      "own non-violent%": 0.0,
+      "fast slice FIGHT% (windows)": 12.3,
+      "normal FIGHT% (windows)": 4.2
+    },
+    "CNN alone": {
+      "FIGHT_AT": 0.5355,
+      "clip_auc": 0.888,
+      "fights%": 58.3,
+      "normal%": 9.1,
+      "hugs%": 14.7,
+      "weapon%": 47.6,
+      "KTH%": 0.0,
+      "own non-violent%": 33.3,
+      "fast slice FIGHT% (windows)": 8.1,
+      "normal FIGHT% (windows)": 4.0
+    }
+  },
+  "pick": null,
+  "pick_two_key_impact": null,
+  "v5_same_windows": {
+    "v5 ensemble": {
+      "FIGHT_AT": 0.6562,
+      "clip_auc": 0.8946,
+      "fights%": 64.5,
+      "normal%": 8.9,
+      "hugs%": 6.9,
+      "weapon%": 51.4,
+      "KTH%": null,
+      "own non-violent%": null,
+      "fast slice FIGHT% (windows)": 19.4,
+      "normal FIGHT% (windows)": 4.4
+    },
+    "v6-hn4 + CNN": {
+      "FIGHT_AT": 0.5113,
+      "clip_auc": 0.9029,
+      "fights%": 64.7,
+      "normal%": 8.9,
+      "hugs%": 8.8,
+      "weapon%": 46.7,
+      "KTH%": null,
+      "own non-violent%": null,
+      "fast slice FIGHT% (windows)": 13.0,
+      "normal FIGHT% (windows)": 4.1
+    },
+    "CNN v6 alone": {
+      "FIGHT_AT": 0.5355,
+      "clip_auc": 0.8731,
+      "fights%": 58.3,
+      "normal%": 9.0,
+      "hugs%": 14.7,
+      "weapon%": 47.6,
+      "KTH%": null,
+      "own non-violent%": null,
+      "fast slice FIGHT% (windows)": 8.4,
+      "normal FIGHT% (windows)": 4.0
+    },
+    "v6-hn4 + CNN, all data": {
+      "FIGHT_AT": 0.5075,
+      "clip_auc": 0.9133,
+      "fights%": 65.2,
+      "normal%": 9.0,
+      "hugs%": 8.8,
+      "weapon%": 46.7,
+      "KTH%": 0.0,
+      "own non-violent%": 0.0,
+      "fast slice FIGHT% (windows)": 12.4,
+      "normal FIGHT% (windows)": 4.1
+    },
+    "v6-hn4 + CNN, all data, TWO_KEY impact": {
+      "FIGHT_AT": 0.5075,
+      "clip_auc": 0.9133,
+      "fights%": 1.2,
+      "normal%": 0.1,
+      "hugs%": 0.0,
+      "weapon%": 0.0,
+      "KTH%": 0.0,
+      "own non-violent%": 0.0,
+      "fast slice FIGHT% (windows)": 0.3,
+      "normal FIGHT% (windows)": 0.0
+    }
+  }
+}
