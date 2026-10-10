@@ -63,6 +63,7 @@ TUNE_GRID = dict(num_leaves=[7, 15, 31, 63], learning_rate=[0.02, 0.05, 0.1],
                  n_estimators=[100, 200, 400, 800], min_child_samples=[10, 20, 50, 100])
 N_TUNE = 12              # random LightGBM settings tried (best by out-of-fold clip ROC-AUC)
 N_JOBS = max(1, (os.cpu_count() or 2) - 2)  # feature workers (leave 2 cores free)
+TARGET_NORMAL_FA = 0.09  # fair comparison: every model judged at the FIGHT_AT where 9% of normal clips fire
 SUSPICIOUS_AUC = 0.97    # warn about possible leakage above this clip ROC-AUC
 # ---------------------------------------------------
 
@@ -135,6 +136,42 @@ def clip_table(win, p):
         rows.append({"path": path, "dataset": g["dataset"].iloc[0], "kind": g["kind"].iloc[0],
                      "label": g["label"].iloc[0], "peak": g["p"].max(), "live_fight": "FIGHT" in levels})
     return pd.DataFrame(rows)
+
+
+def sustained_scores(win, p):
+    """Per clip: the highest smoothed score held for at least MIN_DURATION. With the live logic, a clip
+    reaches FIGHT exactly when this is >= FIGHT_AT, so one number per clip lets us sweep FIGHT_AT."""
+    rows = []
+    for path, g in win.assign(p=p).groupby("path", sort=False):
+        s, smooth = 0.0, []
+        for raw in g["p"]:  # same smoothing as live_detector.py, starting from 0
+            s = LIVE["SMOOTH_ALPHA"] * raw + (1 - LIVE["SMOOTH_ALPHA"]) * s
+            smooth.append(s)
+        t, smooth, best = g["end_s"].to_numpy(), np.array(smooth), 0.0
+        for j in range(len(t)):
+            i = np.searchsorted(t, t[j] - LIVE["MIN_DURATION"], side="right") - 1  # latest start >= MIN_DURATION back
+            if i >= 0:
+                best = max(best, smooth[i:j + 1].min())
+        rows.append({"path": path, "dataset": g["dataset"].iloc[0], "kind": g["kind"].iloc[0],
+                     "label": g["label"].iloc[0], "peak": g["p"].max(), "sustained": best})
+    return pd.DataFrame(rows)
+
+
+def at_matched_fa(clips, target=TARGET_NORMAL_FA):
+    """Lowest FIGHT_AT at which at most `target` of normal clips (kind == normal) reach FIGHT, and
+    what reaches FIGHT there. clips: output of sustained_scores."""
+    normal = np.sort(clips.loc[clips["kind"] == "normal", "sustained"].to_numpy())[::-1]
+    k = int(np.floor(target * len(normal)))           # allowed number of normal clips over threshold
+    fight_at = np.nextafter(normal[k], np.inf) if k < len(normal) else 0.0
+    hit = clips["sustained"] >= fight_at
+    pct = lambda m: round(100 * hit[m].mean(), 1) if m.any() else np.nan
+    return {"FIGHT_AT": round(float(fight_at), 4),
+            "normal%": pct(clips["kind"] == "normal"),
+            "fights%": pct(clips["label"] == 1),
+            "hugs%": pct((clips["dataset"] == "AIRTLab") & (clips["label"] == 0)),
+            "weapon%": pct(clips["kind"] == "weapon"),
+            **{f"fights_{d}%": pct((clips["dataset"] == d) & (clips["label"] == 1))
+               for d in sorted(clips["dataset"].unique())}}
 
 
 def auc(clips):

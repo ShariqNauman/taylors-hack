@@ -8,9 +8,11 @@ Reports:
   3. drop-one: clip AUC change when each new feature is removed from old + all new
   4. the kept set: old + new features that pass KEEP rules, scored the same way
 
-Usage:  python analyze_features.py
+Usage:  python analyze_features.py          # full step-2 report
+        python analyze_features.py --fair   # old vs new at the same normal-clip false alarm rate
 """
 import json
+import sys
 import warnings
 from pathlib import Path
 
@@ -45,8 +47,29 @@ def score(win, feats, weights):
             "weapon_FIGHT%": 100 * clips.loc[clips["kind"] == "weapon", "live_fight"].mean()}
 
 
+def fair(win, weights):
+    """Old 10 vs old + new at the SAME normal-clip false alarm rate (TARGET_NORMAL_FA)."""
+    out = {}
+    for name, feats in (("old 10", OLD_FEATURES), (f"old + {len(NEW_FEATURES)} new", FEATURE_NAMES)):
+        p = T.oof_scores(win, feats, PARAMS, weights)
+        clips = T.sustained_scores(win, p)
+        # Check: sustained >= FIGHT_AT must match the live replay exactly at the current threshold.
+        live = T.clip_table(win, p).set_index("path")["live_fight"]
+        agree = ((clips.set_index("path")["sustained"] >= T.LIVE["FIGHT_AT"]) == live).mean()
+        out[name] = {"clip AUC": round(T.auc(clips), 3), **T.at_matched_fa(clips), "check": f"{agree:.1%}"}
+    print(f"=== Fair comparison: FIGHT_AT chosen per model so {T.TARGET_NORMAL_FA:.0%} of normal clips reach "
+          f"FIGHT (alpha {T.LIVE['SMOOTH_ALPHA']}, held {T.LIVE['MIN_DURATION']} s) ===")
+    print(pd.DataFrame(out).T.to_string())
+    return out
+
+
 def main():
     warnings.filterwarnings("ignore", category=UserWarning)
+    if "--fair" in sys.argv:
+        videos = pd.read_csv(T.VIDEOS_CSV)
+        videos = videos[~videos["path"].isin(set(pd.read_csv(HOLDOUT_CSV)["path"]))].reset_index(drop=True)
+        win = T.load_windows(videos)
+        return fair(win, win["dataset"].map(T.DATASET_WEIGHT).fillna(1.0).to_numpy())
     videos = pd.read_csv(T.VIDEOS_CSV)
     hold = set(pd.read_csv(HOLDOUT_CSV)["path"])
     videos = videos[~videos["path"].isin(hold)].reset_index(drop=True)

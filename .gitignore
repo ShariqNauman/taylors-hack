@@ -57,3 +57,6 @@ session*.csv
 
 # backups of earlier models and metrics
 backup_*/
+oof_*.csv
+seq_windows.npz
+*.onnx
