@@ -11,7 +11,9 @@ import { cn } from "@/lib/utils";
 import { useAppStore } from "@/lib/store/app-store";
 import { LevelPill } from "@/components/chrome/level-pill";
 import { SkeletonView } from "@/components/skeleton/skeleton-view";
-import type { PlanPost, SourceKind } from "./model";
+import type { Guard, PlanPost, SourceKind } from "./model";
+import { team } from "@/lib/posts";
+import { Avatar } from "./post-tags";
 
 const MONO = "font-mono text-[11px] font-bold";
 
@@ -54,6 +56,7 @@ export function CameraPin({
   pos,
   alarming,
   selected,
+  short = false,
   onClick,
 }: {
   camera: Camera;
@@ -61,6 +64,8 @@ export function CameraPin({
   pos: [number, number];
   alarming: boolean;
   selected: boolean;
+  /** Zoomed-out 2D map: the id only; the dot colour still says LIVE / REC / NO SIGNAL. */
+  short?: boolean;
   onClick: () => void;
 }) {
   const tag =
@@ -97,25 +102,31 @@ export function CameraPin({
       >
         <CameraIcon />
       </span>
-      {camera.camera_id.replace(/^CAM-/, "")} · {tag}
+      {camera.camera_id.replace(/^CAM-/, "")}
+      {!short && ` · ${tag}`}
     </button>
   );
 }
 
+/** An on-duty guard at their post: round picture (staff.photo_url, else initials) and first name. */
 export function GuardChip({
-  name,
+  guard,
   pos,
 }: {
-  name: string;
+  guard: Guard;
   pos: [number, number];
 }) {
+  const full = guard.display_name || guard.name;
+  const first = team([{ name: guard.name, display_name: guard.display_name, zone_type: "", on_duty: true }])[0].first;
   return (
     <span
-      className="pointer-events-none absolute inline-flex -translate-x-1/2 -translate-y-1/2 items-center gap-1 whitespace-nowrap rounded-full bg-signal py-0.5 pl-1 pr-2 text-[11px] font-extrabold text-white"
-      style={at(pos)}
+      role="img"
+      aria-label={`${full}, ${guard.name}, on duty at this post`}
+      className="pointer-events-none absolute inline-flex -translate-x-1/2 -translate-y-1/2 items-center gap-1 whitespace-nowrap rounded-full border-2 border-signal bg-white py-[1px] pl-[1px] pr-2 text-[12px] font-extrabold text-signal-ink"
+      style={{ ...at(pos), boxShadow: "0 1px 2px rgb(11 13 16 / 0.25)" }}
     >
-      <PersonIcon />
-      {name}
+      <Avatar guard={{ first, name: full, call_sign: guard.name, photo_url: guard.photo_url ?? undefined }} size={24} />
+      {first}
     </span>
   );
 }

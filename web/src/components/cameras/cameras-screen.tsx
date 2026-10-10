@@ -31,7 +31,7 @@ import { PageShell } from "@/components/chrome/page-shell";
 import { HowItWorks } from "@/components/chrome/how-it-works";
 import { CameraFrame } from "@/components/skeleton/skeleton-view";
 import { CameraFeed } from "@/components/camera/camera-feed";
-import { Campus3D } from "@/components/campus3d";
+import { CamerasMapBlock } from "@/components/map2d";
 
 type Filter = "all" | "live" | "rec" | "black" | "active";
 const DAY = 86_400_000;
@@ -160,38 +160,12 @@ export function CamerasScreen() {
         </div>
       </div>
 
-      <section
-        aria-labelledby="map-h"
-        className="flex flex-col gap-2.5 rounded-[2px] border border-line bg-white p-3.5"
-      >
-        <div className="flex flex-wrap items-baseline justify-between gap-2">
-          <h2 id="map-h" className="ee-display text-[28px]">
-            Campus in 3D
-          </h2>
-          <span className="font-mono text-[12px] uppercase text-muted-ink">
-            {site?.name ?? "Site"} · drag to rotate · click a building or camera
-          </span>
-        </div>
-        {site && cameras && plan ? (
-          <Campus3D
-            mode="cameras"
-            cameras={cameras}
-            site={site}
-            events={evs}
-            plan={plan}
-            selectedCameraId={camParam ?? undefined}
-            onSelectCamera={select}
-            onOpenCamera={(id) =>
-              router.push(`/?cam=${encodeURIComponent(id)}`)
-            }
-          />
-        ) : (
-          <div
-            className="h-[560px] rounded-[2px] border border-line bg-raised"
-            aria-busy="true"
-          />
-        )}
-      </section>
+      <CamerasMapBlock
+        visibleCameraIds={shown.map((c) => c.camera_id)}
+        selectedCameraId={selected?.camera_id}
+        onSelectCamera={select}
+        onOpenCamera={(id) => router.push(`/?cam=${encodeURIComponent(id)}`)}
+      />
 
       <div className="flex flex-wrap items-start gap-3.5">
         <section

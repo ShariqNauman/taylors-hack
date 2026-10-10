@@ -17,6 +17,10 @@ export interface Campus3DProps {
   selectedCameraId?: string;
   /** "Camera details": tells the page which camera was picked. */
   onSelectCamera?: (id: string) => void;
+  /** Only these camera ids get a pin (the Cameras page's filter chips). Default: all. */
+  visibleCameraIds?: string[];
+  /** The page owns the layer (its Map | 3D toggle shows one layer): hide the CAMERAS / PATROL PLAN toggle. */
+  lockLayer?: boolean;
   /** Height in px. Default 560 (full), 240 (compact). */
   height?: number;
   /**

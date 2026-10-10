@@ -4,6 +4,7 @@
 import { useEffect, useMemo, useState } from "react";
 import useSWR from "swr";
 import type { CampusGeoJson } from "@/components/campus3d/model";
+import { haversineM } from "@/lib/geo";
 import { DAY_SHORT, fit, hh, hoursLabel, type Person, slotDays, slotSpan } from "@/lib/posts";
 import type { Camera, GeoPoint, PatrolSlot } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -51,6 +52,7 @@ export function PostDrawer({
   people,
   allActive,
   pickedPoint,
+  onPickOnMap,
   onSave,
 }: {
   open: boolean;
@@ -63,6 +65,8 @@ export function PostDrawer({
   allActive: PatrolSlot[];
   /** A point picked on the map (map's onPickPoint), offered as a place. */
   pickedPoint?: GeoPoint | null;
+  /** Close the drawer and pick the place on the 2D map. */
+  onPickOnMap?: () => void;
   onSave: (d: PostDraft) => Promise<boolean>;
 }) {
   const { data: geo } = useSWR(open ? buildingsUrl : null, fetchGeo, { revalidateOnFocus: false });
@@ -84,7 +88,15 @@ export function PostDrawer({
       seen.add(name);
       out.push({ key: `bld:${name}`, label: `${name} (building)`, location: name, zone_type: "building", geo: { lat, lng } });
     }
-    if (pickedPoint) out.unshift({ key: "pick", label: "The point picked on the map", location: "Picked on the map", zone_type: "other", geo: pickedPoint });
+    if (pickedPoint) {
+      // Name the point after the nearest known place.
+      const near = out
+        .filter((p) => p.geo)
+        .map((p) => ({ p, m: haversineM(p.geo!, pickedPoint) }))
+        .sort((a, b) => a.m - b.m)[0];
+      const name = near ? (near.m < 15 ? near.p.location : `Near ${near.p.location}`) : "Point on the map";
+      out.unshift({ key: "pick", label: `${name} (picked on the map)`, location: name, zone_type: near?.p.zone_type ?? "other", geo: pickedPoint });
+    }
     return out;
   }, [cameras, geo, pickedPoint]);
 
@@ -110,7 +122,7 @@ export function PostDrawer({
       setTip(slot.tip ?? "");
       setWho(slot.assigned_to ?? null);
     } else {
-      setPlaceKey("");
+      setPlaceKey(pickedPoint ? "pick" : "");
       setDays([]);
       setStart(17);
       setLen(1);
@@ -182,7 +194,11 @@ export function PostDrawer({
                 </option>
               ))}
             </select>
-            {!pickedPoint && <span className="text-[13px] text-muted-ink">Camera places and campus buildings.</span>}
+            {onPickOnMap && !slot && (
+              <button type="button" onClick={onPickOnMap} className="min-h-10 self-start rounded-[2px] border border-line-strong bg-white px-3 text-[14px] font-bold">
+                {pickedPoint ? "Pick another point on the map" : "Pick a point on the map"}
+              </button>
+            )}
           </label>
 
           <fieldset className="flex flex-col gap-1.5">

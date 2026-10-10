@@ -36,6 +36,7 @@ import {
   NavControls,
 } from "./overlays";
 import { FlatMap } from "./flat-map";
+import { hasWebGL } from "./webgl";
 import { COLORS } from "./theme";
 import type { Campus3DProps, PostView } from "./types";
 import { GROUND_URL, geoToLocal, localise, parseGround, type GroundCollection, type XY } from "./geo";
@@ -77,15 +78,6 @@ const fetchJson = <T,>(url: string): Promise<T> =>
     return r.json() as Promise<T>;
   });
 
-function hasWebGL(): boolean {
-  try {
-    const c = document.createElement("canvas");
-    return !!(c.getContext("webgl2") || c.getContext("webgl"));
-  } catch {
-    return false;
-  }
-}
-
 function useReducedMotion() {
   const [reduced, setReduced] = useState(false);
   useEffect(() => {
@@ -113,6 +105,8 @@ export default function Campus3D({
   posts: postsProp,
   selectedPostId,
   onSelectPost,
+  visibleCameraIds,
+  lockLayer = false,
 }: Campus3DProps) {
   const h = height ?? (compact ? 240 : 560);
   const wrapRef = useRef<HTMLDivElement>(null);
@@ -376,7 +370,14 @@ export default function Campus3D({
     }
   };
 
-  const shownCams = compact ? (targetCam ? [targetCam] : []) : camLayer ? geoCams : [];
+  const shownCams = compact ? (targetCam ? [targetCam] : []) : camLayer ? geoCams.filter((c) => !visibleCameraIds || visibleCameraIds.includes(c.camera_id)) : [];
+  const headings = useMemo(() => new Map((seed?.cameras ?? []).filter((c) => c.heading_deg != null).map((c) => [c.camera_id, c.heading_deg!])), [seed]);
+  /** Pick a camera pin: open its card here and tell the page (grid and detail panel follow). */
+  const pickCamera = (id: string) => {
+    if (compact) return onOpenCamera?.(id);
+    setSel({ kind: "cam", id });
+    onSelectCamera?.(id);
+  };
   const shownGuards = compact ? (routeGuard ? [routeGuard.guard] : []) : camLayer ? guards : [];
   const selCam = sel?.kind === "cam" ? (geoCams.find((c) => c.camera_id === sel.id) ?? null) : null;
   const selPost = sel?.kind === "post" ? (placedPosts.find((p) => p.id === sel.id) ?? null) : null;
@@ -445,6 +446,23 @@ export default function Campus3D({
             route={route}
           />
           {!compact &&
+            camLayer &&
+            shownCams.map((c) => {
+              const hd = headings.get(c.camera_id);
+              if (hd == null || !c.geo) return null;
+              const kind = sourceKind(c);
+              return (
+                <ViewCone
+                  key={`cone-${c.camera_id}`}
+                  at={geoToLocal(c.geo)}
+                  y={pinAlt(c) - 3}
+                  heading={hd}
+                  colour={c.camera_id === alarm?.camera_id ? "#C8241B" : "#0B0D10"}
+                  opacity={kind === "black" ? 0.05 : c.camera_id === alarm?.camera_id ? 0.24 : sel?.kind === "cam" && sel.id === c.camera_id ? 0.24 : 0.16}
+                />
+              );
+            })}
+          {!compact &&
             layer === "plan" &&
             placedPosts.map((p) => <PostMarker3D key={p.id} post={p} selected={sel?.kind === "post" && sel.id === p.id} onPick={() => selectPost(p.id)} />)}
 
@@ -464,7 +482,7 @@ export default function Campus3D({
             })}
           {shownGuards.map((g) => (
             <Html key={g.name} position={anchor(g.post, 1.5)} occlude={occluders} zIndexRange={[14, 10]} style={{ pointerEvents: "none" }}>
-              <GuardChip name={g.name} pos={ZERO} />
+              <GuardChip guard={g} pos={ZERO} />
             </Html>
           ))}
           {shownCams.map((c) => (
@@ -475,7 +493,7 @@ export default function Campus3D({
                 pos={ZERO}
                 alarming={c.camera_id === alarm?.camera_id}
                 selected={sel?.kind === "cam" && sel.id === c.camera_id}
-                onClick={() => (compact ? onOpenCamera?.(c.camera_id) : setSel({ kind: "cam", id: c.camera_id }))}
+                onClick={() => pickCamera(c.camera_id)}
               />
             </Html>
           ))}
@@ -504,7 +522,7 @@ export default function Campus3D({
           />
           <div className="pointer-events-none absolute inset-0">
             {shownGuards.map((g) => (
-              <GuardChip key={g.name} name={g.name} pos={flatProject(g.post.lng, g.post.lat)} />
+              <GuardChip key={g.name} guard={g} pos={flatProject(g.post.lng, g.post.lat)} />
             ))}
             {shownCams.map((c) => (
               <CameraPin
@@ -514,7 +532,7 @@ export default function Campus3D({
                 pos={flatProject(c.geo!.lng, c.geo!.lat)}
                 alarming={c.camera_id === alarm?.camera_id}
                 selected={sel?.kind === "cam" && sel.id === c.camera_id}
-                onClick={() => (compact ? onOpenCamera?.(c.camera_id) : setSel({ kind: "cam", id: c.camera_id }))}
+                onClick={() => pickCamera(c.camera_id)}
               />
             ))}
             {!compact &&
@@ -541,13 +559,15 @@ export default function Campus3D({
       {ready && !compact && (
         <div className="pointer-events-none absolute left-3 top-3 z-30 flex max-w-[calc(100%-24px)] flex-col gap-2">
           <div className="flex flex-wrap items-center gap-1.5">
-            <LayerToggle
-              layer={layer}
-              onChange={(l) => {
-                setLayer(l);
-                setSel(null);
-              }}
-            />
+            {!lockLayer && (
+              <LayerToggle
+                layer={layer}
+                onChange={(l) => {
+                  setLayer(l);
+                  setSel(null);
+                }}
+              />
+            )}
             <span className="border border-line bg-white/90 px-2 py-[3px] font-mono text-[11px] font-bold">{(site?.name ?? "Taylor's University Lakeside Campus").toUpperCase()}</span>
           </div>
           <div role="group" aria-label="Jump to a building" className="pointer-events-auto flex flex-wrap gap-1">
@@ -608,7 +628,7 @@ export default function Campus3D({
         </div>
       )}
       {ready && !compact && (
-        <div className="pointer-events-none absolute bottom-3 right-3 z-30 flex max-w-[calc(100%-24px)] flex-col items-end gap-1">
+        <div className={cn("pointer-events-none absolute right-3 z-30 flex max-w-[calc(100%-24px)] flex-col items-end gap-1", narrow ? "bottom-[100px]" : w < 780 ? "bottom-[58px]" : "bottom-3")}>
           {camLayer ? <Legend /> : <PostsLegend />}
           <span className={cn("bg-white/85 px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground")}>{CREDIT.toUpperCase()}</span>
         </div>
@@ -620,4 +640,22 @@ export default function Campus3D({
   );
 }
 
+/** What a camera sees, estimated: a flat translucent fan on its building's roof, drawn over the model. */
+function ViewCone({ at, y, heading, colour, opacity }: { at: XY; y: number; heading: number; colour: string; opacity: number }) {
+  const geom = useMemo(() => {
+    const half = (32 * Math.PI) / 180;
+    // CircleGeometry angles run from +x towards +y; after rotateX(−90°) +y is north, so compass h is 90° − h.
+    const g = new THREE.CircleGeometry(30, 24, (Math.PI / 2 - (heading * Math.PI) / 180) - half, 2 * half);
+    g.rotateX(-Math.PI / 2);
+    return g;
+  }, [heading]);
+  useEffect(() => () => geom.dispose(), [geom]);
+  return (
+    <mesh geometry={geom} position={[at[0], y, -at[1]]} renderOrder={18}>
+      <meshBasicMaterial color={colour} transparent opacity={opacity} depthTest={false} depthWrite={false} side={THREE.DoubleSide} />
+    </mesh>
+  );
+}
+
 export { COLORS };
+
