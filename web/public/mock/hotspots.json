@@ -16,6 +16,14 @@
     "last_seen": "2026-10-05T13:48:00+08:00"
   },
   {
+    "location": "Sports pitch",
+    "zone_type": "sports_court",
+    "weekday": 3,
+    "hour": 17,
+    "count": 2,
+    "last_seen": "2026-10-08T17:16:00+08:00"
+  },
+  {
     "location": "U Residence, corridor L3",
     "zone_type": "hostel_corridor",
     "weekday": 1,
@@ -70,6 +78,14 @@
     "hour": 11,
     "count": 1,
     "last_seen": "2026-09-17T11:43:00+08:00"
+  },
+  {
+    "location": "Sports pitch",
+    "zone_type": "sports_court",
+    "weekday": 1,
+    "hour": 17,
+    "count": 1,
+    "last_seen": "2026-09-15T17:39:00+08:00"
   },
   {
     "location": "Sports pitch",

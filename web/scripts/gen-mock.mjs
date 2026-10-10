@@ -31,6 +31,14 @@ const NOW = myt(2026, 10, 10, 14, 30, 0);
 const DAY = 86400e3;
 
 // ── site ──
+// The team (handoff L3Plan). name stays the call sign; photos are illustrations, not real people.
+const shift = (label, days, from, to) => ({ label, days, from, to });
+const TEAM = {
+  "Guard A": { display_name: "Tan Wei Jie", role: "guard", photo_url: "/mock/staff/guard-a.svg", shift: shift("Mon–Sat 07:00–15:00", [0, 1, 2, 3, 4, 5], "07:00", "15:00") },
+  "Guard B": { display_name: "Aiman Hakimi", role: "guard", photo_url: "/mock/staff/guard-b.svg", shift: shift("Mon–Sat 10:00–18:00", [0, 1, 2, 3, 4, 5], "10:00", "18:00") },
+  "Guard C": { display_name: "Priya Nair", role: "guard", photo_url: "/mock/staff/guard-c.svg", shift: shift("Every day 14:00–23:00", [0, 1, 2, 3, 4, 5, 6], "14:00", "23:00") },
+  "Warden D": { display_name: "Rosnah Ahmad", role: "warden", photo_url: "/mock/staff/warden-d.svg", shift: shift("Fri–Sat 21:00–02:00", [4, 5], "21:00", "02:00") },
+};
 const site = {
   site_id: "taylors-lakeside",
   name: "Taylor's Lakeside",
@@ -42,7 +50,7 @@ const site = {
     { zone_type: "auditorium", label: "Grand Hall", risk: 0.5 },
     { zone_type: "sports_court", label: "Sports pitch", risk: 0.3 },
   ],
-  staff: seed3d.staff.map((x) => ({ name: x.name, zone_type: x.zone_type, on_duty: x.on_duty, ...(x.post ? { post: x.post } : {}) })),
+  staff: seed3d.staff.map((x) => ({ name: x.name, ...TEAM[x.name], zone_type: x.zone_type, on_duty: x.on_duty, ...(x.post ? { post: x.post } : {}) })),
   campus: { center: seed3d.campus.center, buildings: "/campus/taylors-lakeside-campus.geojson" },
 };
 const risk = Object.fromEntries(site.zones.map((z) => [z.zone_type, z.risk]));
@@ -149,6 +157,10 @@ const crowd = mk({ camId: "CAM-CT-04", t: NOW - 38e3, level: "tense", type: "cro
 crowd.reason = REASONS.crowd[0]; crowd.priority = 0.1; crowd.snapshot = crowd.peak_snapshot; crowd.top_features = [{ name: "people_close", value: 5 }, { name: "pair_motion_energy", value: 0.18 }, { name: "max_wrist_speed", value: 0.8 }, { name: "risk_score", value: crowd.peak_score }];
 const play = mk({ camId: "CAM-SC-06", t: NOW - 140e3, level: "tense", type: "play", people: 2, status: "new", endS: null, snapshot: snapFor("play") });
 play.reason = REASONS.play[0]; play.priority = 0.03; play.action = "No action; sports zone"; play.snapshot = play.peak_snapshot;
+// 4. Sports pitch, Tue & Thu 17:00–18:00: 3 confirmed in the last 28 days. New pattern: the 06:00 check suggests a post.
+for (const [mo, d] of [[9, 15], [9, 24], [10, 8]]) {
+  mk({ camId: "CAM-SC-06", t: myt(2026, mo, d, 17, 10 + Math.floor(rnd() * 40)), level: pick(["fight_likely", "fight"]), type: "fight", people: 2 + Math.floor(rnd() * 2), status: "confirmed", endS: 40 + Math.floor(rnd() * 60), note: rnd() < 0.5 ? "Argument after a match; separated." : null, snapshot: fightSnap });
+}
 events.sort((a, b) => a.start_time.localeCompare(b.start_time));
 // Renumber in time order so IDs read naturally.
 events.forEach((e, i) => { e.incident_id = `INC-2026-${String(80 + i).padStart(5, "0")}`; });
@@ -198,13 +210,30 @@ for (const e of events) {
 }
 const hotspots = Object.values(cells).sort((a, b) => b.count - a.count || a.location.localeCompare(b.location));
 
-// ── plan (decisions 4–5): avoided/week = incidents_4w × 0.6 / 4; rank by avoided/week ──
+// ── plan: standing guard posts (handoff L3Plan; api/routers/plan.py). Avoided/week = incidents_4w × 0.6 / 4.
+// P1–P3 are standing posts; P4 is what this morning's 06:00 check suggested. Check-ins are the guards'
+// "I'm at my post" taps from the guard app, one per covered post-day.
+const LAST_CHECK = myt(2026, 10, 10, 6, 0);
+const ci = (staff, mo, d, h, m) => ({ staff, at: iso(myt(2026, mo, d, h, m)) });
+const sportsHits = events.filter((e) => e.camera_id === "CAM-SC-06" && e.start_time.slice(11, 13) === "17" && ["confirmed", "resolved"].includes(e.status) && Date.parse(e.start_time) >= LAST_CHECK - 28 * DAY);
 const plan = {
   generated_at: iso(NOW),
+  last_check: iso(LAST_CHECK),
   slots: [
-    { location: "Block C stairwell", days: "Mon–Thu", hours: "13:00–14:00", incidents_4w: 5, expected_avoided_per_week: 0.75, avoided_per_patrol_hour: 0.19, rationale: "5 incidents in the same lunch hour, Monday to Thursday, in 4 weeks. One person at the level 1 landing covers both flights." },
-    { location: "U Residence, corridor L3", days: "Sun–Thu", hours: "22:00–23:00", incidents_4w: 4, expected_avoided_per_week: 0.6, avoided_per_patrol_hour: 0.12, rationale: "4 incidents after 22:00 in 4 weeks. The L5 camera is black, so L3 is the only eye on the block." },
-    { location: "Syopz Mall food court", days: "Fri", hours: "12:00–13:00", incidents_4w: 3, expected_avoided_per_week: 0.45, avoided_per_patrol_hour: 0.45, rationale: "3 crowd gatherings at Friday lunch in 4 weeks. One hour a week, so the best return per patrol hour." },
+    { id: "P1", location: "Block C stairwell", zone_type: "stairwell", days: "Mon–Thu", hours: "13:00–14:00", incidents_4w: 5, expected_avoided_per_week: 0.75, avoided_per_patrol_hour: 0.19,
+      rationale: "5 incidents in the same lunch hour, Monday to Thursday, in 4 weeks. One person at the level 1 landing covers both flights.",
+      status: "active", since: iso(myt(2026, 10, 5, 9, 12)), assigned_to: "Guard B", seen_at: iso(myt(2026, 10, 4, 18, 2)), tip: "Stand at the level 1 landing; you see both flights.",
+      checkins: [ci("Guard B", 10, 5, 12, 58), ci("Guard B", 10, 6, 13, 1), ci("Guard B", 10, 7, 12, 57), ci("Guard B", 10, 8, 13, 2)] },
+    { id: "P2", location: "U Residence, corridor L3", zone_type: "hostel_corridor", days: "Sun–Thu", hours: "22:00–23:00", incidents_4w: 4, expected_avoided_per_week: 0.6, avoided_per_patrol_hour: 0.12,
+      rationale: "4 incidents after 22:00 in 4 weeks. The L5 camera is black, so L3 is the only eye on the block.",
+      status: "active", since: iso(myt(2026, 10, 4, 8, 40)), assigned_to: "Guard C", seen_at: null, tip: "Walk L3 end to end; the L5 camera is off.",
+      checkins: [ci("Guard C", 10, 4, 21, 58), ci("Guard C", 10, 5, 22, 3), ci("Guard C", 10, 6, 21, 59), ci("Guard C", 10, 7, 22, 1)] },
+    { id: "P3", location: "Syopz Mall food court", zone_type: "canteen", days: "Fri", hours: "12:00–13:00", incidents_4w: 3, expected_avoided_per_week: 0.45, avoided_per_patrol_hour: 0.45,
+      rationale: "3 crowd gatherings at Friday lunch in 4 weeks. One hour a week, so the best return per patrol hour.",
+      status: "active", since: iso(myt(2026, 10, 9, 7, 30)), assigned_to: null, seen_at: null, tip: "Stand by the east entrance.", checkins: [] },
+    { id: "P4", location: "Sports pitch", zone_type: "sports_court", days: "Tue, Thu", hours: "17:00–18:00", incidents_4w: sportsHits.length, expected_avoided_per_week: r2((sportsHits.length * 0.6) / 4), avoided_per_patrol_hour: r2((sportsHits.length * 0.6) / 4 / 2),
+      rationale: `${sportsHits.length} incidents at the sports pitch between 17:00 and 18:00 in the last 28 days, all on Tuesdays and Thursdays.`,
+      status: "suggested", suggestion: "add", since: iso(LAST_CHECK), assigned_to: null, seen_at: null, evidence: sportsHits.map((e) => e.start_time), checkins: [] },
   ],
   assumption: "60% of hotspot incidents are avoided when a person is present. Stated, not measured. Avoided = incidents in 4 weeks × 0.6.",
 };

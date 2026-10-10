@@ -32,6 +32,22 @@
   "staff": [
     {
       "name": "Guard B",
+      "display_name": "Aiman Hakimi",
+      "role": "guard",
+      "photo_url": "/mock/staff/guard-b.svg",
+      "shift": {
+        "label": "Mon–Sat 10:00–18:00",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "from": "10:00",
+        "to": "18:00"
+      },
       "zone_type": "stairwell",
       "on_duty": true,
       "post": {
@@ -41,6 +57,22 @@
     },
     {
       "name": "Guard A",
+      "display_name": "Tan Wei Jie",
+      "role": "guard",
+      "photo_url": "/mock/staff/guard-a.svg",
+      "shift": {
+        "label": "Mon–Sat 07:00–15:00",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "from": "07:00",
+        "to": "15:00"
+      },
       "zone_type": "canteen",
       "on_duty": true,
       "post": {
@@ -50,6 +82,23 @@
     },
     {
       "name": "Guard C",
+      "display_name": "Priya Nair",
+      "role": "guard",
+      "photo_url": "/mock/staff/guard-c.svg",
+      "shift": {
+        "label": "Every day 14:00–23:00",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "from": "14:00",
+        "to": "23:00"
+      },
       "zone_type": "hostel_corridor",
       "on_duty": true,
       "post": {
@@ -59,6 +108,18 @@
     },
     {
       "name": "Warden D",
+      "display_name": "Rosnah Ahmad",
+      "role": "warden",
+      "photo_url": "/mock/staff/warden-d.svg",
+      "shift": {
+        "label": "Fri–Sat 21:00–02:00",
+        "days": [
+          4,
+          5
+        ],
+        "from": "21:00",
+        "to": "02:00"
+      },
       "zone_type": "hostel_corridor",
       "on_duty": false
     }

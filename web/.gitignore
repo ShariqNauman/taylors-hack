@@ -39,3 +39,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# shared demo store (src/lib/server/local-store.ts)
+.local-store.json

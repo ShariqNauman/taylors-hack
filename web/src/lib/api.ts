@@ -6,7 +6,9 @@ import type {
   Hotspot,
   PatrolPlan,
   Proof,
+  PatrolSlot,
   Site,
+  SlotPatch,
   StatusPatch,
 } from "./types";
 import { useAppStore } from "./store/app-store";
@@ -167,6 +169,54 @@ export async function patchEvent(
   if (r.ok) return (await r.json()) as StatusPatch;
   throw new PatchError(r.status, `PATCH ${incident_id} failed: ${r.status}`);
 }
+
+/** Where a write landed: the team's API (database) or this demo server's shared store. */
+export type SavedWhere = "api" | "this-computer";
+
+/**
+ * Plan writes go to the API when the plan is read from it (NEXT_PUBLIC_API_RESOURCES has
+ * "plan"); otherwise, or when the API is down or lacks the route, to the local server's
+ * shared store (/api/mock/plan/…), which every device on this server sees.
+ * A 409 / 422 from either rejects with PatchError.
+ */
+async function planWrite(
+  path: string,
+  method: "PATCH" | "POST",
+  body: unknown,
+): Promise<{ slot: PatrolSlot; saved: SavedWhere }> {
+  const init = (): RequestInit => ({
+    method,
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+    signal: AbortSignal.timeout(API_TIMEOUT_MS * 2),
+  });
+  if (!usingMock && API_RESOURCES.has("plan")) {
+    try {
+      const r = await fetch(`${API_URL}${path}`, init());
+      if (r.ok) return { slot: (await r.json()) as PatrolSlot, saved: "api" };
+      if (r.status === 409 || r.status === 422)
+        throw new PatchError(r.status, `${method} ${path} failed: ${r.status}`);
+      // 404 / 405 / 503 / 5xx: the API has no plan routes yet, or its table is missing
+    } catch (e) {
+      if (e instanceof PatchError) throw e;
+      useAppStore.getState().setApiDown(true);
+    }
+  }
+  const r = await fetch(`/api/mock${path}`, init());
+  if (!r.ok) throw new PatchError(r.status, `${method} ${path} failed: ${r.status}`);
+  return { slot: (await r.json()) as PatrolSlot, saved: "this-computer" };
+}
+
+/** PATCH /plan/slots/:id: accept / end a post ({status}), pick a guard ({assigned_to}), or {seen_at}. */
+export const patchSlot = (id: string, patch: SlotPatch) =>
+  planWrite(`/plan/slots/${encodeURIComponent(id)}`, "PATCH", patch);
+
+/** POST /plan/slots/:id/checkins: the guard is at the post. */
+export const postCheckin = (id: string, staff: string) =>
+  planWrite(`/plan/slots/${encodeURIComponent(id)}/checkins`, "POST", {
+    staff,
+    at: new Date().toISOString(),
+  });
 
 /** Back-compat alias. */
 export const patchStatus = patchEvent;

@@ -35,11 +35,23 @@ export interface Zone {
   risk: number; // 0–1, from the per-site zone table
 }
 
+/** A person's usual shift. days: 0 = Mon … 6 = Sun. to < from means it ends after midnight. */
+export interface StaffShift {
+  label: string; // "Mon–Sat 07:00–15:00"
+  days: number[];
+  from: string; // "HH:MM"
+  to: string; // "HH:MM"
+}
+
 export interface Staff {
-  name: string;
+  name: string; // call sign ("Guard B"), used in nearest_staff / pushed_to / assigned_to
   zone_type: string;
   on_duty: boolean;
   post?: GeoPoint | null;
+  display_name?: string | null; // "Aiman Hakimi"
+  photo_url?: string | null;
+  role?: string | null; // "guard" | "warden" | "supervisor"
+  shift?: StaffShift | null;
 }
 
 export interface Site {
@@ -91,6 +103,9 @@ export interface Event {
   pushed_to?: string | null; // two-tier: only fight_likely+ gets pushed; the API sets these
   pushed_at?: string | null; // ISO, +08:00
   acked_at?: string | null; // phone tap; response time = acked_at − pushed_at
+  arrived_at?: string | null; // guard app: "I'm here"
+  outcome?: Outcome | null; // guard app: what they found
+  outcome_at?: string | null;
   status: Status; // operator sets on Live; edge never overwrites
   staff_note: string | null;
   snapshot?: PoseFrame; // v3: latest keypoints, refreshed on each 0.5 s post
@@ -107,7 +122,30 @@ export interface Hotspot {
   last_seen: string; // ISO, +08:00
 }
 
+export type SlotStatus = "active" | "suggested" | "ended";
+
+export interface Checkin {
+  staff: string; // call sign
+  at: string; // ISO
+}
+
+/**
+ * A standing guard post. Active posts stay until the supervisor ends them; the daily 06:00
+ * check only adds suggestions (status "suggested") or sets suggestion = "end".
+ * All the standing-post fields are optional: older APIs return the weekly top-3 only.
+ */
 export interface PatrolSlot {
+  id?: string;
+  zone_type?: string;
+  status?: SlotStatus;
+  since?: string | null; // ISO; when the post started (or was suggested)
+  assigned_to?: string | null; // call sign
+  seen_at?: string | null; // when the guard opened it in their app
+  tip?: string | null;
+  suggestion?: "add" | "end" | null;
+  ended_at?: string | null;
+  evidence?: string[]; // start_time of the incidents behind a suggestion
+  checkins?: Checkin[];
   location: string;
   days: string; // e.g. "Mon–Thu"
   hours: string; // e.g. "13:00–14:00"
@@ -119,8 +157,15 @@ export interface PatrolSlot {
 
 export interface PatrolPlan {
   generated_at: string; // ISO, +08:00
-  slots: PatrolSlot[]; // top-3 ranked by expected_avoided_per_week
+  slots: PatrolSlot[]; // ranked by expected_avoided_per_week
   assumption: string;
+  last_check?: string | null; // ISO; the last daily 06:00 check
+}
+
+export interface SlotPatch {
+  status?: SlotStatus;
+  assigned_to?: string | null;
+  seen_at?: string;
 }
 
 export interface Proof {
@@ -162,10 +207,15 @@ export interface Proof {
   note?: string; // "placeholder" until real numbers land; "report-v2" once they do
 }
 
+export type Outcome = "sorted" | "hurt" | "backup" | "nothing";
+
 export interface StatusPatch {
   status?: Status;
   staff_note?: string;
   acked_at?: string;
+  arrived_at?: string; // guard app: "I'm here"
+  outcome?: Outcome; // guard app: "What did you find?"
+  outcome_at?: string;
 }
 
 // ── Shift handover brief (POST /handover). Facts are computed on the dashboard; the API only words them. ──

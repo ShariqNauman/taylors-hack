@@ -1,32 +1,113 @@
 {
   "generated_at": "2026-10-10T14:30:00+08:00",
+  "last_check": "2026-10-10T06:00:00+08:00",
   "slots": [
     {
+      "id": "P1",
       "location": "Block C stairwell",
+      "zone_type": "stairwell",
       "days": "Mon–Thu",
       "hours": "13:00–14:00",
       "incidents_4w": 5,
       "expected_avoided_per_week": 0.75,
       "avoided_per_patrol_hour": 0.19,
-      "rationale": "5 incidents in the same lunch hour, Monday to Thursday, in 4 weeks. One person at the level 1 landing covers both flights."
+      "rationale": "5 incidents in the same lunch hour, Monday to Thursday, in 4 weeks. One person at the level 1 landing covers both flights.",
+      "status": "active",
+      "since": "2026-10-05T09:12:00+08:00",
+      "assigned_to": "Guard B",
+      "seen_at": "2026-10-04T18:02:00+08:00",
+      "tip": "Stand at the level 1 landing; you see both flights.",
+      "checkins": [
+        {
+          "staff": "Guard B",
+          "at": "2026-10-05T12:58:00+08:00"
+        },
+        {
+          "staff": "Guard B",
+          "at": "2026-10-06T13:01:00+08:00"
+        },
+        {
+          "staff": "Guard B",
+          "at": "2026-10-07T12:57:00+08:00"
+        },
+        {
+          "staff": "Guard B",
+          "at": "2026-10-08T13:02:00+08:00"
+        }
+      ]
     },
     {
+      "id": "P2",
       "location": "U Residence, corridor L3",
+      "zone_type": "hostel_corridor",
       "days": "Sun–Thu",
       "hours": "22:00–23:00",
       "incidents_4w": 4,
       "expected_avoided_per_week": 0.6,
       "avoided_per_patrol_hour": 0.12,
-      "rationale": "4 incidents after 22:00 in 4 weeks. The L5 camera is black, so L3 is the only eye on the block."
+      "rationale": "4 incidents after 22:00 in 4 weeks. The L5 camera is black, so L3 is the only eye on the block.",
+      "status": "active",
+      "since": "2026-10-04T08:40:00+08:00",
+      "assigned_to": "Guard C",
+      "seen_at": null,
+      "tip": "Walk L3 end to end; the L5 camera is off.",
+      "checkins": [
+        {
+          "staff": "Guard C",
+          "at": "2026-10-04T21:58:00+08:00"
+        },
+        {
+          "staff": "Guard C",
+          "at": "2026-10-05T22:03:00+08:00"
+        },
+        {
+          "staff": "Guard C",
+          "at": "2026-10-06T21:59:00+08:00"
+        },
+        {
+          "staff": "Guard C",
+          "at": "2026-10-07T22:01:00+08:00"
+        }
+      ]
     },
     {
+      "id": "P3",
       "location": "Syopz Mall food court",
+      "zone_type": "canteen",
       "days": "Fri",
       "hours": "12:00–13:00",
       "incidents_4w": 3,
       "expected_avoided_per_week": 0.45,
       "avoided_per_patrol_hour": 0.45,
-      "rationale": "3 crowd gatherings at Friday lunch in 4 weeks. One hour a week, so the best return per patrol hour."
+      "rationale": "3 crowd gatherings at Friday lunch in 4 weeks. One hour a week, so the best return per patrol hour.",
+      "status": "active",
+      "since": "2026-10-09T07:30:00+08:00",
+      "assigned_to": null,
+      "seen_at": null,
+      "tip": "Stand by the east entrance.",
+      "checkins": []
+    },
+    {
+      "id": "P4",
+      "location": "Sports pitch",
+      "zone_type": "sports_court",
+      "days": "Tue, Thu",
+      "hours": "17:00–18:00",
+      "incidents_4w": 3,
+      "expected_avoided_per_week": 0.45,
+      "avoided_per_patrol_hour": 0.22,
+      "rationale": "3 incidents at the sports pitch between 17:00 and 18:00 in the last 28 days, all on Tuesdays and Thursdays.",
+      "status": "suggested",
+      "suggestion": "add",
+      "since": "2026-10-10T06:00:00+08:00",
+      "assigned_to": null,
+      "seen_at": null,
+      "evidence": [
+        "2026-09-15T17:39:00+08:00",
+        "2026-09-24T17:11:00+08:00",
+        "2026-10-08T17:16:00+08:00"
+      ],
+      "checkins": []
     }
   ],
   "assumption": "60% of hotspot incidents are avoided when a person is present. Stated, not measured. Avoided = incidents in 4 weeks × 0.6."
