@@ -7,6 +7,10 @@ export const DAY_SHORT = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 const MON = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 const DAY_MS = 86_400_000;
 export const REAL = new Set(["confirmed", "resolved"]);
+/** Every "last N days" on the dashboard: the daily check, Track record, the statistics. */
+export const WINDOW_DAYS = 28;
+/** A post with no real incident this long gets a "suggest ending" (plan_logic.py). */
+export const QUIET_DAYS = 14;
 
 /** Malaysia-time parts of an instant. */
 export function myt(d: Date | string | number) {
@@ -209,7 +213,7 @@ export function floorOf(location: string): number | undefined {
 
 /** Real incidents (confirmed or resolved) at this post's place in the 28 days up to `end`. */
 export function postIncidents(events: Event[], s: PatrolSlot, end: number) {
-  const from = end - 28 * DAY_MS;
+  const from = end - WINDOW_DAYS * DAY_MS;
   const [h, until] = slotSpan(s.hours);
   const ds = slotDays(s.days);
   const all = events.filter((e) => {

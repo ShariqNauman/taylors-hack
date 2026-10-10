@@ -184,7 +184,7 @@ export function LiveScreen() {
         />
       }
     >
-      {strip && <DemoStrip mode={strip} onRestart={feed.replay.restart} />}
+      {strip && <DemoStrip mode={strip} onRestart={feed.replay.restart} location={liveCam?.location} />}
       <div className="grid gap-3.5 min-[1040px]:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
         <div className="order-2 min-w-0 min-[1040px]:order-1">
           <EvidencePanel

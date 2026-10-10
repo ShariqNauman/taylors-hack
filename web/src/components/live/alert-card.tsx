@@ -72,9 +72,6 @@ export function AlertCard({
         <p className="text-[22px] font-medium leading-snug">
           No active incidents on any camera.
         </p>
-        <div className="rounded-[2px] border border-dashed border-line-strong bg-white px-3.5 py-3 text-[16px] text-ink-2">
-          Nothing to do. Chats, hugs and high-fives stay calm by design.
-        </div>
       </section>
     );
   }
@@ -208,7 +205,6 @@ export function AlertCard({
           <button type="button" onClick={() => onDismiss(event)} className="min-h-11 rounded-[2px] bg-ink px-4 text-[16px] font-extrabold text-white">
             Dismiss: false alarm
           </button>
-          <span className="basis-full text-[13px] text-ink-2">The guard&rsquo;s answer is a hint. The desk still decides.</span>
         </div>
       )}
       <div className="flex flex-wrap items-center gap-2.5">
@@ -367,9 +363,6 @@ export function AlertCard({
               ? "Confirmed: real incident"
               : "Dismissed: false alarm"}
           </span>
-          <span className="text-[13px] text-ink-2">
-            Saved as a label for this camera.
-          </span>
           <button
             type="button"
             onClick={() => onUndo(event)}
@@ -379,11 +372,7 @@ export function AlertCard({
           </button>
         </div>
       )}
-      {isCalm && !pushed && (
-        <div className="rounded-[2px] border border-dashed border-line-strong bg-white px-3.5 py-3 text-[16px] text-ink-2">
-          Nothing to do. Chats, hugs and high-fives stay calm by design.
-        </div>
-      )}
+
       {isAlarmLevel(event.level) &&
         event.eta_seconds == null &&
         event.level === "fight_likely" && (

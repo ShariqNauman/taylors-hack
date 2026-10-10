@@ -15,7 +15,10 @@ import {
   daysLabel,
   floorOf,
   hh,
+  hm,
   myt,
+  QUIET_DAYS,
+  WINDOW_DAYS,
   nextPost,
   postIncidents,
   postOnNow,
@@ -26,6 +29,7 @@ import {
 import type { GeoPoint, PatrolSlot, SlotPatch } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { PageShell } from "@/components/chrome/page-shell";
+import { HowItWorks } from "@/components/chrome/how-it-works";
 import { Campus3D } from "@/components/campus3d";
 import type { PostView } from "@/components/campus3d/types";
 import { PostMap } from "./post-map";
@@ -51,10 +55,9 @@ function useNow(ms = 30_000): number | null {
   return now;
 }
 
-const andList = (a: string[]) => (a.length < 2 ? a.join("") : `${a.slice(0, -1).join(", ")} and ${a[a.length - 1]}`);
 
-/** "the sports pitch"; named places keep their name. */
-const placePhrase = (s: PatrolSlot) => (s.zone_type === "sports_court" ? "the sports pitch" : s.location);
+/** The place as the data names it. */
+const placePhrase = (s: PatrolSlot) => s.location;
 
 const ICON = {
   pin: "M12 21s-6-5.33-6-11a6 6 0 0 1 12 0c0 5.67-6 11-6 11zM12 12.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z",
@@ -191,37 +194,36 @@ export function PlanScreen() {
   const black = (cameras ?? []).filter((c) => cameraKind(c) === "black");
 
   const tiles = [
-    { icon: ICON.pin, v: `${active.length} post${active.length === 1 ? "" : "s"}`, k: "running now", sub: "Each one stays until you end it" },
+    { icon: ICON.pin, v: `${active.length} post${active.length === 1 ? "" : "s"}`, k: "running now", sub: "" },
     { icon: ICON.clock, v: next ? `${next.day} ${hh(startHour(next.slot.hours))}` : "None", k: "next post starts", sub: next ? `${next.slot.location} · ${nextWho}` : "No posts in the next 7 days" },
     { icon: ICON.person, v: `${covered} of ${active.length}`, k: "posts have a guard", sub: covered < active.length ? `${active.length - covered} still need${active.length - covered === 1 ? "s" : ""} someone` : "Every post is covered" },
-    { icon: ICON.bulb, v: `${suggested.length + toEnd.length} suggestion${suggested.length + toEnd.length === 1 ? "" : "s"}`, k: "to review", sub: first ? `A new post at ${placePhrase(first)}` : toEnd.length ? `End post ${roster.find((r) => r.slot === toEnd[0])?.rank}?` : "EarlyEye tells you when something changes" },
+    { icon: ICON.bulb, v: `${suggested.length + toEnd.length} suggestion${suggested.length + toEnd.length === 1 ? "" : "s"}`, k: "to review", sub: first ? `A new post at ${placePhrase(first)}` : toEnd.length ? `End post ${roster.find((r) => r.slot === toEnd[0])?.rank}?` : "" },
   ];
 
   return (
     <PageShell>
-      <div className="flex max-w-[1000px] flex-col gap-2">
-        <span className="ee-label text-[12px]">
-          PATROL PLAN · CHECKED {checkedToday ? `TODAY, ${dayDate(checkAt).toUpperCase()}` : checkedYesterday ? `YESTERDAY, ${dayDate(checkAt).toUpperCase()}` : dayDate(checkAt).toUpperCase()}, {hh(myt(checkAt).hour)}
-        </span>
+      <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1.5">
         <h1 className="ee-display text-[48px] leading-[0.95] sm:text-[58px]">Guard posts</h1>
-        <p className="text-[19px] leading-normal text-ink-2">
-          When a place keeps having trouble at the same hour, it gets a standing guard post. EarlyEye rechecks the last 28 days every morning and suggests changes. Nothing changes until you accept it.
-        </p>
-        <span className="text-[14px] text-muted-ink">
-          Based on incidents from {dateOnly(checkAt - 27 * DAY_MS)} to {dateOnly(checkAt)} · next check {nextCheck}
+        <span className="font-mono text-[13px] text-muted-ink">
+          Updated {checkedToday ? "today" : checkedYesterday ? "yesterday" : dayDate(checkAt)} {hm(checkAt)}
         </span>
+        <HowItWorks>
+          <span>When a place keeps having trouble at the same hour, it gets a standing guard post. Every morning EarlyEye rechecks the last {WINDOW_DAYS} days ({dateOnly(checkAt - (WINDOW_DAYS - 1) * DAY_MS)} to {dateOnly(checkAt)}) and suggests changes; nothing changes until you accept it. Next check {nextCheck}.</span>
+          <span>Pick a guard and the post goes straight to the EarlyEye app on their phone. You see when they&rsquo;ve read it.</span>
+          <span>A suggested post is the dashed &ldquo;+&rdquo; on the map. A post quiet for {QUIET_DAYS} days is suggested for ending, never ended on its own.</span>
+        </HowItWorks>
       </div>
 
-      <div className="grid gap-2.5 [grid-template-columns:repeat(auto-fit,minmax(min(240px,100%),1fr))]">
+      <div className="grid gap-2.5 [grid-template-columns:repeat(auto-fit,minmax(min(220px,100%),1fr))]">
         {tiles.map((t) => (
-          <div key={t.k} className="flex items-center gap-3.5 rounded-[2px] border border-line bg-white px-4 py-3.5">
+          <div key={t.k} className="flex min-w-0 items-center gap-3.5 rounded-[2px] border border-line bg-white px-4 py-3.5">
             <span className="inline-flex size-12 flex-none items-center justify-center rounded-full bg-signal-tint">
               <svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true"><path d={t.icon} fill="none" stroke="#1F35B3" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
             </span>
-            <span className="flex flex-col gap-0.5">
+            <span className="flex min-w-0 flex-col gap-0.5">
               <span className="ee-display text-[32px] leading-none">{t.v}</span>
               <span className="text-[15px] font-bold">{t.k}</span>
-              <span className="text-[13px] text-muted-ink">{t.sub}</span>
+              {t.sub && <span className="truncate text-[13px] text-muted-ink">{t.sub}</span>}
             </span>
           </div>
         ))}
@@ -229,21 +231,17 @@ export function PlanScreen() {
 
       {first && (
         <section aria-label="Suggestion" className="flex flex-wrap items-center gap-x-[18px] gap-y-2.5 rounded-[2px] border-2 border-signal bg-signal-tint px-4 py-3.5">
-          <span className="flex flex-[1_1_520px] flex-col gap-1">
-            <span className="font-mono text-[12px] font-bold tracking-[0.08em] text-signal-ink">
-              EARLYEYE SUGGESTS · {first.since && myt(first.since).key === n.key ? "TODAY" : first.since ? dayDate(first.since).toUpperCase() : ""} {first.since ? hh(myt(first.since).hour) : ""}
-            </span>
+          <span className="flex min-w-0 flex-[1_1_320px] flex-col gap-1">
             <span className="text-[20px] font-extrabold">
               Add a post at {placePhrase(first)}, {daysLabel(first.days, " and ")}, {first.hours}
             </span>
-            <span className="text-[15px] text-ink-2">
-              {first.evidence?.length
-                ? `${first.evidence.length} incidents there at that hour in the last 28 days: ${andList(first.evidence.map(dayDate))}.`
-                : first.rationale}{" "}
-              It&rsquo;s the dashed circle on the map.
-            </span>
+            {first.evidence?.length ? (
+              <span className="text-[15px] text-ink-2">
+                {first.evidence.length} incidents at that hour in {WINDOW_DAYS} days: {first.evidence.map(dateOnly).join(", ")}
+              </span>
+            ) : null}
           </span>
-          <span className="flex flex-wrap gap-2">
+          <span className="flex min-w-0 flex-wrap gap-2">
             <button type="button" disabled={busy} onClick={() => write(first.id, { status: "active" }, `Post ${active.length + 1} added: ${placePhrase(first)}, ${daysLabel(first.days, " and ")} ${first.hours}. Pick who goes below.`)} className="min-h-[46px] rounded-[2px] bg-signal px-[18px] text-[16px] font-extrabold text-white">
               Add this post
             </button>
@@ -257,10 +255,9 @@ export function PlanScreen() {
         const rank = roster.find((r) => r.slot === s)?.rank;
         return (
           <section key={slotKey(s)} aria-label="Suggestion" className="flex flex-wrap items-center gap-x-[18px] gap-y-2.5 rounded-[2px] border-2 border-signal bg-signal-tint px-4 py-3.5">
-            <span className="flex flex-[1_1_520px] flex-col gap-1">
-              <span className="font-mono text-[12px] font-bold tracking-[0.08em] text-signal-ink">EARLYEYE SUGGESTS</span>
+            <span className="flex min-w-0 flex-[1_1_320px] flex-col gap-1">
               <span className="text-[20px] font-extrabold">End post {rank} at {s.location}</span>
-              <span className="text-[15px] text-ink-2">No confirmed incidents there at {s.hours} for 14 days. It keeps running until you end it.</span>
+              <span className="text-[15px] text-ink-2">No real incidents at {s.hours} in {QUIET_DAYS} days</span>
             </span>
             <span className="flex flex-wrap gap-2">
               <button type="button" disabled={busy} onClick={() => write(s.id, { status: "ended" }, `Post ${rank} ended. EarlyEye will suggest it again if trouble comes back.`)} className="min-h-[46px] rounded-[2px] bg-signal px-[18px] text-[16px] font-extrabold text-white">End this post</button>
@@ -273,12 +270,12 @@ export function PlanScreen() {
         <div role="status" className="flex flex-wrap items-baseline gap-x-3 rounded-[2px] border border-line bg-white px-3.5 py-2.5 text-[15px] font-bold">
           <span>{note}</span>
           {saved === "this-computer" && !note.startsWith("Couldn") && (
-            <span className="font-mono text-[12px] font-normal text-muted-ink">SAVED ON THIS COMPUTER · not in the database yet</span>
+            <span className="rounded-[1px] border border-dashed border-line-strong px-1.5 font-mono text-[11px] font-bold text-muted-ink">Saved on this computer</span>
           )}
         </div>
       )}
 
-      <div className="flex flex-wrap items-stretch gap-4">
+      <div className="grid items-stretch gap-4 min-[1100px]:grid-cols-[minmax(0,1fr)_minmax(0,1.12fr)]">
         <section aria-label="Where" className="flex min-w-0 flex-[1_1_500px] flex-col gap-3 rounded-[2px] border border-line bg-white p-4">
           <div className="flex flex-wrap items-center justify-between gap-2.5">
             <SectionHead n={1} title="Where are the posts?" />
@@ -325,7 +322,6 @@ export function PlanScreen() {
             </button>
           </div>
           <TeamStrip people={people} now={now} />
-          <p className="text-[15px] text-ink-2">Pick a guard and the post goes straight to the EarlyEye app on their phone. You&rsquo;ll see when they&rsquo;ve read it.</p>
           {roster.length === 0 && <p className="text-[15px]">No standing posts. Accept a suggestion to start one.</p>}
           {roster.map((p) => (
             <PostRow
@@ -349,9 +345,9 @@ export function PlanScreen() {
             const days = c.black_since ? Math.max(1, Math.round((now - Date.parse(c.black_since)) / DAY_MS)) : null;
             return (
               <div key={c.camera_id} className="mt-auto flex flex-wrap items-center gap-x-3 gap-y-1.5 rounded-[2px] bg-ink px-3.5 py-2.5 text-white">
-                <span className="flex-[1_1_260px] text-[14px] leading-snug">
-                  The camera on {c.location} has been off{days ? ` for ${days} day${days === 1 ? "" : "s"}` : ""}
-                  {post ? `, so the guard at post ${post.rank} is the only eye on that block.` : "."}
+                <span className="min-w-0 flex-[1_1_220px] text-[14px] leading-snug">
+                  {c.location}: camera off{days ? ` ${days} day${days === 1 ? "" : "s"}` : ""}
+                  {post ? ` · post ${post.rank} is the only eye there` : ""}
                 </span>
                 <Link href={`/cameras?cam=${encodeURIComponent(c.camera_id)}`} className="text-[14px] font-extrabold text-white">Report the repair</Link>
               </div>
@@ -361,9 +357,7 @@ export function PlanScreen() {
       </div>
 
       <section aria-label="When" className="flex flex-col gap-3 rounded-[2px] border border-line bg-white p-4">
-        <SectionHead n={3} title="When: the next 7 days">
-          <span className="text-[15px] text-ink-2">Always today plus the next six days, so it never runs out</span>
-        </SectionHead>
+        <SectionHead n={3} title="When: the next 7 days" />
         <PostTimetable posts={roster} people={people} now={now} />
       </section>
 

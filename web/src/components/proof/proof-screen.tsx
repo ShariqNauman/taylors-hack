@@ -12,6 +12,8 @@ import {
 } from "@/lib/api";
 import type { Camera, CameraSensitivity, Event, Proof } from "@/lib/types";
 import { normaliseStatus } from "@/lib/format";
+import { QUIET_DAYS as SUGGEST_DAYS_14, WINDOW_DAYS } from "@/lib/posts";
+import { HowItWorks } from "@/components/chrome/how-it-works";
 import {
   MODEL_CARD,
   MODEL_REPORT,
@@ -24,7 +26,8 @@ import { cn } from "@/lib/utils";
 import { PageShell } from "@/components/chrome/page-shell";
 
 const DAY_MS = 86_400_000;
-const WINDOW_DAYS = 28;
+const WEEKS = WINDOW_DAYS / 7;
+const IN_WINDOW = `in ${WEEKS} weeks`;
 const MIN_DECISIONS = 10;
 const MONTHS = "Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec".split(" ");
 const WD = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -127,7 +130,7 @@ function writeSens(cameraId: string, v: SensSaved[string] | null) {
   sensListeners.forEach((l) => l());
 }
 
-const SUGGEST_DAYS = 14;
+const SUGGEST_DAYS = SUGGEST_DAYS_14;
 /** The guard said "Nothing there", or the desk said false alarm. */
 const saidNothing = (e: Event) => isFalse(e) || e.outcome === "nothing";
 
@@ -357,8 +360,8 @@ export function ProofScreen() {
           ? "About half the time."
           : "Not yet.";
   const evidence = !enough
-    ? `The desk has answered ${plural(decided, "alarm")} in the last 4 weeks. EarlyEye needs at least ${MIN_DECISIONS} answers before it gives a verdict.`
-    : `${realDots} of every 10 alarms were real. There ${falseAlarms === 1 ? "was" : "were"} ${plural(falseAlarms, "false alarm")} in 4 weeks${ack != null ? `, and a guard was on the way in about ${fmtS(ack)}` : ""}.`;
+    ? `The desk has answered ${plural(decided, "alarm")} in the last ${WEEKS} weeks. EarlyEye needs at least ${MIN_DECISIONS} answers before it gives a verdict.`
+    : `${realDots} of every 10 alarms were real. There ${falseAlarms === 1 ? "was" : "were"} ${plural(falseAlarms, "false alarm")} ${" " + IN_WINDOW}${ack != null ? `, and a guard was on the way in about ${fmtS(ack)}` : ""}.`;
 
   // ── 1. Misses ──
   const misses = recent
@@ -464,7 +467,7 @@ export function ProofScreen() {
         out.push({
           cam,
           kind: "strict",
-          why: `${nothing} of ${alerts.length} alerts in 14 days were nothing (desk or guard)${play >= nothing / 2 ? ", mostly games and rough play" : ""}.`,
+          why: `${nothing} of ${alerts.length} alerts in ${SUGGEST_DAYS} days were nothing (desk or guard)${play >= nothing / 2 ? ", mostly games and rough play" : ""}.`,
         });
         if (play >= nothing / 2 && camZone(cam) !== sportsZone)
           out.push({ cam, kind: "sports", why: "Sport looks like fighting here. A sports zone counts as lower risk; real fights still sound the alarm." });
@@ -474,7 +477,7 @@ export function ProofScreen() {
           kind: "sensitive",
           why: missed.length
             ? `The desk reported ${plural(missed.length, "fight")} here that never reached an alarm.`
-            : `${realAlarms} real alarms in 14 days and no false ones: it can afford to warn earlier.`,
+            : `${realAlarms} real alarms in ${SUGGEST_DAYS} days and no false ones: it can afford to warn earlier.`,
         });
       }
     }
@@ -492,7 +495,7 @@ export function ProofScreen() {
 
   // ── Summary for management ──
   const shareText = [
-    `EarlyEye track record, ${site?.name ?? "our site"}, last 4 weeks (${dm(since)} to ${dm(now)}).`,
+    `EarlyEye track record, ${site?.name ?? "our site"}, last ${WEEKS} weeks (${dm(since)} to ${dm(now)}).`,
     enough
       ? `${plural(alarms.length, "alarm")} sounded; the security desk confirmed ${real} as real and ${falseAlarms} as false ${falseAlarms === 1 ? "alarm" : "alarms"}.`
       : `${plural(alarms.length, "alarm")} sounded, but the desk has answered only ${decided}, too few to judge accuracy yet.`,
@@ -522,7 +525,7 @@ export function ProofScreen() {
   const pct = (x: number) => `${(x * 100).toFixed(1)}%`;
   const proofRows: TechRow[] = proof ? proofTechRows(proof) : [];
   const campusRow: TechRow = {
-    test: "Your campus: the desk's Yes/No, last 4 weeks",
+    test: `Your campus: the desk's Yes/No, last ${WEEKS} weeks`,
     means: "Real alarms against fights reported with no alarm",
     caught: enough
       ? `${real} of ${real + misses.length} (${pct(real / Math.max(1, real + misses.length))})`
@@ -554,18 +557,17 @@ export function ProofScreen() {
         ) : undefined
       }
     >
-      <div className="flex max-w-[1000px] flex-col gap-2">
-        <span className="ee-label text-[12px]">
-          Track record · last 4 weeks · from your desk&apos;s yes/no answers
-        </span>
+      <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1.5">
         <h1 className="ee-display text-[44px] leading-[0.95] sm:text-[58px]">
           Can you trust the alarms?
         </h1>
-        <p className="text-[17px] leading-normal text-ink-2 sm:text-[19px]">
-          Every time the desk answers &ldquo;Was this real?&rdquo;, EarlyEye
-          learns how it is doing on your cameras. This page turns those answers
-          into a track record you can check, act on and share with management.
-        </p>
+        <span className={CHIP_DASHED}>LAST {WINDOW_DAYS} DAYS</span>
+        <HowItWorks>
+          <span>Every time the desk answers &ldquo;Was this real?&rdquo;, EarlyEye learns how it is doing on your cameras. Campus numbers come only from those answers in the last {WINDOW_DAYS} days.</span>
+          <span>A miss only shows up when the desk marks a fight as real that never reached an alarm.</span>
+          <span>Sports zones count as lower risk; real fights still sound the alarm. Each answer is saved as a label for that camera and used to retune it.</span>
+          <span>Guard times are medians from the guards&rsquo; phones. Test-video numbers come from the model team&rsquo;s held-out clips.</span>
+        </HowItWorks>
       </div>
 
       {/* ── The answer ── */}
@@ -696,15 +698,7 @@ export function ProofScreen() {
               >
                 {misses.length} reported
               </span>
-              <span className="text-[15px] leading-[1.45]">
-                A miss only shows up when the desk marks a fight as real that
-                never reached an alarm.{" "}
-                {misses.length === 0
-                  ? "None in 4 weeks."
-                  : misses.length === 1
-                    ? "That happened once in 4 weeks."
-                    : `That happened ${misses.length} times in 4 weeks.`}
-              </span>
+              <span className="text-[15px] leading-[1.45]">{IN_WINDOW}</span>
             </div>
           </div>
           <div className="flex flex-col gap-1 rounded-[2px] border border-line bg-raised px-3.5 py-3">
@@ -727,13 +721,10 @@ export function ProofScreen() {
           <span id="conf-h" className="contents">
             <SectionHead n={2} title="Where does it get confused?" />
           </span>
-          <span className="text-[15px] text-ink-2">
-            Alerts the desk said were nothing, by place. Fix the biggest one
-            first.
-          </span>
+          <span className="ee-label">Alerts the desk said were nothing, by place</span>
           {confused.length === 0 && (
             <p className="text-[15px]">
-              The desk hasn&apos;t marked any alert as nothing in 4 weeks.
+              The desk hasn&apos;t marked any alert as nothing {IN_WINDOW}.
             </p>
           )}
           {confused.map((c) => {
@@ -749,7 +740,7 @@ export function ProofScreen() {
                   : c.n >= 2
                     ? "ask"
                     : "none";
-            const askText = `Please look at ${c.place} (${c.camera_id}): the desk marked ${plural(c.n, "alert")} as nothing in the last 4 weeks, mostly ${c.top === "crowd" ? "crowd gatherings" : c.top} around ${String(c.busyHour).padStart(2, "0")}:00. Can you quiet these without missing real fights?`;
+            const askText = `Please look at ${c.place} (${c.camera_id}): the desk marked ${plural(c.n, "alert")} as nothing in the last ${WEEKS} weeks, mostly ${c.top === "crowd" ? "crowd gatherings" : c.top} around ${String(c.busyHour).padStart(2, "0")}:00. Can you quiet these without missing real fights?`;
             return (
               <div
                 key={c.camera_id}
@@ -795,7 +786,7 @@ export function ProofScreen() {
                       <span className="flex-[1_1_240px] text-[13px] font-bold text-signal-ink">
                         {isSports
                           ? `${savedOnApi[cam.camera_id] ? "Saved" : "Saved on this computer only"}. This camera now counts as a sports zone, which is lower risk. Real fights still sound the alarm.`
-                          : "Sports zones count as lower risk. Real fights still sound the alarm."}
+                          : ""}
                       </span>
                     </>
                   )}
@@ -818,7 +809,7 @@ export function ProofScreen() {
                   {action === "keep" && (
                     <span className="text-[13px] font-bold text-signal-ink">
                       Keep as is. This is one of your busiest real hotspots (
-                      {plural(c.realHere, "real incident")} in 4 weeks).
+                      {plural(c.realHere, "real incident")} {IN_WINDOW}).
                     </span>
                   )}
                   {action === "none" && (
@@ -836,7 +827,7 @@ export function ProofScreen() {
       {/* ── What EarlyEye suggests changing ── */}
       <section aria-labelledby="suggest-h" className="flex flex-col gap-3 rounded-[2px] border-2 border-signal bg-white p-4">
         <div className="flex flex-col gap-1">
-          <span className="font-mono text-[12px] font-bold tracking-[0.08em] text-signal-ink">FROM THE LAST 14 DAYS OF DESK AND GUARD ANSWERS</span>
+          <span className={CHIP_DASHED + " self-start"}>LAST {SUGGEST_DAYS} DAYS · DESK AND GUARD ANSWERS</span>
           <h2 id="suggest-h" className="ee-display text-[28px] leading-none sm:text-[30px]">What EarlyEye suggests changing</h2>
         </div>
         {suggestions.length === 0 && (
@@ -933,12 +924,7 @@ export function ProofScreen() {
             })}
           </div>
           <span className="text-[15px] leading-[1.45]">
-            <span className="font-extrabold">{trend}</span> Each Yes/No the desk
-            answers is saved as a label for that camera, and the labels are used
-            to retune that camera
-            {weeks[3].n < weeks[0].n
-              ? ", so the same mistake gets rarer."
-              : ". One month is too short to see a trend."}
+            <span className="font-extrabold">{trend}</span>
           </span>
         </section>
 
@@ -993,13 +979,8 @@ export function ProofScreen() {
               </div>
             ))}
           </div>
-          <span className="text-[14px] leading-[1.45] text-ink-2">
-            Guard times are medians from the guards&apos; phones on your campus
-            over the last 4 weeks.{" "}
-            <span className="font-extrabold">
-              Warning before a fight starts: not measured yet.
-            </span>{" "}
-            We will time it on our own recorded clips before claiming it.
+          <span className="text-[14px] font-extrabold">
+            Warning before a fight starts: not measured yet.
           </span>
         </section>
       </div>

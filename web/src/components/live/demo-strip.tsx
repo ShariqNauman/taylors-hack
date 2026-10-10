@@ -6,7 +6,10 @@ import Link from "next/link";
 export function DemoStrip({
   mode,
   onRestart,
+  location,
 }: {
+  /** Where the recorded feed was filmed (the live camera's location). */
+  location?: string;
   /** "replay": the recorded demo feed is playing. "idle": no live feed and no replay. */
   mode: "replay" | "idle";
   onRestart?: () => void;
@@ -16,17 +19,10 @@ export function DemoStrip({
       <span className="rounded-[1px] border border-ink px-2 py-0.5 font-mono text-[12px] font-bold">
         NO CAMERA CONNECTED
       </span>
-      {mode === "replay" ? (
-        <span className="text-[15px]">
-          Showing the recorded demo feed from the Grand Hall webcam, played in
-          real time. When the laptop webcam is on, this is live.
-        </span>
-      ) : (
-        <span className="text-[15px]">
-          No live events in the last minute. Play the recorded demo feed from
-          the Grand Hall webcam to see an escalation in real time.
-        </span>
-      )}
+      <span className="text-[15px]">
+        {mode === "replay" ? "Recorded demo feed" : "No live events in the last minute"}
+        {location ? ` · ${location}` : ""}
+      </span>
       {mode === "replay" ? (
         <button
           type="button"

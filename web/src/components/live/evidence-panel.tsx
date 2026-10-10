@@ -388,19 +388,9 @@ export function EvidencePanel({
         features={entry?.top_features ?? event?.top_features}
         level={level}
       />
-      {(entry?.top_features ?? event?.top_features)?.length ? (
-        <p className="text-[12px] text-muted-ink">
-          The three signals the model leans on most, plus its score.
-          {replayDemo || synthetic
-            ? " Replay values, not a live model run."
-            : ""}{" "}
-          Pose: 12 body keypoints per person, no face points.
-        </p>
-      ) : (
-        <p className="text-[12px] text-muted-ink">
-          Pose: 12 body keypoints per person, no face points.
-        </p>
-      )}
+      {(entry?.top_features ?? event?.top_features)?.length && (replayDemo || synthetic) ? (
+        <span className="font-mono text-[11px] font-bold text-muted-ink">REPLAY VALUES · NOT A LIVE MODEL RUN</span>
+      ) : null}
       {event && isAlarmLevel(level) && mode === "replay" && (
         <p className="sr-only">
           Scrubbing a past frame; the live level is {LEVEL_LABEL[event.level]}.

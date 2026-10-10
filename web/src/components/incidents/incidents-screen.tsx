@@ -34,6 +34,7 @@ import { useClock } from "@/hooks/use-clock";
 import { useFirstName } from "@/hooks/use-first-name";
 import { cn } from "@/lib/utils";
 import { PageShell } from "@/components/chrome/page-shell";
+import { HowItWorks } from "@/components/chrome/how-it-works";
 import { LevelPill } from "@/components/chrome/level-pill";
 import { SkeletonView } from "@/components/skeleton/skeleton-view";
 
@@ -186,15 +187,13 @@ export function IncidentsScreen() {
 
   return (
     <PageShell>
-      <div className="flex max-w-[900px] flex-col gap-1.5">
-        <span className="font-mono text-[12px] tracking-[0.08em] text-muted-ink">
-          EVERY ALERT, SAVED AS A CASE
-        </span>
+      <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1.5">
         <h1 className="ee-display text-[52px]">Incidents</h1>
-        <p className="text-[18px] leading-[1.45] text-ink-2">
-          Every alert EarlyEye raises lands here. Decide if it was real, write
-          down what happened, and follow up.
-        </p>
+        <HowItWorks>
+          <span>Every alert EarlyEye raises is saved here as a case. Decide if it was real, write down what happened, and follow up.</span>
+          <span>Each false alarm you mark helps EarlyEye raise fewer at that spot. People appear as stick figures; the video never leaves campus, and the desk on site can watch the clip.</span>
+          <span>EarlyEye never knows who people are, so names go in your own records, not in the notes here.</span>
+        </HowItWorks>
       </div>
 
       <section aria-label="Needs you now" className="flex flex-col gap-2">
@@ -795,9 +794,6 @@ function CaseStory({
             <span className="text-[20px] font-extrabold">
               False alarm. Nothing more to do.
             </span>
-            <span className="text-[14px] text-ink-2">
-              Each false alarm you mark helps EarlyEye raise fewer at this spot.
-            </span>
           </span>
           <button
             type="button"
@@ -864,10 +860,7 @@ function CaseStory({
                   </span>
                 </>
               ) : (
-                <span className="text-[14px] text-ink-2">
-                  People appear as stick figures. The video never leaves campus;
-                  the desk on site can watch the clip.
-                </span>
+                <span className="font-mono text-[11px] font-bold text-muted-ink">STICK FIGURES · NO VIDEO OFF SITE</span>
               )}
             </figcaption>
           </figure>
@@ -978,8 +971,6 @@ function CaseStory({
             {noteSaved
               ? "Saved with the case. "
               : "Saved with the case when you click away. "}
-            EarlyEye never knows who people are, so names go in your own
-            records, not here.
           </span>
         </div>
       </div>

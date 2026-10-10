@@ -49,7 +49,7 @@ export const LEVEL_NOTE: Record<Level, string> = {
 /** "at the Grand Hall", "on the Block C stairwell", "in U Residence, corridor L3". */
 export function placePhrase(location: string): string {
   const l = location.trim();
-  if (/^(U Residence|DK Senza)|corridor/i.test(l)) return `in ${l}`;
+  if (/corridor|residence|hostel|block [a-z]$/i.test(l)) return `in ${l}`;
   if (/(stairwell|pitch|court|landing|stairs)$/i.test(l)) return `on the ${l}`;
   return `at the ${l}`;
 }

@@ -343,7 +343,6 @@ export function GuardApp() {
       <Frame header={header}>
         <div className="flex flex-col gap-2.5 px-4 pt-4 pb-[22px]">
           <h1 className="ee-display text-[40px] leading-[0.95]">What did you find?</h1>
-          <span className="text-[15px] text-ink-2">One tap. The desk sees it straight away.</span>
           {OUTCOMES.map((o, i) => (
             <button
               key={o.id}
