@@ -131,9 +131,10 @@
    "days": "Mon–Thu",
    "hours": "13:00–14:00",
    "geo": {
-    "lat": 3.0640148,
-    "lng": 101.6173947
-   }
+    "lat": 3.06406,
+    "lng": 101.61752
+   },
+   "_placement_note": "Moved 14 m east onto Block C's south stair core (the old point sat in the gap between Blocks C and D). Check on Google Earth."
   },
   {
    "slot": "P/02",
@@ -143,7 +144,8 @@
    "geo": {
     "lat": 3.0641776,
     "lng": 101.6161353
-   }
+   },
+   "floor": 3
   },
   {
    "slot": "P/03",
@@ -153,6 +155,17 @@
    "geo": {
     "lat": 3.0635174,
     "lng": 101.6163602
+   }
+  },
+  {
+   "slot": "P/04",
+   "location": "Sports pitch",
+   "days": "Tue & Thu",
+   "hours": "17:00–18:00",
+   "status": "suggested",
+   "geo": {
+    "lat": 3.06179,
+    "lng": 101.6172148
    }
   }
  ],

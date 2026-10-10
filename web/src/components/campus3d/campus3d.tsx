@@ -14,6 +14,7 @@ import {
   DEFAULT_BUILDINGS_URL,
   SEED_URL,
   buildBuildings,
+  buildingAt,
   cameraLevel,
   currentAlarm,
   latestEventFor,
@@ -24,7 +25,6 @@ import {
   sourceKind,
   type CampusGeoJson,
   type CampusSeed,
-  type PlanPost,
 } from "./model";
 import {
   BuildingLabel,
@@ -34,15 +34,14 @@ import {
   LayerToggle,
   Legend,
   NavControls,
-  PostCard,
-  PostPin,
 } from "./overlays";
 import { FlatMap } from "./flat-map";
 import { COLORS } from "./theme";
-import type { Campus3DProps } from "./types";
+import type { Campus3DProps, PostView } from "./types";
 import { GROUND_URL, geoToLocal, localise, parseGround, type GroundCollection, type XY } from "./geo";
 import { CameraRig, FOV, focusView, homeView, type FlyRequest, type RigApi, type View } from "./rig";
-import { buildingHeight, CampusScene, POST_FIGURE_H } from "./scene";
+import { buildingHeight, CampusScene, floorY, roofYAt } from "./scene";
+import { discRadius, PostInfoCard, PostMarker3D, PostsLegend, PostTag, type PlacedPost } from "./posts-layer";
 
 export const CREDIT = "Stylised model · footprints © OpenStreetMap contributors";
 const NARROW = 640;
@@ -61,6 +60,16 @@ const JUMPS: { label: string; buildingId?: string; cameraId?: string }[] = [
   { label: "Sports centre", buildingId: "sports" },
   { label: "Whole campus" },
 ];
+
+/** Building names on the plan layer, as on the 2D map. */
+const PLAN_NAMES: Record<string, string> = {
+  blockab: "Block A & B",
+  blockc: "Block C",
+  blockd: "Block D",
+  blocke: "Block E",
+  syopz: "Syopz Mall · U Residence above",
+  sports: "Sports centre",
+};
 
 const fetchJson = <T,>(url: string): Promise<T> =>
   fetch(url).then((r) => {
@@ -101,6 +110,9 @@ export default function Campus3D({
   selectedCameraId,
   onSelectCamera,
   height,
+  posts: postsProp,
+  selectedPostId,
+  onSelectPost,
 }: Campus3DProps) {
   const h = height ?? (compact ? 240 : 560);
   const wrapRef = useRef<HTMLDivElement>(null);
@@ -123,10 +135,48 @@ export default function Campus3D({
   const local = useMemo(() => (geo ? localise(geo, buildings) : null), [geo, buildings]);
   const ground = useMemo(() => (groundFc ? parseGround(groundFc) : []), [groundFc]);
 
+  // ── Guard posts: the page's `posts` when given, else derived from `plan` as before ──
+  const viewPosts = useMemo<PostView[]>(() => {
+    if (postsProp) return postsProp;
+    return posts.map((p) => {
+      const rank = Number(p.id.replace(/^P\//, ""));
+      const slot = plan?.slots?.[rank - 1];
+      return {
+        id: p.id,
+        rank,
+        status: "active" as const,
+        place: p.location,
+        daysLabel: slot?.days ?? p.when,
+        hours: slot?.hours ?? "",
+        geo: p.geo,
+        incidents28d: p.incidents4w,
+        guard: null,
+      };
+    });
+  }, [postsProp, posts, plan]);
+  const placedPosts = useMemo<PlacedPost[]>(
+    () =>
+      viewPosts.map((p) => {
+        const bid = buildingAt([p.geo.lng, p.geo.lat], buildings, 0)?.id ?? null;
+        const at = geoToLocal(p.geo);
+        const fp = local?.buildings.find((b) => b.id === bid);
+        // On an upper floor: the real height, with a disc on the ground and a line up.
+        // Indoors on the ground floor: on the roof, the 3D twin of the 2D map's circle over the building.
+        const upper = !!p.floor && p.floor > 0;
+        const roof = !upper && bid && fp ? roofYAt(bid, fp.pts, at) : 0;
+        const y = upper ? floorY(bid, p.floor) : roof;
+        const side: "left" | "right" = local && at[0] > (local.extent.minX + local.extent.maxX) / 2 ? "left" : "right";
+        return { ...p, at, buildingId: bid, y, discY: upper ? 0 : roof, side };
+      }),
+    [viewPosts, buildings, local],
+  );
+
   // ── Layer and selection (props seed state; the user can change it) ──
-  const [layer, setLayer] = useState<Layer>(mode);
+  const [layer, setLayer] = useState<Layer>(!compact && selectedPostId && !selectedCameraId ? "plan" : mode);
   const [prevMode, setPrevMode] = useState(mode);
-  const [sel, setSel] = useState<Sel>(!compact && selectedCameraId ? { kind: "cam", id: selectedCameraId } : null);
+  const [sel, setSel] = useState<Sel>(
+    compact ? null : selectedCameraId ? { kind: "cam", id: selectedCameraId } : selectedPostId ? { kind: "post", id: selectedPostId } : null,
+  );
   const [prevSelProp, setPrevSelProp] = useState(selectedCameraId);
   if (mode !== prevMode) {
     setPrevMode(mode);
@@ -138,6 +188,16 @@ export default function Campus3D({
     if (selectedCameraId && !compact) {
       setLayer("cameras");
       setSel({ kind: "cam", id: selectedCameraId });
+    }
+  }
+  const [prevPostProp, setPrevPostProp] = useState(selectedPostId);
+  if (selectedPostId !== prevPostProp) {
+    setPrevPostProp(selectedPostId);
+    if (!compact) {
+      if (selectedPostId) {
+        setLayer("plan");
+        setSel({ kind: "post", id: selectedPostId });
+      } else if (sel?.kind === "post") setSel(null);
     }
   }
   const camLayer = compact || layer === "cameras";
@@ -194,8 +254,6 @@ export default function Campus3D({
     if (!targetCam?.geo) return { ...home, polar: 0.85 };
     return { ...home, ...focusView(geoToLocal(targetCam.geo), heightOf(cameraBuilding[targetCam.camera_id]), aspect, true) } as View;
   }, [home, compact, targetCam, heightOf, cameraBuilding, aspect]);
-  const initial = compact ? compactView : home;
-  const initialKey = compact ? `compact:${targetCam?.camera_id ?? "none"}:${routeGuard?.guard.name ?? ""}` : "home";
 
   const rig = useRef<RigApi>(null);
   const [fly, setFly] = useState<FlyRequest | null>(null);
@@ -205,6 +263,50 @@ export default function Campus3D({
     [requestFly, heightOf, aspect],
   );
   const [bearing, setBearing] = useState(0);
+
+  // Opening view on the plan layer: every active and suggested post, about 45° tilt, lake in front.
+  const postsHome = useMemo<View | null>(() => {
+    if (!placedPosts.length || !w) return null;
+    const pad = Math.max(...placedPosts.map((p) => discRadius(p.incidents28d))) + 45;
+    const xs = placedPosts.map((p) => p.at[0]);
+    const ys = placedPosts.map((p) => p.at[1]);
+    const v = homeView({ minX: Math.min(...xs) - pad, maxX: Math.max(...xs) + pad, minY: Math.min(...ys) - pad, maxY: Math.max(...ys) + pad + 40 }, aspect);
+    return { ...v, distance: v.distance * 1.12 };
+  }, [placedPosts, w, aspect]);
+  const showAllPosts = useCallback(() => {
+    if (postsHome) requestFly(postsHome);
+  }, [postsHome, requestFly]);
+  const flyToPost = useCallback(
+    (p: PlacedPost) => requestFly(focusView(p.at, Math.max(p.y, 8), aspect, false)),
+    [requestFly, aspect],
+  );
+  const selectPost = useCallback(
+    (id: string) => {
+      if (compact) return;
+      setLayer("plan");
+      setSel({ kind: "post", id });
+      onSelectPost?.(id);
+      const p = placedPosts.find((q) => q.id === id);
+      if (p) flyToPost(p);
+    },
+    [compact, onSelectPost, placedPosts, flyToPost],
+  );
+  // The page picked a post (a row in "Who is going?" or a timetable block): fly to it.
+  const flownPost = useRef<string | null>(null);
+  useEffect(() => {
+    if (compact || !selectedPostId || flownPost.current === selectedPostId) return;
+    const p = placedPosts.find((q) => q.id === selectedPostId);
+    if (!p) return;
+    flownPost.current = selectedPostId;
+    flyToPost(p);
+  }, [compact, selectedPostId, placedPosts, flyToPost]);
+  useEffect(() => {
+    if (!selectedPostId) flownPost.current = null;
+  }, [selectedPostId]);
+
+  const planOpening = !compact && mode === "plan" && !!postsHome;
+  const initial = compact ? compactView : planOpening ? postsHome : home;
+  const initialKey = compact ? `compact:${targetCam?.camera_id ?? "none"}:${routeGuard?.guard.name ?? ""}` : planOpening ? "posts" : "home";
 
   // Deep link (?cam=): frame the building once per id.
   const framed = useRef<string | null>(null);
@@ -223,22 +325,29 @@ export default function Campus3D({
     (id: string) => {
       if (compact) return;
       if (layer === "plan") {
-        const p = posts.find((q) => q.buildingId === id);
-        setSel(p ? { kind: "post", id: p.id } : null);
+        const p = placedPosts.find((q) => q.buildingId === id);
+        if (p) selectPost(p.id);
+        else setSel(null);
       } else {
         const cams = geoCams.filter((c) => cameraBuilding[c.camera_id] === id);
         const cam = cams.find((c) => c.camera_id === alarmCamId) ?? cams.find((c) => sourceKind(c) === "live") ?? cams[0];
         setSel(cam ? { kind: "cam", id: cam.camera_id } : null);
       }
     },
-    [compact, layer, posts, geoCams, cameraBuilding, alarmCamId],
+    [compact, layer, placedPosts, selectPost, geoCams, cameraBuilding, alarmCamId],
   );
 
   const selectedBuildingId =
-    sel?.kind === "cam" ? (cameraBuilding[sel.id] ?? null) : sel?.kind === "post" ? (posts.find((p) => p.id === sel.id)?.buildingId ?? null) : null;
+    sel?.kind === "cam" ? (cameraBuilding[sel.id] ?? null) : sel?.kind === "post" ? (placedPosts.find((p) => p.id === sel.id)?.buildingId ?? null) : null;
 
-  const [occluders, setOccluders] = useState<React.RefObject<THREE.Object3D>[]>([]);
-  const registerOccluders = useCallback((meshes: THREE.Object3D[]) => setOccluders(meshes.map((m) => ({ current: m }))), []);
+  const [occluderMap, setOccluderMap] = useState<Map<string, THREE.Object3D>>(new Map());
+  const registerOccluders = useCallback((meshes: Map<string, THREE.Object3D>) => setOccluderMap(meshes), []);
+  const occluders = useMemo<React.RefObject<THREE.Object3D>[]>(() => [...occluderMap.values()].map((m) => ({ current: m })), [occluderMap]);
+  /** A post inside a building is drawn through its own walls, so only the other buildings hide its tag. */
+  const occludersExcept = useCallback(
+    (id: string | null) => [...occluderMap.entries()].filter(([k]) => k !== id).map(([, m]) => ({ current: m }) as React.RefObject<THREE.Object3D>),
+    [occluderMap],
+  );
 
   // ── Overlays ──
   const camsIn = (bid: string) => geoCams.filter((c) => cameraBuilding[c.camera_id] === bid);
@@ -256,8 +365,11 @@ export default function Campus3D({
     if (!at) return;
     flyToBuilding(at, b?.id);
     if (layer === "plan") {
-      const p = posts.find((q) => q.buildingId === b?.id);
-      setSel(p ? { kind: "post", id: p.id } : null);
+      const p = placedPosts.find((q) => q.buildingId === b?.id);
+      if (p) {
+        setSel({ kind: "post", id: p.id });
+        onSelectPost?.(p.id);
+      } else setSel(null);
     } else {
       const c = cam ?? (b ? camsIn(b.id)[0] : undefined);
       setSel(c ? { kind: "cam", id: c.camera_id } : null);
@@ -267,7 +379,7 @@ export default function Campus3D({
   const shownCams = compact ? (targetCam ? [targetCam] : []) : camLayer ? geoCams : [];
   const shownGuards = compact ? (routeGuard ? [routeGuard.guard] : []) : camLayer ? guards : [];
   const selCam = sel?.kind === "cam" ? (geoCams.find((c) => c.camera_id === sel.id) ?? null) : null;
-  const selPost = sel?.kind === "post" ? (posts.find((p) => p.id === sel.id) ?? null) : null;
+  const selPost = sel?.kind === "post" ? (placedPosts.find((p) => p.id === sel.id) ?? null) : null;
 
   const compactLabel = compact
     ? targetCam
@@ -276,16 +388,6 @@ export default function Campus3D({
         }`
       : `WHERE · ${(alarm?.location ?? "THIS CAMERA").toUpperCase()} · NOT ON THE MAP YET`
     : null;
-
-  // Columns stand on the roof when the post is inside a building, so they are never swallowed by it.
-  const columnBase = useCallback((p: PlanPost) => (p.buildingId ? heightOf(p.buildingId) + 2.3 : 0), [heightOf]);
-  const columns = useMemo(
-    () =>
-      !compact && layer === "plan"
-        ? posts.map((p) => ({ id: p.id, at: geoToLocal(p.geo), base: columnBase(p), height: POST_FIGURE_H, count: p.incidents4w, people: 1, selected: selPost?.id === p.id, onPick: () => setSel({ kind: "post", id: p.id }) }))
-        : [],
-    [compact, layer, posts, selPost?.id, columnBase],
-  );
 
   // Flat projector for the no-WebGL map: metres to pixels, north up.
   const flatProject = useMemo(() => {
@@ -315,7 +417,7 @@ export default function Campus3D({
       className="relative w-full select-none overflow-hidden rounded-[2px] border border-line"
       style={{ height: h, background: SKY, touchAction: compact ? "auto" : "none" }}
       role="region"
-      aria-label={compact ? `Campus model: ${targetCam?.location ?? "campus"}` : `3D model of ${site?.name ?? "the campus"} with ${layer === "plan" ? "patrol posts and hotspot columns" : "camera pins"}`}
+      aria-label={compact ? `Campus model: ${targetCam?.location ?? "campus"}` : `3D model of ${site?.name ?? "the campus"} with ${layer === "plan" ? "the guard posts, numbered" : "camera pins"}`}
     >
       {ready && gl === "webgl" && local && initial && (
         <Canvas
@@ -341,8 +443,10 @@ export default function Campus3D({
             onPickBuilding={compact ? undefined : pickBuilding}
             registerOccluders={registerOccluders}
             route={route}
-            columns={columns}
           />
+          {!compact &&
+            layer === "plan" &&
+            placedPosts.map((p) => <PostMarker3D key={p.id} post={p} selected={sel?.kind === "post" && sel.id === p.id} onPick={() => selectPost(p.id)} />)}
 
           {/* HTML overlays anchored to 3D points. The overlays centre themselves on [0,0] inside each anchor. */}
           {!compact &&
@@ -350,7 +454,7 @@ export default function Campus3D({
             buildings.map((b) => {
               const live = camLayer ? liveCamIn(b.id) : undefined;
               const n = camLayer ? camsIn(b.id).length : 0;
-              const name = b.name.toUpperCase();
+              const name = (layer === "plan" ? (PLAN_NAMES[b.id] ?? b.name) : b.name).toUpperCase();
               const text = live ? `${live.location.split(",")[0].toUpperCase()} · ${name} · LIVE` : n ? `${name} · ${n} CAM` : name;
               return (
                 <Html key={b.id} position={anchor({ lng: b.centroid[0], lat: b.centroid[1] }, heightOf(b.id) + 7)} zIndexRange={[12, 8]} style={{ pointerEvents: "none" }}>
@@ -377,14 +481,9 @@ export default function Campus3D({
           ))}
           {!compact &&
             layer === "plan" &&
-            posts.map((p) => (
-              <Html key={p.id} position={anchor(p.geo, columnBase(p) + POST_FIGURE_H + 7)} zIndexRange={[20, 15]} style={{ pointerEvents: "none" }}>
-                <div className="absolute left-0 top-0 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-1">
-                  <PostPin post={p} pos={ZERO} selected={sel?.kind === "post" && sel.id === p.id} onClick={() => setSel({ kind: "post", id: p.id })} />
-                  <span className="pointer-events-none mt-[34px] whitespace-nowrap border border-line bg-white/95 px-1.5 py-[2px] font-mono text-[10px] font-bold text-ink-2">
-                    1 PERSON HERE · {p.incidents4w} INCIDENT{p.incidents4w === 1 ? "" : "S"} IN 4 WKS
-                  </span>
-                </div>
+            placedPosts.map((p) => (
+              <Html key={p.id} position={[p.at[0], p.status === "suggested" ? p.discY + 2 : p.y + 9, -p.at[1]]} occlude={occludersExcept(p.buildingId)} zIndexRange={[22, 16]} style={{ pointerEvents: "none" }}>
+                <PostTag post={p} selected={sel?.kind === "post" && sel.id === p.id} onClick={() => selectPost(p.id)} />
               </Html>
             ))}
         </Canvas>
@@ -399,7 +498,7 @@ export default function Campus3D({
             project={flatProject}
             alarmBuildingId={alarmBuildingId}
             selectedBuildingId={selectedBuildingId}
-            columns={!compact && layer === "plan" ? posts.map((p) => p.geo) : []}
+            columns={!compact && layer === "plan" ? viewPosts.map((p) => p.geo) : []}
             route={routeCam?.geo && routeGuard ? [[routeGuard.guard.post.lng, routeGuard.guard.post.lat], [routeCam.geo.lng, routeCam.geo.lat]] : null}
             onBuilding={pickBuilding}
           />
@@ -418,7 +517,16 @@ export default function Campus3D({
                 onClick={() => (compact ? onOpenCamera?.(c.camera_id) : setSel({ kind: "cam", id: c.camera_id }))}
               />
             ))}
-            {!compact && layer === "plan" && posts.map((p) => <PostPin key={p.id} post={p} pos={flatProject(p.geo.lng, p.geo.lat)} selected={sel?.kind === "post" && sel.id === p.id} onClick={() => setSel({ kind: "post", id: p.id })} />)}
+            {!compact &&
+              layer === "plan" &&
+              placedPosts.map((p) => {
+                const [x, y] = flatProject(p.geo.lng, p.geo.lat);
+                return (
+                  <div key={p.id} className="absolute" style={{ left: x, top: y }}>
+                    <PostTag post={p} selected={sel?.kind === "post" && sel.id === p.id} onClick={() => selectPost(p.id)} />
+                  </div>
+                );
+              })}
           </div>
         </>
       )}
@@ -443,6 +551,11 @@ export default function Campus3D({
             <span className="border border-line bg-white/90 px-2 py-[3px] font-mono text-[11px] font-bold">{(site?.name ?? "Taylor's University Lakeside Campus").toUpperCase()}</span>
           </div>
           <div role="group" aria-label="Jump to a building" className="pointer-events-auto flex flex-wrap gap-1">
+            {layer === "plan" && placedPosts.length > 0 && (
+              <button type="button" onClick={showAllPosts} className="min-h-[30px] rounded-[2px] border border-ink bg-ink px-2 text-[12px] font-bold text-white">
+                Show all posts
+              </button>
+            )}
             {JUMPS.map((j) => (
               <button key={j.label} type="button" onClick={() => jump(j)} className="min-h-[30px] rounded-[2px] border border-line-strong bg-white/95 px-2 text-[12px] font-bold text-ink">
                 {j.label}
@@ -472,7 +585,7 @@ export default function Campus3D({
       )}
       {ready && !compact && selPost && (
         <div className="absolute inset-0 z-40 pointer-events-none">
-          <PostCard post={selPost} sheet={narrow} onClose={() => setSel(null)} />
+          <PostInfoCard post={selPost} sheet={narrow} onClose={() => setSel(null)} />
         </div>
       )}
 
@@ -496,7 +609,7 @@ export default function Campus3D({
       )}
       {ready && !compact && (
         <div className="pointer-events-none absolute bottom-3 right-3 z-30 flex max-w-[calc(100%-24px)] flex-col items-end gap-1">
-          {camLayer && <Legend />}
+          {camLayer ? <Legend /> : <PostsLegend />}
           <span className={cn("bg-white/85 px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground")}>{CREDIT.toUpperCase()}</span>
         </div>
       )}

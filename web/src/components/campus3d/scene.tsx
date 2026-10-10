@@ -67,6 +67,35 @@ export function buildingHeight(id: string, fallback: number): number {
   return s.tower ? base + s.tower.floors * s.tower.floorH : base;
 }
 
+/**
+ * Top of the roof under a point, for markers standing on a building: the floating
+ * roof of most blocks, or for Syopz the podium roof, unless the point is under
+ * the U Residence tower (same rectangle as the tower in buildBuilding).
+ */
+export function roofYAt(buildingId: string, pts: XY[], at: XY): number {
+  const s = SPEC[buildingId];
+  if (!s) return 12;
+  const H = s.floors * (s.floorH ?? FLOOR_H);
+  if (s.tower) {
+    const bx = bounds(pts);
+    const inTower = at[0] >= bx.minX + 5 && at[0] <= bx.maxX - 5 && at[1] >= bx.maxY - 62 && at[1] <= bx.maxY - 6;
+    if (inTower) return H + 0.6 + s.tower.floors * s.tower.floorH + 1.4;
+  }
+  return H + 2.1;
+}
+
+/**
+ * Height in metres of a floor's level in the model. For Syopz the floors count
+ * up the U Residence tower above the podium (U Residence "level 3" = third
+ * residential floor); elsewhere 4 m a floor, ground = 0.
+ */
+export function floorY(buildingId: string | null, floor: number | undefined): number {
+  if (!floor || floor <= 0) return 0;
+  const s = buildingId ? SPEC[buildingId] : undefined;
+  if (s?.tower) return s.floors * (s.floorH ?? FLOOR_H) + 0.6 + (floor - 1) * s.tower.floorH + 0.5;
+  return floor * (s?.floorH ?? FLOOR_H);
+}
+
 // ── Geometry helpers (local metres: x east, y north → world x, −z; height → world y) ──
 
 export const toWorld = (p: XY, h = 0): [number, number, number] => [p[0], h, -p[1]];
@@ -515,17 +544,17 @@ export interface SceneProps {
   compact: boolean;
   onPickBuilding?: (id: string) => void;
   /** Receives the building pick meshes so pins can be occluded by them. */
-  registerOccluders?: (meshes: THREE.Object3D[]) => void;
+  /** Receives the building pick meshes by building id, so overlays can be occluded by them. */
+  registerOccluders?: (meshes: Map<string, THREE.Object3D>) => void;
   route?: [XY, number, XY, number] | null; // guard → camera, with heights
-  columns?: { at: XY; base: number; height: number; count: number; people: number; selected: boolean; id: string; onPick: () => void }[];
 }
 
-export function CampusScene({ campus, ground, selectedBuildingId, alarmBuildingId, pulse, compact, onPickBuilding, registerOccluders, route, columns }: SceneProps) {
+export function CampusScene({ campus, ground, selectedBuildingId, alarmBuildingId, pulse, compact, onPickBuilding, registerOccluders, route }: SceneProps) {
   const built = useMemo(() => campus.buildings.map(buildBuilding), [campus]);
   const g = useMemo(() => buildGround(campus, ground), [campus, ground]);
   const bodyRefs = useRef<Map<string, THREE.Mesh>>(new Map());
   useEffect(() => {
-    registerOccluders?.([...bodyRefs.current.values()]);
+    registerOccluders?.(new Map(bodyRefs.current));
   }, [built, registerOccluders]);
   useEffect(
     () => () => {
@@ -676,10 +705,6 @@ export function CampusScene({ campus, ground, selectedBuildingId, alarmBuildingI
         );
       })}
 
-      {/* Patrol posts (plan layer): a stack of one block per incident on a base plate, with a pole up to the pin. */}
-      {columns?.map((c) => (
-        <PostStack key={c.id} {...c} />
-      ))}
 
       {/* Dashed route from the nearest guard to the alarming camera */}
       {route && (
@@ -695,88 +720,6 @@ export function CampusScene({ campus, ground, selectedBuildingId, alarmBuildingI
           renderOrder={20}
         />
       )}
-    </group>
-  );
-}
-
-export const POST_FIGURE_H = 16;
-
-/**
- * A patrol post as a person-shaped marker: a low-poly figure (about 16 m tall at
- * diorama scale, so it reads from the whole-island view) standing on a round
- * base plate on the roof. One figure per person to station there. Selected
- * posts go darker.
- */
-function PostStack({ at, base, people, selected, onPick }: { at: XY; base: number; count: number; height: number; people: number; selected: boolean; id: string; onPick: () => void }) {
-  const colour = selected ? "#1F35B3" : M.column3d;
-  const skin = "#F3E3CF";
-  const x = at[0];
-  const z = -at[1];
-  const n = Math.max(1, people);
-  const Figure = ({ dx }: { dx: number }) => (
-    <group position={[x + dx, base + 1, z]}>
-      {/* legs */}
-      <mesh position={[-1.1, 2.6, 0]} castShadow>
-        <cylinderGeometry args={[0.85, 0.95, 5.2, 10]} />
-        <meshStandardMaterial color={colour} roughness={0.8} />
-      </mesh>
-      <mesh position={[1.1, 2.6, 0]} castShadow>
-        <cylinderGeometry args={[0.85, 0.95, 5.2, 10]} />
-        <meshStandardMaterial color={colour} roughness={0.8} />
-      </mesh>
-      {/* torso */}
-      <mesh position={[0, 8.2, 0]} castShadow>
-        <capsuleGeometry args={[2.1, 3.6, 4, 12]} />
-        <meshStandardMaterial color={colour} roughness={0.8} />
-      </mesh>
-      {/* arms */}
-      <mesh position={[-3.0, 8.0, 0]} rotation={[0, 0, 0.22]} castShadow>
-        <capsuleGeometry args={[0.65, 4.2, 3, 8]} />
-        <meshStandardMaterial color={colour} roughness={0.8} />
-      </mesh>
-      <mesh position={[3.0, 8.0, 0]} rotation={[0, 0, -0.22]} castShadow>
-        <capsuleGeometry args={[0.65, 4.2, 3, 8]} />
-        <meshStandardMaterial color={colour} roughness={0.8} />
-      </mesh>
-      {/* head and cap */}
-      <mesh position={[0, 13.0, 0]} castShadow>
-        <sphereGeometry args={[1.9, 16, 12]} />
-        <meshStandardMaterial color={skin} roughness={0.9} />
-      </mesh>
-      <mesh position={[0, 14.0, 0]} castShadow>
-        <sphereGeometry args={[1.95, 16, 8, 0, Math.PI * 2, 0, Math.PI * 0.5]} />
-        <meshStandardMaterial color={colour} roughness={0.8} />
-      </mesh>
-      <mesh position={[0, 13.2, 1.6]} rotation={[0.25, 0, 0]}>
-        <boxGeometry args={[3.2, 0.3, 1.6]} />
-        <meshStandardMaterial color={colour} roughness={0.8} />
-      </mesh>
-    </group>
-  );
-  return (
-    <group
-      onClick={(e) => {
-        e.stopPropagation();
-        onPick();
-      }}
-      onPointerOver={() => {
-        document.body.style.cursor = "pointer";
-      }}
-      onPointerOut={() => {
-        document.body.style.cursor = "";
-      }}
-    >
-      <mesh position={[x, base + 0.4, z]} castShadow receiveShadow>
-        <cylinderGeometry args={[6 + n * 1.5, 6 + n * 1.5, 0.8, 32]} />
-        <meshStandardMaterial color="#DDE3FB" roughness={0.9} />
-      </mesh>
-      <mesh position={[x, base + 0.85, z]}>
-        <cylinderGeometry args={[4.6 + n * 1.5, 4.6 + n * 1.5, 0.3, 32]} />
-        <meshStandardMaterial color={colour} roughness={0.8} />
-      </mesh>
-      {Array.from({ length: n }, (_, i) => (
-        <Figure key={i} dx={(i - (n - 1) / 2) * 6} />
-      ))}
     </group>
   );
 }
