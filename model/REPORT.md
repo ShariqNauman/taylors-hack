@@ -2,14 +2,215 @@
 
 Fight detection from video using body keypoints (no faces). Model only, no backend or website.
 
-- **Part A** (below): v3, multi-dataset model on v2 keypoints. **Current model.**
-- **Part B** (further down): the previous model (RLVS only, v1 keypoints), kept for comparison.
+- **Part V5** (below): v5, half-body round. Same ensemble, made robust to partial bodies, one person and people close to the camera. **Current model.**
+- **Part A0**: v4, the final training round. LightGBM + 1D-CNN ensemble, tested on a locked hold-out (backed up in `backup_v4/`).
+- **Part A**: v3, multi-dataset LightGBM on v2 keypoints (the previous model, backed up in `backup_v3/`).
+- **Part B**: the first model (RLVS only, v1 keypoints).
+
+---
+
+# Part V5 — v5: half-body round (10 Oct 2026, branch `model-halfbody`)
+
+## V5.1 Why
+
+The v4 ensemble broke in the room:
+
+- **Live session (`session4.csv`):** 2 false FIGHT episodes in about 4 minutes of normal activity.
+- **One of those alarms had a pair distance of ~0.** That means one person was detected twice.
+- **Simulated framings:** with only the upper body visible, v4 missed most fights. The cause was the torso fallback (YOLO box height × 0.30), which made bodies look about 2.7× too small, so every speed and distance looked 2.7× too big.
+
+## V5.2 What changed
+
+| Change | Detail |
+|---|---|
+| **Body scale without hips** | Torso length from shoulder width × 1.92, else ear-to-ear × 3.01, eye-to-eye × 8.41 or eyes-to-nose × 14.29 (medians over ~140k full-body person-frames of the training part). No box-height torso any more. |
+| **Half-body copies** | Every clip also as waist-up (no hips, knees or ankles) and chest-up (also everything below the chest line), with boxes clipped. Copies keep their clip's group. |
+| **Own-room negatives** (stand-in for a recorded session) | Non-violent clips also as "single" (only the most-tracked person) and "close" (that person zoomed 2× around the shoulders, lower body out of frame). Synthetic copies of violent clips are used for testing only. |
+| **`visible_body_frac`** | New feature: the share of the 17 keypoints that are tracked. |
+| **Single-person rule** | A window with fewer than 2 tracked people can't be FIGHT (capped at TENSE). Cost: 6.1% of fight windows and 1.7% of fight clips have only one tracked person. |
+| **Duplicate merge** | Two boxes with IoU ≥ 0.7 in one frame are treated as one person. |
+| **Clipping** | LightGBM features clipped to the training part's 1st–99th percentile (stored in the model). CNN coordinates clipped to [-3.47, 3.45] (`seq_clip.json`). Applied in training and live. |
+| **Live** | `--save-keypoints` records raw keypoints and labels, so future sessions can be added to training. |
+
+Training settings are the same as v4 (LightGBM trial 94 and the 1D-CNN, same folds, same weights), on 82,824 training-part windows. FIGHT_AT 0.656 is fixed at 9% normal false alarms on full-body training clips.
+
+## V5.3 Hold-out results (second look: this hold-out was also used once for v4)
+
+Both models here were trained on the training part only.
+
+| Framing | Model | Clip AUC | Fights caught | Normal → FIGHT | Hugs → FIGHT | Weapon caught |
+|---|---|---|---|---|---|---|
+| Full body | v4 | **0.929** | **78.9%** | 10.5% | 11.1% | **68.4%** |
+| | **v5** | 0.917 | 64.5% | **5.2%** | 11.1% | 47.4% |
+| Waist-up | v4 | 0.881 | 36.4% | 1.9% | 33.3% | 10.5% |
+| | **v5** | **0.922** | **64.9%** | 4.3% | **5.6%** | **52.6%** |
+| Chest-up | v4 | 0.857 | 69.8% | 10.5% | **66.7%** | 36.8% |
+| | **v5** | **0.928** | 62.4% | **5.2%** | **11.1%** | **47.4%** |
+
+**One person alone or close to the camera:**
+
+| Clips reaching FIGHT | v4 | v5 |
+|---|---|---|
+| One person only | 12.1% | **0%** |
+| One person close to the camera | 16.4% | **0%** |
+
+**Proof rows (v5, full-body hold-out):**
+
+| Row | AUC | Precision | Recall |
+|---|---|---|---|
+| Phone-video sets | 0.942 | 0.928 | 0.696 |
+| CCTV | 0.813 | 0.903 | 0.483 |
+
+AIRTLab hug false alarms: 11.1% (2/18).
+
+**Verdict: v5 ships.**
+
+- **It fixes the failures seen live:** half bodies, one person, and close to the camera.
+- **The trade-off:** on clean full-body footage it is more cautious. AUC drops by 0.012, and it catches 14 points fewer fights at its threshold, while halving normal-clip false alarms.
+- **The v4 file as shipped** was trained on the hold-out clips, so it is not compared here.
+
+## V5.5 Live sensitivity presets and guards
+
+**Shared logic:** live and the evaluation run the same code (`guards.LevelLogic`). `evaluate_guards.py` tests it on the hold-out (second look). With guards off, it reproduces V5.3 exactly.
+
+**Presets** (both chosen on the training part, out-of-fold, full-body clips):
+
+| Preset | FIGHT_AT | Normal clips reaching FIGHT (training part) |
+|---|---|---|
+| `strict` | 0.656 | 9% |
+| `sensitive` | 0.541 | 15% |
+
+Note: 0.656 already *is* the training part's 9% threshold, so "sensitive" was set at 15%.
+
+**Guards:**
+
+| Guard | Rule |
+|---|---|
+| `PROX` | Pair within 2 torso lengths in the last 2 s |
+| `TWO_KEY` | A wrist moving toward the other person at ≥ 3 torso/s, or contact |
+| `K_OF_N` (3, 4) | Persistence: in practice ~2 s of hot windows instead of 1 s |
+| `MIN_TRACK` | A person counts only once tracked for ≥ 1 s |
+| `CLIP_FEATURES` | Features clipped to the training range |
+
+The single-person rule is always on.
+
+**Hold-out results:**
+
+| Setting | Fights caught | Normal → FIGHT | Hugs → FIGHT | Weapon caught | Waist-up / chest-up fights | Chest-up hugs | Single / close |
+|---|---|---|---|---|---|---|---|
+| **strict, guards off (default)** | **64.5%** | 5.2% | 11.1% | 47.4% | 64.9 / 62.4% | 11.1% | 0 / 0% |
+| strict, PROX only | 40.9% | 1.9% | 5.6% | 5.3% | 32.6 / 33.9% | 11.1% | 0 / 0% |
+| strict, TWO_KEY only | 54.5% | 3.8% | 11.1% | 42.1% | 50.8 / 43.4% | 11.1% | 0 / 0% |
+| strict, K_OF_N only | 44.6% | 1.9% | **0.0%** | 21.1% | 45.9 / 42.1% | 5.6% | 0 / 0% |
+| strict, MIN_TRACK only | 47.9% | 3.8% | 11.1% | 21.1% | 44.2 / 44.2% | 11.1% | 0 / 0% |
+| strict, CLIP_FEATURES only | 64.5% | 5.2% | 11.1% | 47.4% | 64.9 / 62.4% | 11.1% | 0 / 0% |
+| strict, all on | 16.5% | 0.5% | 0.0% | 0.0% | 12.0 / 12.4% | 5.6% | 0 / 0% |
+| sensitive, guards off | **75.6%** | 9.5% | 22.2% | **57.9%** | 77.7 / 78.5% | 22.2% | 0 / 0% |
+| sensitive, K_OF_N only | 57.0% | 4.3% | 5.6% | 47.4% | 64.0 / 62.0% | 16.7% | 0 / 0% |
+| sensitive, all on | 24.4% | 1.4% | 5.6% | 5.3% | 17.8 / 20.7% | 16.7% | 0 / 0% |
+
+The remaining rows are in `guards_results.json`.
+
+**Default: `strict`, all guards off except `CLIP_FEATURES`.**
+
+- **Each guard costs more recall than it saves.**
+  - `PROX` misses most weapon clips: many real fights have no clean pair distance, and missing counts as "not close".
+  - `TWO_KEY` and `MIN_TRACK` cost 10–26 points of fights or weapons for small false-alarm gains.
+- **`K_OF_N` is the switch to use if the room still gives false alarms:** hugs and normal clips drop to almost zero, at about 20 points of recall.
+- **`sensitive`:** use it when missing a fight costs more than a false alarm.
+- **`CLIP_FEATURES` costs nothing:** no hold-out clip has extreme values. It stays on to guard against close-to-camera spikes live.
+- **The overlay shows which guard blocked** an alarm-level score.
+
+## V5.4 Limits
+
+- **Not tested in our own room yet.** No session has been recorded with `--save-keypoints`, so the synthetic negatives stand in for real footage of our room.
+- **Lower full-body recall than v4** on dataset clips.
+
+---
+
+# Part A0 — v4: final training round (10–11 Oct 2026, branch `model-final`)
+
+Followed `TRAINING_PLAN.md` step by step, with an OK at every STOP.
+
+## A0.1 Verdict
+
+**The new ensemble is clearly better than v3.** It was evaluated once, on a locked hold-out of 470 clips that no feature, tuning, threshold or model choice ever saw.
+
+| Hold-out (470 clips) | Clip AUC | Precision | Recall | Fights caught | Normal → FIGHT | AIRTLab hugs/claps → FIGHT | Weapon caught |
+|---|---|---|---|---|---|---|---|
+| **v4 ensemble (shipped)** | **0.929** | 0.884 | **0.785** | **78.5%** | 11.0% | **11.1% (2/18)** | **68.4% (13/19)** |
+| LightGBM alone (fallback) | 0.895 | 0.909 | 0.702 | 70.2% | 6.2% | 22.2% (4/18) | 47.4% |
+| v3 recipe, retrained on the 85% (fair baseline) | 0.860 | 0.874 | 0.632 | 63.2% | 8.6% | 22.2% (4/18) | 36.8% |
+| v3 file as shipped (trained on these clips: **in-sample**) | 0.943 | 0.962 | 0.727 | 72.7% | 3.3% | 0.0% | 63.2% |
+
+**Per dataset (hold-out clip AUC):**
+
+| | AIRTLab | RLVS | SCF | SCVD |
+|---|---|---|---|---|
+| v4 ensemble | 0.904 | 0.947 | 0.834 | 0.888 |
+| v3 recipe | 0.897 | 0.878 | 0.735 | 0.834 |
+
+**How the thresholds were set:** every model's FIGHT_AT was fixed on the training part (out-of-fold) so that 9% of normal clips reach FIGHT, then applied to the hold-out unchanged. That is why the ensemble's hold-out normal rate is 11.0% rather than exactly 9%.
+
+**Reading the comparison:**
+
+- **vs the fair v3 baseline:** +0.069 AUC, +15 points of fights caught, +32 points of weapons caught, half the hug alarms. Only normal-clip alarms are a little higher (11.0% vs 8.6%).
+- **The shipped v3 file is not a fair comparison.** It was trained on all 3,131 clips, hold-out included; its AIRTLab AUC of 1.000 is memorisation.
+- **Hug and weapon counts are tiny** (18 and 19 hold-out clips), so one clip moves those rates by 5–6 points.
+
+**Proof-page rows (hold-out, ensemble):**
+
+| Row | Clips | AUC | Precision | Recall |
+|---|---|---|---|---|
+| Phone-video sets (RLVS + AIRTLab) | 352 | **0.944** | 0.882 | 0.853 |
+| CCTV clips (SCF + SCVD) | 118 | **0.865** | 0.892 | 0.569 |
+
+The final model also trains on other SCF/SCVD clips, so the CCTV row is not a pure domain test. The pure test (v3 recipe, trained with no CCTV at all) scored 0.709 (A7.8).
+
+## A0.2 What was done
+
+| Step | What | Result |
+|---|---|---|
+| 1. Hold-out | 15% of groups (444 groups, 470 clips), stratified by dataset and kind, seed 42 (`make_holdout.py`, `holdout_groups.csv`). AIRTLab camera pairs kept together. | Every kind at ~15%; 0 groups on both sides |
+| 2. Features | 13 new features: head (distance, snap, facing), legs (ankle toward, knee lift, height drop), arms (asymmetry, elbow extension), whole body (energy max/min, contact time/count, box overlap). `analyze_features.py`. | Training part, at matched 9% normal false alarms: AUC 0.855 → 0.888, fights 60 → 68%, weapon 37 → 45%, but **hugs 19 → 31%** |
+| 3. LightGBM search | 100 settings plus dataset weights plus a **3–8x hug/clap weight** (hard negatives); saved folds (`folds.csv`); hug guardrail: reject if hugs > 18.6% (old-10's rate) at matched 9% normal false alarms (`tune_lgbm.py`). | 67/100 pass. Pick: trial 94 (31 leaves, lr 0.05, 400 trees, min_child 100, AIRTLab 2x, CCTV 2x, hugs x5): AUC 0.889, hugs 17.6% |
+| 4. Sequence model | 51k-parameter dilated 1D-CNN over the active pair's 17 keypoints × 20 steps; flip/jitter/swap augmentation; same folds and weights; trained on the RTX 5090 (`seq_features.py`, `seq_dataset.py`, `seq_train.py`). | Out-of-fold: CNN 0.880 / hugs 7.8%; **ensemble 0.914 / hugs 8.8%** (`compare_candidates.py`) |
+| 5. Final | One hold-out evaluation (`evaluate_holdout.py`), then retrain on all clips (`finalize_model.py`, `seq_final.py`). | Table above |
+
+**The fair-comparison rule:** every candidate is judged at its own FIGHT_AT where 9% of normal clips reach FIGHT, using `train.sustained_scores`. That gives one number per clip, and it reproduces the live FIGHT logic exactly (checked: 100% agreement with the replay).
+
+## A0.3 Live
+
+- **`predict.py`:** `MODE = "ensemble"` (default) or `"lgbm"` (fallback, needs no CNN) or `"rules"`. Each mode has its own FIGHT_AT in `live_detector.py`: 0.658 for the ensemble, 0.695 for LightGBM. Other settings: alpha 0.6, TENSE 0.5, MIN_DURATION 1.0 s.
+- **One shared people-finding pass:** `seq_features.window_inputs()` builds both models' inputs from one pass, with identical outputs to the separate functions (46/46 windows). Input time drops from 18.7 to 13.1 ms per window. Model time: LightGBM 0.6 ms, CNN 0.1 ms (OpenVINO CPU). Total about 14 ms per window, scored every 0.5 s.
+- **Live test** (30 s of a 720p 30 fps fight clip, window shown):
+
+  | Mode | Display fps | Pose fps | Scoring interval |
+  |---|---|---|---|
+  | Ensemble | 29.9 | 30.2 | 0.53 s median |
+  | LightGBM | 29.9 | 30.2 | 0.53 s median |
+
+  The ensemble costs nothing visible; scoring runs on the pose thread, not the display thread.
+- **Bug found and fixed:** live recorded only the 12 body keypoints. The CNN crashed on the first window, and LightGBM's head features were always empty live (a train/live mismatch). Live now records all 17 keypoints, like extraction; only the body is drawn.
+
+## A0.4 Reproducibility note
+
+- **The first two hold-out runs differed slightly** for the models using trial-94 LightGBM (ensemble AUC 0.9276 vs 0.9287; LightGBM-alone weapon 57.9% vs 47.4% = 2 of 19 clips). Multithreaded LightGBM isn't bit-for-bit reproducible by default.
+- **The official numbers come from `deterministic=True`:** two runs give identical results.
+- **The conclusion is the same in every run.**
+
+## A0.5 Limits and next steps
+
+1. **No live-room numbers yet:** false alarms per camera-hour, live precision/recall and lead time are still placeholders in `proof.json`. `session1.csv` (87 s, all normal) was recorded with the v3 model, so it can't score v4. **Next:** record a labelled session with v4 (hold F for fights, H for hugs), then run `tune_live.py`.
+2. **Hugs:** 2 of 18 hold-out hug/clap clips still alarm. Close, energetic contact remains the hard case.
+3. **SCF clips** (~2 s) are too short for the 1 s persistence, which caps SCF recall.
+4. **CCTV:** CCTV recall is 0.57 at the shared threshold. A per-camera FIGHT_AT, tuned from operator labels, is the production answer.
 
 ---
 
 # Part A — v3: multi-dataset model on v2 keypoints (trained 10 Oct 2026; webcam tuning still to do)
 
-Branch: `model-dev`. Nothing in Part A is committed yet.
+Branch: `model-dev` (merged to `main` in PR #12). Superseded by Part A0; backed up in `backup_v3/`.
 
 **Files set aside (10 Oct):** these are no longer used by the v3 pipeline.
 

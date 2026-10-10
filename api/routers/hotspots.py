@@ -2,7 +2,8 @@
 EarlyEye API — Hotspot & Patrol-Plan router.
 
 GET /hotspots  → returns time/location clusters where incidents recur.
-GET /plan      → auto-generates a patrol schedule from the hotspot data.
+generate_plan_slots() → the first three posts, used once to seed plan_slots
+                        (GET /plan and the standing posts live in api/routers/plan.py).
 
 Aggregation is done in Python because supabase-py doesn't support
 raw SQL GROUP BY.  We pull the last 8 weeks of elevated events and
@@ -12,7 +13,7 @@ group them by (location, zone_type, weekday, hour).
 from __future__ import annotations
 
 from collections import defaultdict
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from fastapi import APIRouter
 
@@ -24,6 +25,12 @@ router = APIRouter(prefix="", tags=["analytics"])
 # ── Day-of-week helpers ──────────────────────────────────────────────────────
 
 _DAY_ABBR = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+# Supabase returns timestamps in UTC; days and hours are the site's local time (Malaysia, UTC+8).
+_MYT = timezone(timedelta(hours=8))
+
+
+def _local(dt: datetime) -> datetime:
+    return dt.astimezone(_MYT) if dt.tzinfo else dt
 
 
 def _days_to_range_str(days: list[int]) -> str:
@@ -43,7 +50,7 @@ def _days_to_range_str(days: list[int]) -> str:
     if days == list(range(days[0], days[-1] + 1)):
         if len(days) == 1:
             return _DAY_ABBR[days[0]]
-        return f"{_DAY_ABBR[days[0]]}-{_DAY_ABBR[days[-1]]}"
+        return f"{_DAY_ABBR[days[0]]}–{_DAY_ABBR[days[-1]]}"
 
     # Non-contiguous → comma-separated
     return ", ".join(_DAY_ABBR[d] for d in days)
@@ -62,7 +69,7 @@ def _hours_to_range_str(hours: list[int]) -> str:
     hours = sorted(set(hours))
     start = hours[0]
     end = hours[-1] + 1  # the range covers up to the end of the last hour
-    return f"{start:02d}:00-{end:02d}:00"
+    return f"{start:02d}:00–{end:02d}:00"
 
 
 # ── Core aggregation logic ───────────────────────────────────────────────────
@@ -97,7 +104,7 @@ def _build_hotspots(events: list[dict], min_count: int = 3) -> list[Hotspot]:
             # Replace trailing Z with +00:00 for fromisoformat compat (Python < 3.11)
             if raw.endswith("Z"):
                 raw = raw[:-1] + "+00:00"
-            dt = datetime.fromisoformat(raw)
+            dt = _local(datetime.fromisoformat(raw))
         except (KeyError, ValueError):
             continue  # skip malformed rows
 
@@ -139,9 +146,8 @@ def get_hotspots():
     return _build_hotspots(events, min_count=3)
 
 
-@router.get("/plan", response_model=PatrolPlan)
-def get_plan():
-    """Auto-generate a patrol schedule based on hotspot data.
+def get_plan() -> PatrolPlan:
+    """Generate a patrol schedule from hotspot data (seeds the standing posts once).
 
     Strategy
     --------
@@ -187,7 +193,7 @@ def get_plan():
                 raw = ev["start_time"]
                 if raw.endswith("Z"):
                     raw = raw[:-1] + "+00:00"
-                dt = datetime.fromisoformat(raw)
+                dt = _local(datetime.fromisoformat(raw))
             except (KeyError, ValueError):
                 continue
             if ev["start_time"] < four_weeks_ago:

@@ -26,7 +26,9 @@ Usage:  python train.py            # uses whatever keypoints exist so far; rerun
 import hashlib
 import json
 import time
+import os
 import warnings
+from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
 
 import joblib
@@ -37,7 +39,7 @@ from sklearn.metrics import roc_auc_score
 from sklearn.model_selection import GroupKFold
 from tqdm import tqdm
 
-from features import FEATURE_NAMES, LONG_S, SHORT_S, window_features
+from features import CROPS, FEATURE_NAMES, LONG_S, SHORT_S, SYNTHETIC, crop_keypoints, window_features
 from tune_live import current_settings, replay
 
 # ---------------- Tunable constants ----------------
@@ -60,6 +62,9 @@ DEFAULT_PARAMS = dict(n_estimators=300, learning_rate=0.05, num_leaves=15, min_c
 TUNE_GRID = dict(num_leaves=[7, 15, 31, 63], learning_rate=[0.02, 0.05, 0.1],
                  n_estimators=[100, 200, 400, 800], min_child_samples=[10, 20, 50, 100])
 N_TUNE = 12              # random LightGBM settings tried (best by out-of-fold clip ROC-AUC)
+N_JOBS = max(1, (os.cpu_count() or 2) - 2)  # feature workers (leave 2 cores free)
+SINGLE_PERSON_RULE = True   # a window with fewer than 2 tracked people is capped at TENSE (never FIGHT)
+TARGET_NORMAL_FA = 0.09  # fair comparison: every model judged at the FIGHT_AT where 9% of normal clips fire
 SUSPICIOUS_AUC = 0.97    # warn about possible leakage above this clip ROC-AUC
 # ---------------------------------------------------
 
@@ -74,13 +79,30 @@ def make_model(params):
 
 
 def kp_path(video_path):
-    """data/<...>/clip.mp4 -> keypoints_v2/<...>/clip.csv (same rule as extract_keypoints_v2.py)."""
-    return KEYPOINT_DIR / Path(video_path).relative_to("data").with_suffix(".csv")
+    """data/<...>/clip.mp4 -> keypoints_v2/<...>/clip.csv (same rule as extract_keypoints_v2.py).
+    A half-body copy "<path>#waist-up" uses the same file."""
+    return KEYPOINT_DIR / Path(video_path.split("#")[0]).relative_to("data").with_suffix(".csv")
+
+
+def load_kp(video_path):
+    """Keypoints of a clip; "<path>#waist-up" / "#chest-up" = the half-body augmented copy."""
+    kp = pd.read_csv(kp_path(video_path))
+    crop = video_path.partition("#")[2]
+    return crop_keypoints(kp, crop) if crop else kp
+
+
+def with_crops(videos, synthetic=False):
+    """Add a waist-up and a chest-up copy of every clip (and with synthetic=True a "single" and a "close"
+    copy: one person alone / close to the camera). Copies keep the clip's group_id, so GroupKFold and
+    the hold-out always keep a clip and its copies on the same side. Synthetic copies of violent clips
+    are only for testing (one person can't be in a fight); training uses those of non-violent clips."""
+    copies = [videos.assign(path=videos["path"] + "#" + c, crop=c) for c in CROPS + (SYNTHETIC if synthetic else ())]
+    return pd.concat([videos.assign(crop="full")] + copies, ignore_index=True)
 
 
 def video_windows(v):
     """Feature rows for one video: one window every STEP_S from SHORT_S to just past the last frame."""
-    kp = pd.read_csv(kp_path(v["path"]))
+    kp = load_kp(v["path"])
     tmax = kp["time_s"].max() if len(kp) else SHORT_S
     rows = []
     for end in np.arange(SHORT_S, max(tmax, SHORT_S) + 0.1 + 1e-6, STEP_S):
@@ -98,12 +120,15 @@ def load_windows(videos):
         cache = cache[(cache["feat_hash"] == FEATURES_HASH) & cache["path"].isin(videos["path"])]
     todo = videos[~videos["path"].isin(set(cache["path"]) if len(cache) else set())]
     if len(todo):
-        rows = [r for _, v in tqdm(todo.iterrows(), total=len(todo), desc="features", unit="video")
-                for r in video_windows(v)]
+        # One process per core: features for 3,000 videos take minutes in one process.
+        with ProcessPoolExecutor(max_workers=N_JOBS) as pool:
+            per_video = list(tqdm(pool.map(video_windows, [v for _, v in todo.iterrows()], chunksize=8),
+                                  total=len(todo), desc="features", unit="video"))
+        rows = [r for video_rows in per_video for r in video_rows]
         new = pd.DataFrame(rows).assign(feat_hash=FEATURES_HASH)
         cache = pd.concat([cache, new], ignore_index=True)
         cache.to_csv(WINDOWS_CACHE, index=False)
-    meta = videos[["path", "dataset", "label", "kind", "domain", "group_id"]]
+    meta = videos[[c for c in ("path", "dataset", "label", "kind", "domain", "group_id", "crop") if c in videos]]
     return cache.drop(columns="feat_hash").merge(meta, on="path").sort_values(["path", "end_s"],
                                                                                  ignore_index=True)
 
@@ -129,6 +154,44 @@ def clip_table(win, p):
         rows.append({"path": path, "dataset": g["dataset"].iloc[0], "kind": g["kind"].iloc[0],
                      "label": g["label"].iloc[0], "peak": g["p"].max(), "live_fight": "FIGHT" in levels})
     return pd.DataFrame(rows)
+
+
+def sustained_scores(win, p):
+    """Per clip: the highest smoothed score held for at least MIN_DURATION. With the live logic, a clip
+    reaches FIGHT exactly when this is >= FIGHT_AT, so one number per clip lets us sweep FIGHT_AT."""
+    rows = []
+    for path, g in win.assign(p=p).groupby("path", sort=False):
+        s, smooth = 0.0, []
+        for raw in g["p"]:  # same smoothing as live_detector.py, starting from 0
+            s = LIVE["SMOOTH_ALPHA"] * raw + (1 - LIVE["SMOOTH_ALPHA"]) * s
+            smooth.append(s)
+        t, smooth, best = g["end_s"].to_numpy(), np.array(smooth), 0.0
+        if SINGLE_PERSON_RULE and "n_people" in g:  # < 2 people tracked: that window can't be FIGHT
+            smooth = np.where(g["n_people"].to_numpy() >= 2, smooth, 0.0)
+        for j in range(len(t)):
+            i = np.searchsorted(t, t[j] - LIVE["MIN_DURATION"], side="right") - 1  # latest start >= MIN_DURATION back
+            if i >= 0:
+                best = max(best, smooth[i:j + 1].min())
+        rows.append({"path": path, "dataset": g["dataset"].iloc[0], "kind": g["kind"].iloc[0],
+                     "label": g["label"].iloc[0], "peak": g["p"].max(), "sustained": best})
+    return pd.DataFrame(rows)
+
+
+def at_matched_fa(clips, target=TARGET_NORMAL_FA):
+    """Lowest FIGHT_AT at which at most `target` of normal clips (kind == normal) reach FIGHT, and
+    what reaches FIGHT there. clips: output of sustained_scores."""
+    normal = np.sort(clips.loc[clips["kind"] == "normal", "sustained"].to_numpy())[::-1]
+    k = int(np.floor(target * len(normal)))           # allowed number of normal clips over threshold
+    fight_at = np.nextafter(normal[k], np.inf) if k < len(normal) else 0.0
+    hit = clips["sustained"] >= fight_at
+    pct = lambda m: round(100 * hit[m].mean(), 1) if m.any() else np.nan
+    return {"FIGHT_AT": round(float(fight_at), 4),
+            "normal%": pct(clips["kind"] == "normal"),
+            "fights%": pct(clips["label"] == 1),
+            "hugs%": pct((clips["dataset"] == "AIRTLab") & (clips["label"] == 0)),
+            "weapon%": pct(clips["kind"] == "weapon"),
+            **{f"fights_{d}%": pct((clips["dataset"] == d) & (clips["label"] == 1))
+               for d in sorted(clips["dataset"].unique())}}
 
 
 def auc(clips):

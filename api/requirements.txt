@@ -7,4 +7,4 @@ supabase==2.*
 pydantic==2.*
 python-dotenv==1.*
 httpx==0.28.*
-pyjwt==2.*
+pyjwt[crypto]==2.*   # [crypto] = cryptography, for Web Push (ES256); already installed via supabase

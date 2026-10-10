@@ -1,0 +1,190 @@
+{
+  "single": [
+    {
+      "feature": "head_dist_min",
+      "window AUC": 0.5015317862816262,
+      "strength": 0.5015317862816262,
+      "missing %": 36.41030341919516,
+      "missing % calm": 44.70960929250264,
+      "missing % fight": 30.045351473922903,
+      "AUC change if removed": -0.0008391652680577177,
+      "drop": false
+    },
+    {
+      "feature": "head_snap",
+      "window AUC": 0.6972556242074037,
+      "strength": 0.6972556242074037,
+      "missing %": 31.446512054267117,
+      "missing % calm": 41.10876451953537,
+      "missing % fight": 24.03628117913832,
+      "AUC change if removed": -0.0007512338669911633,
+      "drop": false
+    },
+    {
+      "feature": "facing_score",
+      "window AUC": 0.543555194838307,
+      "strength": 0.543555194838307,
+      "missing %": 35.16362636355303,
+      "missing % calm": 43.48468848996832,
+      "missing % fight": 28.781988986070616,
+      "AUC change if removed": -0.005679067915839053,
+      "drop": false
+    },
+    {
+      "feature": "ankle_toward_speed",
+      "window AUC": 0.6581825356423783,
+      "strength": 0.6581825356423783,
+      "missing %": 43.98661655513796,
+      "missing % calm": 61.48891235480465,
+      "missing % fight": 30.563654033041786,
+      "AUC change if removed": -0.0025830909329436214,
+      "drop": false
+    },
+    {
+      "feature": "knee_lift",
+      "window AUC": 0.6159422776833807,
+      "strength": 0.6159422776833807,
+      "missing %": 35.860298835823635,
+      "missing % calm": 52.31256599788807,
+      "missing % fight": 23.24263038548753,
+      "AUC change if removed": -0.007799034620656342,
+      "drop": false
+    },
+    {
+      "feature": "height_drop",
+      "window AUC": 0.6966798725233349,
+      "strength": 0.6966798725233349,
+      "missing %": 29.31524429370245,
+      "missing % calm": 40.601900739176344,
+      "missing % fight": 20.659216067379333,
+      "AUC change if removed": -0.0028731797351765342,
+      "drop": false
+    },
+    {
+      "feature": "arm_asymmetry",
+      "window AUC": 0.41762226215134807,
+      "strength": 0.5823777378486519,
+      "missing %": 77.79356494637454,
+      "missing % calm": 77.7296726504752,
+      "missing % fight": 77.84256559766763,
+      "AUC change if removed": 0.0002649251536963604,
+      "drop": false
+    },
+    {
+      "feature": "elbow_ext_rate",
+      "window AUC": 0.5767077822206221,
+      "strength": 0.5767077822206221,
+      "missing %": 30.566504720872672,
+      "missing % calm": 42.51319957761351,
+      "missing % fight": 21.40427599611273,
+      "AUC change if removed": -0.0023133592396391567,
+      "drop": false
+    },
+    {
+      "feature": "energy_max",
+      "window AUC": 0.7858632574468299,
+      "strength": 0.7858632574468299,
+      "missing %": 28.95315794298286,
+      "missing % calm": 40.221752903907074,
+      "missing % fight": 20.31098153547133,
+      "AUC change if removed": 0.00018066934174165716,
+      "drop": false
+    },
+    {
+      "feature": "energy_min",
+      "window AUC": 0.7817050641028404,
+      "strength": 0.7817050641028404,
+      "missing %": 28.95315794298286,
+      "missing % calm": 40.221752903907074,
+      "missing % fight": 20.31098153547133,
+      "AUC change if removed": -0.0008631979660985722,
+      "drop": false
+    },
+    {
+      "feature": "contact_s",
+      "window AUC": 0.4468422433675372,
+      "strength": 0.5531577566324628,
+      "missing %": 28.925657713814285,
+      "missing % calm": 40.17951425554382,
+      "missing % fight": 20.294784580498867,
+      "AUC change if removed": 0.001067900005881084,
+      "drop": false
+    },
+    {
+      "feature": "contact_count",
+      "window AUC": 0.4954391297774026,
+      "strength": 0.5045608702225974,
+      "missing %": 28.925657713814285,
+      "missing % calm": 40.17951425554382,
+      "missing % fight": 20.294784580498867,
+      "AUC change if removed": -0.0006135406440987978,
+      "drop": false
+    },
+    {
+      "feature": "box_iou_max",
+      "window AUC": 0.5495082856350101,
+      "strength": 0.5495082856350101,
+      "missing %": 28.925657713814285,
+      "missing % calm": 40.17951425554382,
+      "missing % fight": 20.294784580498867,
+      "AUC change if removed": -0.0016274377637942594,
+      "drop": false
+    }
+  ],
+  "ablation": {
+    "old 10": {
+      "auc": 0.8550565362152968,
+      "auc_AIRTLab": 0.8120248099239696,
+      "auc_RLVS": 0.9003439446366781,
+      "auc_SCF": 0.7942298228346457,
+      "auc_SCVD": 0.7002476497319131,
+      "fights_FIGHT%": 59.28623452294246,
+      "normal_FIGHT%": 9.08385093167702,
+      "hugs_FIGHT%": 16.666666666666664,
+      "weapon_FIGHT%": 36.19047619047619
+    },
+    "old + all 13 new": {
+      "auc": 0.8871172863521417,
+      "auc_AIRTLab": 0.8168767507002801,
+      "auc_RLVS": 0.9285370242214532,
+      "auc_SCF": 0.7998892716535433,
+      "auc_SCVD": 0.7790267125099181,
+      "fights_FIGHT%": 62.49089584850692,
+      "normal_FIGHT%": 7.686335403726709,
+      "hugs_FIGHT%": 24.509803921568626,
+      "weapon_FIGHT%": 40.95238095238095
+    },
+    "old + 13 kept new": {
+      "auc": 0.8871172863521417,
+      "auc_AIRTLab": 0.8168767507002801,
+      "auc_RLVS": 0.9285370242214532,
+      "auc_SCF": 0.7998892716535433,
+      "auc_SCVD": 0.7790267125099181,
+      "fights_FIGHT%": 62.49089584850692,
+      "normal_FIGHT%": 7.686335403726709,
+      "hugs_FIGHT%": 24.509803921568626,
+      "weapon_FIGHT%": 40.95238095238095
+    }
+  },
+  "kept_new": [
+    "head_dist_min",
+    "head_snap",
+    "facing_score",
+    "ankle_toward_speed",
+    "knee_lift",
+    "height_drop",
+    "arm_asymmetry",
+    "elbow_ext_rate",
+    "energy_max",
+    "energy_min",
+    "contact_s",
+    "contact_count",
+    "box_iou_max"
+  ],
+  "params": {
+    "num_leaves": 31,
+    "learning_rate": 0.02,
+    "n_estimators": 800,
+    "min_child_samples": 20
+  }
+}

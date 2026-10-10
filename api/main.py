@@ -21,7 +21,9 @@ from api.routers import (
     hotspots,
     knowledge,
     notifications,
+    plan,
     proof,
+    push,
     reports,
     site,
     sites,
@@ -51,6 +53,8 @@ app.add_middleware(
 app.include_router(site.router)
 app.include_router(events.router)
 app.include_router(hotspots.router)
+app.include_router(plan.router)
+app.include_router(push.router)
 app.include_router(proof.router)
 
 # ── Advanced Routers (SHOULD & CUT Items) ─────────────────────────────────────
