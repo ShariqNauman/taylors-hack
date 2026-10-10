@@ -3,7 +3,14 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import useSWR from "swr";
-import { getCameras, getHotspots, getPatrolPlan, getSite } from "@/lib/api";
+import {
+  getCameras,
+  getEvents,
+  getHotspots,
+  getPatrolPlan,
+  getSite,
+} from "@/lib/api";
+import { useRouter } from "next/navigation";
 import type { Camera, PatrolSlot } from "@/lib/types";
 import {
   daysInclude,
@@ -20,7 +27,7 @@ import {
 import { cameraKind } from "@/lib/camera-meta";
 import { cn } from "@/lib/utils";
 import { PageShell } from "@/components/chrome/page-shell";
-import { CampusSlot } from "@/components/cameras/campus-slot";
+import { Campus3D } from "@/components/campus3d";
 
 const pad2 = (n: number) => String(n).padStart(2, "0");
 
@@ -52,6 +59,10 @@ export function PlanScreen() {
   const { data: cameras } = useSWR("cameras", getCameras, {
     refreshInterval: 30_000,
   });
+  const { data: events } = useSWR(["events", "full"], () => getEvents(), {
+    refreshInterval: 10_000,
+  });
+  const router = useRouter();
   const [zone, setZone] = useState<string>("all");
   const [sel, setSel] = useState<number | null>(null);
 
@@ -144,10 +155,23 @@ export function PlanScreen() {
             CLICK A POST
           </span>
         </div>
-        <CampusSlot
-          height={460}
-          caption="FOOTPRINTS © OPENSTREETMAP CONTRIBUTORS · HEIGHTS ESTIMATED"
-        />
+        {plan && site && cameras ? (
+          <Campus3D
+            mode="plan"
+            cameras={cameras}
+            site={site}
+            events={events ?? []}
+            plan={plan}
+            onOpenCamera={(id) =>
+              router.push(`/cameras?cam=${encodeURIComponent(id)}`)
+            }
+          />
+        ) : (
+          <div
+            className="h-[560px] rounded-[2px] border border-line bg-raised"
+            aria-busy="true"
+          />
+        )}
       </section>
 
       <section

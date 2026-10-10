@@ -5,7 +5,7 @@
   "zones": [
     {
       "zone_type": "hostel_corridor",
-      "label": "DK Senza corridors",
+      "label": "U Residence corridors",
       "risk": 1
     },
     {
@@ -20,7 +20,7 @@
     },
     {
       "zone_type": "auditorium",
-      "label": "Auditorium",
+      "label": "Grand Hall",
       "risk": 0.5
     },
     {
@@ -53,8 +53,8 @@
       "zone_type": "hostel_corridor",
       "on_duty": true,
       "post": {
-        "lat": 3.0603973,
-        "lng": 101.6171249
+        "lat": 3.06406,
+        "lng": 101.6165401
       }
     },
     {

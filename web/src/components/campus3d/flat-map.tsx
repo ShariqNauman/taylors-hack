@@ -60,12 +60,24 @@ export function FlatMap({
       {feats
         .filter((f) => f.properties.kind === "water")
         .map((f, i) => (
-          <path key={`w${i}`} d={d(f.geometry.coordinates[0])} fill={COLORS.water} stroke={COLORS.waterLine} strokeWidth={1.5} />
+          <path
+            key={`w${i}`}
+            d={d(f.geometry.coordinates[0])}
+            fill={COLORS.water}
+            stroke={COLORS.waterLine}
+            strokeWidth={1.5}
+          />
         ))}
       {feats
         .filter((f) => f.properties.kind === "pitch")
         .map((f, i) => (
-          <path key={`p${i}`} d={d(f.geometry.coordinates[0])} fill={COLORS.pitch} stroke={COLORS.pitchLine} strokeWidth={1.5} />
+          <path
+            key={`p${i}`}
+            d={d(f.geometry.coordinates[0])}
+            fill={COLORS.pitch}
+            stroke={COLORS.pitchLine}
+            strokeWidth={1.5}
+          />
         ))}
       {feats
         .filter((f) => f.properties.kind === "building")
@@ -77,8 +89,16 @@ export function FlatMap({
             <path
               key={id}
               d={d(f.geometry.coordinates[0])}
-              fill={alarm ? COLORS.alarmTop : sel ? COLORS.selectedTop : "#FFFFFF"}
-              stroke={alarm ? COLORS.alarmLine : sel ? COLORS.selectedLine : COLORS.edge}
+              fill={
+                alarm ? COLORS.alarmTop : sel ? COLORS.selectedTop : "#FFFFFF"
+              }
+              stroke={
+                alarm
+                  ? COLORS.alarmLine
+                  : sel
+                    ? COLORS.selectedLine
+                    : COLORS.edge
+              }
               strokeWidth={alarm || sel ? 2 : 1.2}
               style={{ cursor: "pointer" }}
               onClick={() => onBuilding(id)}
@@ -87,7 +107,17 @@ export function FlatMap({
         })}
       {columns.map((c, i) => {
         const p = project(c.lng, c.lat);
-        return <circle key={i} cx={p[0]} cy={p[1]} r={7} fill="#3653DC" stroke="#1F35B3" strokeWidth={1.5} />;
+        return (
+          <circle
+            key={i}
+            cx={p[0]}
+            cy={p[1]}
+            r={7}
+            fill="#3653DC"
+            stroke="#1F35B3"
+            strokeWidth={1.5}
+          />
+        );
       })}
       {route && (
         <polyline

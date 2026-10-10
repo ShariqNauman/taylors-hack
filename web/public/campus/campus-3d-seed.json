@@ -1,5 +1,5 @@
 {
- "_note": "Seed for the 3D campus. Geo positions are placed by hand on OpenStreetMap footprints of Taylor's University Lakeside Campus (© OpenStreetMap contributors, ODbL). Verify on site; the auditorium location is an assumption.",
+ "_note": "Seed for the 3D campus of the real Taylor's University Lakeside Campus, 1 Jalan Taylor's, 47500 Subang Jaya. Footprints from OpenStreetMap (ODbL). Room names and floors from Taylor's official pages (see sources). Positions are placed by hand on the footprints: check each one against Google Maps 3D and move it to the right spot on the real building.",
  "campus": {
   "name": "Taylor's University Lakeside Campus",
   "osm_way": 210350320,
@@ -12,15 +12,15 @@
  "cameras": [
   {
    "camera_id": "CAM-AU-01",
-   "location": "Auditorium",
-   "building": "Block A and B",
+   "location": "Grand Hall",
+   "building": "Block B (OSM footprint: Block A and Block B)",
    "zone_type": "auditorium",
    "source": "live",
-   "floor": "ground floor, stage left",
+   "floor": "level 2, stage left",
    "geo": {
     "lat": 3.0645574,
     "lng": 101.6170349,
-    "alt_m": 6
+    "alt_m": 10
    }
   },
   {
@@ -51,28 +51,28 @@
   },
   {
    "camera_id": "CAM-HC-01",
-   "location": "DK Senza, corridor L3",
-   "building": "DK Senza",
+   "location": "U Residence, corridor L3",
+   "building": "U Residence, above Syopz Mall",
    "zone_type": "hostel_corridor",
    "source": "recorded",
-   "floor": "level 3",
+   "floor": "residence level 3",
    "geo": {
-    "lat": 3.0601983,
-    "lng": 101.6173498,
-    "alt_m": 8
+    "lat": 3.0642137,
+    "lng": 101.6160904,
+    "alt_m": 16
    }
   },
   {
    "camera_id": "CAM-HC-02",
-   "location": "DK Senza, corridor L5",
-   "building": "DK Senza",
+   "location": "U Residence, corridor L5",
+   "building": "U Residence, above Syopz Mall",
    "zone_type": "hostel_corridor",
    "source": "black",
-   "floor": "level 5",
+   "floor": "residence level 5",
    "geo": {
-    "lat": 3.059927,
-    "lng": 101.6170619,
-    "alt_m": 8
+    "lat": 3.0643042,
+    "lng": 101.6162883,
+    "alt_m": 22
    }
   },
   {
@@ -81,7 +81,7 @@
    "building": "Sports centre",
    "zone_type": "sports_court",
    "source": "recorded",
-   "floor": "pitch side",
+   "floor": "football pitch side",
    "geo": {
     "lat": 3.0617539,
     "lng": 101.6172328,
@@ -113,8 +113,8 @@
    "zone_type": "hostel_corridor",
    "on_duty": true,
    "post": {
-    "lat": 3.0603973,
-    "lng": 101.6171249
+    "lat": 3.06406,
+    "lng": 101.6165401
    }
   },
   {
@@ -137,12 +137,12 @@
   },
   {
    "slot": "P/02",
-   "location": "DK Senza, corridor L3",
+   "location": "U Residence, corridor L3",
    "days": "Sun–Thu",
    "hours": "22:00–23:00",
    "geo": {
-    "lat": 3.0602164,
-    "lng": 101.6173947
+    "lat": 3.0641776,
+    "lng": 101.6161353
    }
   },
   {
@@ -151,9 +151,14 @@
    "days": "Fri",
    "hours": "12:00–13:00",
    "geo": {
-    "lat": 3.063653,
-    "lng": 101.6165401
+    "lat": 3.0635174,
+    "lng": 101.6163602
    }
   }
- ]
+ ],
+ "sources": {
+  "facilities": "https://university.taylors.edu.my/en/study/campus-facilities.html",
+  "on_campus_hostels": "https://taylorshostel.taylors.edu.my/accommodations/on-campus/ruemz",
+  "footprints": "https://www.openstreetmap.org/way/210350320"
+ }
 }

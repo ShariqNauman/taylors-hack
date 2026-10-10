@@ -1,5 +1,12 @@
 // Pure data helpers for the 3D campus: no React, no deck.gl.
-import type { Camera, Event, GeoPoint, Level, PatrolPlan, Site } from "@/lib/types";
+import type {
+  Camera,
+  Event,
+  GeoPoint,
+  Level,
+  PatrolPlan,
+  Site,
+} from "@/lib/types";
 import { LEVEL_ORDER } from "@/lib/format";
 
 export type LngLat = [number, number];
@@ -248,9 +255,7 @@ const CLOSED = new Set(["dismissed", "resolved", "false_alarm"]);
 
 /** Open incidents: no end_time, not dismissed or resolved. */
 export function openEvents(events: Event[]): Event[] {
-  return events.filter(
-    (e) => !e.end_time && !CLOSED.has(e.status as string),
-  );
+  return events.filter((e) => !e.end_time && !CLOSED.has(e.status as string));
 }
 
 /** The current fight_likely / fight incident: highest level, then priority. */
@@ -366,7 +371,10 @@ export interface PlanPost {
 }
 
 const norm = (s: string) =>
-  s.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+  s
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
 
 /** One post per plan slot, placed at the seed's patrol post for that location (else at its camera). */
 export function planPosts(

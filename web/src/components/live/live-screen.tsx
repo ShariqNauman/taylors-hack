@@ -18,6 +18,9 @@ import { Queue } from "./queue";
 import { CameraWall } from "./camera-wall";
 import { HandoverDrawer } from "./handover-drawer";
 import { useLiveFeed, type LiveEvent } from "./use-live-feed";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { Campus3D } from "@/components/campus3d";
 
 const PUSH_BUDGET = 3;
 const LIVE_STALE_MS = 60_000;
@@ -36,6 +39,7 @@ export function LiveScreen() {
   const { data: plan } = useSWR("plan", getPatrolPlan, {
     revalidateOnFocus: false,
   });
+  const router = useRouter();
   const feed = useLiveFeed(replayOn);
 
   const active = useMemo(
@@ -145,6 +149,31 @@ export function LiveScreen() {
             site={site}
             now={now}
             pulsing={!!current && pulsingCams.has(current.camera_id)}
+            compact3d={
+              current && site && cameras && plan && current.level !== "calm" ? (
+                <div className="flex flex-col gap-1.5">
+                  <Campus3D
+                    mode="cameras"
+                    compact
+                    focusCameraId={current.camera_id}
+                    cameras={cameras}
+                    site={site}
+                    events={active}
+                    plan={plan}
+                    height={220}
+                    onOpenCamera={(id) =>
+                      router.push(`/cameras?cam=${encodeURIComponent(id)}`)
+                    }
+                  />
+                  <Link
+                    href={`/cameras?cam=${encodeURIComponent(current.camera_id)}`}
+                    className="text-[13px] font-bold text-signal"
+                  >
+                    Open the 3D campus
+                  </Link>
+                </div>
+              ) : undefined
+            }
             onPush={feed.pushNow}
             onConfirm={(e) => feed.label(e, "confirmed")}
             onDismiss={(e) => feed.label(e, "dismissed")}

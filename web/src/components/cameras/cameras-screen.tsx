@@ -30,7 +30,7 @@ import { cn } from "@/lib/utils";
 import { PageShell } from "@/components/chrome/page-shell";
 import { CameraFrame } from "@/components/skeleton/skeleton-view";
 import { CameraFeed } from "@/components/camera/camera-feed";
-import { CampusSlot } from "./campus-slot";
+import { Campus3D } from "@/components/campus3d";
 
 type Filter = "all" | "live" | "rec" | "black" | "active";
 const DAY = 86_400_000;
@@ -171,7 +171,25 @@ export function CamerasScreen() {
             {site?.name ?? "Site"} · drag to rotate · click a building or camera
           </span>
         </div>
-        <CampusSlot caption="FOOTPRINTS © OPENSTREETMAP CONTRIBUTORS · HEIGHTS ESTIMATED" />
+        {site && cameras && plan ? (
+          <Campus3D
+            mode="cameras"
+            cameras={cameras}
+            site={site}
+            events={evs}
+            plan={plan}
+            selectedCameraId={camParam ?? undefined}
+            onSelectCamera={select}
+            onOpenCamera={(id) =>
+              router.push(`/?cam=${encodeURIComponent(id)}`)
+            }
+          />
+        ) : (
+          <div
+            className="h-[560px] rounded-[2px] border border-line bg-raised"
+            aria-busy="true"
+          />
+        )}
       </section>
 
       <div className="flex flex-wrap items-start gap-3.5">

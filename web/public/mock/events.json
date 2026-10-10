@@ -197,7 +197,7 @@
   {
     "incident_id": "INC-2026-00083",
     "camera_id": "CAM-HC-01",
-    "location": "DK Senza, corridor L3",
+    "location": "U Residence, corridor L3",
     "zone_type": "hostel_corridor",
     "start_time": "2026-08-18T22:20:00+08:00",
     "end_time": "2026-08-18T22:20:32+08:00",
@@ -798,7 +798,7 @@
   {
     "incident_id": "INC-2026-00086",
     "camera_id": "CAM-AU-01",
-    "location": "Auditorium, Block A and B",
+    "location": "Grand Hall",
     "zone_type": "auditorium",
     "start_time": "2026-08-21T21:02:00+08:00",
     "end_time": "2026-08-21T21:02:44+08:00",
@@ -820,7 +820,7 @@
   {
     "incident_id": "INC-2026-00087",
     "camera_id": "CAM-HC-01",
-    "location": "DK Senza, corridor L3",
+    "location": "U Residence, corridor L3",
     "zone_type": "hostel_corridor",
     "start_time": "2026-08-23T22:28:00+08:00",
     "end_time": "2026-08-23T22:29:09+08:00",
@@ -977,7 +977,7 @@
   {
     "incident_id": "INC-2026-00088",
     "camera_id": "CAM-HC-01",
-    "location": "DK Senza, corridor L3",
+    "location": "U Residence, corridor L3",
     "zone_type": "hostel_corridor",
     "start_time": "2026-08-25T17:19:00+08:00",
     "end_time": "2026-08-25T17:20:45+08:00",
@@ -996,7 +996,7 @@
   {
     "incident_id": "INC-2026-00089",
     "camera_id": "CAM-HC-01",
-    "location": "DK Senza, corridor L3",
+    "location": "U Residence, corridor L3",
     "zone_type": "hostel_corridor",
     "start_time": "2026-08-26T17:40:00+08:00",
     "end_time": "2026-08-26T17:41:13+08:00",
@@ -1015,7 +1015,7 @@
   {
     "incident_id": "INC-2026-00090",
     "camera_id": "CAM-HC-01",
-    "location": "DK Senza, corridor L3",
+    "location": "U Residence, corridor L3",
     "zone_type": "hostel_corridor",
     "start_time": "2026-08-26T21:49:00+08:00",
     "end_time": "2026-08-26T21:50:06+08:00",
@@ -1237,7 +1237,7 @@
   {
     "incident_id": "INC-2026-00091",
     "camera_id": "CAM-HC-01",
-    "location": "DK Senza, corridor L3",
+    "location": "U Residence, corridor L3",
     "zone_type": "hostel_corridor",
     "start_time": "2026-08-29T20:31:00+08:00",
     "end_time": "2026-08-29T20:31:38+08:00",
@@ -1259,7 +1259,7 @@
   {
     "incident_id": "INC-2026-00092",
     "camera_id": "CAM-HC-01",
-    "location": "DK Senza, corridor L3",
+    "location": "U Residence, corridor L3",
     "zone_type": "hostel_corridor",
     "start_time": "2026-08-31T12:46:00+08:00",
     "end_time": "2026-08-31T12:46:20+08:00",
@@ -1784,7 +1784,7 @@
   {
     "incident_id": "INC-2026-00095",
     "camera_id": "CAM-HC-01",
-    "location": "DK Senza, corridor L3",
+    "location": "U Residence, corridor L3",
     "zone_type": "hostel_corridor",
     "start_time": "2026-09-06T18:39:00+08:00",
     "end_time": "2026-09-06T18:40:22+08:00",
@@ -1982,7 +1982,7 @@
   {
     "incident_id": "INC-2026-00098",
     "camera_id": "CAM-AU-01",
-    "location": "Auditorium, Block A and B",
+    "location": "Grand Hall",
     "zone_type": "auditorium",
     "start_time": "2026-09-09T14:37:00+08:00",
     "end_time": "2026-09-09T14:37:55+08:00",
@@ -2331,7 +2331,7 @@
   {
     "incident_id": "INC-2026-00099",
     "camera_id": "CAM-AU-01",
-    "location": "Auditorium, Block A and B",
+    "location": "Grand Hall",
     "zone_type": "auditorium",
     "start_time": "2026-09-13T18:53:00+08:00",
     "end_time": "2026-09-13T18:54:28+08:00",
@@ -2488,7 +2488,7 @@
   {
     "incident_id": "INC-2026-00100",
     "camera_id": "CAM-AU-01",
-    "location": "Auditorium, Block A and B",
+    "location": "Grand Hall",
     "zone_type": "auditorium",
     "start_time": "2026-09-17T11:43:00+08:00",
     "end_time": "2026-09-17T11:44:46+08:00",
@@ -3125,7 +3125,7 @@
   {
     "incident_id": "INC-2026-00105",
     "camera_id": "CAM-HC-01",
-    "location": "DK Senza, corridor L3",
+    "location": "U Residence, corridor L3",
     "zone_type": "hostel_corridor",
     "start_time": "2026-09-22T22:11:00+08:00",
     "end_time": "2026-09-22T22:12:55+08:00",
@@ -3501,7 +3501,7 @@
   {
     "incident_id": "INC-2026-00107",
     "camera_id": "CAM-HC-01",
-    "location": "DK Senza, corridor L3",
+    "location": "U Residence, corridor L3",
     "zone_type": "hostel_corridor",
     "start_time": "2026-09-25T19:06:00+08:00",
     "end_time": "2026-09-25T19:07:19+08:00",
@@ -4140,7 +4140,7 @@
   {
     "incident_id": "INC-2026-00112",
     "camera_id": "CAM-HC-01",
-    "location": "DK Senza, corridor L3",
+    "location": "U Residence, corridor L3",
     "zone_type": "hostel_corridor",
     "start_time": "2026-09-29T22:01:00+08:00",
     "end_time": "2026-09-29T22:01:40+08:00",
@@ -5223,7 +5223,7 @@
   {
     "incident_id": "INC-2026-00116",
     "camera_id": "CAM-HC-01",
-    "location": "DK Senza, corridor L3",
+    "location": "U Residence, corridor L3",
     "zone_type": "hostel_corridor",
     "start_time": "2026-10-07T22:08:00+08:00",
     "end_time": "2026-10-07T22:08:53+08:00",
@@ -5380,7 +5380,7 @@
   {
     "incident_id": "INC-2026-00117",
     "camera_id": "CAM-HC-01",
-    "location": "DK Senza, corridor L3",
+    "location": "U Residence, corridor L3",
     "zone_type": "hostel_corridor",
     "start_time": "2026-10-08T22:25:00+08:00",
     "end_time": "2026-10-08T22:25:32+08:00",

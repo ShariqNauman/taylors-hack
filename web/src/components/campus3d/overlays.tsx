@@ -63,9 +63,14 @@ export function CameraPin({
   selected: boolean;
   onClick: () => void;
 }) {
-  const tag = kind === "live" ? "LIVE" : kind === "recorded" ? "REC" : "NO SIGNAL";
+  const tag =
+    kind === "live" ? "LIVE" : kind === "recorded" ? "REC" : "NO SIGNAL";
   const spoken =
-    kind === "live" ? "live webcam" : kind === "recorded" ? "recording" : "no signal";
+    kind === "live"
+      ? "live webcam"
+      : kind === "recorded"
+        ? "recording"
+        : "no signal";
   return (
     <button
       type="button"
@@ -97,7 +102,13 @@ export function CameraPin({
   );
 }
 
-export function GuardChip({ name, pos }: { name: string; pos: [number, number] }) {
+export function GuardChip({
+  name,
+  pos,
+}: {
+  name: string;
+  pos: [number, number];
+}) {
   return (
     <span
       className="pointer-events-none absolute inline-flex -translate-x-1/2 -translate-y-1/2 items-center gap-1 whitespace-nowrap rounded-full bg-signal py-0.5 pl-1 pr-2 text-[11px] font-extrabold text-white"
@@ -200,7 +211,9 @@ function CardShell({
     >
       <div className="flex items-center gap-2">
         <span className="shrink-0 whitespace-nowrap">{chip}</span>
-        <span className="min-w-0 truncate font-mono text-[11px] text-muted-foreground">{code}</span>
+        <span className="min-w-0 truncate font-mono text-[11px] text-muted-foreground">
+          {code}
+        </span>
         <button
           type="button"
           onClick={onClose}
@@ -219,9 +232,17 @@ function CardShell({
   );
 }
 
-const SOURCE_CHIP: Record<SourceKind, { text: string; bg: string; fg: string; dot: string }> = {
+const SOURCE_CHIP: Record<
+  SourceKind,
+  { text: string; bg: string; fg: string; dot: string }
+> = {
   live: { text: "LIVE WEBCAM", bg: "#0B0D10", fg: "#FFFFFF", dot: "#FF453A" },
-  recorded: { text: "RECORDING · LOOP", bg: "#F1F2F4", fg: "#3A414B", dot: "#5D6672" },
+  recorded: {
+    text: "RECORDING · LOOP",
+    bg: "#F1F2F4",
+    fg: "#3A414B",
+    dot: "#5D6672",
+  },
   black: { text: "NO SIGNAL", bg: "#0B0D10", fg: "#FFFFFF", dot: "#8B939E" },
 };
 
@@ -252,7 +273,9 @@ function CameraFeed({
       <SkeletonView
         background="black"
         idleText="NO SIGNAL"
-        idleSub={camera.black_since ? fmtBlackFor(camera.black_since) : undefined}
+        idleSub={
+          camera.black_since ? fmtBlackFor(camera.black_since) : undefined
+        }
         hud={{ topLeft: place }}
         ariaLabel={`${camera.location}: no signal`}
       />
@@ -273,7 +296,10 @@ function CameraFeed({
           {place}
         </span>
         <span className="absolute right-2 top-2 inline-flex items-center gap-1 font-mono text-[10px] font-bold text-[#ECEFF3]">
-          <span className="size-1.5 rounded-full" style={{ background: SOURCE_DOT[kind] }} />
+          <span
+            className="size-1.5 rounded-full"
+            style={{ background: SOURCE_DOT[kind] }}
+          />
           {kind === "live" ? "LIVE VIDEO" : "REC · LOOP"}
         </span>
       </div>
@@ -289,8 +315,14 @@ function CameraFeed({
       level={level}
       showBox={!!frame && level !== "calm"}
       stroke={4}
-      idleText={people != null ? `${people} ${people === 1 ? "person" : "people"} in view` : "Waiting for the edge"}
-      idleSub={kind === "recorded" ? "REC · OUR OWN STAGED RECORDING" : undefined}
+      idleText={
+        people != null
+          ? `${people} ${people === 1 ? "person" : "people"} in view`
+          : "Waiting for the edge"
+      }
+      idleSub={
+        kind === "recorded" ? "REC · OUR OWN STAGED RECORDING" : undefined
+      }
       hud={{
         topLeft: place,
         topRight: kind === "live" ? "LIVE SKELETONS" : "REC · SKELETONS",
@@ -330,7 +362,9 @@ export function CameraCard({
 }) {
   const chip = SOURCE_CHIP[kind];
   const people = camera.people_count ?? event?.people_count;
-  const sub = [camera.geo?.building ?? buildingName, camera.geo?.floor].filter(Boolean).join(" · ");
+  const sub = [camera.geo?.building ?? buildingName, camera.geo?.floor]
+    .filter(Boolean)
+    .join(" · ");
   return (
     <CardShell
       sheet={sheet}
@@ -340,15 +374,27 @@ export function CameraCard({
       onClose={onClose}
       chip={
         <span
-          className={cn("inline-flex items-center gap-1.5 rounded-[1px] px-2 py-0.5", MONO)}
+          className={cn(
+            "inline-flex items-center gap-1.5 rounded-[1px] px-2 py-0.5",
+            MONO,
+          )}
           style={{ background: chip.bg, color: chip.fg }}
         >
-          <span className="size-[7px] rounded-full" style={{ background: chip.dot }} />
+          <span
+            className="size-[7px] rounded-full"
+            style={{ background: chip.dot }}
+          />
           {chip.text}
         </span>
       }
     >
-      <CameraFeed key={camera.camera_id} camera={camera} kind={kind} event={event} level={level} />
+      <CameraFeed
+        key={camera.camera_id}
+        camera={camera}
+        kind={kind}
+        event={event}
+        level={level}
+      />
       {kind === "recorded" && (
         <span className="text-[12px] text-ink-2">
           {camera.recorded_at
@@ -358,7 +404,12 @@ export function CameraCard({
       )}
       <div className="flex flex-wrap items-center gap-1.5">
         {kind === "black" ? (
-          <span className={cn("inline-flex items-center rounded-[1px] border border-ink bg-ink px-2 py-0.5 uppercase text-white", "text-[12px] font-extrabold")}>
+          <span
+            className={cn(
+              "inline-flex items-center rounded-[1px] border border-ink bg-ink px-2 py-0.5 uppercase text-white",
+              "text-[12px] font-extrabold",
+            )}
+          >
             No signal
           </span>
         ) : (
@@ -397,7 +448,9 @@ export function PostCard({
   sheet: boolean;
   onClose: () => void;
 }) {
-  const hrs = Number.isInteger(post.hoursPerWeek) ? `${post.hoursPerWeek} h` : `${post.hoursPerWeek.toFixed(1)} h`;
+  const hrs = Number.isInteger(post.hoursPerWeek)
+    ? `${post.hoursPerWeek} h`
+    : `${post.hoursPerWeek.toFixed(1)} h`;
   return (
     <CardShell
       sheet={sheet}
@@ -406,7 +459,12 @@ export function PostCard({
       sub={`Place one person here · ${post.when.toLowerCase()}`}
       onClose={onClose}
       chip={
-        <span className={cn("inline-flex items-center gap-1.5 rounded-[1px] bg-signal px-2 py-0.5 text-white", MONO)}>
+        <span
+          className={cn(
+            "inline-flex items-center gap-1.5 rounded-[1px] bg-signal px-2 py-0.5 text-white",
+            MONO,
+          )}
+        >
           <span className="size-[7px] rounded-full bg-white" />
           PATROL POST {post.id}
         </span>
@@ -414,11 +472,15 @@ export function PostCard({
     >
       <div className="grid grid-cols-3 gap-1.5">
         <div className="flex flex-col gap-0.5 border border-line bg-raised p-2">
-          <span className="font-mono text-[20px] font-bold">{post.incidents4w}</span>
+          <span className="font-mono text-[20px] font-bold">
+            {post.incidents4w}
+          </span>
           <span className="text-[11px] text-ink-2">in 4 weeks</span>
         </div>
         <div className="flex flex-col gap-0.5 border border-[#A9B6F2] bg-signal-tint p-2">
-          <span className="font-mono text-[20px] font-bold text-signal-ink">{post.avoidedPerWeek.toFixed(2)}</span>
+          <span className="font-mono text-[20px] font-bold text-signal-ink">
+            {post.avoidedPerWeek.toFixed(2)}
+          </span>
           <span className="text-[11px] text-signal-ink">avoided a week</span>
         </div>
         <div className="flex flex-col gap-0.5 border border-line bg-raised p-2">
@@ -426,7 +488,9 @@ export function PostCard({
           <span className="text-[11px] text-ink-2">hours a week</span>
         </div>
       </div>
-      <span className="text-[13px] leading-[1.45] text-ink-2">{post.rationale}</span>
+      <span className="text-[13px] leading-[1.45] text-ink-2">
+        {post.rationale}
+      </span>
       <div className="flex flex-wrap gap-1.5">
         <Link href="/plan" className={BTN_PRIMARY}>
           Open in Plan
@@ -464,27 +528,61 @@ export function NavControls({
   canTilt: boolean;
 }) {
   return (
-    <div role="group" aria-label="View controls" className="pointer-events-auto flex flex-wrap items-center gap-1">
-      <button type="button" className={CTRL} aria-label="Rotate left" onClick={() => onRotate(-20)}>
+    <div
+      role="group"
+      aria-label="View controls"
+      className="pointer-events-auto flex flex-wrap items-center gap-1"
+    >
+      <button
+        type="button"
+        className={CTRL}
+        aria-label="Rotate left"
+        onClick={() => onRotate(-20)}
+      >
         <RotateCcw className="size-4" strokeWidth={2.2} aria-hidden />
       </button>
-      <button type="button" className={CTRL} aria-label="Rotate right" onClick={() => onRotate(20)}>
+      <button
+        type="button"
+        className={CTRL}
+        aria-label="Rotate right"
+        onClick={() => onRotate(20)}
+      >
         <RotateCw className="size-4" strokeWidth={2.2} aria-hidden />
       </button>
       {canTilt && (
         <>
-          <button type="button" className={CTRL} aria-label="Look more from above" onClick={onTop}>
+          <button
+            type="button"
+            className={CTRL}
+            aria-label="Look more from above"
+            onClick={onTop}
+          >
             Top
           </button>
-          <button type="button" className={CTRL} aria-label="Tilt toward the horizon" onClick={onTilt}>
+          <button
+            type="button"
+            className={CTRL}
+            aria-label="Tilt toward the horizon"
+            onClick={onTilt}
+          >
             Tilt
           </button>
         </>
       )}
-      <button type="button" className={cn(CTRL, "text-[18px]")} aria-label="Zoom in" onClick={() => onZoom(0.5)}>
+      <button
+        type="button"
+        className={cn(CTRL, "text-[18px]")}
+        aria-label="Zoom in"
+        onClick={() => onZoom(0.5)}
+      >
         +
       </button>
-      <button type="button" className={cn(CTRL, "text-[18px]")} aria-label="Zoom out" onClick={() => onZoom(-0.5)}>
+      <button
+        type="button"
+        className={cn(CTRL, "text-[18px]")}
+        aria-label="Zoom out"
+        onClick={() => onZoom(-0.5)}
+      >
         −
       </button>
       <button type="button" className={cn(CTRL, "font-bold")} onClick={onReset}>
@@ -496,7 +594,13 @@ export function NavControls({
         aria-label={`Compass, facing ${Math.round(((bearing % 360) + 360) % 360)} degrees. Turn north up`}
         className="inline-flex size-9 items-center justify-center rounded-full border border-line-strong bg-white"
       >
-        <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" style={{ transform: `rotate(${-bearing}deg)` }}>
+        <svg
+          width="22"
+          height="22"
+          viewBox="0 0 24 24"
+          aria-hidden="true"
+          style={{ transform: `rotate(${-bearing}deg)` }}
+        >
           <path d="M12 2 16 12H8z" fill="#C8241B" />
           <path d="M12 22 8 12h8z" fill="#B4BAC3" />
         </svg>
@@ -527,7 +631,11 @@ export function LayerToggle({
     </button>
   );
   return (
-    <div role="group" aria-label="Layer" className="pointer-events-auto inline-flex overflow-hidden rounded-[2px] border border-ink bg-white">
+    <div
+      role="group"
+      aria-label="Layer"
+      className="pointer-events-auto inline-flex overflow-hidden rounded-[2px] border border-ink bg-white"
+    >
       {item("cameras", "CAMERAS")}
       {item("plan", "PATROL PLAN")}
     </div>

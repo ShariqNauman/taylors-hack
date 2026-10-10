@@ -18,13 +18,13 @@ export function DemoStrip({
       </span>
       {mode === "replay" ? (
         <span className="text-[15px]">
-          Showing the recorded demo feed from the auditorium webcam, played in
+          Showing the recorded demo feed from the Grand Hall webcam, played in
           real time. When the laptop webcam is on, this is live.
         </span>
       ) : (
         <span className="text-[15px]">
           No live events in the last minute. Play the recorded demo feed from
-          the auditorium webcam to see an escalation in real time.
+          the Grand Hall webcam to see an escalation in real time.
         </span>
       )}
       {mode === "replay" ? (

@@ -204,7 +204,9 @@ export default function Campus3D({
     return geoCams.find((c) => c.camera_id === id) ?? null;
   }, [focusCameraId, alarm, geoCams]);
   const alarmCamId = camLayer ? (alarm?.camera_id ?? null) : null;
-  const alarmBuildingId = alarmCamId ? (cameraBuilding[alarmCamId] ?? null) : null;
+  const alarmBuildingId = alarmCamId
+    ? (cameraBuilding[alarmCamId] ?? null)
+    : null;
 
   // Route: nearest on-duty post → alarming camera (compact: → focused camera).
   const routeCam = compact
@@ -282,12 +284,19 @@ export default function Campus3D({
     if (compact && routeGuard) extra.push(routeGuard.guard.post);
     // Compact: turn the map so the guard sits below the camera and the route runs up the screen.
     const bearing =
-      compact && routeGuard ? azimuth(routeGuard.guard.post, targetCam.geo) : HOME_BEARING;
+      compact && routeGuard
+        ? azimuth(routeGuard.guard.post, targetCam.geo)
+        : HOME_BEARING;
     if (!b) {
       const p = targetCam.geo;
       const d = 0.0004;
       return viewFor(
-        { minLng: p.lng - d, maxLng: p.lng + d, minLat: p.lat - d, maxLat: p.lat + d },
+        {
+          minLng: p.lng - d,
+          maxLng: p.lng + d,
+          minLat: p.lat - d,
+          maxLat: p.lat + d,
+        },
         w,
         h,
         compact ? compactPitch : homePitch,
@@ -296,12 +305,30 @@ export default function Campus3D({
         bearing,
       );
     }
-    return buildingView(b, extra, compact ? compactPitch : homePitch, compact ? 0.6 : 0.5, bearing);
-  }, [targetCam, focusCameraId, compact, byId, cameraBuilding, routeGuard, buildingView, w, h, compactPitch, homePitch]);
+    return buildingView(
+      b,
+      extra,
+      compact ? compactPitch : homePitch,
+      compact ? 0.6 : 0.5,
+      bearing,
+    );
+  }, [
+    targetCam,
+    focusCameraId,
+    compact,
+    byId,
+    cameraBuilding,
+    routeGuard,
+    buildingView,
+    w,
+    h,
+    compactPitch,
+    homePitch,
+  ]);
 
   const [view, setView] = useState<View | null>(null);
   const touched = useRef(false);
-  const fitKey = `${gl}|${w}x${h}|${allBounds ? 1 : 0}|${compact ? focusCameraId ?? alarm?.camera_id ?? "" : focusCameraId ?? ""}|${routeGuard?.guard.name ?? ""}`;
+  const fitKey = `${gl}|${w}x${h}|${allBounds ? 1 : 0}|${compact ? (focusCameraId ?? alarm?.camera_id ?? "") : (focusCameraId ?? "")}|${routeGuard?.guard.name ?? ""}`;
   const [prevFitKey, setPrevFitKey] = useState("");
   if (fitKey !== prevFitKey && w && allBounds) {
     // Fit on first size, on resize (until the user moves the view) and always in compact.
@@ -320,15 +347,21 @@ export default function Campus3D({
     setView({
       ...target,
       ...(ms
-        ? { transitionDuration: ms, transitionInterpolator: new FlyToInterpolator() }
+        ? {
+            transitionDuration: ms,
+            transitionInterpolator: new FlyToInterpolator(),
+          }
         : {}),
     });
   }, []);
 
-  const nudge = useCallback((patch: (v: MapViewState) => Partial<MapViewState>) => {
-    touched.current = true;
-    setView((v) => (v ? { ...v, ...patch(v), transitionDuration: 0 } : v));
-  }, []);
+  const nudge = useCallback(
+    (patch: (v: MapViewState) => Partial<MapViewState>) => {
+      touched.current = true;
+      setView((v) => (v ? { ...v, ...patch(v), transitionDuration: 0 } : v));
+    },
+    [],
+  );
 
   // ── Google Photorealistic 3D Tiles (only with a key, never in compact) ──
   const wantTiles = !!GOOGLE_KEY && !compact && gl === "webgl";
@@ -395,9 +428,20 @@ export default function Campus3D({
   const lighting = useMemo(
     () =>
       new LightingEffect({
-        ambient: new AmbientLight({ color: [255, 255, 255], intensity: LIGHT.ambient }),
-        top: new DirectionalLight({ color: [255, 255, 255], intensity: LIGHT.top, direction: [0, 0, -1] }),
-        side: new DirectionalLight({ color: [255, 255, 255], intensity: LIGHT.side, direction: [1, 0.35, 0] }),
+        ambient: new AmbientLight({
+          color: [255, 255, 255],
+          intensity: LIGHT.ambient,
+        }),
+        top: new DirectionalLight({
+          color: [255, 255, 255],
+          intensity: LIGHT.top,
+          direction: [0, 0, -1],
+        }),
+        side: new DirectionalLight({
+          color: [255, 255, 255],
+          intensity: LIGHT.side,
+          direction: [1, 0.35, 0],
+        }),
       }),
     [],
   );
@@ -410,7 +454,10 @@ export default function Campus3D({
       const i = blds.indexOf(f);
       return f.properties.id ?? `b${f.properties.osm_way ?? i}`;
     };
-    const flatParams = { depthWriteEnabled: false, depthCompare: "always" as const };
+    const flatParams = {
+      depthWriteEnabled: false,
+      depthCompare: "always" as const,
+    };
     const out = [];
     if (tilesLive) {
       out.push(
@@ -418,7 +465,9 @@ export default function Campus3D({
           id: "google-3d-tiles",
           data: GOOGLE_ROOT,
           loadOptions: { fetch: { headers: { "X-GOOG-API-KEY": GOOGLE_KEY } } },
-          onTileLoad: (tile: { content?: { gltf?: { asset?: { copyright?: string } } } }) => {
+          onTileLoad: (tile: {
+            content?: { gltf?: { asset?: { copyright?: string } } };
+          }) => {
             setTiles("ready");
             const c = tile.content?.gltf?.asset?.copyright;
             if (c)
@@ -468,7 +517,10 @@ export default function Campus3D({
         getElevation: (f) => f.properties.height_m_estimate ?? 12,
         getFillColor: (f) => {
           const id = idOf(f as CampusFeature);
-          if (tilesReady) return id === alarmBuildingId ? hex(COLORS.alarmTop, 110) : [255, 255, 255, 1];
+          if (tilesReady)
+            return id === alarmBuildingId
+              ? hex(COLORS.alarmTop, 110)
+              : [255, 255, 255, 1];
           if (id === alarmBuildingId) return baseForTop(COLORS.alarmTop);
           if (id === selectedBuildingId) return baseForTop(COLORS.selectedTop);
           return hex("#C9D0D9");
@@ -479,7 +531,12 @@ export default function Campus3D({
           if (id === selectedBuildingId) return hex(COLORS.selectedLine);
           return hex(COLORS.edge);
         },
-        material: { ambient: 1, diffuse: 1, shininess: 1, specularColor: [0, 0, 0] },
+        material: {
+          ambient: 1,
+          diffuse: 1,
+          shininess: 1,
+          specularColor: [0, 0, 0],
+        },
         updateTriggers: {
           getFillColor: [alarmBuildingId, selectedBuildingId, tilesReady],
           getLineColor: [alarmBuildingId, selectedBuildingId],
@@ -498,7 +555,12 @@ export default function Campus3D({
           getPosition: (p) => [p.geo.lng, p.geo.lat],
           getElevation: (p) => p.incidents4w * 9,
           getFillColor: baseForTop("#3653DC"),
-          material: { ambient: 1, diffuse: 1, shininess: 1, specularColor: [0, 0, 0] },
+          material: {
+            ambient: 1,
+            diffuse: 1,
+            shininess: 1,
+            specularColor: [0, 0, 0],
+          },
         }),
       );
     }
@@ -520,15 +582,30 @@ export default function Campus3D({
       );
     }
     return out;
-  }, [gl, geo, tilesLive, tilesReady, compact, alarmBuildingId, selectedBuildingId, layer, posts, route]);
+  }, [
+    gl,
+    geo,
+    tilesLive,
+    tilesReady,
+    compact,
+    alarmBuildingId,
+    selectedBuildingId,
+    layer,
+    posts,
+    route,
+  ]);
 
   const onDeckClick = useCallback(
     (info: PickingInfo) => {
       if (compact || !info.layer) return;
       if (info.layer.id === "buildings" && info.object) {
         const f = info.object as CampusFeature;
-        const blds = (geo?.features ?? []).filter((x) => x.properties.kind === "building");
-        const i = blds.findIndex((x) => x.properties.osm_way === f.properties.osm_way);
+        const blds = (geo?.features ?? []).filter(
+          (x) => x.properties.kind === "building",
+        );
+        const i = blds.findIndex(
+          (x) => x.properties.osm_way === f.properties.osm_way,
+        );
         pickBuilding(f.properties.id ?? `b${f.properties.osm_way ?? i}`);
       } else if (info.layer.id === "plan-columns" && info.object) {
         setSel({ kind: "post", id: (info.object as PlanPost).id });
@@ -538,8 +615,10 @@ export default function Campus3D({
   );
 
   // ── Overlays ──
-  const camsIn = (bid: string) => geoCams.filter((c) => cameraBuilding[c.camera_id] === bid);
-  const liveCamIn = (bid: string) => camsIn(bid).find((c) => sourceKind(c) === "live");
+  const camsIn = (bid: string) =>
+    geoCams.filter((c) => cameraBuilding[c.camera_id] === bid);
+  const liveCamIn = (bid: string) =>
+    camsIn(bid).find((c) => sourceKind(c) === "live");
 
   const jumps = useMemo(() => {
     const withCams = buildings.filter((b) =>
@@ -573,7 +652,13 @@ export default function Campus3D({
     }
   };
 
-  const shownCams = compact ? (targetCam ? [targetCam] : []) : camLayer ? geoCams : [];
+  const shownCams = compact
+    ? targetCam
+      ? [targetCam]
+      : []
+    : camLayer
+      ? geoCams
+      : [];
   const shownGuards = compact
     ? routeGuard
       ? [routeGuard.guard]
@@ -582,8 +667,12 @@ export default function Campus3D({
       ? guards
       : [];
 
-  const selCam = sel?.kind === "cam" ? (geoCams.find((c) => c.camera_id === sel.id) ?? null) : null;
-  const selPost = sel?.kind === "post" ? (posts.find((p) => p.id === sel.id) ?? null) : null;
+  const selCam =
+    sel?.kind === "cam"
+      ? (geoCams.find((c) => c.camera_id === sel.id) ?? null)
+      : null;
+  const selPost =
+    sel?.kind === "post" ? (posts.find((p) => p.id === sel.id) ?? null) : null;
 
   const compactLabel =
     compact && targetCam
@@ -597,7 +686,11 @@ export default function Campus3D({
   const credit = tilesReady
     ? `GOOGLE${credits.length ? " · " + credits.join(" · ").toUpperCase() : ""}`
     : `FOOTPRINTS © OPENSTREETMAP CONTRIBUTORS · HEIGHTS ESTIMATED${
-        compact ? "" : flat ? " · TOP-DOWN, 3D NOT AVAILABLE HERE" : " · DRAG TO ROTATE"
+        compact
+          ? ""
+          : flat
+            ? " · TOP-DOWN, 3D NOT AVAILABLE HERE"
+            : " · DRAG TO ROTATE"
       }`;
 
   const ready = !!view && !!viewport && !!geo;
@@ -606,7 +699,11 @@ export default function Campus3D({
     <div
       ref={wrapRef}
       className="relative w-full select-none overflow-hidden rounded-[2px] border border-line"
-      style={{ height: h, background: COLORS.background, touchAction: compact ? "auto" : "none" }}
+      style={{
+        height: h,
+        background: COLORS.background,
+        touchAction: compact ? "auto" : "none",
+      }}
       role="region"
       aria-label={
         compact
@@ -630,14 +727,25 @@ export default function Campus3D({
           controller={
             compact
               ? false
-              : { dragMode: "rotate", touchRotate: true, inertia: false, keyboard: true }
+              : {
+                  dragMode: "rotate",
+                  touchRotate: true,
+                  inertia: false,
+                  keyboard: true,
+                }
           }
           layers={layers}
           effects={[lighting]}
           onClick={onDeckClick}
           onError={() => setGl("none")}
           getCursor={({ isDragging, isHovering }) =>
-            compact ? "default" : isDragging ? "grabbing" : isHovering ? "pointer" : "grab"
+            compact
+              ? "default"
+              : isDragging
+                ? "grabbing"
+                : isHovering
+                  ? "pointer"
+                  : "grab"
           }
           width={w}
           height={h}
@@ -658,7 +766,9 @@ export default function Campus3D({
       )}
       {!ready && (
         <div className="absolute inset-0 grid place-items-center">
-          <span className="ee-label text-muted-foreground">Loading campus map</span>
+          <span className="ee-label text-muted-foreground">
+            Loading campus map
+          </span>
         </div>
       )}
 
@@ -690,7 +800,9 @@ export default function Campus3D({
             })}
           {shownGuards.map((g) => {
             const p = project(g.post.lng, g.post.lat, 0);
-            return onScreen(p) ? <GuardChip key={g.name} name={g.name} pos={p} /> : null;
+            return onScreen(p) ? (
+              <GuardChip key={g.name} name={g.name} pos={p} />
+            ) : null;
           })}
           {shownCams.map((c) => {
             const p = project(c.geo!.lng, c.geo!.lat, c.geo!.alt_m ?? 6);
@@ -762,8 +874,15 @@ export default function Campus3D({
                 </span>
               )}
             </div>
-            <div role="group" aria-label="Jump to a building" className="flex flex-wrap gap-1">
-              {[...jumps, { id: null as string | null, label: "Whole campus" }].map((j) => (
+            <div
+              role="group"
+              aria-label="Jump to a building"
+              className="flex flex-wrap gap-1"
+            >
+              {[
+                ...jumps,
+                { id: null as string | null, label: "Whole campus" },
+              ].map((j) => (
                 <button
                   key={j.id ?? "all"}
                   type="button"
@@ -780,10 +899,20 @@ export default function Campus3D({
             <NavControls
               bearing={view?.bearing ?? 0}
               canTilt={!flat}
-              onRotate={(d) => nudge((v) => ({ bearing: (v.bearing ?? 0) + d }))}
-              onTop={() => nudge((v) => ({ pitch: Math.max(0, (v.pitch ?? 0) - 12) }))}
-              onTilt={() => nudge((v) => ({ pitch: Math.min(70, (v.pitch ?? 0) + 12) }))}
-              onZoom={(d) => nudge((v) => ({ zoom: Math.max(14.5, Math.min(20.5, v.zoom + d)) }))}
+              onRotate={(d) =>
+                nudge((v) => ({ bearing: (v.bearing ?? 0) + d }))
+              }
+              onTop={() =>
+                nudge((v) => ({ pitch: Math.max(0, (v.pitch ?? 0) - 12) }))
+              }
+              onTilt={() =>
+                nudge((v) => ({ pitch: Math.min(70, (v.pitch ?? 0) + 12) }))
+              }
+              onZoom={(d) =>
+                nudge((v) => ({
+                  zoom: Math.max(14.5, Math.min(20.5, v.zoom + d)),
+                }))
+              }
               onReset={() => {
                 const v = homeView();
                 if (v) flyTo(v);
@@ -803,16 +932,30 @@ export default function Campus3D({
             <CameraCard
               camera={selCam}
               kind={sourceKind(selCam)}
-              buildingName={byId.get(cameraBuilding[selCam.camera_id] ?? "")?.name ?? null}
+              buildingName={
+                byId.get(cameraBuilding[selCam.camera_id] ?? "")?.name ?? null
+              }
               event={latestEventFor(events ?? [], selCam.camera_id)}
               level={cameraLevel(events ?? [], selCam.camera_id)}
               sheet={narrow}
               onClose={() => setSel(null)}
-              onOpen={onOpenCamera ? () => onOpenCamera(selCam.camera_id) : undefined}
-              onDetails={onSelectCamera ? () => onSelectCamera(selCam.camera_id) : undefined}
+              onOpen={
+                onOpenCamera ? () => onOpenCamera(selCam.camera_id) : undefined
+              }
+              onDetails={
+                onSelectCamera
+                  ? () => onSelectCamera(selCam.camera_id)
+                  : undefined
+              }
             />
           )}
-          {selPost && <PostCard post={selPost} sheet={narrow} onClose={() => setSel(null)} />}
+          {selPost && (
+            <PostCard
+              post={selPost}
+              sheet={narrow}
+              onClose={() => setSel(null)}
+            />
+          )}
         </>
       )}
     </div>
