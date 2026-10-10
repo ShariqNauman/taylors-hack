@@ -82,6 +82,8 @@ interface Proof {
 
 Endpoints: `GET /site` · `GET /cameras` · `GET /events?since=<iso>` · `PATCH /events/:id {status?, staff_note?, acked_at?}` · `GET /hotspots` · `GET /plan` · `GET /proof`. (`POST /events`, `POST /cameras/heartbeat` are edge → API; the dashboard never calls them.)
 
+Shift handover brief: `POST /handover` takes `HandoverFacts` (counts, names, times and the patrol slot, all computed on the dashboard; never raw events) and returns `HandoverBrief { text, model, generated_at }`. The drawer shows the facts first and swaps in the brief only when it arrives; mock: `/api/mock/handover` assembles the text without a model.
+
 Replay rule: `?replay=1` and `replay.json` events are played **by timestamp** (`start_time` deltas), not at a fixed 0.5 s, so "fight likely in ~6 s" is true on screen. `replay.json` therefore needs realistic timestamps: tense at t=0, fight_likely at t≈4 s with eta 6, fight at t≈10 s.
 
 Write `public/mock/*.json` yourself in the first hour. Demo site = **Taylor's Lakeside campus** (`site_type: "campus"`): zones = hostel corridor (risk 1.0), Block C stairwell (0.8), canteen (0.7), car park (0.6), sports court (0.3). 6 cameras, one with `black_since` 3 days ago. `replay.json` = 12-event escalation calm → tense → fight_likely (eta 6) → fight at "Block C stairwell". `events.json` = ~40 incidents over 8 weeks. `hotspots.json` + `plan.json` with the planted pattern "Block C stairwell, Mon–Thu 13:00–14:00, 5 incidents, ~3 avoided/week". `proof.json` with placeholders and `note: "placeholder"`.
