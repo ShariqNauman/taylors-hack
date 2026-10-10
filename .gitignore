@@ -1,53 +1,67 @@
-
-!model/violence_model.joblib
-# Environment Variables & Secrets
-# IDE & OS
-# ML Artifacts & Datasets
-# Model v2 pipeline (model/)
-# Node / Frontend
 # Python & Virtual Environments
-# ship the trained model so the live demo runs from a fresh clone
-*$py.class
-*.csv.gz
-*.egg-info/
-*.joblib
-*.key
-*.log
-*.pem
-*.pt
+__pycache__/
 *.py[cod]
+*$py.class
 *.so
-*.swo
-*.swp
-*.tgz
-*.tmp
-*_openvino_*/
-.DS_Store
 .Python
-.Rhistory
-.claude/worktrees/
+env/
+venv/
+.venv/
+ENV/
+build/
+dist/
+*.egg-info/
+.pytest_cache/
 .coverage
+htmlcov/
+
+# ML Artifacts & Datasets
+data/
+keypoints/
+*.pt
+*.joblib
+*_openvino_*/
+windows*.csv
+live_features*.csv
+
+# Environment Variables & Secrets
 .env
 .env*
-.idea/
-.next/
-.pytest_cache/
-.venv/
-.vscode/
-ENV/
-Thumbs.db
-__pycache__/
-build/
-data/
-dist/
-env/
-failed_videos*.txt
-htmlcov/
-keypoints/
-keypoints_v2/
-live_features*.csv
+*.pem
+*.key
+
+# Node / Frontend
 node_modules/
+.next/
 out/
+
+# IDE & OS
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+.Rhistory
+
+# Model v2 pipeline (model/)
+keypoints_v2/
+*.log
+*.tmp
+failed_videos*.txt
+*.tgz
+*.csv.gz
 session*.csv
-venv/
-windows*.csv
+# ship the trained model so the live demo runs from a fresh clone
+!model/violence_model.joblib
+
+# backups of earlier models and metrics
+backup_*/
+oof_*.csv
+seq_windows.npz
+*.onnx
+!model/seq_model.onnx
+holdout_v4*_scores.csv
+
+# Agent worktrees
+.claude/worktrees/
