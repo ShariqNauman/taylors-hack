@@ -9,6 +9,7 @@ import {
   mergeEvents,
   mirrorEvent,
   patchEvent,
+  sendBackup,
   usingMock,
   type EdgeLive,
 } from "@/lib/api";
@@ -431,6 +432,14 @@ export function useLiveFeed(replayOn: boolean, edgeUrls: string[] = []) {
       const at = new Date().toISOString();
       const id = `${e.incident_id}-B`;
       pushToast(name, at, e.location);
+      if (!usingMock) {
+        try {
+          await sendBackup(e.incident_id, name, e.outcome === "backup" ? "need_backup" : "no_answer");
+          return;
+        } catch {
+          // API down: fall through to the local copy so the desk still shows it
+        }
+      }
       await mirrorEvent(
         {
           ...plainEvent(e),
