@@ -19,13 +19,7 @@ const API_URL = (process.env.NEXT_PUBLIC_API_URL ?? "").replace(/\/$/, "");
 export const usingMock = API_URL === "";
 
 type MockName =
-  | "site"
-  | "cameras"
-  | "events"
-  | "replay"
-  | "hotspots"
-  | "plan"
-  | "proof";
+  "site" | "cameras" | "events" | "replay" | "hotspots" | "plan" | "proof";
 
 function mockUrl(name: MockName): string {
   return `/api/mock/${name}`;
@@ -89,12 +83,13 @@ export const swrKeys = {
   proof: "proof",
 } as const;
 
-export const swrFetchers: Record<keyof typeof swrKeys, () => Promise<unknown>> = {
-  site: getSite,
-  cameras: getCameras,
-  events: () => getEvents(),
-  replay: getReplay,
-  hotspots: getHotspots,
-  plan: getPatrolPlan,
-  proof: getProof,
-};
+export const swrFetchers: Record<keyof typeof swrKeys, () => Promise<unknown>> =
+  {
+    site: getSite,
+    cameras: getCameras,
+    events: () => getEvents(),
+    replay: getReplay,
+    hotspots: getHotspots,
+    plan: getPatrolPlan,
+    proof: getProof,
+  };

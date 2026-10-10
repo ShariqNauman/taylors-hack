@@ -42,9 +42,12 @@ export function fmtRelative(iso: string, now: Date = new Date()): string {
 
 /** "black for 3 days" / "black for 5 h". */
 export function fmtBlackFor(iso: string, now: Date = new Date()): string {
-  const h = Math.max(1, Math.round((now.getTime() - new Date(iso).getTime()) / 3_600_000));
+  const h = Math.max(
+    1,
+    Math.floor((now.getTime() - new Date(iso).getTime()) / 3_600_000),
+  );
   if (h < 24) return `black for ${h} h`;
-  const d = Math.round(h / 24);
+  const d = Math.floor(h / 24);
   return d === 1 ? "black for 1 day" : `black for ${d} days`;
 }
 
@@ -127,7 +130,10 @@ export function zoneLabel(site: Site | undefined, zone_type: string): string {
   return zone_type.replace(/_/g, " ").replace(/^\w/, (c) => c.toUpperCase());
 }
 
-export function zoneRisk(site: Site | undefined, zone_type: string): number | undefined {
+export function zoneRisk(
+  site: Site | undefined,
+  zone_type: string,
+): number | undefined {
   return site?.zones.find((z) => z.zone_type === zone_type)?.risk;
 }
 
