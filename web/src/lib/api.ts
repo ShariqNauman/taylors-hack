@@ -176,7 +176,27 @@ export const getReplay = () => getJson<Event[]>("/replay", "replay");
 export async function getEvents(since?: string): Promise<Event[]> {
   const q = since ? `?since=${encodeURIComponent(since)}` : "";
   const list = await getJson<Event[]>(`/events${q}`, "events");
-  return list.map(normaliseEvent);
+  return list.map(normaliseEvent).filter((e) => !isRehearsal(e));
+}
+
+/** The webcam camera on the demo laptop (edge/cameras.json "live"). */
+const LIVE_CAMERA = process.env.NEXT_PUBLIC_LIVE_CAMERA ?? "CAM-AU-01";
+/** The build started Sat 10 Oct 14:00; webcam incidents from then on are our own runs. */
+const BUILD_START = Date.parse("2026-10-10T14:00:00+08:00");
+/** When this page loaded: the demo starts here. */
+const PAGE_LOADED_AT = Date.now();
+const REHEARSAL_GRACE_MS = 5 * 60_000;
+
+/**
+ * Webcam incidents from our rehearsals stay out of every screen: on stage the history shows the
+ * planned weeks and the recorded fights, plus whatever the live demo does from this page load on.
+ * An incident still going on when the page opens (a guard opening /guard mid-fight) still shows.
+ */
+function isRehearsal(e: Event): boolean {
+  if (e.camera_id !== LIVE_CAMERA) return false;
+  const t = Date.parse(e.start_time);
+  if (!(t >= BUILD_START) || t >= PAGE_LOADED_AT) return false;
+  return !!e.end_time || t < PAGE_LOADED_AT - REHEARSAL_GRACE_MS;
 }
 
 const LEVELS = new Set(["calm", "tense", "fight_likely", "fight"]);
