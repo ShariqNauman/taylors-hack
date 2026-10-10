@@ -28,10 +28,16 @@ const ACTIVE_WINDOW_MS = 20 * 60_000;
 
 export function LiveScreen() {
   const params = useSearchParams();
-  const replayOn = params.get("replay") === "1";
   const camParam = params.get("cam");
-  const now = useClock(replayOn ? 100 : 500);
   const apiDown = useAppStore((s) => s.apiDown);
+  const view = useAppStore((s) => s.view);
+  // Replay policy. `?replay=1` forces it, `?replay=0` suppresses it. Otherwise
+  // it starts by itself once the edge probe says we are not on site: someone
+  // opening the deployed link with no camera attached (a judge, a buyer) must
+  // see the product work, not a quiet screen. On site the webcam drives it.
+  const replayParam = params.get("replay");
+  const replayOn = replayParam !== "0" && (replayParam === "1" || view === "remote");
+  const now = useClock(replayOn ? 100 : 500);
 
   const { data: site } = useSWR("site", getSite, { revalidateOnFocus: false });
   const { data: cameras } = useSWR("cameras", getCameras, {
@@ -49,7 +55,6 @@ export function LiveScreen() {
     [cameras],
   );
   const feed = useLiveFeed(replayOn, edgeUrls);
-  const view = useAppStore((s) => s.view);
   const mockOnSite = view === "onsite" && (usingMock || apiDown);
 
   const active = useMemo(

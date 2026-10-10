@@ -396,6 +396,64 @@ export function ProofScreen() {
       </section>
 
       <section
+        aria-labelledby="ir-h"
+        className="flex flex-col gap-2.5 rounded-[2px] border border-line bg-white p-4 min-[900px]:flex-row min-[900px]:items-start"
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={proof.ir_check.image || "/ir-frame.jpg"}
+          alt="A night / infrared CCTV frame, the kind a hostel corridor camera produces after dark."
+          className="w-full max-w-[360px] rounded-[2px] border border-line-strong"
+        />
+        <div className="flex flex-col gap-2">
+          <h2 id="ir-h" className="ee-display text-[24px]">
+            Night and infrared
+          </h2>
+          {m.ir ? (
+            <p className="m-0 max-w-[70ch] text-[15px] leading-normal text-ink-2">
+              Pose found a skeleton in {proof.ir_check.skeletons_detected} of{" "}
+              {proof.ir_check.frames} infrared frames. {proof.ir_check.note}
+            </p>
+          ) : (
+            <>
+              <p className="m-0 max-w-[70ch] text-[15px] leading-normal text-ink-2">
+                This is what a hostel corridor camera gives you at 2am: infrared,
+                grey, wide. Every number on this page comes from daylight or
+                indoor footage.{" "}
+                <strong>
+                  We have not run the pose model on infrared, so we do not claim
+                  it works at night.
+                </strong>{" "}
+                That is why the first customer is a campus control room in
+                daylight, not a hostel at 2am.
+              </p>
+              <span className="w-fit rounded-[1px] border border-dashed border-line-strong px-2 py-1 font-mono text-[12px] font-bold uppercase">
+                {NM} · night and IR
+              </span>
+            </>
+          )}
+        </div>
+      </section>
+
+      {proof.disclosure && (
+        <section
+          aria-labelledby="disclosure-h"
+          className="flex flex-col gap-2 rounded-[2px] border-2 border-ink bg-white p-4"
+        >
+          <h2 id="disclosure-h" className="ee-display text-[24px]">
+            Full disclosure
+          </h2>
+          <p className="m-0 max-w-[110ch] text-[15px] leading-normal text-ink-2">
+            {proof.disclosure}
+          </p>
+          <span className="font-mono text-[11px] tracking-[0.08em] text-muted-ink">
+            VERBATIM FROM MODEL/PROOF.JSON · WRITTEN BY THE PERSON WHO TRAINED
+            THE MODEL
+          </span>
+        </section>
+      )}
+
+      <section
         aria-labelledby="card-h"
         className="flex flex-col gap-2.5 rounded-[2px] border border-line bg-white p-4"
       >

@@ -5,7 +5,7 @@ services:
   - type: web
     name: earlyeye-api
     runtime: python
-    repo: https://github.com/<YOUR_GITHUB>/taylors-hack  # update this
+    repo: https://github.com/ShariqNauman/taylors-hack
     branch: backend
     buildCommand: pip install -r api/requirements.txt
     startCommand: uvicorn api.main:app --host 0.0.0.0 --port $PORT
