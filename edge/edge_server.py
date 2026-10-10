@@ -39,6 +39,8 @@ import predict as predict_module
 from features import window_features
 from predict import predict
 
+predict_module.MODE = "lgbm"
+
 MYT = timezone(timedelta(hours=8))
 
 # Full 17 COCO keypoints: 0:nose, 1:l_eye, 2:r_eye, 3:l_ear, 4:r_ear,
@@ -319,6 +321,12 @@ def run_pipeline(s: State):
                 if ret:
                     current_frame = f
                 time.sleep(1.0 / 30.0)
+            else:
+                f = np.zeros((480, 640, 3), dtype=np.uint8)
+                cv2.putText(f, "EARLYEYE EDGE ONLINE (RTX 5090)", (80, 220), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (0, 255, 200), 2, cv2.LINE_AA)
+                cv2.putText(f, "Ready for laptop webcam feed...", (140, 260), cv2.FONT_HERSHEY_SIMPLEX, 0.55, (180, 180, 180), 1, cv2.LINE_AA)
+                current_frame = f
+                time.sleep(1.0 / 15.0)
 
         if current_frame is None:
             time.sleep(0.005)

@@ -20,7 +20,7 @@ import time
 import urllib.request
 import cv2
 
-DEFAULT_GPU_URL = "https://collaboration-isolation-bar-hull.trycloudflare.com"
+DEFAULT_GPU_URL = "https://rec-refuse-apparatus-web.trycloudflare.com"
 
 ALL_BONES = [
     # Head & Face

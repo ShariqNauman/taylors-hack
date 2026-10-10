@@ -8,8 +8,8 @@ import paramiko
 
 HOST = os.getenv("GRAPHILAB_HOST", "instance.grafilab.ai")
 PORT = int(os.getenv("GRAPHILAB_PORT", "22"))
-USER = os.getenv("GRAPHILAB_USER", "humble-masks-wink")
-PASS = os.getenv("GRAPHILAB_PASSWORD", "59SdkKCEow4K")
+USER = os.getenv("GRAPHILAB_USER", "funny-icons-pump")
+PASS = os.getenv("GRAPHILAB_PASSWORD", "RRLctRfbqZ0j")
 
 print(f"Connecting to {USER}@{HOST}:{PORT}...")
 ssh = paramiko.SSHClient()
