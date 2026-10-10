@@ -167,9 +167,10 @@ export function AlertCard({
         </div>
       </div>
 
-      {compact3d ?? (
-        <CampusCompactSlot cameraId={event.camera_id} whereText={where} />
-      )}
+      {compact3d ??
+        (!isCalm && (
+          <CampusCompactSlot cameraId={event.camera_id} whereText={where} />
+        ))}
 
       <ol
         aria-label="Progress"

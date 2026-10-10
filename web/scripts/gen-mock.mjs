@@ -36,10 +36,10 @@ const site = {
   name: "Taylor's Lakeside",
   site_type: "campus",
   zones: [
-    { zone_type: "hostel_corridor", label: "DK Senza corridors", risk: 1.0 },
+    { zone_type: "hostel_corridor", label: "U Residence corridors", risk: 1.0 },
     { zone_type: "stairwell", label: "Block C stairwell", risk: 0.8 },
     { zone_type: "canteen", label: "Syopz Mall food court", risk: 0.7 },
-    { zone_type: "auditorium", label: "Auditorium", risk: 0.5 },
+    { zone_type: "auditorium", label: "Grand Hall", risk: 0.5 },
     { zone_type: "sports_court", label: "Sports pitch", risk: 0.3 },
   ],
   staff: seed3d.staff.map((x) => ({ name: x.name, zone_type: x.zone_type, on_duty: x.on_duty, ...(x.post ? { post: x.post } : {}) })),
@@ -55,13 +55,13 @@ const cameras = seed3d.cameras.map((c) => {
   const black = c.source === "black";
   const out = {
     camera_id: c.camera_id,
-    location: c.camera_id === "CAM-AU-01" ? "Auditorium, Block A and B" : c.location,
+    location: c.location,
     zone_type: c.zone_type,
     online: !black,
     last_frame_at: black ? iso(NOW - 3 * DAY) : iso(NOW - 1000),
     ...(black ? { black_since: iso(NOW - 3 * DAY) } : {}),
     ...(black ? {} : { people_count: PEOPLE[c.camera_id] }),
-    geo: { ...c.geo, building: c.building, floor: c.floor },
+    geo: { ...c.geo, building: c.building.replace(/ \(.*\)$/, ""), floor: c.floor },
     ...(black ? {} : { source: c.source }),
     ...(c.source === "recorded" ? { recorded_at: iso(myt(2026, 10, 10, +REC[c.camera_id].slice(0, 2), +REC[c.camera_id].slice(3))) } : {}),
     edge_url: black ? "" : `http://127.0.0.1:${PORT[c.camera_id]}`,
@@ -122,7 +122,7 @@ for (const d of [...new Set(bcRecent)].concat(pickN(early4((x) => x <= 3), 3))) 
   const lvl = pick(["fight_likely", "fight", "fight_likely"]);
   mk({ camId: "CAM-BC-03", t: at(d, 13, 5 + Math.floor(rnd() * 50)), level: lvl, type: pick(["fight", "fight", "cornering"]), people: 2 + Math.floor(rnd() * 2), status: pick(["confirmed", "confirmed", "resolved"]), endS: 40 + Math.floor(rnd() * 80), note: rnd() < 0.4 ? "Two people separated; referred on." : null, snapshot: fightSnap });
 }
-// 2. DK Senza corridor L3, Sun–Thu 22:00–23:00: 4 in last 4 weeks + 2 earlier.
+// 2. U Residence corridor L3, Sun–Thu 22:00–23:00: 4 in last 4 weeks + 2 earlier.
 for (const d of [...pickN(last4((x) => x <= 3 || x === 6), 4), ...pickN(early4((x) => x <= 3 || x === 6), 2)]) {
   const lvl = pick(["fight_likely", "tense", "fight"]);
   mk({ camId: "CAM-HC-01", t: at(d, 22, Math.floor(rnd() * 55)), level: lvl, type: pick(["cornering", "fight", "crowd"]), people: 3 + Math.floor(rnd() * 2), status: lvl === "tense" ? "resolved" : pick(["confirmed", "resolved", "dismissed"]), endS: 30 + Math.floor(rnd() * 90), snapshot: lvl === "tense" ? snapFor("pair") : fightSnap });
@@ -176,7 +176,7 @@ const replay = R.map(([off, level, type, score, eta, reason, kf]) => {
   const t = iso(T0 + off * 1000);
   const people = kf >= 11 ? 3 : 2;
   return {
-    incident_id: "INC-2026-00142", camera_id: "CAM-AU-01", location: "Auditorium, Block A and B", zone_type: "auditorium",
+    incident_id: "INC-2026-00142", camera_id: "CAM-AU-01", location: "Grand Hall", zone_type: "auditorium",
     start_time: t, end_time: null, type, level, peak_score: score, eta_seconds: eta,
     priority: REPLAY_PRIORITY[kf], reason, people_count: people,
     action: actionFor(level, "Guard B"), nearest_staff: "Guard B", status: "new", staff_note: null,
@@ -204,7 +204,7 @@ const plan = {
   generated_at: iso(NOW),
   slots: [
     { location: "Block C stairwell", days: "Mon–Thu", hours: "13:00–14:00", incidents_4w: 5, expected_avoided_per_week: 0.75, avoided_per_patrol_hour: 0.19, rationale: "5 incidents in the same lunch hour, Monday to Thursday, in 4 weeks. One person at the level 1 landing covers both flights." },
-    { location: "DK Senza, corridor L3", days: "Sun–Thu", hours: "22:00–23:00", incidents_4w: 4, expected_avoided_per_week: 0.6, avoided_per_patrol_hour: 0.12, rationale: "4 incidents after 22:00 in 4 weeks. The L5 camera is black, so L3 is the only eye on the block." },
+    { location: "U Residence, corridor L3", days: "Sun–Thu", hours: "22:00–23:00", incidents_4w: 4, expected_avoided_per_week: 0.6, avoided_per_patrol_hour: 0.12, rationale: "4 incidents after 22:00 in 4 weeks. The L5 camera is black, so L3 is the only eye on the block." },
     { location: "Syopz Mall food court", days: "Fri", hours: "12:00–13:00", incidents_4w: 3, expected_avoided_per_week: 0.45, avoided_per_patrol_hour: 0.45, rationale: "3 crowd gatherings at Friday lunch in 4 weeks. One hour a week, so the best return per patrol hour." },
   ],
   assumption: "60% of hotspot incidents are avoided when a person is present. Stated, not measured. Avoided = incidents in 4 weeks × 0.6.",
