@@ -341,29 +341,34 @@ Never show: `peak_score`, priority, zone risk, keypoint or skeleton jargon, rule
 
 ### 6.4 Plan (`/plan`), design file `L3Plan.dc.html`
 
-**Who uses it and why.** The security supervisor, once a week, to put one person at each of the 3 posts. Keep it simple: no steps strip, no roster to copy, no calendar, no team list. Picking a person **sends the post to their phone** (section 6.6), and the page shows when they have seen it.
+**Who uses it and why.** A security supervisor who opens it for the first time must understand it without help. The page is five numbered questions, each answered by one picture. The post numbers 1, 2 and 3 are the same in every picture. Picking a guard sends the post to their phone (section 6.6).
 
-**Layout:**
-1. Kicker `PATROL PLAN · WEEK OF MON 12 OCT`, H1 "Where to put people this week", and the line "Pick who goes to each post. It goes straight to their phone, and you see when they've read it."
-2. One status line, "2 of 3 posts have someone · 1 seen on the phone", then one line about last week with a **Details** button. Details opens three short lines, one per post: covered days, the dated result and a verdict.
-3. Two columns:
-   - **Left:** `<Campus3D mode="plan">`, with guard names on the post pins, and the black-camera note under it.
-   - **Right:** three post cards. Each card shows:
-     - the rank, the place, and "Mon–Thu, 13:00–14:00 · 12–15 Oct" (this week's dates);
-     - one sentence, "5 incidents here at lunchtime in the last 4 weeks.", with a **Why here?** link;
-     - Why here? opens the dates of those incidents as chips, "Mon 1 · Tue 1 · Wed 2 · Thu 1 · should prevent about 3 a month", the at-the-post tip, and **See the 5 incidents**;
-     - who goes, which is either:
-       - the person's chip, the phone status ("✓ Seen on their phone · Sun 18:02" or "Sent to their phone · not seen yet") and **Change**; or
-       - **Send Guard C** (the suggestion), why they were suggested, and **Someone else**.
-     - The chooser lists everyone. Anyone not free is greyed out with the reason. "Nobody" takes the post off that person's phone.
-4. One folded section, **When trouble happens, by weekday**. Its summary line names the busiest weekday. Opened, it shows 7 day tiles with this week's dates and counts, and a day panel with that day's dates, busiest hour and place, and this week's posts that day.
+**Layout, top to bottom:**
+- **Title:** H1 "Guard posts this week". Kicker `PATROL PLAN · WEEK OF 12–18 OCT`. One plain sentence: "Three places on campus keep having trouble at the same time of day. Put one guard at each place at that time."
+- **Four summary tiles with icons:**
+  - "3 places · need a guard this week"
+  - "10 hours · of guard time this week"
+  - "2 of 3 · posts have a guard"
+  - "8 of 10 · post days covered last week"
+1. **Where does trouble keep happening?** A top-down 2D campus map, north up, drawn from the real footprints with the building names on it. Each post is a numbered blue circle, sized by its incidents in 4 weeks, with a guard-name tag beside it (dashed "Nobody yet" when empty). It has a legend, a north arrow and a 50 m scale bar. A **Map | 3D** toggle swaps in `<Campus3D mode="plan">`.
+2. **Who is going?** Beside the map, one row per post:
+   - the number, place, days, hours and this week's dates;
+   - the guard chip with the phone status ("Seen on their phone · Sun 18:02" or "Sent to their phone, not seen yet") and **Change**;
+   - or, when empty, a dashed "Nobody yet" with **Send Guard A** (the suggestion) and **Someone else**. The chooser greys out anyone not free and shows the reason.
+   - Under the rows: the black-camera note.
+3. **When do they need to be there?** A timetable with one row per post and Mon to Sun columns with dates. A filled blue block shows "13:00–14:00 · Guard B"; a dashed block shows "Nobody yet". Empty days are pale.
+4. **Why these places and times?** One card per post:
+   - the headline "5 of 7 incidents here happened between 13:00 and 14:00";
+   - an hour-of-day bar chart from 07:00 to 23:00 with counts on the bars and the guard's hour in blue;
+   - a Mon–Sun count strip with the post days shaded;
+   - the dates.
+5. **Did last week's posts work?** One card per post: four weekly bars (14 Sep, 21 Sep, 28 Sep, Last week, with last week in blue), one plain sentence and a verdict ("Working. Keep it." or "Cover every night this week."). Footer: "One week is too short to be sure."
 
 **Data:**
-- Counts and dates come from real incidents (`confirmed` or `resolved`) in the last 28 days.
-- Assigning calls `PATCH /plan/slots/:rank {assigned_to}`.
-- The phone status comes from `seen_at` on the slot.
-- Coverage comes from the guards' check-ins.
-- Until Web A adds those routes, mock them and show "Saved on this computer".
+- Counts, hours and dates come from real incidents (`confirmed` or `resolved`) in the last 28 days.
+- Weekly bars count incidents inside each post's hours.
+- Assigning calls `PATCH /plan/slots/:rank {assigned_to}`. The phone status comes from `seen_at`, and coverage comes from check-ins. Until Web A adds these, mock them and show "Saved on this computer".
+- Charts are plain HTML bars, with no chart library needed.
 
 ### 6.5 Proof (`/proof`), design file `L3Proof.dc.html`
 
