@@ -7,3 +7,11 @@ __pycache__/
 *_openvino_*/
 windows*.csv
 live_features*.csv
+keypoints_v2/
+*.log
+*.tmp
+failed_videos*.txt
+*.tgz
+*.csv.gz
+session*.csv
+!model/violence_model.joblib
