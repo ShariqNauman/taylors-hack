@@ -4,7 +4,8 @@ live_detector.py - Live fight detection from a webcam (or a video file for testi
 Three threads so the video stays smooth:
   capture thread: reads camera frames (640x480 @ 30 fps)
   pose thread:    YOLO pose + tracking on the newest frame, then every 0.5 s:
-                  resample the last 2 s to 10 fps (same as training) -> features -> predict.py
+                  features.window_features (last 2 s resampled to FEATURE_FPS, same as training)
+                  -> predict.py
                   -> smoothed risk -> CALM / TENSE / FIGHT, logged to live_features.csv
   main thread:    draws the newest frame + skeletons + HUD
 
@@ -29,7 +30,7 @@ import numpy as np
 import pandas as pd
 from ultralytics import YOLO
 
-from features import FEATURE_NAMES, LONG_S, SHORT_S, compute_features
+from features import FEATURE_NAMES, SHORT_S, window_features
 from predict import predict
 
 # ---------------- Tunable constants ----------------
@@ -38,18 +39,17 @@ USE_OPENVINO = True      # export once to OpenVINO (much faster on Intel CPUs), 
 IMGSZ = 640              # pose input size: 320 / 480 / 640. 640 = same as training extraction
 DEVICE = "intel:gpu"       # Intel iGPU via OpenVINO (65 pose fps at 640 vs 29 on CPU); falls back to cpu
 DET_CONF = 0.25
-TRACKER = "bytetrack.yaml"
+TRACKER = "bytetrack_v2.yaml"   # same as extract_keypoints_v2.py (track buffer 60)
 CAM_W, CAM_H, CAM_FPS = 640, 480, 30   # requested webcam mode
-SAMPLE_FPS = 10          # features always see 10 fps keypoints, like training
 SCORE_EVERY_S = 0.5      # score a new window every 0.5 s (features use the last LONG_S = 2 s)
 HISTORY_S = 3.0          # how much pose history to keep for resampling
-SMOOTH_ALPHA = 0.4       # exponential smoothing: higher = reacts faster, lower = steadier
-# Tuned with `python tune_live.py --rlvs` (no labelled webcam session): out-of-fold scores of the
-# 600 RLVS clips replayed through this logic. Fires FIGHT on 75.7% of fight clips and 13.7% of calm
-# clips, TENSE+ on 14.6% of calm time. (Top raw pick 0.6/0.4/0.5/1.5 caught 77.7% but showed
-# TENSE 30% of calm time.) Re-tune with a labelled session: python tune_live.py --apply
+SMOOTH_ALPHA = 0.6       # exponential smoothing: higher = reacts faster, lower = steadier
+# v3 model (all 3,131 clips): out-of-fold scores replayed through this logic, best setting with
+# <= 10% of non-violent clips reaching FIGHT. FIGHT on 60% of fight/weapon clips, 9% of non-violent
+# clips, 14% of AIRTLab hugs/claps (see REPORT.md A7). Not yet tuned on our own webcam footage:
+# record a labelled session, then python tune_live.py --log session1.csv --apply
 TENSE_AT = 0.5          # smoothed score >= this -> TENSE
-FIGHT_AT = 0.55           # smoothed score >= this ...
+FIGHT_AT = 0.75         # smoothed score >= this ...
 MIN_DURATION = 1.0       # ... for at least this many seconds -> FIGHT
 FIGHT_HOLD = 2.0         # keep showing FIGHT this many seconds after it triggers
 LOG_CSV = "live_features.csv"
@@ -120,27 +120,16 @@ def to_rows(res, t, w, h):
     if res.keypoints is None or len(res.boxes) == 0:
         return rows
     xy, conf = res.keypoints.xy.cpu().numpy(), res.keypoints.conf.cpu().numpy()
+    boxes, box_conf = res.boxes.xyxy.cpu().numpy(), res.boxes.conf.cpu().numpy()
     ids = res.boxes.id.int().tolist() if res.boxes.id is not None else [-1] * len(xy)
     for p, pid in enumerate(ids):
-        row = {"time_s": t, "frame_w": w, "frame_h": h, "person_id": pid}
+        x1, y1, x2, y2 = boxes[p]
+        row = {"time_s": t, "frame_w": w, "frame_h": h, "person_id": pid,
+               "box_x1": x1, "box_y1": y1, "box_x2": x2, "box_y2": y2, "box_conf": box_conf[p]}
         for name, k in KEYPOINTS.items():
             row[f"{name}_x"], row[f"{name}_y"], row[f"{name}_conf"] = xy[p, k, 0], xy[p, k, 1], conf[p, k]
         rows.append(row)
     return rows
-
-
-def resample_window(rows, frame_times, t_end):
-    """Keep only the pose frames nearest a 10 fps grid over the last LONG_S, so features
-    see the same frame rate as training no matter how fast pose runs."""
-    if not frame_times:
-        return pd.DataFrame()
-    ft = np.array(frame_times)
-    chosen = set()
-    for g in t_end - np.arange(int(SAMPLE_FPS * LONG_S)) / SAMPLE_FPS:
-        i = np.abs(ft - g).argmin()
-        if abs(ft[i] - g) <= 0.5 / SAMPLE_FPS:
-            chosen.add(ft[i])
-    return pd.DataFrame([r for r in rows if r["time_s"] in chosen])
 
 
 def window_label(s, t):
@@ -197,7 +186,7 @@ def pose_loop(model, device, s, log):
         if t < next_score:
             continue
         next_score = t + SCORE_EVERY_S
-        feats = compute_features(resample_window(rows, frame_times, t), t)
+        feats = window_features(pd.DataFrame(list(rows)), t, frame_times)
         raw = predict(feats)
         smooth = SMOOTH_ALPHA * raw + (1 - SMOOTH_ALPHA) * smooth
         high_since = (high_since if high_since is not None else t) if smooth >= FIGHT_AT else None
