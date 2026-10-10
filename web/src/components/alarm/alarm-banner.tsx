@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { PersonByCall } from "@/components/chrome/person-tag";
 import {
   useAlarmStore,
   selectBanner,
@@ -39,13 +40,18 @@ export function AlarmBanner() {
         <span className="ee-display text-[30px] leading-none">
           {LEVEL_LABEL[banner.level]} · {banner.location}
         </span>
-        <span className="text-[16px] font-medium">
-          {banner.decision === "confirmed"
-            ? `Confirmed by desk${banner.pushed_to ? ` · ${banner.pushed_to} on the way` : ""}`
-            : banner.pushed_to
-              ? `${banner.pushed_to} pushed${banner.pushed_at ? ` at ${fmtTime(banner.pushed_at)}` : ""}`
-              : "Not pushed yet"}
-        </span>
+        {banner.pushed_to ? (
+          <span className="inline-flex items-center gap-2 text-[16px] font-medium">
+            <PersonByCall call={banner.pushed_to} size={28} dark />
+            <span>
+              {banner.decision === "confirmed"
+                ? "· on the way · confirmed by desk"
+                : `· pushed${banner.pushed_at ? ` at ${fmtTime(banner.pushed_at)}` : ""}`}
+            </span>
+          </span>
+        ) : (
+          <span className="text-[16px] font-medium">{banner.decision === "confirmed" ? "Confirmed by desk" : "Not pushed yet"}</span>
+        )}
         <Link
           href={`/cameras?cam=${encodeURIComponent(banner.camera_id)}`}
           className="text-[15px] font-extrabold text-white underline-offset-2 hover:underline"

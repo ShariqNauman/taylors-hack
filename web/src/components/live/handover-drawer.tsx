@@ -23,6 +23,7 @@ export function HandoverDrawer({
   events,
   cameras,
   patrolToday,
+  nameOf,
 }: {
   open: boolean;
   onOpenChange: (o: boolean) => void;
@@ -32,6 +33,8 @@ export function HandoverDrawer({
   events: LiveEvent[];
   cameras: Camera[];
   patrolToday?: string | null;
+  /** "Aiman Hakimi (Guard B)" from a call sign. */
+  nameOf?: (call: string | null | undefined) => string;
 }) {
   const [copied, setCopied] = useState(false);
   const { facts, open_, unlabelled, black, lines } = buildFacts({
@@ -41,6 +44,7 @@ export function HandoverDrawer({
     events,
     cameras,
     patrolToday,
+    nameOf,
   });
 
   // The written brief is an enhancement: the facts above never wait for it.
@@ -232,6 +236,7 @@ export function buildFacts({
   events,
   cameras,
   patrolToday,
+  nameOf,
 }: {
   now: Date;
   pushes: number;
@@ -239,6 +244,7 @@ export function buildFacts({
   events: LiveEvent[];
   cameras: Camera[];
   patrolToday?: string | null;
+  nameOf?: (call: string | null | undefined) => string;
 }) {
   const open_ = events
     .filter(
@@ -264,7 +270,7 @@ export function buildFacts({
       .slice(0, 2)
       .map(
         (e) =>
-          `${e.location}: ${LEVEL_LABEL[e.level].toLowerCase()} since ${fmtTime(e.start_time, false)}, ${e.status === "confirmed" ? "confirmed" : "no label yet"}.`,
+          `${e.location}: ${LEVEL_LABEL[e.level].toLowerCase()} since ${fmtTime(e.start_time, false)}, ${e.status === "confirmed" ? "confirmed" : "no label yet"}${e.pushed_to ? `; ${nameOf ? nameOf(e.pushed_to) : e.pushed_to} ${e.outcome ? "reported back" : e.arrived_at ? "is there" : e.acked_at ? "on the way" : "alerted"}` : ""}.`,
       ),
     ...black.map(
       (c) =>

@@ -76,6 +76,8 @@ const store = {
     }
   },
 };
+/** One alarm per push: a new pushed_at on the same incident (a re-push) rings again. */
+const pushKey = (e: Event) => `${e.incident_id}|${e.pushed_at ?? ""}`;
 const secs = (a?: string | null, b?: string | null) => (a && b ? Math.max(1, Math.round((Date.parse(b) - Date.parse(a)) / 1000)) : null);
 
 function LevelChip({ level, big }: { level: Level; big?: boolean }) {
@@ -142,8 +144,8 @@ export function GuardApp() {
   const posts = useMemo(() => activePosts(plan?.slots ?? []), [plan]);
   const mine = posts.filter((s) => s.assigned_to === me);
 
-  const markHandled = (id: string) => {
-    handled.current.add(id);
+  const markHandled = (key: string) => {
+    handled.current.add(key);
     try {
       sessionStorage.setItem(HANDLED_KEY, JSON.stringify([...handled.current]));
     } catch {
@@ -153,7 +155,7 @@ export function GuardApp() {
 
   const raise = useCallback(
     (e: Event, test = false) => {
-      markHandled(e.incident_id);
+      markHandled(pushKey(e));
       setFlow({ kind: "alert", event: e, test });
       dev.ring();
     },
@@ -164,7 +166,7 @@ export function GuardApp() {
   useEffect(() => {
     if (!me || !shift || flow) return;
     const t = Date.now();
-    const next = events
+    const waiting = events
       .filter(
         (e) =>
           (e.pushed_to === me || (!e.pushed_to && e.nearest_staff === me && e.status === "pushed")) &&
@@ -172,10 +174,14 @@ export function GuardApp() {
           !e.acked_at &&
           e.end_time == null &&
           t - Date.parse(e.pushed_at ?? e.start_time) < FRESH_MS &&
-          !handled.current.has(e.incident_id),
+          !handled.current.has(pushKey(e)),
       )
-      .sort((a, b) => Date.parse(b.pushed_at ?? b.start_time) - Date.parse(a.pushed_at ?? a.start_time))[0];
-    if (next) raise(next);
+      .sort((a, b) => Date.parse(b.pushed_at ?? b.start_time) - Date.parse(a.pushed_at ?? a.start_time));
+    // Ring for the newest only. Older unanswered pushes and scenes already calm are history.
+    for (const e of waiting.slice(1)) markHandled(pushKey(e));
+    const next = waiting[0];
+    if (next && next.level === "calm") markHandled(pushKey(next));
+    else if (next) raise(next);
   }, [events, me, shift, flow, raise]);
 
   // Same browser as the desk (demo): the Live tab announces its pushes.
@@ -184,7 +190,7 @@ export function GuardApp() {
     const ch = new BroadcastChannel("earlyeye-push");
     ch.onmessage = (m: MessageEvent<{ type: string; event: Event }>) => {
       const e = m.data?.event;
-      if (m.data?.type !== "push" || !e || e.pushed_to !== me || handled.current.has(e.incident_id) || flow) return;
+      if (m.data?.type !== "push" || !e || e.pushed_to !== me || handled.current.has(pushKey(e)) || flow) return;
       raise(e);
     };
     return () => ch.close();
@@ -252,6 +258,9 @@ export function GuardApp() {
 
   // ── Alarm, over any tab ──
   if (flow?.kind === "alert" && live) {
+    // The level that rang the alarm, or worse if it has grown since.
+    const LV: Level[] = ["calm", "tense", "fight_likely", "fight"];
+    const alarmLevel = LV[Math.max(LV.indexOf(flow.event.level), LV.indexOf(live.level), 2)];
     const cam = cameras?.find((c) => c.camera_id === live.camera_id);
     const dist = fmtDistance(staffDistance(site, me, cam));
     const spot = cam?.geo?.floor ?? cam?.geo?.building;
@@ -261,8 +270,8 @@ export function GuardApp() {
           {flow.test && <span className="self-start rounded-[2px] bg-white px-2 py-0.5 font-mono text-[12px] font-bold text-[#C8241B]">TEST · NOT SENT TO THE DESK</span>}
           <span className="text-[15px] font-extrabold">{person.first}, you&rsquo;re the nearest guard</span>
           <span className="inline-flex items-center gap-2 self-start rounded-[2px] bg-white py-1 pr-3 pl-2 text-[16px] font-extrabold text-[#C8241B] uppercase">
-            <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d={GLYPH[live.level]} fill="#C8241B" /></svg>
-            {LEVEL_LABEL[live.level]}
+            <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d={GLYPH[alarmLevel]} fill="#C8241B" /></svg>
+            {LEVEL_LABEL[alarmLevel]}
           </span>
           <span className="ee-display text-[52px] leading-[0.92]">{live.location}</span>
           {(spot || dist) && <span className="text-[20px] font-extrabold">{[spot && spot[0].toUpperCase() + spot.slice(1), dist && `about ${dist.replace("~", "")} from you`].filter(Boolean).join(" · ")}</span>}

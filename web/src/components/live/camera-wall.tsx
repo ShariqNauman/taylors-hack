@@ -30,7 +30,7 @@ export function CameraWall({
   const view = useAppStore((s) => s.view);
   const counts = {
     live: cameras.filter((c) => cameraKind(c) === "live").length,
-    rec: cameras.filter((c) => cameraKind(c) === "recorded" && !!c.edge_url)
+    rec: cameras.filter((c) => c.source === "recorded")
       .length,
     black: cameras.filter((c) => cameraKind(c) === "black").length,
   };

@@ -37,6 +37,18 @@ export const hm = (d: Date | string | number) => {
 };
 void MYT_TZ;
 
+/** [start, end) hours of "13:00–15:00"; end may pass 24 for a post after midnight. */
+export function slotSpan(hours: string): [number, number] {
+  const m = hours.match(/(\d{1,2}):\d{2}\s*[–-]\s*(\d{1,2}):\d{2}/);
+  if (!m) return [startHour(hours), startHour(hours) + 1];
+  const a = parseInt(m[1]);
+  let b = parseInt(m[2]);
+  if (b <= a) b += 24;
+  return [a, b];
+}
+/** "17:00–19:00" from a start hour and a length. */
+export const hoursLabel = (start: number, len: number) => `${hh(start)}–${hh(start + len)}`;
+
 /** Start hour of "13:00–14:00". */
 export function startHour(hours: string): number {
   const m = hours.match(/(\d{1,2}):\d{2}/);
@@ -65,6 +77,9 @@ export interface Person {
   from: number;
   to: number; // may be > 24 (ends after midnight)
   zone_type: string;
+  /** From the guard app's Start / End my shift; null = never told us. */
+  onDuty: boolean | null;
+  post?: { lat: number; lng: number } | null;
 }
 const hourOf = (s: string) => parseInt(s.split(":")[0]) || 0;
 const ROLE: Record<string, string> = { guard: "Security guard", warden: "Hostel warden", supervisor: "Supervisor" };
@@ -93,8 +108,15 @@ export function team(staff: Staff[] | undefined): Person[] {
       from,
       to,
       zone_type: s.zone_type,
+      onDuty: s.on_duty ?? null,
+      post: s.post ?? null,
     };
   });
+}
+
+/** On duty now: the guard app's Start / End my shift when known, else the usual shift hours. */
+export function onDutyNow(p: Person, now: Date | number): boolean {
+  return p.onDuty ?? onShift(p, now);
 }
 
 /** On shift at this instant (handles shifts that end after midnight). */
@@ -112,14 +134,16 @@ export interface Fit {
 /** Can this person take this post? Reasons are the design's words. */
 export function fit(p: Person, slot: PatrolSlot, others: PatrolSlot[]): Fit {
   const ds = slotDays(slot.days);
-  const h = startHour(slot.hours);
+  const [h, end] = slotSpan(slot.hours);
   const missing = ds.filter((d) => !p.days.includes(d));
   if (missing.length) return { ok: false, note: `Not working on ${missing.map((d) => DAY_SHORT[d]).join(", ")}` };
   if (h < p.from) return { ok: false, note: `Shift starts at ${hh(p.from)}` };
-  if (h + 1 > p.to) return { ok: false, note: `Shift ends at ${hh(p.to)}` };
-  const clash = others.find(
-    (o) => o.id !== slot.id && o.assigned_to === p.id && startHour(o.hours) === h && slotDays(o.days).some((d) => ds.includes(d)),
-  );
+  if (end > p.to) return { ok: false, note: `Shift ends at ${hh(p.to)}` };
+  const clash = others.find((o) => {
+    if (o.id === slot.id || o.assigned_to !== p.id || (o.status ?? "active") !== "active") return false;
+    const [a, b] = slotSpan(o.hours);
+    return a < end && h < b && slotDays(o.days).some((d) => ds.includes(d));
+  });
   if (clash) return { ok: false, note: `Already at post ${rankOf(others, clash)} then` };
   return { ok: true, note: `On shift then · ${p.shiftLabel}` };
 }
@@ -171,7 +195,8 @@ export function nextPost(posts: PatrolSlot[], now: Date | number) {
 /** Is this post's hour running right now? */
 export function postOnNow(s: PatrolSlot, now: Date | number): boolean {
   const n = myt(now);
-  return slotDays(s.days).includes(n.wd) && startHour(s.hours) === n.hour;
+  const [a, b] = slotSpan(s.hours);
+  return slotDays(s.days).includes(n.wd) && n.hour >= a && n.hour < b;
 }
 
 /** "U Residence, corridor L3" → 3 */
@@ -185,13 +210,16 @@ export function floorOf(location: string): number | undefined {
 /** Real incidents (confirmed or resolved) at this post's place in the 28 days up to `end`. */
 export function postIncidents(events: Event[], s: PatrolSlot, end: number) {
   const from = end - 28 * DAY_MS;
-  const h = startHour(s.hours);
+  const [h, until] = slotSpan(s.hours);
   const ds = slotDays(s.days);
   const all = events.filter((e) => {
     const t = Date.parse(e.start_time);
     return e.location === s.location && REAL.has(e.status) && t >= from && t <= end;
   });
-  const win = all.filter((e) => myt(e.start_time).hour === h);
+  const win = all.filter((e) => {
+    const x = myt(e.start_time).hour;
+    return x >= h && x < until;
+  });
   const hits = win.filter((e) => ds.includes(myt(e.start_time).wd));
   return { all, win, hits };
 }

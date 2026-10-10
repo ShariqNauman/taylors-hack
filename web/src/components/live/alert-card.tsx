@@ -12,9 +12,12 @@ import {
   zoneLabel,
   zoneRisk,
 } from "@/lib/format";
-import { fmtDistance, haversineM, staffDistance } from "@/lib/geo";
-import { team } from "@/lib/posts";
+import { whereLine } from "@/lib/people";
+import { hm } from "@/lib/posts";
 import { cn } from "@/lib/utils";
+import type { PeopleApi } from "@/hooks/use-people";
+import { PersonTag } from "@/components/chrome/person-tag";
+import { Avatar } from "@/components/plan/avatar";
 import { LevelPill } from "@/components/chrome/level-pill";
 import { TypeChip } from "@/components/chrome/type-chip";
 import { CampusCompactSlot } from "./campus-compact-slot";
@@ -27,6 +30,9 @@ export function AlertCard({
   now,
   pulsing,
   compact3d,
+  people,
+  calmForS,
+  handled,
   onPush,
   onPushBackup,
   onConfirm,
@@ -40,7 +46,13 @@ export function AlertCard({
   pulsing: boolean;
   /** Renders the compact 3D campus; defaults to the slot. */
   compact3d?: React.ReactNode;
-  onPush: (e: LiveEvent) => void;
+  /** The team: pictures, names, and who is nearest right now. */
+  people: PeopleApi;
+  /** Seconds this camera has been calm (null = not calm / unknown). */
+  calmForS: number | null;
+  /** The guard reported back within the last 2 minutes: the card stays as "Handled". */
+  handled: boolean;
+  onPush: (e: LiveEvent, to?: string | null) => void;
   /** Send another guard (no answer in 20 s, or Need backup). */
   onPushBackup?: (e: LiveEvent, name: string) => void;
   onConfirm: (e: LiveEvent) => void;
@@ -77,39 +89,36 @@ export function AlertCard({
       : null;
   const risk = zoneRisk(site, event.zone_type);
   const zone = zoneLabel(site, event.zone_type);
-  const nearest = event.nearest_staff ?? "Person on duty";
-  const dist = fmtDistance(staffDistance(site, event.nearest_staff, camera));
+  // Who: the guard already pushed, else the nearest person on duty right now
+  // (checked in at a post counts as standing there; otherwise their base).
+  const ranked = people.nearest(camera);
+  const targetCall = event.pushed_to ?? ranked[0]?.person.id ?? event.nearest_staff ?? null;
+  const target = people.person(targetCall);
+  const targetWhere = ranked.find((w) => w.person.id === targetCall);
+  const first = target?.first ?? targetCall ?? "The guard";
   const ack = secondsBetween(event.pushed_at, event.acked_at);
-  // The guard's phone, step by step (guard app: On my way → I'm here → What did you find?).
-  const people = team(site?.staff);
-  const firstOf = (call: string | null | undefined) => people.find((p) => p.id === call)?.first ?? call ?? "The guard";
-  const guard = firstOf(event.pushed_to);
   const there = secondsBetween(event.acked_at, event.arrived_at);
   const pushedFor = event.pushed_at ? (now.getTime() - Date.parse(event.pushed_at)) / 1000 : 0;
   const noAnswer = pushed && !event.acked_at && pushedFor >= 20 && event.status === "pushed";
-  const calmNow = event.level === "calm" || event.end_time != null;
   const OUTCOME: Record<Outcome, string> = { sorted: "Sorted, nobody hurt", hurt: "Sorted, someone hurt", backup: "Needs backup", nothing: "Nothing there" };
-  // Next guard: anyone not marked off duty (same rule as the API), nearest first when we know
-  // where they stand, then same zone.
-  const nextGuard = (() => {
-    if (!site?.staff) return null;
-    const far = (s: (typeof site.staff)[number]) => (s.post && camera?.geo ? haversineM(s.post, camera.geo) : Infinity);
-    const free = site.staff.filter((s) => s.on_duty !== false && s.name !== event.pushed_to && s.name !== event.nearest_staff);
-    free.sort((a, b) => far(a) - far(b) || Number(b.zone_type === event.zone_type) - Number(a.zone_type === event.zone_type));
-    const s = free[0];
-    if (!s) return null;
-    const m = far(s);
-    return { call: s.name, first: firstOf(s.name), dist: Number.isFinite(m) ? fmtDistance(m) : null };
-  })();
+  // "camera agrees: calm" only after 30 s of calm (backend handoff rule 4).
+  const cameraLine =
+    calmForS != null && calmForS >= 30
+      ? "camera agrees: calm"
+      : event.level === "calm" || event.end_time
+        ? `camera calm for ${Math.max(0, Math.round(calmForS ?? 0))} s`
+        : `camera still sees ${LEVEL_LABEL[event.level].toLowerCase()}`;
+  const next = people.nearest(camera, [event.pushed_to, targetCall])[0] ?? null;
+  const nextGuard = next ? { call: next.person.id, first: next.person.first, line: whereLine(next) } : null;
   const guardLine = !pushed
     ? null
     : event.outcome
-      ? `${guard}: ${OUTCOME[event.outcome]}${event.outcome !== "backup" ? ` · camera ${calmNow ? "agrees: calm" : `still says ${LEVEL_LABEL[event.level].toLowerCase()}`}` : ""}`
+      ? `${first}: ${OUTCOME[event.outcome]}${event.outcome !== "backup" ? ` · ${cameraLine}` : ""}`
       : event.arrived_at
-        ? `${guard} is there${there != null ? ` · ${there} s` : ""}`
+        ? `${first} is there${there != null ? ` · ${there} s` : ""}`
         : event.acked_at
-          ? `${guard} on the way${ack != null ? ` · ${ack} s` : ""}`
-          : `${guard} alerted${dist ? `, ${dist} away` : ""}`;
+          ? `${first} on the way${ack != null ? ` · ${ack} s` : ""}`
+          : `${first} alerted${targetWhere?.metres != null ? `, ~${Math.max(10, Math.round(targetWhere.metres / 10) * 10)} m away` : ""}`;
   const nearestState =
     event.status === "confirmed"
       ? `Confirmed real${pushed ? " · on the way" : ""}`
@@ -120,7 +129,7 @@ export function AlertCard({
           : event.level === "tense"
             ? "Not pushed; tense is silent"
             : "Not pushed yet · use Push now";
-  const where = `WHERE · ${event.location.toUpperCase()}${event.nearest_staff ? ` · ${event.nearest_staff.toUpperCase()}${dist ? ` ${dist.toUpperCase()} AWAY` : ""}` : ""}`;
+  const where = `WHERE · ${event.location.toUpperCase()}${targetCall ? ` · ${first.toUpperCase()}${targetWhere?.metres != null ? ` ~${Math.max(10, Math.round(targetWhere.metres / 10) * 10)} M AWAY` : ""}` : ""}`;
 
   const steps = [
     {
@@ -171,8 +180,8 @@ export function AlertCard({
         <div role="alert" className="flex flex-wrap items-center gap-x-3 gap-y-2 rounded-[2px] bg-[#C8241B] px-3.5 py-3 text-white">
           <span className="flex flex-[1_1_240px] flex-col">
             <span className="font-mono text-[12px] font-bold tracking-[0.08em]">NEED BACKUP</span>
-            <span className="text-[19px] font-extrabold">{guard} is at {event.location} and needs help.</span>
-            <span className="text-[14px]">{nextGuard ? `Next nearest: ${nextGuard.first}${nextGuard.dist ? `, ${nextGuard.dist}` : ""}.` : "Nobody else is on duty. Call the security lead."}</span>
+            <span className="text-[19px] font-extrabold">{first} is at {event.location} and needs help.</span>
+            <span className="text-[14px]">{nextGuard ? `Next nearest: ${nextGuard.line}.` : "Nobody else is on duty. Call the security lead."}</span>
           </span>
           {nextGuard && onPushBackup ? (
             <button type="button" onClick={() => onPushBackup(event, nextGuard.call)} className="min-h-12 rounded-[2px] bg-white px-4 text-[16px] font-extrabold text-[#C8241B]">
@@ -181,6 +190,25 @@ export function AlertCard({
           ) : nextGuard ? (
             <span className="text-[15px] font-extrabold">Call {nextGuard.first} by radio</span>
           ) : null}
+        </div>
+      )}
+      {handled && event.outcome && (
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 rounded-[2px] border-2 border-ink bg-white px-3.5 py-2.5">
+          <span className="font-mono text-[12px] font-bold tracking-[0.08em]">HANDLED</span>
+          <span className="text-[16px] font-extrabold">
+            {first} reported {OUTCOME[event.outcome].toLowerCase()}
+            {event.outcome_at ? ` at ${hm(event.outcome_at)}` : ""}
+          </span>
+          <span className="text-[14px] text-ink-2">{cameraLine}</span>
+        </div>
+      )}
+      {event.outcome === "nothing" && !decided && (
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-2 rounded-[2px] border-2 border-dashed border-ink bg-white px-3.5 py-3">
+          <span className="flex-[1_1_220px] text-[17px] font-extrabold">Guard found nothing · Mark as false alarm?</span>
+          <button type="button" onClick={() => onDismiss(event)} className="min-h-11 rounded-[2px] bg-ink px-4 text-[16px] font-extrabold text-white">
+            Dismiss: false alarm
+          </button>
+          <span className="basis-full text-[13px] text-ink-2">The guard&rsquo;s answer is a hint. The desk still decides.</span>
         </div>
       )}
       <div className="flex flex-wrap items-center gap-2.5">
@@ -208,14 +236,9 @@ export function AlertCard({
             {event.action}
           </span>
         </div>
-        <div className="flex flex-col gap-1 rounded-[2px] border border-line bg-white px-3.5 py-3">
+        <div className="flex flex-col gap-1.5 rounded-[2px] border border-line bg-white px-3.5 py-3">
           <span className="ee-label">Person on duty</span>
-          <span className="text-[19px] font-extrabold">
-            {nearest}{" "}
-            {dist && (
-              <span className="text-[14px] font-medium text-ink-2">{dist}</span>
-            )}
-          </span>
+          <PersonTag person={target} call={targetCall} size={40} className="text-[18px]" sub={targetWhere ? whereLine(targetWhere) : null} />
           <span className="text-[13px] text-ink-2">{nearestState}</span>
         </div>
       </div>
@@ -238,7 +261,7 @@ export function AlertCard({
           <span className="text-[19px] font-extrabold">{guardLine}</span>
           {noAnswer && (
             <span className="flex flex-wrap items-center gap-2 text-[15px]">
-              <span className="font-bold">No answer in 20 s.{nextGuard ? ` Next nearest: ${nextGuard.first}${nextGuard.dist ? `, ${nextGuard.dist}` : ""}.` : " Nobody else is on duty."}</span>
+              <span className="font-bold">No answer in 20 s.{nextGuard ? ` Next nearest: ${nextGuard.line}.` : " Nobody else is on duty."}</span>
               {nextGuard && onPushBackup ? (
                 <button type="button" onClick={() => onPushBackup(event, nextGuard.call)} className="min-h-10 rounded-[2px] bg-signal px-3 text-[14px] font-extrabold text-white">
                   Push {nextGuard.first} now
@@ -290,12 +313,12 @@ export function AlertCard({
         >
           Camera and 3D campus
         </Link>
-        {event.nearest_staff && (
+        {targetCall && (
           <Link
-            href={`/guard?staff=${encodeURIComponent(event.nearest_staff)}`}
+            href={`/guard?staff=${encodeURIComponent(targetCall)}`}
             className="text-signal"
           >
-            {event.nearest_staff}&apos;s phone screen
+            {first}&apos;s phone screen
           </Link>
         )}
       </div>
@@ -304,10 +327,11 @@ export function AlertCard({
         <div className="grid grid-cols-2 gap-2.5">
           <button
             type="button"
-            onClick={() => onPush(event)}
-            className="min-h-[60px] rounded-[2px] bg-signal px-2 text-[19px] font-extrabold text-white"
+            onClick={() => onPush(event, targetCall)}
+            className="inline-flex min-h-[60px] items-center justify-center gap-2 rounded-[2px] bg-signal px-2 text-[19px] font-extrabold text-white"
           >
-            Push {nearest} now
+            <Avatar person={target} size={30} />
+            Push {first} now
           </button>
           <button
             type="button"
@@ -318,7 +342,7 @@ export function AlertCard({
           </button>
         </div>
       )}
-      {!isCalm && !decided && pushed && (
+      {(!isCalm || pushed) && !decided && pushed && event.outcome !== "nothing" && (
         <div className="grid grid-cols-2 gap-2.5">
           <button
             type="button"
@@ -355,7 +379,7 @@ export function AlertCard({
           </button>
         </div>
       )}
-      {isCalm && (
+      {isCalm && !pushed && (
         <div className="rounded-[2px] border border-dashed border-line-strong bg-white px-3.5 py-3 text-[16px] text-ink-2">
           Nothing to do. Chats, hugs and high-fives stay calm by design.
         </div>

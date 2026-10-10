@@ -69,7 +69,12 @@ interface Override {
   pushed_at?: string;
 }
 
-export function useLiveFeed(replayOn: boolean, edgeUrls: string[] = []) {
+export function useLiveFeed(
+  replayOn: boolean,
+  edgeUrls: string[] = [],
+  /** Who gets the push for this incident: the nearest guard on duty (Live passes it). */
+  pickGuard?: (e: Event) => string | null,
+) {
   // On site: read each edge's /live.json every 0.5 s. Remote never calls an edge.
   const view = useAppStore((st) => st.view);
   const edgeKey =
@@ -106,7 +111,12 @@ export function useLiveFeed(replayOn: boolean, edgeUrls: string[] = []) {
   const { data: replayEvents } = useSWR(replayOn ? "replay" : null, getReplay, {
     revalidateOnFocus: false,
   });
-  const replay = useReplay(replayEvents, replayOn);
+  // Hold the replay loop while its alert waits for a guard ("no answer in 20 s" must be visible).
+  const [waitingForGuard, setWaitingForGuard] = useState(false);
+  const replay = useReplay(replayEvents, replayOn, waitingForGuard);
+  const pickRef = useRef(pickGuard);
+  pickRef.current = pickGuard;
+  const chosen = useRef(new Map<string, string>());
 
   const polled = useMemo(() => {
     const base = mergeEvents(full.data ?? [], recent.data ?? []).map((e) => ({
@@ -157,8 +167,10 @@ export function useLiveFeed(replayOn: boolean, edgeUrls: string[] = []) {
   const [bufferTick, setBufferTick] = useState(0);
 
   // Replay incident, built client-side by timestamp. The API would set the push fields; replay simulates that.
+  // Each loop is a fresh incident (id + loop tag), so the guard's phone rings on every run.
   const replayIncident: LiveEvent | null = useMemo(() => {
     if (!replayOn || !replayEvents?.length || replay.index < 0) return null;
+    const id = `${replayEvents[0].incident_id}-${replay.loopTag}`;
     const base = Date.parse(replayEvents[0].start_time);
     const started = Date.parse(replay.startedAt);
     const cur = replayEvents[replay.index];
@@ -172,48 +184,41 @@ export function useLiveFeed(replayOn: boolean, edgeUrls: string[] = []) {
     const firstNonCalm = replayEvents.findIndex((e) => e.level !== "calm");
     const startIdx =
       firstNonCalm >= 0 && replay.index >= firstNonCalm ? firstNonCalm : 0;
+    let guard = chosen.current.get(id);
+    if (pushed && !guard) {
+      guard = pickRef.current?.(cur) ?? cur.nearest_staff ?? undefined;
+      if (guard) chosen.current.set(id, guard);
+    }
+    // Calm tail: the scene settles after the last event.
+    const calm = replay.calmTail
+      ? {
+          level: "calm" as const,
+          eta_seconds: null,
+          reason: "Calm again: people apart, no fast movement.",
+          snapshot: replayEvents[0].snapshot,
+          people_count: replayEvents[0].people_count,
+        }
+      : {};
     return {
       ...cur,
+      incident_id: id,
       start_time: new Date(
         started + (Date.parse(replayEvents[startIdx].start_time) - base),
       ).toISOString(),
       ...(pushed
         ? {
-            pushed_to: cur.nearest_staff ?? undefined,
+            pushed_to: guard,
+            nearest_staff: guard ?? cur.nearest_staff,
+            action: guard ? `Send ${guard} now` : cur.action,
             pushed_at: pushedAt,
             status: "pushed" as Status,
           }
         : {}),
+      ...calm,
       etaAt: started + (Date.parse(cur.start_time) - base),
       isReplay: true,
     };
-  }, [replayOn, replayEvents, replay.index, replay.startedAt]);
-
-  // Restart: forget the replay incident's local state.
-  const replayId = replayEvents?.[0]?.incident_id;
-  const lastIndex = useRef(-1);
-  useEffect(() => {
-    if (!replayId) return;
-    if (
-      replay.index < lastIndex.current ||
-      (replay.index === 0 && lastIndex.current !== 0)
-    ) {
-      buffers.current.delete(replayId);
-      etaAnchors.current.delete(replayId);
-      setOverrides((o) => {
-        if (!o[replayId]) return o;
-        const n = { ...o };
-        delete n[replayId];
-        return n;
-      });
-      useAlarmStore.getState().clear(replayId);
-      seenAlarm.current.delete(replayId);
-      lastLevel.current.delete(replayId);
-      toasted.current.delete(replayId);
-      mirrored.current.delete(replayId);
-    }
-    lastIndex.current = replay.index;
-  }, [replay.index, replayId]);
+  }, [replayOn, replayEvents, replay.index, replay.startedAt, replay.loopTag, replay.calmTail]);
 
   const events: LiveEvent[] = useMemo(() => {
     const now = Date.now();
@@ -240,6 +245,30 @@ export function useLiveFeed(replayOn: boolean, edgeUrls: string[] = []) {
       };
     });
   }, [polled, replayIncident, overrides]);
+
+  // When each incident's scene went calm (kept across replay loops), for "camera agrees: calm".
+  const calmAt = useRef(new Map<string, number>());
+  useEffect(() => {
+    for (const e of events) {
+      if (e.level !== "calm" && !e.end_time) calmAt.current.delete(e.incident_id);
+      else if (!calmAt.current.has(e.incident_id))
+        calmAt.current.set(
+          e.incident_id,
+          e.end_time
+            ? Date.parse(e.end_time)
+            : e.isReplay && replay.calmTail
+              ? Date.parse(replay.startedAt) + (replay.duration + 2) * 1000
+              : Date.now(),
+        );
+    }
+  }, [events, replay.calmTail, replay.startedAt, replay.duration]);
+  const calmSince = useCallback((id: string) => calmAt.current.get(id) ?? null, []);
+
+  // The replay holds its loop while its alert waits for the guard's "On my way".
+  useEffect(() => {
+    const r = events.find((e) => e.isReplay);
+    setWaitingForGuard(!!r?.pushed_to && !r.acked_at && r.status === "pushed");
+  }, [events]);
 
   // Ring buffers: append when the snapshot or level changes.
   useEffect(() => {
@@ -280,7 +309,15 @@ export function useLiveFeed(replayOn: boolean, edgeUrls: string[] = []) {
         const base = Date.parse(replayEvents[0].start_time);
         const started = Date.parse(replay.startedAt);
         const firstAlarm = replayEvents.findIndex((e) => isAlarmLevel(e.level));
-        return replayEvents.map((e, i) => ({
+        const tail: BufferEntry = {
+          at: started + (replay.duration + 2) * 1000,
+          level: "calm",
+          score: 0.1,
+          eta: null,
+          snapshot: replayEvents[0].snapshot,
+          pushed: true,
+        };
+        return [...replayEvents.map((e, i) => ({
           at: started + (Date.parse(e.start_time) - base),
           level: e.level,
           score: e.peak_score,
@@ -288,13 +325,13 @@ export function useLiveFeed(replayOn: boolean, edgeUrls: string[] = []) {
           snapshot: e.snapshot,
           top_features: e.top_features,
           pushed: firstAlarm >= 0 && i >= firstAlarm,
-        }));
+        })), tail];
       }
       return buffers.current.get(id) ?? [];
     },
     // bufferTick forces fresh reads after appends
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [replayIncident, replayEvents, replay.startedAt, bufferTick],
+    [replayIncident, replayEvents, replay.startedAt, replay.duration, bufferTick],
   );
 
   // Mirrored pushes: keep the guard's "camera now" in step with the level.
@@ -390,7 +427,11 @@ export function useLiveFeed(replayOn: boolean, edgeUrls: string[] = []) {
         [e.incident_id]: { status, prev, ...extra },
       }));
       try {
-        await patchEvent(e.incident_id, { status });
+        await patchEvent(e.incident_id, {
+          status,
+          // Push now: who and when, so the API (and the shared demo store) can ring that phone.
+          ...(status === "pushed" && extra?.pushed_to ? { pushed_to: extra.pushed_to, pushed_at: extra.pushed_at } : {}),
+        });
       } catch {
         // Keep the local decision; the next poll shows the server state when it agrees.
       }
@@ -399,8 +440,8 @@ export function useLiveFeed(replayOn: boolean, edgeUrls: string[] = []) {
   );
 
   const pushNow = useCallback(
-    async (e: LiveEvent) => {
-      const name = e.nearest_staff ?? "person on duty";
+    async (e: LiveEvent, to?: string | null) => {
+      const name = to ?? pickRef.current?.(e) ?? e.nearest_staff ?? "person on duty";
       const at = new Date().toISOString();
       await act(e, "pushed", { pushed_to: name, pushed_at: at });
       toasted.current.add(e.incident_id);
@@ -519,6 +560,7 @@ export function useLiveFeed(replayOn: boolean, edgeUrls: string[] = []) {
     replayIncident,
     pushNow,
     pushBackup,
+    calmSince,
     label,
     undo,
     pushesThisShift,

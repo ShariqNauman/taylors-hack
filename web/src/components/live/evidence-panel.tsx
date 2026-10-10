@@ -143,7 +143,7 @@ export function EvidencePanel({
     };
   else
     badge = {
-      text: `LIVE SKELETONS · UPDATED ${ago != null ? ago.toFixed(1) : "—"} S AGO`,
+      text: `${isRecording ? "REC SKELETONS" : "LIVE SKELETONS"} · UPDATED ${ago != null ? ago.toFixed(1) : "—"} S AGO`,
       cls: "bg-signal-tint text-signal-ink",
     };
 
@@ -163,7 +163,9 @@ export function EvidencePanel({
             : `LIVE ${clock}`
           : replayDemo
             ? `DEMO ${clock}`
-            : `SKELETONS ${clock}`,
+            : isRecording
+              ? `REC SKELETONS ${clock}`
+              : `SKELETONS ${clock}`,
     topRightDot:
       mode === "replay" || isRecording
         ? "#AEB7C2"
