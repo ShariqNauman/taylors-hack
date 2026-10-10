@@ -1,17 +1,19 @@
 "use client";
 
 import Link from "next/link";
-import type { Camera, Site } from "@/lib/types";
+import type { Camera, Outcome, Site } from "@/lib/types";
 import {
   etaText,
   fmtTime,
   isAlarmLevel,
+  LEVEL_LABEL,
   LEVEL_THEME,
   secondsBetween,
   zoneLabel,
   zoneRisk,
 } from "@/lib/format";
-import { fmtDistance, staffDistance } from "@/lib/geo";
+import { fmtDistance, haversineM, staffDistance } from "@/lib/geo";
+import { team } from "@/lib/posts";
 import { cn } from "@/lib/utils";
 import { LevelPill } from "@/components/chrome/level-pill";
 import { TypeChip } from "@/components/chrome/type-chip";
@@ -26,6 +28,7 @@ export function AlertCard({
   pulsing,
   compact3d,
   onPush,
+  onPushBackup,
   onConfirm,
   onDismiss,
   onUndo,
@@ -38,6 +41,8 @@ export function AlertCard({
   /** Renders the compact 3D campus; defaults to the slot. */
   compact3d?: React.ReactNode;
   onPush: (e: LiveEvent) => void;
+  /** Send another guard (no answer in 20 s, or Need backup). */
+  onPushBackup?: (e: LiveEvent, name: string) => void;
   onConfirm: (e: LiveEvent) => void;
   onDismiss: (e: LiveEvent) => void;
   onUndo: (e: LiveEvent) => void;
@@ -75,11 +80,41 @@ export function AlertCard({
   const nearest = event.nearest_staff ?? "Person on duty";
   const dist = fmtDistance(staffDistance(site, event.nearest_staff, camera));
   const ack = secondsBetween(event.pushed_at, event.acked_at);
+  // The guard's phone, step by step (guard app: On my way → I'm here → What did you find?).
+  const people = team(site?.staff);
+  const firstOf = (call: string | null | undefined) => people.find((p) => p.id === call)?.first ?? call ?? "The guard";
+  const guard = firstOf(event.pushed_to);
+  const there = secondsBetween(event.acked_at, event.arrived_at);
+  const pushedFor = event.pushed_at ? (now.getTime() - Date.parse(event.pushed_at)) / 1000 : 0;
+  const noAnswer = pushed && !event.acked_at && pushedFor >= 20 && event.status === "pushed";
+  const calmNow = event.level === "calm" || event.end_time != null;
+  const OUTCOME: Record<Outcome, string> = { sorted: "Sorted, nobody hurt", hurt: "Sorted, someone hurt", backup: "Needs backup", nothing: "Nothing there" };
+  // Next guard: anyone not marked off duty (same rule as the API), nearest first when we know
+  // where they stand, then same zone.
+  const nextGuard = (() => {
+    if (!site?.staff) return null;
+    const far = (s: (typeof site.staff)[number]) => (s.post && camera?.geo ? haversineM(s.post, camera.geo) : Infinity);
+    const free = site.staff.filter((s) => s.on_duty !== false && s.name !== event.pushed_to && s.name !== event.nearest_staff);
+    free.sort((a, b) => far(a) - far(b) || Number(b.zone_type === event.zone_type) - Number(a.zone_type === event.zone_type));
+    const s = free[0];
+    if (!s) return null;
+    const m = far(s);
+    return { call: s.name, first: firstOf(s.name), dist: Number.isFinite(m) ? fmtDistance(m) : null };
+  })();
+  const guardLine = !pushed
+    ? null
+    : event.outcome
+      ? `${guard}: ${OUTCOME[event.outcome]}${event.outcome !== "backup" ? ` · camera ${calmNow ? "agrees: calm" : `still says ${LEVEL_LABEL[event.level].toLowerCase()}`}` : ""}`
+      : event.arrived_at
+        ? `${guard} is there${there != null ? ` · ${there} s` : ""}`
+        : event.acked_at
+          ? `${guard} on the way${ack != null ? ` · ${ack} s` : ""}`
+          : `${guard} alerted${dist ? `, ${dist} away` : ""}`;
   const nearestState =
     event.status === "confirmed"
       ? `Confirmed real${pushed ? " · on the way" : ""}`
       : pushed
-        ? `Pushed at ${fmtTime(event.pushed_at!)}${ack != null ? ` · tapped On my way in ${ack} s` : ""}`
+        ? `Pushed at ${fmtTime(event.pushed_at!)}`
         : isCalm
           ? "On patrol"
           : event.level === "tense"
@@ -132,6 +167,22 @@ export function AlertCard({
       )}
       style={{ background: theme.tint, borderColor: theme.border }}
     >
+      {event.outcome === "backup" && (
+        <div role="alert" className="flex flex-wrap items-center gap-x-3 gap-y-2 rounded-[2px] bg-[#C8241B] px-3.5 py-3 text-white">
+          <span className="flex flex-[1_1_240px] flex-col">
+            <span className="font-mono text-[12px] font-bold tracking-[0.08em]">NEED BACKUP</span>
+            <span className="text-[19px] font-extrabold">{guard} is at {event.location} and needs help.</span>
+            <span className="text-[14px]">{nextGuard ? `Next nearest: ${nextGuard.first}${nextGuard.dist ? `, ${nextGuard.dist}` : ""}.` : "Nobody else is on duty. Call the security lead."}</span>
+          </span>
+          {nextGuard && onPushBackup ? (
+            <button type="button" onClick={() => onPushBackup(event, nextGuard.call)} className="min-h-12 rounded-[2px] bg-white px-4 text-[16px] font-extrabold text-[#C8241B]">
+              Send {nextGuard.first}
+            </button>
+          ) : nextGuard ? (
+            <span className="text-[15px] font-extrabold">Call {nextGuard.first} by radio</span>
+          ) : null}
+        </div>
+      )}
       <div className="flex flex-wrap items-center gap-2.5">
         <LevelPill level={event.level} size="xl" />
         {!isCalm && <TypeChip type={event.type} size="lg" />}
@@ -168,6 +219,37 @@ export function AlertCard({
           <span className="text-[13px] text-ink-2">{nearestState}</span>
         </div>
       </div>
+
+      {guardLine && (
+        <div className="flex flex-col gap-1.5 rounded-[2px] border border-line bg-white px-3.5 py-3" aria-live="polite">
+          <span className="ee-label">Guard&rsquo;s phone</span>
+          <ol className="m-0 grid list-none grid-cols-4 gap-1 p-0" aria-label="Guard progress">
+            {[
+              ["Alerted", true],
+              ["On the way", !!event.acked_at],
+              ["There", !!event.arrived_at],
+              ["Reported", !!event.outcome],
+            ].map(([l, on]) => (
+              <li key={l as string} className="border-t-[3px] pt-1 text-[12px] font-bold" style={{ borderColor: on ? "#2742D9" : "#DCDFE4", color: on ? "#1F35B3" : "#5D6672" }}>
+                {l}
+              </li>
+            ))}
+          </ol>
+          <span className="text-[19px] font-extrabold">{guardLine}</span>
+          {noAnswer && (
+            <span className="flex flex-wrap items-center gap-2 text-[15px]">
+              <span className="font-bold">No answer in 20 s.{nextGuard ? ` Next nearest: ${nextGuard.first}${nextGuard.dist ? `, ${nextGuard.dist}` : ""}.` : " Nobody else is on duty."}</span>
+              {nextGuard && onPushBackup ? (
+                <button type="button" onClick={() => onPushBackup(event, nextGuard.call)} className="min-h-10 rounded-[2px] bg-signal px-3 text-[14px] font-extrabold text-white">
+                  Push {nextGuard.first} now
+                </button>
+              ) : nextGuard ? (
+                <span>Call {nextGuard.first} by radio.</span>
+              ) : null}
+            </span>
+          )}
+        </div>
+      )}
 
       {compact3d ??
         (!isCalm && (
@@ -210,7 +292,7 @@ export function AlertCard({
         </Link>
         {event.nearest_staff && (
           <Link
-            href={`/push?staff=${encodeURIComponent(event.nearest_staff)}`}
+            href={`/guard?staff=${encodeURIComponent(event.nearest_staff)}`}
             className="text-signal"
           >
             {event.nearest_staff}&apos;s phone screen

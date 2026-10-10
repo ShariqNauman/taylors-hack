@@ -216,6 +216,73 @@ export const postCheckin = (id: string, staff: string) =>
     at: new Date().toISOString(),
   });
 
+/**
+ * Without the API (mock data), the desk copies a pushed incident into the local server's shared
+ * store so a guard's phone on the same server gets the alarm. With the API, the edge and the API
+ * do this, so it's a no-op.
+ */
+export async function mirrorEvent(event: Event, reset = false): Promise<void> {
+  if (!usingMock) return;
+  // The guard's own answers live only in their PATCHes, never in the desk's copy.
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { acked_at, arrived_at, outcome, outcome_at, ...desk } = event;
+  event = desk as Event;
+  try {
+    await fetch("/api/mock/events", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ event, reset }),
+    });
+  } catch {
+    // the next push tries again
+  }
+}
+
+/**
+ * Start my shift / End my shift. The API on main has no staff route yet, so this goes to the
+ * local server's shared store; the desk reads it from GET /site there.
+ */
+export async function setOnDuty(name: string, on_duty: boolean): Promise<SavedWhere> {
+  if (!usingMock) {
+    try {
+      const r = await fetch(`${API_URL}/staff/${encodeURIComponent(name)}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ on_duty }),
+        signal: AbortSignal.timeout(API_TIMEOUT_MS),
+      });
+      if (r.ok) return "api";
+    } catch {
+      // fall through
+    }
+  }
+  try {
+    await fetch("/api/mock/staff", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, on_duty }),
+    });
+  } catch {
+    // offline: the phone still works; the desk won't see the change
+  }
+  return "this-computer";
+}
+
+/** Desk sends another guard (API: POST /events/:id/backup → <id>-B pushed to them). */
+export async function sendBackup(
+  incident_id: string,
+  staff: string,
+  reason: "need_backup" | "no_answer",
+): Promise<void> {
+  const r = await fetch(`${API_URL}/events/${encodeURIComponent(incident_id)}/backup`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ staff, reason }),
+    signal: AbortSignal.timeout(API_TIMEOUT_MS * 2),
+  });
+  if (!r.ok) throw new PatchError(r.status, `backup ${incident_id} failed: ${r.status}`);
+}
+
 /** Back-compat alias. */
 export const patchStatus = patchEvent;
 

@@ -1,9 +1,9 @@
 import { promises as fs } from "fs";
 import path from "path";
 import { NextResponse } from "next/server";
-import { readStore } from "@/lib/server/local-store";
+import { readStore, updateStore } from "@/lib/server/local-store";
 import { withStore } from "@/lib/server/mock-plan";
-import type { PatrolPlan } from "@/lib/types";
+import type { Event, PatrolPlan, Site } from "@/lib/types";
 
 const ALLOWED = new Set([
   "site",
@@ -83,14 +83,52 @@ export async function GET(
   let data = rebase(name, JSON.parse(await fs.readFile(file, "utf8")));
   // Shared demo store: labels and guard taps made on any device that uses this server.
   if (name === "events" && Array.isArray(data)) {
-    const { events } = await readStore();
-    data = data.map((e: Json) => {
+    const { events, added } = await readStore();
+    const extra = Object.values(added);
+    const ids = new Set(extra.map((e) => e.incident_id));
+    data = [...(data as Json[]).filter((e) => !ids.has(String(e.incident_id))), ...(extra as unknown as Json[])].map((e) => {
       const o = events[String(e.incident_id)];
       return o ? { ...e, ...o } : e;
     });
+  }
+  if (name === "site") {
+    const { staff } = await readStore();
+    const site = data as Site;
+    data = { ...site, staff: site.staff?.map((s) => (staff[s.name] ? { ...s, ...staff[s.name] } : s)) };
   }
   if (name === "plan") data = await withStore(data as PatrolPlan);
   return NextResponse.json(data, {
     headers: { "Cache-Control": "no-store" },
   });
+}
+
+/**
+ * Shared demo store writes that the API does with its own routes:
+ * - POST /api/mock/events {event, reset?}: the desk pushed an incident (like POST /events).
+ *   reset clears earlier guard taps on that id (the replay demo restarting).
+ * - POST /api/mock/staff {name, on_duty}: Start my shift / End my shift.
+ */
+export async function POST(
+  req: Request,
+  ctx: { params: Promise<{ name: string }> },
+) {
+  const { name } = await ctx.params;
+  const body = (await req.json().catch(() => ({}))) as Record<string, unknown>;
+  if (name === "events") {
+    const e = body.event as Event | undefined;
+    if (!e?.incident_id) return NextResponse.json({ detail: "Send event." }, { status: 422 });
+    await updateStore((s) => {
+      const base = body.reset ? undefined : s.added[e.incident_id];
+      s.added[e.incident_id] = { ...base, ...e, acked_at: null, arrived_at: null, outcome: null, outcome_at: null };
+      if (body.reset) delete s.events[e.incident_id];
+    });
+    return NextResponse.json(e, { status: 201 });
+  }
+  if (name === "staff") {
+    if (typeof body.name !== "string" || typeof body.on_duty !== "boolean")
+      return NextResponse.json({ detail: "Send name and on_duty." }, { status: 422 });
+    await updateStore((s) => (s.staff[body.name as string] = { on_duty: body.on_duty as boolean }));
+    return NextResponse.json({ name: body.name, on_duty: body.on_duty });
+  }
+  return NextResponse.json({ error: "unknown mock" }, { status: 404 });
 }
