@@ -30,8 +30,11 @@ import numpy as np
 import pandas as pd
 from ultralytics import YOLO
 
+import predict as predict_module
 from features import FEATURE_NAMES, SHORT_S, window_features
 from predict import predict
+from extract_keypoints_v2 import KEYPOINTS as EXTRACT_KEYPOINTS
+from seq_features import window_inputs
 
 # ---------------- Tunable constants ----------------
 MODEL_PT = "yolo26n-pose.pt"
@@ -44,12 +47,13 @@ CAM_W, CAM_H, CAM_FPS = 640, 480, 30   # requested webcam mode
 SCORE_EVERY_S = 0.5      # score a new window every 0.5 s (features use the last LONG_S = 2 s)
 HISTORY_S = 3.0          # how much pose history to keep for resampling
 SMOOTH_ALPHA = 0.6       # exponential smoothing: higher = reacts faster, lower = steadier
-# v3 model (all 3,131 clips): out-of-fold scores replayed through this logic, best setting with
-# <= 10% of non-violent clips reaching FIGHT. FIGHT on 60% of fight/weapon clips, 9% of non-violent
-# clips, 14% of AIRTLab hugs/claps (see REPORT.md A7). Not yet tuned on our own webcam footage:
-# record a labelled session, then python tune_live.py --log session1.csv --apply
+# FIGHT_AT per scoring mode (predict.MODE), each fixed on the training part (out-of-fold) so that 9% of
+# normal clips reach FIGHT. Hold-out result for the ensemble: 78.5% of fights, 11.0% of normal clips,
+# 11.1% of AIRTLab hugs/claps, 68.4% of weapon clips reach FIGHT (REPORT.md Part A0).
+# Not yet tuned on our own webcam footage: record a labelled session, then tune_live.py.
 TENSE_AT = 0.5          # smoothed score >= this -> TENSE
-FIGHT_AT = 0.75         # smoothed score >= this ...
+FIGHT_AT = 0.658        # ensemble: smoothed score >= this ...
+FIGHT_AT_LGBM = 0.695   # used instead when predict.MODE == "lgbm"
 MIN_DURATION = 1.0       # ... for at least this many seconds -> FIGHT
 FIGHT_HOLD = 2.0         # keep showing FIGHT this many seconds after it triggers
 LOG_CSV = "live_features.csv"
@@ -58,14 +62,13 @@ LABEL_KEYS = {"F": "fight", "H": "hug", "N": "normal"}  # hold key -> label; not
 LABEL_COLORS = {"fight": (0, 0, 220), "hug": (200, 120, 0), "normal": (90, 90, 90)}  # BGR
 KEY_HOLD_TIMEOUT = 0.6   # non-Windows fallback: key counts as held this long after its last repeat
 
-# Same 12 body keypoints as extract_keypoints.py (face left out).
-KEYPOINTS = {
-    "l_shoulder": 5, "r_shoulder": 6, "l_elbow": 7, "r_elbow": 8,
-    "l_wrist": 9, "r_wrist": 10, "l_hip": 11, "r_hip": 12,
-    "l_knee": 13, "r_knee": 14, "l_ankle": 15, "r_ankle": 16,
-}
+# All 17 COCO keypoints, same as extract_keypoints_v2.py: the head features and the sequence model need
+# the face points (used only as head position). Only the 12 body points are drawn.
+KEYPOINTS = {name: i for i, name in enumerate(EXTRACT_KEYPOINTS)}
+BODY_POINTS = [KEYPOINTS[n] for n in KEYPOINTS if n not in ("nose", "l_eye", "r_eye", "l_ear", "r_ear")]
 BONES = [(5, 7), (7, 9), (6, 8), (8, 10), (5, 6), (5, 11), (6, 12), (11, 12),
          (11, 13), (13, 15), (12, 14), (14, 16)]
+ACTIVE_FIGHT_AT = FIGHT_AT_LGBM if predict_module.MODE == "lgbm" else FIGHT_AT
 LEVEL_COLORS = {"CALM": (0, 180, 0), "TENSE": (0, 200, 255), "FIGHT": (0, 0, 255)}  # BGR
 # ---------------------------------------------------
 
@@ -186,10 +189,14 @@ def pose_loop(model, device, s, log):
         if t < next_score:
             continue
         next_score = t + SCORE_EVERY_S
-        feats = window_features(pd.DataFrame(list(rows)), t, frame_times)
-        raw = predict(feats)
+        kp = pd.DataFrame(list(rows))
+        if predict_module.NEEDS_SEQUENCE:  # one shared people-finding pass for both models
+            feats, seq = window_inputs(kp, t, frame_times)
+        else:
+            feats, seq = window_features(kp, t, frame_times), None
+        raw = predict(feats, seq)
         smooth = SMOOTH_ALPHA * raw + (1 - SMOOTH_ALPHA) * smooth
-        high_since = (high_since if high_since is not None else t) if smooth >= FIGHT_AT else None
+        high_since = (high_since if high_since is not None else t) if smooth >= ACTIVE_FIGHT_AT else None
         if high_since is not None and t - high_since >= MIN_DURATION:
             fight_until = t + FIGHT_HOLD
         level = "FIGHT" if t <= fight_until else "TENSE" if smooth >= TENSE_AT else "CALM"
@@ -204,7 +211,7 @@ def draw_skeletons(frame, pose):
         return
     xy, conf = pose
     for p in range(len(xy)):
-        pts = {k: tuple(map(int, xy[p, k])) for k in KEYPOINTS.values() if conf[p, k] >= MIN_DRAW_CONF}
+        pts = {k: tuple(map(int, xy[p, k])) for k in BODY_POINTS if conf[p, k] >= MIN_DRAW_CONF}
         for a, b in BONES:
             if a in pts and b in pts:
                 cv2.line(frame, pts[a], pts[b], (255, 200, 0), 2)
@@ -232,7 +239,7 @@ def draw_hud(frame, s, label, model_name):
     x0, x1, y0, y1 = 10, w - 10, h - 30, h - 10
     cv2.rectangle(frame, (x0, y0), (x1, y1), (60, 60, 60), -1)
     cv2.rectangle(frame, (x0, y0), (x0 + int((x1 - x0) * s.score), y1), color, -1)
-    for th in (TENSE_AT, FIGHT_AT):
+    for th in (TENSE_AT, ACTIVE_FIGHT_AT):
         x = x0 + int((x1 - x0) * th)
         cv2.line(frame, (x, y0 - 4), (x, y1 + 4), (255, 255, 255), 1)
     cv2.putText(frame, f"{s.level}  risk {s.score:.2f}", (10, h - 40), cv2.FONT_HERSHEY_SIMPLEX, 0.8, color, 2)
@@ -256,6 +263,7 @@ def main():
     ap.add_argument("--camera", default="0", help="webcam index or a video file path")
     ap.add_argument("--no-show", action="store_true", help="don't open a window (for testing)")
     ap.add_argument("--log", default=LOG_CSV, help="where to write the per-window log")
+    ap.add_argument("--seconds", type=float, default=None, help="stop after this many seconds (speed tests)")
     args = ap.parse_args()
 
     source = int(args.camera) if args.camera.isdigit() else args.camera
@@ -285,6 +293,8 @@ def main():
     shown_id, last_tick, last_key, n_shown, pose_fps_seen = 0, time.time(), ["normal", 0.0], 0, []
     prev_label = "normal"
     while s.running:
+        if args.seconds and s.now() > args.seconds:
+            break
         if args.no_show:
             time.sleep(0.05)
             pose_fps_seen.append(s.pose_fps)
