@@ -413,7 +413,7 @@ def run_pipeline(s: State):
                 people_17.append({"id": int(pid), "kp": kp17})
 
         annotated = draw(current_frame.copy(), people_17, s.level, s.score, a, is_live)
-        ok, jpg = cv2.imencode(".jpg", annotated, [cv2.IMWRITE_JPEG_QUALITY, 75])
+        ok, jpg = cv2.imencode(".jpg", annotated, [cv2.IMWRITE_JPEG_QUALITY, 60])
         with s.lock:
             s.people = people_12
             s.people_17 = people_17

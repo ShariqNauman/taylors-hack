@@ -18,10 +18,10 @@ import math
 import sys
 import threading
 import time
-import urllib.request
+import requests
 import cv2
 
-DEFAULT_GPU_URL = "https://eye-dated-stylish-surrounding.trycloudflare.com"
+DEFAULT_GPU_URL = "https://graphs-calls-event-absent.trycloudflare.com"
 
 ALL_BONES = [
     # Head & Face
@@ -143,6 +143,9 @@ def main():
     current_level = "CALM"
     current_score = 0.0
 
+    session = requests.Session()
+    session.headers.update({"Content-Type": "image/jpeg"})
+
     def post_worker():
         nonlocal last_status, current_people, current_level, current_score
         while running:
@@ -154,24 +157,18 @@ def main():
 
             if jpg_data is not None:
                 try:
-                    req = urllib.request.Request(
-                        target_url,
-                        data=jpg_data,
-                        headers={"Content-Type": "image/jpeg"},
-                        method="POST",
-                    )
-                    with urllib.request.urlopen(req, timeout=3) as r:
-                        if r.status == 200:
-                            data = json.loads(r.read().decode())
-                            with lock:
-                                current_people = data.get("people", [])
-                                current_level = data.get("level", "CALM")
-                                current_score = data.get("score", 0.0)
-                            last_status = "RTX 5090: Skeletons Active"
+                    r = session.post(target_url, data=jpg_data, timeout=2.0)
+                    if r.status_code == 200:
+                        data = r.json()
+                        with lock:
+                            current_people = data.get("people", [])
+                            current_level = data.get("level", "CALM")
+                            current_score = data.get("score", 0.0)
+                        last_status = "RTX 5090: Skeletons Active"
                 except Exception as e:
-                    last_status = f"Network Err: {e}"
+                    last_status = f"Network: {e}"
             else:
-                time.sleep(0.01)
+                time.sleep(0.005)
 
     sender_thread = threading.Thread(target=post_worker, daemon=True)
     sender_thread.start()
@@ -189,8 +186,9 @@ def main():
             if not args.no_flip:
                 frame = cv2.flip(frame, 1)
 
-            # Send to GPU
-            ok, jpg = cv2.imencode(".jpg", frame, [cv2.IMWRITE_JPEG_QUALITY, 75])
+            # High-speed upload: 480x360 @ quality 55 (~15 KB vs 75 KB) for 4x faster transmission
+            upload_frame = cv2.resize(frame, (480, 360), interpolation=cv2.INTER_AREA)
+            ok, jpg = cv2.imencode(".jpg", upload_frame, [cv2.IMWRITE_JPEG_QUALITY, 55])
             if ok:
                 with lock:
                     latest_jpg[0] = jpg.tobytes()
