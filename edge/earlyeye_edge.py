@@ -199,13 +199,17 @@ def _predict_worker(conn, model_dir: str):
     from predict import predict  # noqa: E402  (model/predict.py, not modified)
     while True:
         try:
-            feats = conn.recv()
+            item = conn.recv()
         except (EOFError, KeyboardInterrupt):
             return
-        if feats is None:
+        if item is None:
             return
         try:
-            conn.send(float(predict(feats)))
+            if isinstance(item, tuple):
+                feats, seq = item
+                conn.send(float(predict(feats, seq)))
+            else:
+                conn.send(float(predict(item)))
         except Exception as e:  # report, keep serving
             conn.send(("error", str(e)))
 
@@ -218,8 +222,8 @@ class PredictProcess:
         self.proc = ctx.Process(target=_predict_worker, args=(child, str(MODEL_DIR)), daemon=True)
         self.proc.start()
 
-    def __call__(self, feats: dict) -> float:
-        self.conn.send(feats)
+    def __call__(self, feats: dict, seq=None) -> float:
+        self.conn.send((feats, seq))
         out = self.conn.recv()
         if isinstance(out, tuple):
             raise RuntimeError(out[1])
@@ -248,7 +252,9 @@ def run_model(s: State):
     os.chdir(MODEL_DIR)                      # model code uses relative paths (joblib, tracker yaml)
     sys.path.insert(0, str(MODEL_DIR))
     import live_detector as ld               # noqa: E402  (model/live_detector.py, not modified)
+    import predict as predict_module         # noqa: E402
     from features import window_features     # noqa: E402
+    from seq_features import window_inputs   # noqa: E402
     if worker is None:
         from predict import predict          # noqa: E402
     else:
@@ -325,8 +331,12 @@ def run_model(s: State):
         if t < next_score:
             continue
         next_score = t + ld.SCORE_EVERY_S
-        feats = window_features(pd.DataFrame(list(rows)), t, frame_times)
-        raw = predict(feats)
+        kp = pd.DataFrame(list(rows))
+        if getattr(predict_module, "NEEDS_SEQUENCE", False):
+            feats, seq = window_inputs(kp, t, frame_times)
+        else:
+            feats, seq = window_features(kp, t, frame_times), None
+        raw = predict(feats, seq)
         smooth = ld.SMOOTH_ALPHA * raw + (1 - ld.SMOOTH_ALPHA) * smooth
         high_since = (high_since if high_since is not None else t) if smooth >= ld.FIGHT_AT else None
         if high_since is not None and t - high_since >= ld.MIN_DURATION:
