@@ -2,7 +2,15 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import useSWR from "swr";
-import { getEvents, getReplay, mergeEvents, patchEvent } from "@/lib/api";
+import {
+  getEdgeLive,
+  getEvents,
+  getReplay,
+  mergeEvents,
+  patchEvent,
+  type EdgeLive,
+} from "@/lib/api";
+import { useAppStore } from "@/lib/store/app-store";
 import { useReplay } from "@/hooks/use-replay";
 import { isAlarmLevel, LEVEL_ORDER, normaliseStatus } from "@/lib/format";
 import { useAlarmStore } from "@/lib/store/alarm-store";
@@ -32,6 +40,8 @@ export interface LiveEvent extends Event {
   etaAt: number;
   /** True for the canned ?replay=1 incident. */
   isReplay?: boolean;
+  /** Came straight from the edge laptop's /live.json (on site only). */
+  isEdge?: boolean;
 }
 
 interface Override {
@@ -41,7 +51,23 @@ interface Override {
   pushed_at?: string;
 }
 
-export function useLiveFeed(replayOn: boolean) {
+export function useLiveFeed(replayOn: boolean, edgeUrls: string[] = []) {
+  // On site: read each edge's /live.json every 0.5 s. Remote never calls an edge.
+  const view = useAppStore((st) => st.view);
+  const edgeKey =
+    view === "onsite" && edgeUrls.length ? ["edge-live", ...edgeUrls] : null;
+  const edge = useSWR(
+    edgeKey,
+    () => Promise.all(edgeUrls.map((u) => getEdgeLive(u))),
+    {
+      refreshInterval: 500,
+      dedupingInterval: 200,
+    },
+  );
+  const edgeLive = useMemo(
+    () => (edge.data ?? []).filter((x): x is EdgeLive => !!x),
+    [edge.data],
+  );
   // Polling: since-window every 2 s, full list every 10 s; merged by incident_id.
   const [since, setSince] = useState(() =>
     new Date(Date.now() - SINCE_WINDOW_MS).toISOString(),
@@ -65,9 +91,33 @@ export function useLiveFeed(replayOn: boolean) {
   const replay = useReplay(replayEvents, replayOn);
 
   const polled = useMemo(() => {
-    const base = mergeEvents(full.data ?? [], recent.data ?? []);
-    return base.map((e) => ({ ...e, status: normaliseStatus(e.status) }));
-  }, [full.data, recent.data]);
+    const base = mergeEvents(full.data ?? [], recent.data ?? []).map((e) => ({
+      ...e,
+      status: normaliseStatus(e.status),
+    }));
+    // Edge incidents: live level, snapshot and features from the laptop; human fields
+    // (status, push, ack, note) from the API record with the same id, when it exists.
+    const byId = new Map(base.map((e) => [e.incident_id, e]));
+    for (const x of edgeLive) {
+      const inc = x.incident;
+      if (!inc) continue;
+      const api = byId.get(inc.incident_id);
+      byId.set(inc.incident_id, {
+        ...inc,
+        ...(api
+          ? {
+              status: api.status,
+              pushed_to: api.pushed_to,
+              pushed_at: api.pushed_at,
+              acked_at: api.acked_at,
+              staff_note: api.staff_note,
+            }
+          : { status: normaliseStatus(inc.status) }),
+        isEdge: true,
+      } as unknown as Event);
+    }
+    return [...byId.values()];
+  }, [full.data, recent.data, edgeLive]);
 
   // Local overrides: operator decisions and early pushes. They survive polls until the server agrees.
   const [overrides, setOverrides] = useState<Record<string, Override>>({});
@@ -356,7 +406,11 @@ export function useLiveFeed(replayOn: boolean) {
   const lastLiveEventAt = useMemo(() => {
     let t = 0;
     for (const e of polled)
-      if (e.end_time == null) t = Math.max(t, Date.parse(e.start_time));
+      if (e.end_time == null)
+        t = Math.max(
+          t,
+          (e as LiveEvent).isEdge ? Date.now() : Date.parse(e.start_time),
+        );
     return t;
   }, [polled]);
 

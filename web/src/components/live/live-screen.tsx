@@ -24,6 +24,7 @@ import { Campus3D } from "@/components/campus3d";
 
 const PUSH_BUDGET = 3;
 const LIVE_STALE_MS = 60_000;
+const ACTIVE_WINDOW_MS = 20 * 60_000;
 
 export function LiveScreen() {
   const params = useSearchParams();
@@ -40,7 +41,16 @@ export function LiveScreen() {
     revalidateOnFocus: false,
   });
   const router = useRouter();
-  const feed = useLiveFeed(replayOn);
+  const edgeUrls = useMemo(
+    () =>
+      (cameras ?? [])
+        .filter((c) => c.edge_url && c.online && !c.black_since)
+        .map((c) => c.edge_url!),
+    [cameras],
+  );
+  const feed = useLiveFeed(replayOn, edgeUrls);
+  const view = useAppStore((s) => s.view);
+  const mockOnSite = view === "onsite" && (usingMock || apiDown);
 
   const active = useMemo(
     () =>
@@ -48,12 +58,19 @@ export function LiveScreen() {
         .filter(
           (e) =>
             e.end_time == null &&
+            // An open record older than the window is stale history (the API cannot close
+            // records yet); the edge and the replay are always current.
+            (e.isEdge ||
+              e.isReplay ||
+              Date.now() - Date.parse(e.start_time) < ACTIVE_WINDOW_MS) &&
+            // On site without an API, mock "now" incidents would hide the real webcam.
+            (!mockOnSite || e.isEdge || e.isReplay) &&
             LEVEL_ORDER[e.level] >= LEVEL_ORDER.tense &&
             e.status !== "dismissed" &&
             e.status !== "resolved",
         )
         .sort((a, b) => b.priority - a.priority),
-    [feed.events],
+    [feed.events, mockOnSite],
   );
 
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -95,11 +112,8 @@ export function LiveScreen() {
       ? camById.get(camParam)
       : liveCam;
 
-  const liveFresh =
-    !!liveCam &&
-    !usingMock &&
-    !apiDown &&
-    now.getTime() - Date.parse(liveCam.last_frame_at) < LIVE_STALE_MS;
+  // On site the edge answered /health, so the webcam is connected.
+  const liveFresh = view === "onsite";
   const noLiveEvent = now.getTime() - feed.lastLiveEventAt > LIVE_STALE_MS;
   const strip = replayOn
     ? noLiveEvent
@@ -111,7 +125,9 @@ export function LiveScreen() {
 
   const replaySelected = !!current?.isReplay;
   const synthetic =
-    SYNTHETIC_POSES_IN_MOCKS && (replaySelected || usingMock || apiDown);
+    SYNTHETIC_POSES_IN_MOCKS &&
+    !current?.isEdge &&
+    (replaySelected || usingMock || apiDown);
 
   const [handover, setHandover] = useState(false);
   const wd = mytWeekday(now);
