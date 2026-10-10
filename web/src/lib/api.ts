@@ -19,6 +19,43 @@ const API_URL = (process.env.NEXT_PUBLIC_API_URL ?? "").replace(/\/$/, "");
 
 export const usingMock = API_URL === "";
 
+/** Live webcam edge on the demo laptop (edge/earlyeye_edge.py). Used only on site. */
+export const EDGE_URL = (
+  process.env.NEXT_PUBLIC_EDGE_URL ?? "http://127.0.0.1:8765"
+).replace(/\/$/, "");
+
+/** What edge/earlyeye_edge.py serves at /live.json. */
+export interface EdgeLive {
+  camera_id: string;
+  source: "live" | "recorded";
+  fake?: boolean;
+  level: string;
+  score: number;
+  people_count: number;
+  updated_at: string;
+  snapshot?: {
+    t: string;
+    people: { id: number; kp: [number, number, number][] }[];
+  };
+  incident: Event | null;
+}
+
+/** On site only: the edge's current state. Never called from the remote view. */
+export async function getEdgeLive(edgeUrl: string): Promise<EdgeLive | null> {
+  try {
+    const r = await fetch(`${edgeUrl.replace(/\/$/, "")}/live.json`, {
+      cache: "no-store",
+      signal: AbortSignal.timeout(800),
+    });
+    if (!r.ok) return null;
+    const j = (await r.json()) as EdgeLive;
+    if (j.incident) j.incident = normaliseEvent(j.incident);
+    return j;
+  } catch {
+    return null;
+  }
+}
+
 /** Per-request timeout before a screen falls back to mock data. */
 const API_TIMEOUT_MS = 4000;
 
@@ -29,8 +66,22 @@ function mockUrl(name: MockName): string {
   return `/api/mock/${name}`;
 }
 
+/**
+ * Which resources come from the API. Default: only the live loop (events + labels).
+ * Site, cameras, plan, hotspots and proof come from the repo (public/mock, which holds
+ * the demo site's seed and the model team's model/proof.json), because the API on main
+ * still serves an older seed and placeholder proof numbers.
+ * Set NEXT_PUBLIC_API_RESOURCES="events,site,cameras,plan,hotspots,proof" to read all of them.
+ */
+const API_RESOURCES = new Set(
+  (process.env.NEXT_PUBLIC_API_RESOURCES ?? "events")
+    .split(",")
+    .map((x) => x.trim())
+    .filter(Boolean),
+);
+
 async function getJson<T>(path: string, mock: MockName): Promise<T> {
-  if (!usingMock) {
+  if (!usingMock && API_RESOURCES.has(mock)) {
     try {
       const r = await fetch(`${API_URL}${path}`, {
         cache: "no-store",

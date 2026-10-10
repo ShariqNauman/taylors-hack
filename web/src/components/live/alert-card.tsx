@@ -82,7 +82,9 @@ export function AlertCard({
         ? `Pushed at ${fmtTime(event.pushed_at!)}${ack != null ? ` · tapped On my way in ${ack} s` : ""}`
         : isCalm
           ? "On patrol"
-          : "Not pushed; tense is silent";
+          : event.level === "tense"
+            ? "Not pushed; tense is silent"
+            : "Not pushed yet · use Push now";
   const where = `WHERE · ${event.location.toUpperCase()}${event.nearest_staff ? ` · ${event.nearest_staff.toUpperCase()}${dist ? ` ${dist.toUpperCase()} AWAY` : ""}` : ""}`;
 
   const steps = [

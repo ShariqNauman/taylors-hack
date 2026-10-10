@@ -108,7 +108,10 @@ export function PushScreen() {
     const mine = events
       .filter(
         (e) =>
-          e.pushed_to === staff &&
+          // The API sets pushed_to; an operator's early push (PATCH status only) leaves it
+          // empty, so the named nearest person counts too.
+          (e.pushed_to === staff ||
+            (!e.pushed_to && e.nearest_staff === staff)) &&
           e.status === "pushed" &&
           !e.acked_at &&
           e.end_time == null &&
