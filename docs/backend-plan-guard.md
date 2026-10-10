@@ -15,6 +15,7 @@ database.
 | `POST /plan/slots/{id}/checkins` | `{staff, at?}` | Guard app: "I'm at my post" |
 | `PATCH /events/{id}` | adds `arrived_at`, `outcome` (sorted/hurt/backup/nothing), `outcome_at` | Guard app: I'm here, What did you find? |
 | `PATCH /staff/{name}` | `{on_duty}` | Guard app: Start my shift / End my shift. Off duty = no alarms |
+| `GET /push/key`, `POST /push/subscribe`, `POST /push/unsubscribe` | `{staff, subscription}` / `{endpoint}` | Guard app: Start my shift registers the phone for alarms **with the app closed** (Web Push) |
 | `POST /events/{id}/backup` | `{staff?, reason: need_backup / no_answer}` | Desk: Send Priya. Creates `<id>-B` pushed to that guard or the next on duty |
 
 **Real-incident rules in `POST /events`:**
@@ -35,7 +36,8 @@ Rules (pure, tested in `api/services/plan_logic.py` / `api/test_plan_logic.py`):
    - adds the staff columns and the 4-person demo team (Guard A/B/C, Warden D, with names, photos and shifts);
    - adds the event columns `arrived_at`, `outcome` and `outcome_at`;
    - creates `plan_slots`, `plan_checkins` and `plan_meta`.
-3. **Render:** redeploy (auto on merge to `main`, if that's set up). No new env vars.
+3. **Supabase, Web Push:** run `api/sql/migration_push.sql`.
+4. **Render env, Web Push:** run `python -m api.scripts.gen_vapid` once, then paste `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY` and `VAPID_SUBJECT` into Render (secret; never commit the private key). Redeploy. Without them push is off and the app-open alarm still works. Check: `curl $API/push/key` returns the public key.
 4. **Seed the posts.** The first `GET /plan` seeds P1–P3 from hotspots and runs today's check. Since the hotspot seed data is the old Asrama set, set the demo posts explicitly so the deployed plan matches the mock:
    ```sql
    -- optional: make the deployed plan match web/public/mock/plan.json

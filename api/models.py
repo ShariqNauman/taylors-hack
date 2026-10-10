@@ -170,6 +170,8 @@ class EventPatch(BaseModel):
     arrived_at ("I'm here") and outcome + outcome_at ("What did you find?")."""
     status: Optional[Status] = None
     staff_note: Optional[str] = None
+    pushed_to: Optional[str] = None     # desk "Push now": the guard it chose (else the API picks)
+    pushed_at: Optional[str] = None
     acked_at: Optional[str] = None
     arrived_at: Optional[str] = None
     outcome: Optional[Outcome] = None

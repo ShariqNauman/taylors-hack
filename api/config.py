@@ -29,6 +29,11 @@ JWT_EXPIRE_HOURS: int = int(os.getenv("JWT_EXPIRE_HOURS", "24"))
 # ── Notifications ─────────────────────────────────────────────────────────────
 DEFAULT_ALERT_WEBHOOK_URL: str = os.getenv("DEFAULT_ALERT_WEBHOOK_URL", "")
 
+# ── Web Push (guard app alarms when the app is closed) ─────────────────────────
+VAPID_PUBLIC_KEY: str = os.getenv("VAPID_PUBLIC_KEY", "")
+VAPID_PRIVATE_KEY: str = os.getenv("VAPID_PRIVATE_KEY", "")
+VAPID_SUBJECT: str = os.getenv("VAPID_SUBJECT", "mailto:earlyeye@example.com")
+
 # ── CORS ──────────────────────────────────────────────────────────────────────
 CORS_ORIGINS: list[str] = os.getenv("CORS_ORIGINS", "*").split(",")
 
