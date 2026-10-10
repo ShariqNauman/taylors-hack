@@ -108,6 +108,12 @@ class Camera(BaseModel):
     black_since: Optional[str] = None
 
 
+class CameraPatch(BaseModel):
+    """PATCH /cameras/{camera_id}. The manager changes a camera's zone on Track record
+    ("Make it a sports zone"). zone_type must be one of the site's zones."""
+    zone_type: str
+
+
 # ── Event (the core incident record) ─────────────────────────────────────────
 
 class EventCreate(BaseModel):
