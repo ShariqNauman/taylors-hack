@@ -113,18 +113,32 @@ Video never leaves the laptop. Only the event record goes up.
 
 ## 6. Contracts (lock at 14:00)
 
-**Event record** (`POST /events`, one per alert; also the DB row):
+**Approved 10 Oct 14:50 per `docs/earlyeye-system-proposal.md` (decisions 1–8 + amendments).** The TypeScript definitions in `docs/kayla-frontend-plan.md` are the single source of truth; this section is the JSON view.
+
+**Event record** (`POST /events` from the edge, every 0.5 s while level ≥ tense, same `incident_id`; also the DB row):
 ```json
-{ "incident_id": "INC-2026-00142", "camera_id": "CAM-ASR-03", "location": "Asrama Puteri, koridor tingkat 3",
-  "zone_type": "hostel_corridor", "start_time": "2026-10-11T22:41:07+08:00", "end_time": null,
-  "type": "fight|cornering|crowd|play", "level": "tense|fight_likely|fight", "peak_score": 0.87,
+{ "incident_id": "INC-2026-00142", "camera_id": "CAM-BC-03", "location": "Block C stairwell",
+  "zone_type": "stairwell", "start_time": "2026-10-11T13:41:07+08:00", "end_time": null,
+  "type": "fight|cornering|crowd|play", "level": "calm|tense|fight_likely|fight", "peak_score": 0.87,
   "eta_seconds": 6, "priority": 0.92, "reason": "wrist speed spiked; distance below 0.5 torso",
-  "people_count": 3, "action": "Send nearest warden (Warden B, ~40 m)", "nearest_staff": "Warden B",
-  "status": "new|acknowledged|resolved|false_alarm", "staff_note": null }
+  "people_count": 3, "action": "Send Guard B", "nearest_staff": "Guard B",
+  "pushed_to": null, "pushed_at": null, "acked_at": null,
+  "status": "new|pushed|confirmed|dismissed|resolved", "staff_note": null }
 ```
-**Live alert** (same object, pushed every 0.5 s while level ≥ tense; dashboard polls `GET /events?since=`).
-**Hotspot** (`GET /hotspots`): `{ location, weekday, hour, count, last_seen }[]`.
-**Proof** (`GET /proof`): `{ datasets, n_clips, auc, precision, recall, fa_per_camera_hour, airtlab_fp_rate, lead_time_s: number[], latency_ms, model_card, disclosure }`.
+Edge may set everything **except** `pushed_to, pushed_at, acked_at, status, staff_note`; the API ignores those from the edge and never lets a repeat post overwrite them. `calm` is never posted; it only appears in replay data.
+
+**Push rule (API):** on the first `fight_likely` or `fight` for an incident → set `pushed_to = nearest_staff`, `pushed_at = now`, `status = pushed`. Shift budget = 3 pushes per 8-hour window; **the budget caps `fight_likely` only, `fight` always pushes.** Operator may push early via `PATCH` (status `pushed`).
+
+**Heartbeat** (`POST /cameras/heartbeat`, every 10 s from the edge): `{ camera_id, last_frame_at, black: false }`. `black_since` is computed on read: `now − last_frame_at > 60 s` or `black: true`. Seeded demo cameras without a laptop carry fixed values; one is black 3 days.
+
+**Site** (`GET /site`): `{ site_id, name, site_type, zones: [{zone_type, label, risk}], staff: [{name, zone_type, on_duty}] }`. Edge fetches this at startup for `zone_risk` and `nearest_staff` (the on-duty person assigned to that zone, else the first on duty).
+
+**Labels / ack** (`PATCH /events/:id`): operator on Live sends `status: confirmed|dismissed|resolved` (+ `staff_note`); the phone sends `acked_at` only. Response time = `acked_at − pushed_at`.
+
+**Hotspot** (`GET /hotspots`): `{ location, zone_type, weekday, hour, count, last_seen }[]`.
+**Patrol plan** (`GET /plan`): `{ generated_at, slots: [{ location, days, hours, incidents_4w, expected_avoided_per_week, avoided_per_patrol_hour, rationale }], assumption }`. Rule: ≥3 incidents, same location, same hour-of-week window, within 4 weeks. `expected_avoided_per_week = incidents_4w × 0.6 / 4` (Block C: 5 → 0.75/week, say "~3 a month"). **Rank by avoided per week**; show per-patrol-hour beside it.
+**Proof** (`GET /proof`): as `Proof` in the frontend plan: `clip_*` (phone-video sets, GroupKFold by video), `cctv_domain` (held-out SCF + SCVD), `live_*`, `fa_per_camera_hour`, `airtlab_fp_rate`, `lead_time_s[]`, `pushes_per_shift_target`, `latency_ms`, `ir_check`, `model_card`, `disclosure`, `note`.
+**Replay** (`edge/replay.py` and dashboard `?replay=1`): events are replayed **by their timestamps**, not at a fixed interval, so ETA on screen matches wall-clock.
 
 ---
 
