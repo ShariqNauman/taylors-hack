@@ -16,18 +16,14 @@ from datetime import datetime, timedelta, timezone
 from typing import Optional
 
 from fastapi import APIRouter, HTTPException, Query
-import httpx
 from supabase import Client
 
-from api.config import ANTHROPIC_API_KEY, ANTHROPIC_MODEL
 from api.db import get_supabase
 from api.models import (
     BackupRequest,
     Event,
     EventCreate,
     EventPatch,
-    HandoverBrief,
-    HandoverFacts,
     LabelRow,
     Status,
 )
@@ -442,70 +438,3 @@ async def get_labels(since: Optional[str] = Query(default=None)):
         )
         for r in rows
     ]
-
-
-# ── POST /handover (Route 15: Shift Handover Brief) ───────────────────────────
-
-@router.post("/handover", response_model=HandoverBrief)
-async def post_handover(facts: HandoverFacts):
-    """
-    Route 15: Shift handover brief.
-    Words the already-computed shift facts using Claude (claude-sonnet-5-5),
-    falling back to a clean deterministic brief.
-    Never invents numbers; words only the facts provided.
-    """
-    now_iso = datetime.now(timezone.utc).isoformat()
-    text = None
-    model_name = ANTHROPIC_MODEL
-
-    if ANTHROPIC_API_KEY:
-        prompt = (
-            "You are the control room supervisor writing an operational shift handover brief for EarlyEye.\n"
-            "Summarize ONLY these verified shift facts (do not invent or extrapolate numbers):\n"
-            f"- Shift window: {facts.shift_start} to {facts.now}\n"
-            f"- Pushes / Alert budget: {facts.pushes} / {facts.budget}\n"
-            f"- Confirmed incidents: {facts.confirmed}\n"
-            f"- Dismissed alarms: {facts.dismissed}\n"
-            f"- Open incidents ({len(facts.open)}): {[f'{i.incident_id} at {i.location} ({i.level})' for i in facts.open]}\n"
-            f"- Inactive/Black cameras ({len(facts.black_cameras)}): {[f'{c.camera_id} at {c.location} since {c.black_since}' for c in facts.black_cameras]}\n"
-            f"- Today's patrol plan: {facts.patrol_today or 'Standard schedule'}\n\n"
-            "Write a concise, professional 2-3 paragraph brief for the incoming shift supervisor."
-        )
-        try:
-            async with httpx.AsyncClient(timeout=10.0) as client:
-                res = await client.post(
-                    "https://api.anthropic.com/v1/messages",
-                    headers={
-                        "x-api-key": ANTHROPIC_API_KEY,
-                        "anthropic-version": "2023-06-01",
-                        "content-type": "application/json",
-                    },
-                    json={
-                        "model": ANTHROPIC_MODEL,
-                        "max_tokens": 500,
-                        "messages": [{"role": "user", "content": prompt}],
-                    },
-                )
-                if res.status_code == 200:
-                    text = res.json()["content"][0]["text"]
-        except Exception:
-            pass
-
-    if not text:
-        # Fallback offline template without inventing numbers
-        model_name = "offline-template"
-        open_desc = f"{len(facts.open)} open incident(s)" if facts.open else "No open incidents"
-        black_desc = f"{len(facts.black_cameras)} camera(s) black" if facts.black_cameras else "All cameras operational"
-        text = (
-            f"Shift Handover Brief ({facts.shift_start[:16]} to {facts.now[:16]}):\n"
-            f"Pushes used: {facts.pushes} of {facts.budget} budget. "
-            f"Actions: {facts.confirmed} confirmed, {facts.dismissed} dismissed.\n"
-            f"Status: {open_desc}. Hardware: {black_desc}.\n"
-            f"Patrol coverage: {facts.patrol_today or 'Standard standing posts active'}."
-        )
-
-    return HandoverBrief(
-        text=text,
-        model=model_name,
-        generated_at=now_iso,
-    )

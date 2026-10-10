@@ -15,7 +15,7 @@ services:
       - key: SUPABASE_KEY
         sync: false
       - key: ANTHROPIC_API_KEY
-        sync: false
+        sync: false           # set manually; without it /handover and /agent fall back
       - key: ANTHROPIC_MODEL
         value: "claude-sonnet-5-5"
       - key: OPENAI_API_KEY

@@ -18,6 +18,7 @@ from api.routers import (
     auth,
     clips,
     events,
+    handover,
     hotspots,
     knowledge,
     notifications,
@@ -54,6 +55,7 @@ app.include_router(events.router)
 app.include_router(hotspots.router)
 app.include_router(plan.router)
 app.include_router(proof.router)
+app.include_router(handover.router)
 
 # ── Advanced Routers (SHOULD & CUT Items) ─────────────────────────────────────
 
