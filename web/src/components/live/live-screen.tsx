@@ -214,6 +214,7 @@ export function LiveScreen() {
         site={site}
         active={active}
         selectedId={current?.incident_id ?? null}
+        onScreenCam={currentCam?.camera_id ?? null}
         pulsingCams={pulsingCams}
         now={now}
       />

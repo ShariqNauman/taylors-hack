@@ -1,5 +1,5 @@
 {
-  "_note": "Cameras for edge/run_edge.sh all and run_edge.bat all. The live webcam is the only camera that posts to the API. Recordings are sample CCTV clips (not filmed on campus). Checked with the v4 ensemble on 10 Oct (60 s each): clip 5 tense max 0.60, clip 3 calm max 0.39. Not used: clip 2 (tense 80% of the time, max 0.68, above the v4 alarm line 0.658); clip 1 (restaurant, reached FIGHT); clip 4 (umbrellas, false FIGHT); clip 6 (shows a real kick).",
+  "_note": "Cameras for edge/run_edge.sh all and run_edge.bat all. The live webcam is the only camera that posts to the API. Recordings are sample CCTV clips (not filmed on campus). Checked with the v5 model on 10 Oct (45-60 s each): clip 5 max 0.41, clip 2 max 0.48, clip 3 max 0.20, all calm. Not used: clip 1 (restaurant) and clip 4 (umbrellas) reach FIGHT under v5; clip 6 shows a real kick.",
   "live": {
     "camera": "0",
     "camera_id": "CAM-AU-01",
@@ -18,6 +18,15 @@
       "zone_risk": 0.8,
       "staff": "Guard B",
       "port": 8766
+    },
+    {
+      "file": "edge/recordings/clip2.mp4",
+      "camera_id": "CAM-HC-01",
+      "location": "U Residence, corridor L3",
+      "zone": "hostel_corridor",
+      "zone_risk": 1.0,
+      "staff": "Guard C",
+      "port": 8768
     },
     {
       "file": "edge/recordings/clip3.mp4",
