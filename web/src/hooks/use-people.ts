@@ -14,7 +14,7 @@ const fetchSeed = (u: string) => fetch(u).then((r) => r.json() as Promise<Seed>)
 /** The team with pictures and names, and who is nearest right now. Shares SWR keys with the screens. */
 export function usePeople(now: number) {
   const { data: site } = useSWR("site", getSite, { refreshInterval: 10_000 });
-  const { data: plan } = useSWR("plan", getPatrolPlan, { refreshInterval: 5_000 });
+  const { data: plan } = useSWR("plan", getPatrolPlan, { refreshInterval: 2_000 });
   const { data: cameras } = useSWR("cameras", getCameras, { refreshInterval: 10_000 });
   const { data: seed } = useSWR(SEED_URL, fetchSeed, { revalidateOnFocus: false });
   const people = useMemo(() => team(site?.staff), [site]);

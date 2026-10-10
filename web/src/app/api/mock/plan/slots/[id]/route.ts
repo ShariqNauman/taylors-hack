@@ -18,8 +18,12 @@ export async function PATCH(
     patch.status = body.status;
   if ("assigned_to" in body) patch.assigned_to = body.assigned_to ?? null;
   if (typeof body.seen_at === "string") patch.seen_at = body.seen_at;
+  // Edit (Plan drawer)
+  for (const k of ["days", "hours", "location", "zone_type", "tip"] as const)
+    if (k in body) (patch as Record<string, unknown>)[k] = body[k] ?? null;
+  if ("geo" in body) patch.geo = body.geo ?? null;
   if (!Object.keys(patch).length)
-    return NextResponse.json({ detail: "Send status, assigned_to or seen_at." }, { status: 422 });
+    return NextResponse.json({ detail: "Send status, assigned_to, seen_at or an edit (days, hours, location, tip)." }, { status: 422 });
   const update = slotUpdate(current, patch, new Date().toISOString());
   await updateStore((s) => (s.slots[id] = { ...s.slots[id], ...update }));
   return NextResponse.json({ ...current, ...update });

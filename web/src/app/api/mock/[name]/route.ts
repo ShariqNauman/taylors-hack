@@ -38,6 +38,20 @@ function rebase(name: string, data: unknown): unknown {
   // Stable within a 15-minute bucket, so open incidents keep a fixed start time between polls.
   const anchor = Math.floor(now / BUCKET) * BUCKET;
   const shift = anchor - MOCK_NOW;
+  if (name === "plan" && data && typeof data === "object") {
+    // The 06:00 check happened this morning (or yesterday, before 06:00).
+    const myt = now + 8 * 3_600_000;
+    let check = Math.floor(myt / DAY) * DAY + 6 * 3_600_000 - 8 * 3_600_000;
+    if (check > now) check -= DAY;
+    const plan = data as { last_check?: string; slots?: Json[] };
+    return {
+      ...plan,
+      last_check: toMyt(check),
+      slots: (plan.slots ?? []).map((sl) =>
+        sl.status === "suggested" ? { ...sl, since: toMyt(check) } : sl,
+      ),
+    };
+  }
   if (name === "cameras" && Array.isArray(data)) {
     return data.map((c: Json) =>
       c.black_since

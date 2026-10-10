@@ -9,6 +9,7 @@ import type {
   Proof,
   PatrolSlot,
   Site,
+  SlotCreate,
   SlotPatch,
   StatusPatch,
 } from "./types";
@@ -211,6 +212,9 @@ async function planWrite(
 /** PATCH /plan/slots/:id: accept / end a post ({status}), pick a guard ({assigned_to}), or {seen_at}. */
 export const patchSlot = (id: string, patch: SlotPatch) =>
   planWrite(`/plan/slots/${encodeURIComponent(id)}`, "PATCH", patch);
+
+/** POST /plan/slots: "+ Add a post" (source "manual"). */
+export const createSlot = (body: SlotCreate) => planWrite("/plan/slots", "POST", body);
 
 /** POST /plan/slots/:id/checkins: the guard is at the post. */
 export const postCheckin = (id: string, staff: string) =>

@@ -8,7 +8,7 @@ import {
   daysLabel,
   fit,
   hm,
-  onShift,
+  onDutyNow,
   type Person,
   slotKey,
   suggestPerson,
@@ -25,7 +25,7 @@ export function TeamStrip({ people, now }: { people: Person[]; now: number }) {
   return (
     <ul className="m-0 flex list-none flex-wrap gap-2 p-0" aria-label="The team">
       {people.map((p) => {
-        const on = onShift(p, now);
+        const on = onDutyNow(p, now);
         return (
           <li key={p.id} className="flex items-center gap-2 rounded-full border border-line bg-white py-1.5 pr-3 pl-1.5">
             <Avatar person={p} size={36} />
@@ -50,6 +50,7 @@ export function PostRow({
   onSelect,
   onAssign,
   onEnd,
+  onEdit,
   busy,
 }: {
   post: RosterPost;
@@ -59,13 +60,15 @@ export function PostRow({
   onSelect: () => void;
   onAssign: (who: string | null) => void;
   onEnd: () => void;
+  /** Opens the Edit drawer. */
+  onEdit?: () => void;
   busy: boolean;
 }) {
   const { slot, rank } = post;
   const [choosing, setChoosing] = useState(false);
   const g = people.find((p) => p.id === slot.assigned_to) ?? null;
   const sug = g ? null : suggestPerson(people, slot, allActive);
-  const since = slot.since ? `standing post since ${dayDate(slot.since)}` : "standing post";
+  const since = slot.source === "manual" ? `added by you${slot.since ? ` · ${dayDate(slot.since)}` : ""}` : slot.since ? `standing post since ${dayDate(slot.since)}` : "standing post";
   const pick = (who: string | null) => {
     setChoosing(false);
     onAssign(who);
@@ -81,7 +84,8 @@ export function PostRow({
         selected && "outline outline-2 outline-offset-2 outline-signal",
       )}
     >
-      <button type="button" onClick={onSelect} aria-pressed={selected} className="flex items-start gap-3 text-left">
+      <div className="flex items-start gap-2">
+      <button type="button" onClick={onSelect} aria-pressed={selected} className="flex flex-1 items-start gap-3 text-left">
         <span className="ee-display inline-flex size-[38px] flex-none items-center justify-center rounded-full bg-signal text-[22px] text-white">
           {rank}
         </span>
@@ -92,6 +96,12 @@ export function PostRow({
           </span>
         </span>
       </button>
+        {onEdit && (
+          <button type="button" onClick={onEdit} disabled={busy} className="min-h-10 flex-none rounded-[2px] border border-line-strong bg-white px-3 text-[14px] font-bold">
+            Edit
+          </button>
+        )}
+      </div>
 
       {!choosing && g && (
         <div className="flex flex-wrap items-center gap-2.5">

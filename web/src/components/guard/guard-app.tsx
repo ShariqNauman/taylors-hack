@@ -28,8 +28,10 @@ import {
   myt,
   onShift,
   type Person,
+  postOnNow,
   rollingWeek,
   slotDays,
+  slotSpan,
   startHour,
   team,
 } from "@/lib/posts";
@@ -381,7 +383,7 @@ export function GuardApp() {
     const label = OUTCOMES.find((o) => o.id === flow.outcome)?.label ?? "";
     const ackS = secs(live.pushed_at, live.acked_at);
     const thereS = secs(live.acked_at, live.arrived_at);
-    const myPostNow = mine.find((s) => slotDays(s.days).includes(myt(now).wd) && startHour(s.hours) === myt(now).hour);
+    const myPostNow = mine.find((s) => postOnNow(s, now));
     return (
       <Frame header={header}>
         <div className="flex flex-1 flex-col gap-3.5 px-4 py-[22px]">
@@ -408,7 +410,7 @@ export function GuardApp() {
             }}
             className="mt-auto min-h-16 rounded-[4px] bg-ink text-[20px] font-extrabold text-white"
           >
-            {myPostNow ? `Back to my post · until ${hh(startHour(myPostNow.hours) + 1)}` : "Back to today"}
+            {myPostNow ? `Back to my post · until ${hh(slotSpan(myPostNow.hours)[1])}` : "Back to today"}
           </button>
         </div>
       </Frame>
@@ -541,7 +543,7 @@ function TodayTab({ person, mine, posts, now, onSeen, onCheckIn }: { person: Per
   const unseen = mine.filter((s) => !s.seen_at);
   const today = mine.filter((s) => slotDays(s.days).includes(n.wd)).sort((a, b) => startHour(a.hours) - startHour(b.hours));
   // The post running now, else the next one today, else the next day with one.
-  const current = today.find((s) => startHour(s.hours) === n.hour) ?? today.find((s) => startHour(s.hours) > n.hour) ?? null;
+  const current = today.find((s) => postOnNow(s, now)) ?? today.find((s) => startHour(s.hours) > n.hour) ?? null;
   const later = !current
     ? rollingWeek(now).slice(1).flatMap((d) => mine.filter((s) => slotDays(s.days).includes(d.wd)).map((s) => ({ s, d }))).sort((a, b) => a.d.i - b.d.i || startHour(a.s.hours) - startHour(b.s.hours))[0]
     : null;
@@ -554,9 +556,19 @@ function TodayTab({ person, mine, posts, now, onSeen, onCheckIn }: { person: Per
     <div className="flex flex-col gap-3 px-4 py-3.5">
       {unseen.map((s) => (
         <div key={s.id} className="flex flex-col gap-2 rounded-[4px] border-2 border-signal bg-signal-tint p-3.5">
-          <Kicker blue>NEW FROM YOUR SUPERVISOR{s.since ? ` · ${dayDate(s.since).toUpperCase()}` : ""}</Kicker>
-          <span className="text-[18px] leading-[1.3] font-extrabold">You have a standing post: {s.location}, {daysLabel(s.days)}, {s.hours}.</span>
-          <span className="text-[14px] text-ink-2">It stays in your schedule until your supervisor ends it.</span>
+          {s.changed_at ? (
+            <>
+              <Kicker blue>CHANGED BY YOUR SUPERVISOR · {dayDate(s.changed_at).toUpperCase()}, {hm(s.changed_at)}</Kicker>
+              <span className="text-[18px] leading-[1.3] font-extrabold">Your post is now: {s.location}, {daysLabel(s.days)}, {s.hours}.</span>
+              {s.tip && <span className="text-[14px] text-ink-2">{s.tip}</span>}
+            </>
+          ) : (
+            <>
+              <Kicker blue>NEW FROM YOUR SUPERVISOR{s.since ? ` · ${dayDate(s.since).toUpperCase()}` : ""}</Kicker>
+              <span className="text-[18px] leading-[1.3] font-extrabold">You have a standing post: {s.location}, {daysLabel(s.days)}, {s.hours}.</span>
+              <span className="text-[14px] text-ink-2">It stays in your schedule until your supervisor ends it.</span>
+            </>
+          )}
           <button type="button" onClick={() => onSeen(s)} className="min-h-[52px] rounded-[4px] bg-signal text-[18px] font-extrabold text-white">Got it</button>
         </div>
       ))}
@@ -576,8 +588,8 @@ function TodayTab({ person, mine, posts, now, onSeen, onCheckIn }: { person: Per
           <Kicker blue>AT YOUR POST · ✓ CHECKED IN {hm(checkin.at)}</Kicker>
           <span className="ee-display text-[34px] leading-none">{current.location}</span>
           <span className="text-[18px] font-extrabold">
-            Until {hh(startHour(current.hours) + 1)}
-            {startHour(current.hours) === n.hour ? ` · ${60 - n.minute} min left` : ""}
+            Until {hh(slotSpan(current.hours)[1])}
+            {postOnNow(current, now) ? ` · ${slotSpan(current.hours)[1] * 60 - (n.hour * 60 + n.minute)} min left` : ""}
           </span>
           <span className="text-[14px] leading-[1.45] text-ink-2">The desk can see you&rsquo;re here. If anything starts nearby, you get the alert first.</span>
         </div>
@@ -594,7 +606,7 @@ function TodayTab({ person, mine, posts, now, onSeen, onCheckIn }: { person: Per
         {(working
           ? [
               { t: person.from, text: n.hour >= person.from ? "Shift started" : "Shift starts", strong: false },
-              ...today.map((s) => ({ t: startHour(s.hours), text: `Post: ${s.location}, until ${hh(startHour(s.hours) + 1)}`, strong: true })),
+              ...today.map((s) => ({ t: startHour(s.hours), text: `Post: ${s.location}, until ${hh(slotSpan(s.hours)[1])}`, strong: true })),
               { t: person.to, text: "Shift ends", strong: false },
             ]
           : [{ t: -1, text: "Day off. Alerts still come while you're on duty.", strong: false }]

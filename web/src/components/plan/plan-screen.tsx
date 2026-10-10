@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import useSWR, { useSWRConfig } from "swr";
-import { getCameras, getEvents, getPatrolPlan, getSite, patchSlot, type SavedWhere } from "@/lib/api";
+import { createSlot, getCameras, getEvents, getPatrolPlan, getSite, patchSlot, type SavedWhere } from "@/lib/api";
 import { cameraKind } from "@/lib/camera-meta";
 import {
   activePosts,
@@ -23,12 +23,13 @@ import {
   startHour,
   team,
 } from "@/lib/posts";
-import type { PatrolSlot, SlotPatch } from "@/lib/types";
+import type { GeoPoint, PatrolSlot, SlotPatch } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { PageShell } from "@/components/chrome/page-shell";
 import { Campus3D } from "@/components/campus3d";
 import type { PostView } from "@/components/campus3d/types";
 import { PostMap } from "./post-map";
+import { PostDrawer, type PostDraft } from "./post-drawer";
 import { PostRow, type RosterPost, TeamStrip } from "./post-roster";
 import { PostStats } from "./post-stats";
 import { PostTimetable } from "./post-timetable";
@@ -87,6 +88,14 @@ export function PlanScreen() {
   const [note, setNote] = useState<string | null>(null);
   const [saved, setSaved] = useState<SavedWhere | null>(null);
   const [kept, setKept] = useState<string[]>([]);
+  const [drawer, setDrawer] = useState<{ open: boolean; slot: PatrolSlot | null }>({ open: false, slot: null });
+  // The map can hand a point to "+ Add a post" (onPickPoint): call pickPoint(geo).
+  const [pickedPoint, setPickedPoint] = useState<GeoPoint | null>(null);
+  const pickPoint = (g: GeoPoint) => {
+    setPickedPoint(g);
+    setDrawer({ open: true, slot: null });
+  };
+  void pickPoint;
 
   const people = useMemo(() => team(site?.staff), [site]);
   const slots = useMemo(() => plan?.slots ?? [], [plan]);
@@ -111,7 +120,28 @@ export function PlanScreen() {
     }
   };
 
+  const saveDraft = async (d: PostDraft): Promise<boolean> => {
+    const g = people.find((x) => x.id === d.assigned_to);
+    try {
+      if (drawer.slot?.id) {
+        const r = await patchSlot(drawer.slot.id, d);
+        setSaved(r.saved);
+        const rank = roster.find((x) => x.slot.id === drawer.slot?.id)?.rank;
+        setNote(`Post ${rank ?? ""} changed: ${d.location}, ${daysLabel(d.days, " and ")} ${d.hours}.${d.assigned_to ? ` ${g?.name ?? d.assigned_to}'s app shows the change.` : ""}`);
+      } else {
+        const r = await createSlot({ ...d, source: "manual" });
+        setSaved(r.saved);
+        setNote(`Added by you: ${d.location}, ${daysLabel(d.days, " and ")} ${d.hours}${d.assigned_to ? `, sent to ${g?.name ?? d.assigned_to}'s app` : ". Pick who goes"}.`);
+      }
+      await mutate("plan");
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
   const geoFor = (s: PatrolSlot) =>
+    s.geo ??
     seed?.patrol_posts?.find((p) => p.location === s.location)?.geo ??
     cameras?.find((c) => c.location === s.location)?.geo ??
     null;
@@ -152,6 +182,7 @@ export function PlanScreen() {
 
   const n = myt(now);
   const checkedToday = myt(checkAt).key === n.key;
+  const checkedYesterday = myt(checkAt).key === myt(now - DAY_MS).key;
   const nextCheck = n.hour < 6 ? "today at 06:00" : "tomorrow at 06:00";
   const next = nextPost(active, now);
   const nextWho = next ? people.find((p) => p.id === next.slot.assigned_to)?.name ?? "nobody yet" : "";
@@ -170,7 +201,7 @@ export function PlanScreen() {
     <PageShell>
       <div className="flex max-w-[1000px] flex-col gap-2">
         <span className="ee-label text-[12px]">
-          PATROL PLAN · CHECKED {checkedToday ? `TODAY, ${dayDate(checkAt).toUpperCase()}` : dayDate(checkAt).toUpperCase()}, {hh(myt(checkAt).hour)}
+          PATROL PLAN · CHECKED {checkedToday ? `TODAY, ${dayDate(checkAt).toUpperCase()}` : checkedYesterday ? `YESTERDAY, ${dayDate(checkAt).toUpperCase()}` : dayDate(checkAt).toUpperCase()}, {hh(myt(checkAt).hour)}
         </span>
         <h1 className="ee-display text-[48px] leading-[0.95] sm:text-[58px]">Guard posts</h1>
         <p className="text-[19px] leading-normal text-ink-2">
@@ -287,7 +318,12 @@ export function PlanScreen() {
         </section>
 
         <section aria-label="Who" className="flex min-w-0 flex-[1_1_560px] flex-col gap-3 rounded-[2px] border border-line bg-white p-4">
-          <SectionHead n={2} title="Who is going?" />
+          <div className="flex flex-wrap items-center justify-between gap-2.5">
+            <SectionHead n={2} title="Who is going?" />
+            <button type="button" onClick={() => setDrawer({ open: true, slot: null })} className="min-h-11 rounded-[2px] bg-ink px-4 text-[15px] font-extrabold text-white">
+              + Add a post
+            </button>
+          </div>
           <TeamStrip people={people} now={now} />
           <p className="text-[15px] text-ink-2">Pick a guard and the post goes straight to the EarlyEye app on their phone. You&rsquo;ll see when they&rsquo;ve read it.</p>
           {roster.length === 0 && <p className="text-[15px]">No standing posts. Accept a suggestion to start one.</p>}
@@ -305,6 +341,7 @@ export function PlanScreen() {
                 write(p.slot.id, { assigned_to: who }, who ? `Post ${p.rank} sent to ${g?.name ?? who}'s app.` : `Post ${p.rank} taken off the app. Nobody is going.`);
               }}
               onEnd={() => write(p.slot.id, { status: "ended" }, `Post ${p.rank} ended. EarlyEye will suggest it again if trouble comes back.`)}
+              onEdit={() => setDrawer({ open: true, slot: p.slot })}
             />
           ))}
           {black.map((c) => {
@@ -331,6 +368,21 @@ export function PlanScreen() {
       </section>
 
       <PostStats posts={roster} events={events ?? []} end={checkAt} assumption={plan.assumption || ASSUMPTION} />
+
+      <PostDrawer
+        open={drawer.open}
+        onOpenChange={(o) => {
+          setDrawer((d) => ({ ...d, open: o }));
+          if (!o) setPickedPoint(null);
+        }}
+        slot={drawer.slot}
+        cameras={cameras ?? []}
+        buildingsUrl={site.campus?.buildings ?? "/campus/taylors-lakeside-campus.geojson"}
+        people={people}
+        allActive={active}
+        pickedPoint={pickedPoint}
+        onSave={saveDraft}
+      />
     </PageShell>
   );
 }

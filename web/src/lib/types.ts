@@ -154,6 +154,7 @@ export interface PatrolSlot {
   checkins?: Checkin[];
   geo?: GeoPoint | null; // manual posts: the point picked on the map
   source?: SlotSource; // "manual" = added by the supervisor
+  changed_at?: string | null; // last edit of place / days / hours; the guard app says "Changed by your supervisor"
   location: string;
   days: string; // e.g. "Mon–Thu"
   hours: string; // e.g. "13:00–14:00"
