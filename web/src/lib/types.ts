@@ -236,7 +236,8 @@ export interface Proof {
 
 export type Outcome = "sorted" | "hurt" | "backup" | "nothing";
 export interface CameraPatch {
-  zone_type: string;
+  zone_type?: string;
+  sensitivity?: CameraSensitivity; // Track record: "Make this camera stricter / more sensitive"
 }
 
 export interface StatusPatch {

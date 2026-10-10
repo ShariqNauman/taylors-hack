@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useSyncExternalStore } from "react";
+import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import useSWR from "swr";
 import {
   getCameras,
@@ -10,7 +10,7 @@ import {
   patchCamera,
   usingMock,
 } from "@/lib/api";
-import type { Camera, Event, Proof } from "@/lib/types";
+import type { Camera, CameraSensitivity, Event, Proof } from "@/lib/types";
 import { normaliseStatus } from "@/lib/format";
 import {
   MODEL_CARD,
@@ -97,6 +97,39 @@ function writeZone(cameraId: string, zone: string | null) {
   } catch {}
   zoneListeners.forEach((l) => l());
 }
+
+// ── Sensitivity: PATCH /cameras/:id {sensitivity}, else kept in this browser ──
+
+const SENS_KEY = "earlyeye.camera-sensitivity.v1";
+type SensSaved = Record<string, { sensitivity: CameraSensitivity; at: string; where: "api" | "this-computer" }>;
+const sensListeners = new Set<() => void>();
+const readSens = () => {
+  try {
+    return localStorage.getItem(SENS_KEY) ?? "{}";
+  } catch {
+    return "{}";
+  }
+};
+function subscribeSens(cb: () => void) {
+  sensListeners.add(cb);
+  return () => sensListeners.delete(cb);
+}
+function writeSens(cameraId: string, v: SensSaved[string] | null) {
+  let all: SensSaved = {};
+  try {
+    all = JSON.parse(readSens());
+  } catch {}
+  if (v) all[cameraId] = v;
+  else delete all[cameraId];
+  try {
+    localStorage.setItem(SENS_KEY, JSON.stringify(all));
+  } catch {}
+  sensListeners.forEach((l) => l());
+}
+
+const SUGGEST_DAYS = 14;
+/** The guard said "Nothing there", or the desk said false alarm. */
+const saidNothing = (e: Event) => isFalse(e) || e.outcome === "nothing";
 
 // ── Small pieces ──
 
@@ -245,7 +278,9 @@ export function ProofScreen() {
   const { data: proof } = useSWR("proof", getProof, {
     revalidateOnFocus: false,
   });
-  const { data: events } = useSWR(["events", "full"], () => getEvents(), {
+  // 28 days, not the latest 50: every count on this page covers 4 weeks.
+  const [since28] = useState(() => new Date(Date.now() - WINDOW_DAYS * DAY_MS).toISOString());
+  const { data: events } = useSWR(["events", "28d", since28], () => getEvents(since28), {
     refreshInterval: 10_000,
   });
   const { data: cameras, mutate: mutateCameras } = useSWR(
@@ -269,7 +304,20 @@ export function ProofScreen() {
   const [share, setShare] = useState(false);
   const [copied, setCopied] = useState<string | null>(null);
   const [tech, setTech] = useState(false);
-  const [now] = useState(() => Date.now());
+  // Ticks, so a decision made on Live a moment ago counts here without a reload.
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    const t = setInterval(() => setNow(Date.now()), 15_000);
+    return () => clearInterval(t);
+  }, []);
+  const sensRaw = useSyncExternalStore(subscribeSens, readSens, () => "{}");
+  const sensSaved = useMemo(() => {
+    try {
+      return JSON.parse(sensRaw) as SensSaved;
+    } catch {
+      return {} as SensSaved;
+    }
+  }, [sensRaw]);
 
   const since = now - WINDOW_DAYS * DAY_MS;
   const recent = useMemo(
@@ -316,8 +364,11 @@ export function ProofScreen() {
   const misses = recent
     .filter(isMiss)
     .sort((a, b) => Date.parse(b.start_time) - Date.parse(a.start_time));
-  const testCaught = MODEL_REPORT.holdout.caught;
+  // From GET /proof (model/proof.json) when it is there.
+  const testCaught = proof?.clip_recall ?? MODEL_REPORT.holdout.caught;
+  const testClips = proof?.n_clips ?? MODEL_REPORT.holdout.clips;
   const testDots = Math.round(testCaught * 10);
+  const cctvCaught = proof?.cctv_domain?.recall;
 
   // ── 2. Where it gets confused ──
   const sportsZone =
@@ -375,6 +426,8 @@ export function ProofScreen() {
     const a = since + i * 7 * DAY_MS;
     const b = a + 7 * DAY_MS;
     return {
+      a,
+      b,
       label: i === 3 ? "Last 7 days" : `Week of ${dm(a)}`,
       n: recent.filter(
         (e) =>
@@ -391,6 +444,51 @@ export function ProofScreen() {
       : weeks[3].n > weeks[0].n
         ? `Up from ${weeks[0].n} to ${weeks[3].n}.`
         : `Level at ${weeks[3].n} a week.`;
+
+  // ── What EarlyEye suggests changing (per camera, last 14 days) ──
+  const since14 = now - SUGGEST_DAYS * DAY_MS;
+  const suggestions = useMemo(() => {
+    const out: {
+      cam: Camera;
+      kind: "strict" | "sensitive" | "sports";
+      why: string;
+    }[] = [];
+    for (const cam of cameras ?? []) {
+      const here = recent.filter((e) => e.camera_id === cam.camera_id && Date.parse(e.start_time) >= since14);
+      const alerts = here.filter((e) => isAlarm(e) || e.outcome === "nothing");
+      const nothing = alerts.filter(saidNothing).length;
+      const realAlarms = alerts.filter(isReal).length;
+      const missed = here.filter(isMiss);
+      if (alerts.length >= 5 && nothing / alerts.length >= 0.7) {
+        const play = alerts.filter((e) => saidNothing(e) && e.type === "play").length;
+        out.push({
+          cam,
+          kind: "strict",
+          why: `${nothing} of ${alerts.length} alerts in 14 days were nothing (desk or guard)${play >= nothing / 2 ? ", mostly games and rough play" : ""}.`,
+        });
+        if (play >= nothing / 2 && camZone(cam) !== sportsZone)
+          out.push({ cam, kind: "sports", why: "Sport looks like fighting here. A sports zone counts as lower risk; real fights still sound the alarm." });
+      } else if (missed.length || (realAlarms >= 3 && nothing === 0)) {
+        out.push({
+          cam,
+          kind: "sensitive",
+          why: missed.length
+            ? `The desk reported ${plural(missed.length, "fight")} here that never reached an alarm.`
+            : `${realAlarms} real alarms in 14 days and no false ones: it can afford to warn earlier.`,
+        });
+      }
+    }
+    return out;
+    // camZone reads localZones
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cameras, recent, since14, localZones, sportsZone]);
+  const answers = recent.filter((e) => isReal(e) || isFalse(e) || e.outcome === "nothing").length;
+  const applySens = async (cam: Camera, sensitivity: CameraSensitivity) => {
+    const ok = await patchCamera(cam.camera_id, { sensitivity });
+    writeSens(cam.camera_id, { sensitivity, at: new Date().toISOString(), where: ok ? "api" : "this-computer" });
+    if (ok) mutateCameras();
+  };
+  const appliedMarks = Object.values(sensSaved).map((v) => Date.parse(v.at));
 
   // ── Summary for management ──
   const shareText = [
@@ -580,10 +678,15 @@ export function ProofScreen() {
                 <span className="font-extrabold">
                   about {testDots} of every 10 fights
                 </span>{" "}
-                ({(testCaught * 100).toFixed(1)}% of{" "}
-                {MODEL_REPORT.holdout.clips} held-out clips). These are videos
-                it never trained on.
+                ({(testCaught * 100).toFixed(1)}% of {testClips} held-out
+                clips). These are videos it never trained on.
               </span>
+              {cctvCaught != null && (
+                <span className="text-[15px] leading-[1.45]">
+                  On a high CCTV angle it has never seen:{" "}
+                  <span className="font-extrabold">about {Math.round(cctvCaught * 10)} in 10</span>.
+                </span>
+              )}
             </div>
             <div className="flex flex-[1_1_240px] flex-col gap-2">
               <span className="text-[15px] font-extrabold">On your campus</span>
@@ -730,6 +833,59 @@ export function ProofScreen() {
         </section>
       </div>
 
+      {/* ── What EarlyEye suggests changing ── */}
+      <section aria-labelledby="suggest-h" className="flex flex-col gap-3 rounded-[2px] border-2 border-signal bg-white p-4">
+        <div className="flex flex-col gap-1">
+          <span className="font-mono text-[12px] font-bold tracking-[0.08em] text-signal-ink">FROM THE LAST 14 DAYS OF DESK AND GUARD ANSWERS</span>
+          <h2 id="suggest-h" className="ee-display text-[28px] leading-none sm:text-[30px]">What EarlyEye suggests changing</h2>
+        </div>
+        {suggestions.length === 0 && (
+          <p className="text-[15px]">Nothing to change. No camera has enough answers pointing one way.</p>
+        )}
+        {suggestions.map((sg) => {
+          const saved = sensSaved[sg.cam.camera_id];
+          const current = saved?.sensitivity ?? sg.cam.sensitivity ?? "strict";
+          const isSports = camZone(sg.cam) === sportsZone;
+          const applied =
+            sg.kind === "sports" ? isSports : !!saved && saved.sensitivity === (sg.kind === "strict" ? "strict" : "sensitive");
+          const title =
+            sg.kind === "strict" ? "Make this camera stricter" : sg.kind === "sensitive" ? "More sensitive here" : "Make it a sports zone";
+          return (
+            <div key={`${sg.cam.camera_id}-${sg.kind}`} className="flex flex-wrap items-center gap-x-4 gap-y-2 rounded-[2px] border border-line px-3.5 py-3">
+              <span className="flex flex-[1_1_320px] flex-col gap-0.5">
+                <span className="text-[17px] font-extrabold">
+                  {title} · {sg.cam.location}
+                </span>
+                <span className="text-[14px] leading-[1.45] text-ink-2">{sg.why}</span>
+                {sg.kind !== "sports" && (
+                  <span className="font-mono text-[12px] text-muted-ink">
+                    NOW: {current === "strict" ? "STRICT (FEWER ALARMS)" : "SENSITIVE (EARLIER ALARMS)"}
+                  </span>
+                )}
+              </span>
+              {sg.kind === "sports" ? (
+                <button type="button" aria-pressed={isSports} onClick={() => toggleSports(sg.cam)} className={cn("min-h-11 rounded-[2px] px-4 text-[15px] font-extrabold", isSports ? "border border-signal bg-white text-signal-ink" : "bg-ink text-white")}>
+                  {isSports ? "Sports zone on · undo" : "Make it a sports zone"}
+                </button>
+              ) : applied ? (
+                <span className="flex flex-col items-end gap-0.5 text-right">
+                  <span className="text-[15px] font-extrabold text-signal-ink">Applied {wdm(Date.parse(saved!.at))}, {new Date(Date.parse(saved!.at) + MYT).toISOString().slice(11, 16)}</span>
+                  <span className="text-[12px] text-muted-ink">{saved!.where === "api" ? "Saved. The camera uses it within 10 s." : "Saved on this computer"}</span>
+                  <button type="button" onClick={() => writeSens(sg.cam.camera_id, null)} className="text-[13px] font-bold text-signal">Undo</button>
+                </span>
+              ) : (
+                <button type="button" onClick={() => applySens(sg.cam, sg.kind === "strict" ? "strict" : "sensitive")} className="min-h-11 rounded-[2px] bg-ink px-4 text-[15px] font-extrabold text-white">
+                  Apply
+                </button>
+              )}
+            </div>
+          );
+        })}
+        <p className="m-0 text-[14px] leading-[1.45] text-ink-2">
+          <span className="font-extrabold">{plural(answers, "answer")} saved as training examples (stick figures only).</span> The camera setting changes now; the model team retrains weekly.
+        </p>
+      </section>
+
       <div className="flex flex-wrap items-stretch gap-4">
         {/* ── 3. Getting better ── */}
         <section aria-labelledby="better-h" className={CARD}>
@@ -756,17 +912,25 @@ export function ProofScreen() {
             ))}
           </div>
           <div className="-mt-1.5 flex gap-3.5">
-            {weeks.map((w, i) => (
-              <span
-                key={w.label}
-                className={cn(
-                  "flex-1 text-center text-[13px] text-ink-2",
-                  i === 3 ? "font-extrabold" : "font-medium",
-                )}
-              >
-                {w.label}
-              </span>
-            ))}
+            {weeks.map((w, i) => {
+              const applied = appliedMarks.filter((t) => t >= w.a && t < w.b);
+              return (
+                <span
+                  key={w.label}
+                  className={cn(
+                    "flex flex-1 flex-col items-center text-center text-[13px] text-ink-2",
+                    i === 3 ? "font-extrabold" : "font-medium",
+                  )}
+                >
+                  {w.label}
+                  {applied.length > 0 && (
+                    <span className="mt-0.5 rounded-[1px] border border-dashed border-signal px-1 font-mono text-[11px] font-bold text-signal-ink">
+                      ◆ CHANGE APPLIED {wdm(applied[0]).toUpperCase()}
+                    </span>
+                  )}
+                </span>
+              );
+            })}
           </div>
           <span className="text-[15px] leading-[1.45]">
             <span className="font-extrabold">{trend}</span> Each Yes/No the desk
@@ -949,6 +1113,38 @@ export function ProofScreen() {
                 </div>
               ))}
             </div>
+            {proof && (
+              <div className="flex flex-col gap-2.5 rounded-[2px] border border-line bg-white p-3.5 min-[900px]:flex-row min-[900px]:items-start">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={proof.ir_check.image || "/ir-frame.jpg"}
+                  alt="A night / infrared CCTV frame, the kind a hostel corridor camera produces after dark."
+                  className="w-full max-w-[360px] rounded-[2px] border border-line-strong"
+                />
+                <div className="flex flex-col gap-2">
+                  <span className="text-[18px] font-extrabold">Night and infrared</span>
+                  {proof.ir_check.frames > 0 ? (
+                    <p className="m-0 max-w-[70ch] text-[14px] leading-normal text-ink-2">
+                      Pose found a skeleton in {proof.ir_check.skeletons_detected} of {proof.ir_check.frames} infrared frames. {proof.ir_check.note}
+                    </p>
+                  ) : (
+                    <p className="m-0 max-w-[70ch] text-[14px] leading-normal text-ink-2">
+                      This is what a hostel corridor camera gives you at 2am: infrared, grey, wide. Every number on this page comes from daylight or indoor footage.{" "}
+                      <strong>We have not run the pose model on infrared, so we do not claim it works at night.</strong>
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
+            {proof?.disclosure && (
+              <div className="flex flex-col gap-1.5 rounded-[2px] border-2 border-ink bg-white p-3.5">
+                <span className="text-[18px] font-extrabold">Full disclosure</span>
+                <p className="m-0 max-w-[110ch] text-[14px] leading-normal text-ink-2">{proof.disclosure}</p>
+                <span className="font-mono text-[11px] tracking-[0.08em] text-muted-ink">
+                  VERBATIM FROM MODEL/PROOF.JSON · WRITTEN BY THE PERSON WHO TRAINED THE MODEL
+                </span>
+              </div>
+            )}
             <span className="text-[13px] leading-normal text-muted-foreground">
               Lesson from practice: 100% on KTH clips, then zero on a live
               camera until retuned. That is why the campus numbers above come
