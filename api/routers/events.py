@@ -12,12 +12,13 @@ import random
 from datetime import datetime, timezone
 from typing import Optional
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, BackgroundTasks, HTTPException, Query
 from supabase import Client
 
 from api.db import get_supabase
-from api.models import Event, EventCreate, EventPatch, Status
+from api.models import BackupRequest, Event, EventCreate, EventPatch, Status
 from api.services import live_loop
+from api.routers.push import notify
 
 router = APIRouter(prefix="", tags=["events"])
 
@@ -87,6 +88,26 @@ def get_nearest_staff(
     return None, None
 
 
+def _staff_rows(sb: Client) -> list[dict]:
+    """Team with on-duty state (on_duty arrives with migration_plan_guard.sql; missing = on duty)."""
+    try:
+        return sb.table("staff").select("*").execute().data or []
+    except Exception:
+        return []
+
+
+def _send_backup(sb: Client, row: dict, staff_rows: list[dict], staff: str | None, why: str) -> dict | None:
+    """Create (or replace) <id>-B pushed to the next guard on duty. Returns the stored row."""
+    first = row.get("pushed_to")
+    name = staff or live_loop.choose_guard(staff_rows, None, row.get("zone_type"),
+                                           exclude=tuple(x for x in (first,) if x))
+    if not name or name == first:
+        return None
+    backup = live_loop.backup_row(row, name, datetime.now(timezone.utc).isoformat(), why)
+    data = _write(sb, backup, existing=False)
+    return data[0] if data else None
+
+
 # ── Routes ────────────────────────────────────────────────────────────────────
 
 
@@ -123,7 +144,7 @@ def _ensure_camera(sb: Client, camera_id: str, location: str, zone_type: str) ->
 
 
 @router.post("/events", response_model=Event, status_code=201)
-async def create_event(body: EventCreate):
+async def create_event(body: EventCreate, background: BackgroundTasks):
     """
     Edge -> API, every 0.5 s while level >= tense, same incident_id (contract §6).
     Upserts by incident_id. The edge never overwrites pushed_to / pushed_at / acked_at /
@@ -161,10 +182,13 @@ async def create_event(body: EventCreate):
                      .gte("pushed_at", live_loop.shift_start()).execute().data or [])
     except Exception:
         pass
-    staff_name = body.nearest_staff
+    # Only someone on duty gets the alarm (guard app: Start my shift / End my shift).
+    staff_rows = _staff_rows(supabase)
+    staff_name = live_loop.choose_guard(staff_rows, body.nearest_staff, body.zone_type)
     if not staff_name:
         _, staff_name = get_nearest_staff(supabase, body.zone_type)
-    row.update(live_loop.push_decision(row, pushes, staff_name, now_iso))
+    pushed_now = live_loop.push_decision(row, pushes, staff_name, now_iso)
+    row.update(pushed_now)
 
     if existing is None:
         _ensure_camera(supabase, body.camera_id, body.location, body.zone_type)
@@ -179,7 +203,43 @@ async def create_event(body: EventCreate):
         raise HTTPException(status_code=500, detail=f"Write failed: {exc}")
     if not data:
         raise HTTPException(status_code=500, detail="Write returned no data")
-    return Event(**data[0])
+
+    # Wake the guard's phone, even with the app closed (Web Push).
+    stored = data[0]
+    if pushed_now.get("pushed_to"):
+        background.add_task(notify, pushed_now["pushed_to"])
+
+    # No "On my way" 20 s after the push, while the edge still sees it: send the next guard once.
+    try:
+        has_backup = bool(supabase.table("events").select("incident_id")
+                          .eq("incident_id", f"{incident_id}-B").limit(1).execute().data)
+        if live_loop.escalation_due(stored, datetime.now(timezone.utc), has_backup):
+            b = _send_backup(supabase, stored, staff_rows, None,
+                             f"No answer from {stored.get('pushed_to')} in {live_loop.NO_ANSWER_S} s.")
+            if b:
+                background.add_task(notify, b.get("pushed_to"))
+    except Exception:
+        pass  # the desk still sees "No answer in 20 s" and can send someone
+    return Event(**stored)
+
+
+@router.post("/events/{incident_id}/backup", response_model=Event, status_code=201)
+async def send_backup(incident_id: str, body: BackupRequest, background: BackgroundTasks):
+    """
+    Desk: send another guard to an incident ("Need backup" from the guard's phone, or no
+    answer). Creates <id>-B pushed to `staff`, or to the next guard on duty.
+    """
+    supabase = get_supabase()
+    found = supabase.table("events").select("*").eq("incident_id", incident_id).limit(1).execute().data
+    if not found:
+        raise HTTPException(status_code=404, detail=f"Event {incident_id} not found")
+    why = "Backup requested by the first guard." if body.reason == "need_backup" else \
+        f"No answer from {found[0].get('pushed_to')}."
+    row = _send_backup(supabase, found[0], _staff_rows(supabase), body.staff, why)
+    if not row:
+        raise HTTPException(status_code=409, detail="Nobody else is on duty.")
+    background.add_task(notify, row.get("pushed_to"))
+    return Event(**row)
 
 
 @router.get("/events", response_model=list[Event])
@@ -217,7 +277,7 @@ async def list_events(since: Optional[str] = Query(default=None)):
 
 
 @router.patch("/events/{incident_id}", response_model=Event)
-async def patch_event(incident_id: str, body: EventPatch):
+async def patch_event(incident_id: str, body: EventPatch, background: BackgroundTasks):
     """
     The desk sends status (+ staff_note): confirmed / dismissed / resolved, or pushed for an
     early push. The duty phone sends acked_at ("On my way"; response = acked_at - pushed_at),
@@ -231,6 +291,19 @@ async def patch_event(incident_id: str, body: EventPatch):
     if not update_data:
         raise HTTPException(status_code=422, detail="Send status, staff_note, acked_at, arrived_at or outcome.")
     update_data["incident_id"] = incident_id
+    # Desk "Push now" (status pushed): record who and when, so the guard's phone rings.
+    if update_data.get("status") == "pushed":
+        try:
+            cur = supabase.table("events").select("*").eq("incident_id", incident_id).limit(1).execute().data
+        except Exception:
+            cur = []
+        if cur and not cur[0].get("pushed_to"):
+            name = body.pushed_to or live_loop.choose_guard(
+                _staff_rows(supabase), cur[0].get("nearest_staff"), cur[0].get("zone_type"))
+            if name:
+                update_data["pushed_to"] = name
+                update_data["pushed_at"] = body.pushed_at or datetime.now(timezone.utc).isoformat()
+                background.add_task(notify, name)
     try:
         data = _write(supabase, update_data, existing=True)
     except Exception as exc:

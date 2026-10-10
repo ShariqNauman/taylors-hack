@@ -13,7 +13,7 @@ from datetime import datetime, timedelta, timezone
 from fastapi import APIRouter, HTTPException
 
 from api.db import get_supabase
-from api.models import Camera, CameraPatch, Site, SiteStaff, StaffShift, Zone
+from api.models import Camera, CameraPatch, Site, SiteStaff, StaffDuty, StaffShift, Zone
 
 router = APIRouter(prefix="", tags=["site"])
 
@@ -88,6 +88,21 @@ def _staff(sb, site_id: str) -> list[SiteStaff]:
             on_duty=r.get("on_duty"),
         ))
     return out
+
+
+# ── PATCH /staff/{name} ──────────────────────────────────────────────────────
+
+@router.patch("/staff/{name}")
+async def set_on_duty(name: str, body: StaffDuty) -> dict:
+    """Guard app: Start my shift (true) / End my shift (false). Off duty = no alarms."""
+    sb = get_supabase()
+    try:
+        rows = sb.table("staff").update({"on_duty": body.on_duty}).eq("name", name).execute().data
+    except Exception as exc:
+        raise HTTPException(status_code=503, detail=f"Run api/sql/migration_plan_guard.sql first ({exc})")
+    if not rows:
+        raise HTTPException(status_code=404, detail=f"No staff member called {name}")
+    return {"name": name, "on_duty": body.on_duty}
 
 
 # ── GET /cameras ──────────────────────────────────────────────────────────────

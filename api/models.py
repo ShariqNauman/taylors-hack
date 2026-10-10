@@ -36,6 +36,16 @@ class Level(str, Enum):
     fight = "fight"
 
 
+class BackupRequest(BaseModel):
+    """POST /events/{id}/backup. staff omitted = the next guard on duty."""
+    staff: Optional[str] = None
+    reason: str = "need_backup"   # "need_backup" | "no_answer"
+
+
+class StaffDuty(BaseModel):
+    on_duty: bool
+
+
 class Outcome(str, Enum):
     """What the guard found on arrival (guard app, "What did you find?")."""
     sorted = "sorted"
@@ -166,6 +176,8 @@ class EventPatch(BaseModel):
     arrived_at ("I'm here") and outcome + outcome_at ("What did you find?")."""
     status: Optional[Status] = None
     staff_note: Optional[str] = None
+    pushed_to: Optional[str] = None     # desk "Push now": the guard it chose (else the API picks)
+    pushed_at: Optional[str] = None
     acked_at: Optional[str] = None
     arrived_at: Optional[str] = None
     outcome: Optional[Outcome] = None
