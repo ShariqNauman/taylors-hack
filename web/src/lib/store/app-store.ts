@@ -26,8 +26,10 @@ export const useAppStore = create<AppState>((set) => ({
 }));
 
 /** On a desk-sized screen, show that guard's phone beside the desk (a push just went to them). */
-export function showPhoneBeside(call: string | null | undefined) {
-  if (!call || typeof window === "undefined" || window.innerWidth < 1100) return;
-  if (window.location.pathname.startsWith("/guard")) return;
+/** Opens the guard's phone beside the desk; returns false where it can't fit (then the caller toasts). */
+export function showPhoneBeside(call: string | null | undefined): boolean {
+  if (!call || typeof window === "undefined" || window.innerWidth < 1100) return false;
+  if (window.location.pathname.startsWith("/guard")) return false;
   useAppStore.getState().openPhone(call);
+  return true;
 }

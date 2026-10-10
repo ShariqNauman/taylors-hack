@@ -416,8 +416,8 @@ export function useLiveFeed(
           ? now - Date.parse(e.pushed_at) < FRESH_MS
           : true;
         if (fresh) {
-          pushToast(e.pushed_to, e.pushed_at ?? new Date(), e.location);
-          showPhoneBeside(e.pushed_to);
+          // The desk sees the guard's phone open by itself; the toast only where it can't fit.
+          if (!showPhoneBeside(e.pushed_to)) pushToast(e.pushed_to, e.pushed_at ?? new Date(), e.location);
         }
         // Without the API, copy the push to the shared store so the guard's phone rings.
         if (fresh && usingMock && (e.isReplay || e.isEdge)) {
@@ -471,8 +471,7 @@ export function useLiveFeed(
       const at = new Date().toISOString();
       await act(e, "pushed", { pushed_to: name, pushed_at: at });
       toasted.current.add(e.incident_id);
-      pushToast(name, at, e.location);
-      showPhoneBeside(name);
+      if (!showPhoneBeside(name)) pushToast(name, at, e.location);
       if (usingMock) {
         mirrored.current.set(e.incident_id, `${e.level}|${e.end_time}|${e.timeline?.length ?? 0}`);
         void mirrorEvent({ ...forStore(e), pushed_to: name, pushed_at: at });
@@ -499,8 +498,7 @@ export function useLiveFeed(
     async (e: LiveEvent, name: string) => {
       const at = new Date().toISOString();
       const id = `${e.incident_id}-B`;
-      pushToast(name, at, e.location);
-      showPhoneBeside(name);
+      if (!showPhoneBeside(name)) pushToast(name, at, e.location);
       if (!usingMock) {
         try {
           await sendBackup(e.incident_id, name, e.outcome === "backup" ? "need_backup" : "no_answer");
