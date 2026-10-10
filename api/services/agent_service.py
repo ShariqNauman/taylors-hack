@@ -231,7 +231,7 @@ class AgentService:
             d = disp_call.output
             sections.append(f"[DISPATCH] **Dispatch Action Executed:** Alert dispatched to **{d.get('dispatched_to')}** for incident `{d.get('incident_id')}`.")
 
-        # If Claude key is configured, synthesize an authoritative response using claude-sonnet-5
+        # If Claude key is configured, synthesize an authoritative response with ANTHROPIC_MODEL
         if ANTHROPIC_API_KEY and sections:
             try:
                 system_prompt = (

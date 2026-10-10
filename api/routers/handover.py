@@ -34,9 +34,11 @@ router = APIRouter(prefix="", tags=["handover"])
 
 MYT = ZoneInfo("Asia/Kuala_Lumpur")
 
-# The dashboard aborts at 6 s (HANDOVER_TIMEOUT_MS). Stay well inside it: a late
-# brief is worse than a templated one, because the drawer would show neither.
-CLAUDE_TIMEOUT_S = 4.5
+# Measured: a Claude round trip from Render takes ~6 s, so the 4.5 s this started
+# with fell back to the template every time. Reports already use 20-25 s here and
+# 45 s in the browser. The drawer renders the facts immediately and says "Writing
+# the brief…", so waiting costs nothing; returning the template always does.
+CLAUDE_TIMEOUT_S = 20.0
 CLAUDE_MAX_TOKENS = 300
 
 LEVEL_WORDS = {
@@ -134,13 +136,20 @@ _DIGITS = re.compile(r"\d+")
 
 def _invents_a_number(text: str, facts: HandoverFacts, draft: str) -> bool:
     """
-    True if the wording contains a run of digits that is in neither the facts nor
-    the draft. Times, counts and camera IDs are all already in one or the other,
-    so anything else is the model doing arithmetic we did not ask for — and a
-    handover with an invented figure in it is worse than no handover.
+    True if the wording contains a run of digits that does not occur anywhere in
+    the facts or the draft. Anything else is the model doing arithmetic nobody
+    asked for, and a handover with an invented figure in it is worse than no
+    handover at all.
+
+    Substring, not whole-token. The first version compared maximal runs, so the
+    allowed set for "2026-10-10T14:00:00Z" was {2026, 10, 14, 00} and did not
+    contain "0" — which rejected every honest rewording that said "0 cameras are
+    black" or "an 8-hour shift". In production that threw away a good brief on
+    every shift that had anything in it. A digit run that appears nowhere in the
+    source is still caught: "47" is not a substring of any of this.
     """
-    allowed = set(_DIGITS.findall(facts.model_dump_json())) | set(_DIGITS.findall(draft))
-    return any(n not in allowed for n in _DIGITS.findall(text))
+    source = facts.model_dump_json() + " " + draft
+    return any(n not in source for n in _DIGITS.findall(text))
 
 
 # ── The wording ──────────────────────────────────────────────────────────────

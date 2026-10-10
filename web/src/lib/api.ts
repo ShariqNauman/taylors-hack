@@ -391,7 +391,10 @@ function anySignal(signals: (AbortSignal | undefined)[]): AbortSignal {
   return ctrl.signal;
 }
 
-export const HANDOVER_TIMEOUT_MS = 6000;
+// The API gives Claude 20 s (api/routers/handover.py) and falls back to its own
+// template after that, so abort later than the server gives up — at 6 s we aborted
+// first every time and never saw the written brief at all.
+export const HANDOVER_TIMEOUT_MS = 25_000;
 
 /**
  * POST /handover: words the already-computed shift facts as a short brief.
