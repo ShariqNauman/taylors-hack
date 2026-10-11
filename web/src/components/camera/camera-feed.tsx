@@ -27,6 +27,7 @@ export function CameraFeed({
   trail,
   now = new Date(),
   onStreamState,
+  controls,
 }: {
   camera?: Camera;
   frame?: PoseFrame | null;
