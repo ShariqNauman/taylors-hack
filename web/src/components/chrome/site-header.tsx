@@ -3,13 +3,14 @@
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { useSyncExternalStore } from "react";
+import { useState, useSyncExternalStore } from "react";
 import { usingMock } from "@/lib/api";
 import { cameraKind } from "@/lib/camera-meta";
 import type { Camera } from "@/lib/types";
 import { useAppStore } from "@/lib/store/app-store";
 import { Logo } from "./logo";
 import { AlarmBanner } from "@/components/alarm/alarm-banner";
+import { DemoVideoModal } from "@/components/demo-video-modal";
 
 const NAV = [
   { href: "/", label: "Live" },
@@ -32,6 +33,7 @@ export function SiteHeader({
   cameras?: Camera[];
   children?: React.ReactNode;
 }) {
+  const [videoModalOpen, setVideoModalOpen] = useState(false);
   // Only what needs attention: cameras that are off.
   const off = (cameras ?? []).filter((c) => cameraKind(c) === "black");
   const pathname = usePathname();
@@ -79,6 +81,17 @@ export function SiteHeader({
               </Link>
             )}
             {children}
+            <button
+              type="button"
+              onClick={() => setVideoModalOpen(true)}
+              className="inline-flex min-h-7 items-center gap-1.5 rounded-[1px] bg-[#E11D48] px-2.5 font-mono text-[11px] font-extrabold uppercase tracking-[0.06em] text-white shadow-sm transition hover:bg-[#BE123C]"
+              title="Watch physical violence prediction demo video on real surveillance footage"
+            >
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M8 5v14l11-7z" />
+              </svg>
+              Watch ML Demo
+            </button>
             <span
               className={cn(
                 "inline-flex min-h-7 items-center rounded-[1px] border px-2 font-mono text-[11px] font-bold tracking-[0.06em]",
@@ -128,6 +141,7 @@ export function SiteHeader({
         </div>
       </header>
       <AlarmBanner />
+      <DemoVideoModal open={videoModalOpen} onClose={() => setVideoModalOpen(false)} />
     </>
   );
 }

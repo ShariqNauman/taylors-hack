@@ -28,6 +28,8 @@ live_features*.csv
 edge/clips/
 edge/recordings/
 *.mp4
+!docs/voilence-prediction-demo.mp4
+!web/public/demo-prediction.mp4
 
 # Environment Variables & Secrets
 .env

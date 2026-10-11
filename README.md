@@ -4,6 +4,23 @@
 
 Dormathon 2026 · Taylor's University · Track 1, Predictive Model — *Predict Early, Decide Better*
 
+---
+
+### 🎥 Physical Violence Prediction Demo
+
+> **Watch EarlyEye's 17-keypoint temporal violence detector running on benchmark surveillance footage:**
+
+<div align="center">
+  <video src="docs/voilence-prediction-demo.mp4" controls="controls" width="100%" poster="docs/demo-poster.jpg" style="max-height: 460px; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.2);">
+    Your browser does not support the video tag.
+  </video>
+  <p>
+    📹 <strong><a href="docs/voilence-prediction-demo.mp4">▶ Click to Open / Download the full Violence Prediction Demo Video (docs/voilence-prediction-demo.mp4)</a></strong>
+  </p>
+</div>
+
+---
+
 | | |
 |---|---|
 | **Live dashboard** | `TODO_VERCEL_URL` (Kayla fills this in at submission) |

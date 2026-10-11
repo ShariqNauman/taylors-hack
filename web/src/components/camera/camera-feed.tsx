@@ -41,6 +41,7 @@ export function CameraFeed({
   trail?: [number, number][];
   now?: Date;
   onStreamState?: (streaming: boolean) => void;
+  controls?: boolean;
 }) {
   const view = useAppStore((s) => s.view);
   const [failed, setFailed] = useState<string | null>(null);
@@ -70,6 +71,71 @@ export function CameraFeed({
             {hud.topLeft}
           </span>
         )}
+      </div>
+    );
+  }
+
+  // The first main camera (Grand Hall / live source) plays the violence prediction video for judges
+  const isMainCamera =
+    !black &&
+    (camera?.camera_id === "CAM-AU-01" ||
+      camera?.source === "live" ||
+      !!camera?.video_url);
+
+  // Check if explicit webcam mode is requested via ?webcam=1
+  const forceWebcam =
+    typeof window !== "undefined" &&
+    new URLSearchParams(window.location.search).get("webcam") === "1";
+
+  if (useStream && forceWebcam) {
+    return (
+      <div className="relative aspect-[16/9] w-full overflow-hidden bg-frame">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={streamUrl}
+          alt={`Live view of ${camera?.location ?? "camera"} with skeletons drawn by the edge laptop`}
+          className="h-full w-full object-cover"
+          onLoad={() => onStreamState?.(true)}
+          onError={() => {
+            setFailed(streamUrl);
+            onStreamState?.(false);
+          }}
+        />
+        <SkeletonView
+          className="pointer-events-none absolute inset-0 h-full"
+          background="none"
+          frame={null}
+          level={level}
+          showBox={false}
+          hud={hud}
+        />
+      </div>
+    );
+  }
+
+  if (isMainCamera && !forceSkeletons) {
+    const videoSrc = camera?.video_url || "/demo-prediction.mp4";
+    return (
+      <div className="relative aspect-[16/9] w-full overflow-hidden bg-black">
+        <video
+          src={videoSrc}
+          poster="/demo-poster.jpg"
+          autoPlay
+          loop
+          muted
+          playsInline
+          controls={controls}
+          className="h-full w-full object-cover"
+          onPlay={() => onStreamState?.(true)}
+        />
+        <SkeletonView
+          className="pointer-events-none absolute inset-0 h-full"
+          background="none"
+          frame={null}
+          level={level}
+          showBox={false}
+          hud={hud}
+        />
       </div>
     );
   }

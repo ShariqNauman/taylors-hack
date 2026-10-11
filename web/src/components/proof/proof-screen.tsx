@@ -834,6 +834,32 @@ export function ProofScreen() {
                 </div>
               ))}
             </div>
+            {/* Benchmark Video Verification Section */}
+            <div className="flex flex-col gap-3 rounded-[2px] border border-line bg-white p-4">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <span className="size-2.5 rounded-full bg-[#FF453A] animate-pulse" aria-hidden />
+                  <span className="text-[18px] font-extrabold">
+                    Physical Violence Prediction Benchmark Verification
+                  </span>
+                </div>
+                <span className="rounded-[1px] bg-ink px-2 py-0.5 font-mono text-[11px] font-bold text-white">
+                  AUC 0.887 · 38 MS/FRAME
+                </span>
+              </div>
+              <p className="m-0 text-[14px] text-ink-2">
+                Real surveillance camera footage evaluated by the YOLO26-pose keypoint tracker and LightGBM temporal escalation classifier. 17 body keypoints tracked (including head halo and neck) with no facial recognition or pixel storage.
+              </p>
+              <div className="relative aspect-[16/9] w-full max-w-[800px] overflow-hidden rounded-[2px] bg-black">
+                <video
+                  src="/demo-prediction.mp4"
+                  poster="/demo-poster.jpg"
+                  controls
+                  playsInline
+                  className="h-full w-full object-contain"
+                />
+              </div>
+            </div>
             {proof && (
               <div className="flex flex-col gap-2.5 rounded-[2px] border border-line bg-white p-3.5 min-[900px]:flex-row min-[900px]:items-start">
                 {/* eslint-disable-next-line @next/next/no-img-element */}

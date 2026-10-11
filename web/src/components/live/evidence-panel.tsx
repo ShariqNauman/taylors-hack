@@ -120,6 +120,7 @@ export function EvidencePanel({
     !!camera?.edge_url &&
     streaming;
   // A recording is never shown as live (brief §8.1).
+  const isMainCam = camera?.camera_id === "CAM-AU-01" || camera?.source === "live";
   const isRecording = camera?.source === "recorded";
   const lastAt = past[past.length - 1]?.at;
   const ago = lastAt ? Math.max(0, (nowMs - lastAt) / 1000) : null;
@@ -130,6 +131,11 @@ export function EvidencePanel({
     badge = {
       text: "RECORDED DEMO FEED · SKELETONS",
       cls: "bg-signal-tint text-signal-ink",
+    };
+  else if (isMainCam)
+    badge = {
+      text: "ML VIOLENCE PREDICTION FEED · 38 MS INFERENCE",
+      cls: "bg-signal text-white font-bold",
     };
   else if (onsiteStream && isRecording)
     badge = {
@@ -157,22 +163,24 @@ export function EvidencePanel({
     topRight:
       mode === "replay"
         ? `REPLAY ${fmtTime(new Date(entry?.at ?? nowMs))}`
-        : onsiteStream
-          ? isRecording
-            ? "REC · LOOP"
-            : `LIVE ${clock}`
-          : replayDemo
-            ? `DEMO ${clock}`
-            : isRecording
-              ? `REC SKELETONS ${clock}`
-              : `SKELETONS ${clock}`,
+        : isMainCam
+          ? `VIOLENCE PREDICTION ${clock}`
+          : onsiteStream
+            ? isRecording
+              ? "REC · LOOP"
+              : `LIVE ${clock}`
+            : replayDemo
+              ? `DEMO ${clock}`
+              : isRecording
+                ? `REC SKELETONS ${clock}`
+                : `SKELETONS ${clock}`,
     topRightDot:
       mode === "replay" || isRecording
         ? "#AEB7C2"
-        : onsiteStream
+        : isMainCam || onsiteStream
           ? "#FF453A"
           : "#7FE0FF",
-    bottomLeft: onsiteStream
+    bottomLeft: onsiteStream || isMainCam
       ? undefined
       : "NO PIXELS LEAVE THE SITE · 12 BODY KEYPOINTS PER PERSON",
   };
@@ -252,6 +260,7 @@ export function EvidencePanel({
           trail={trail}
           now={now}
           onStreamState={setStreaming}
+          controls={isMainCam && mode === "live"}
         />
       </CameraFrame>
 
