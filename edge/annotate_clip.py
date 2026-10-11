@@ -77,9 +77,10 @@ def annotate(src: str, out: str, camera_id: str, stride: int = 2, max_w: int = 9
             rows.popleft()
         while frame_times and frame_times[0] < t - ld.HISTORY_S:
             frame_times.popleft()
-        people = []
+        people, pose = [], None
         if res.keypoints is not None and len(res.boxes) > 0:
             xy, conf = res.keypoints.xy.cpu().numpy(), res.keypoints.conf.cpu().numpy()
+            pose = (xy, conf)
             for p in range(len(xy)):
                 people.append({"id": p, "kp": [[float(xy[p, k, 0]) / w, float(xy[p, k, 1]) / h,
                                                 float(conf[p, k])] for k in ee.COCO_12]})
@@ -109,7 +110,8 @@ def annotate(src: str, out: str, camera_id: str, stride: int = 2, max_w: int = 9
             stats["fight_s"] += dt
         elif level == "TENSE":
             stats["tense_s"] += dt
-        frame = ee.draw(frame, people, level, score, a)
+        ld.draw_skeletons(frame, pose)                # the live detector's own drawing (17 points, head ring)
+        frame = ee.draw(frame, [], level, score, a)   # edge level badge + camera label, as on the live stream
         if w > max_w:
             frame = cv2.resize(frame, (max_w, int(h * max_w / w) // 2 * 2))
         if writer is None:
