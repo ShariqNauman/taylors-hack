@@ -6,10 +6,11 @@ Dormathon 2026 · Taylor's University · Track 1, Predictive Model — *Predict 
 
 | | |
 |---|---|
-| **Live dashboard** | `TODO_VERCEL_URL` (Kayla fills this in at submission) |
+| **Live dashboard** | https://earlyeye.vercel.app |
+| **Track record / model proof** | https://earlyeye.vercel.app/proof |
 | **API** | https://earl-eye-backend.onrender.com (`/health`, `/site`, `/cameras`, `/events`, `/hotspots`, `/plan`, `/proof`) |
 | **Demo with no camera** | open the dashboard on a laptop. The recorded escalation plays by itself (`?replay=1` forces it, `?replay=0` shows the quiet state). |
-| **Guard app (phones only)** | `TODO_VERCEL_URL/guard`. Pick a person, tap **Start my shift**, then watch the laptop's replay ring the phone. `/push?staff=Guard%20B` still works and opens the same app. |
+| **Guard app (phones only)** | https://earlyeye.vercel.app/guard. Pick a person, tap **Start my shift**, then watch the laptop's replay ring the phone. `/push?staff=Guard%20B` still works and opens the same app. |
 
 ---
 
@@ -19,7 +20,7 @@ One operator, thirty screens. Malaysia's own ministry audit of 54 boarding schoo
 
 ## What EarlyEye does
 
-A pose model turns people into 12-point skeletons — **no faces, no identities, and the video never leaves the site**. A classifier scores the *build-up*, not just the punch, and the system answers four questions a security desk actually has:
+A pose model turns people into 17-point skeletons (face points only give the head's position) — **no faces, no identities, and the video never leaves the site**. A classifier scores the *build-up*, not just the punch, and the system answers four questions a security desk actually has:
 
 | Judges' rubric | EarlyEye |
 |---|---|
@@ -46,21 +47,33 @@ Phones always get the guard app: a phone that opens a desk page is sent to `/gua
 
 ## What the model is, honestly
 
-- **LightGBM** on 12-keypoint pose features (YOLO26n-pose + ByteTrack), 2 s windows scored every 0.5 s, all distances scaled by torso length.
-- **3,131 clips** across four datasets: RLVS, AIRTLab, Surveillance Camera Fight, SCVD.
-- **GroupKFold split by video**, never by window. Clip score = max window.
-- Alarm fires when the smoothed score holds ≥ 0.75 for 1.0 s.
+- **v6 ensemble:** LightGBM on 36 pose features + a small 1D-CNN over the keypoint sequence, averaged. Pose from
+  YOLO26n-pose + ByteTrack (17 keypoints + boxes), 2 s windows at 10 fps scored every 0.5 s, all distances
+  scaled by torso length.
+- Trained to detect **violence, not fast movement**: features for body-relative limb speed, path straightness and
+  rhythm, plus running/walking clips and fast non-violent group movement as hard negatives.
+- **3,338 clips:** RLVS, AIRTLab, Surveillance Camera Fight, SCVD, KTH running/walking, and 7 videos from our own
+  camera. GroupKFold by video, never by window.
+- **Hold-out:** 470 clips locked away before training (used for v4, v5 and v6, so a "third look").
+- Alarm (`FIGHT`) when the smoothed score stays ≥ 0.505 for 1.0 s with at least 2 people tracked; `TENSE` from 0.385.
 
-| Measured | Value |
+| Measured (hold-out, 470 clips, default `strict` setting) | Value |
 |---|---|
-| Clip ROC-AUC (out-of-fold, phone-video sets) | **0.887** |
-| CCTV angle, **held out of training** (SCF + SCVD) | AUC 0.709 · precision 0.803 · recall 0.317 |
-| AIRTLab hugs / claps that cross the alarm line | **19%** |
-| Inference latency | 38 ms/frame |
+| Accuracy · precision · recall · F1 | **82.1% · 91.1% · 72.3% · 0.806** |
+| Clip ROC-AUC (all · phone-video sets · CCTV clips) | **0.935 · 0.950 · 0.880** |
+| AIRTLab hugs / claps that reach FIGHT | 3 of 18 (17%) |
+| Fast non-violent movement that reaches FIGHT (v5 → v6) | 11.3% → **7.5%** of windows |
+| Our own camera, 7 videos (each scored by a model that never saw it) | **6 of 6 fights caught**, 2 false alarms in 2.9 min of non-fight footage, 0 of 4 running segments |
+| Inference latency | ~39 ms per scored window |
 
-**Not measured yet, and the app says so on every tile:** live-room precision/recall, false alarms per camera-hour, lead time before a shove, night/infrared. These need our own venue footage; the `/proof` page renders them as hatched "not measured" cards rather than numbers.
+The earlier CCTV-only test (model trained with **no** CCTV at all): AUC 0.709. Full details: `model/REPORT.md` (Part V6).
 
-That 19% is why the two-tier rule exists: one in five hugs crosses the raw model threshold, so `tense` never pings a human.
+**Not measured yet, and the app says so on every tile:** false alarms per camera-hour (7 short videos are not
+enough), night/infrared. On our own videos the alarm comes **1.5–2.5 s after** a fight starts: fast detection, not
+yet early prediction.
+
+That is why the two-tier rule exists: some hugs and fast play still cross the line, so `tense` never pings a human
+and only a sustained `fight` does.
 
 **We do not claim:** verbal or online bullying, weapon recognition, or night/IR performance.
 
