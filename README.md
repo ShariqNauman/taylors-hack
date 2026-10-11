@@ -79,6 +79,69 @@ and only a sustained `fight` does.
 
 ## Run it
 
+### Run the model on your webcam and connect it to the dashboard
+
+Needs **Python 3.11** (`py -3.11 --version` on Windows, `python3.11 --version` on macOS/Linux) and a webcam. The
+trained model files are already in `model/` (`violence_model.joblib`, `seq_model.onnx`, `seq_clip.json`); the pose
+model downloads itself on the first run.
+
+**1. Create a virtual environment and install the dependencies (once):**
+
+```powershell
+# Windows (PowerShell), from the repo root
+cd model
+py -3.11 -m venv venv
+venv\Scripts\Activate.ps1          # cmd.exe: venv\Scripts\activate.bat
+pip install -r requirements.txt
+```
+
+```bash
+# macOS / Linux, from the repo root
+cd model
+python3.11 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt    # macOS also needs: brew install libomp
+```
+
+If PowerShell refuses to run `Activate.ps1`, run `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned` once, or skip
+activation and call `venv\Scripts\python` directly instead of `python`.
+
+**2. (Optional) Test the model on its own:** a window opens with skeletons and the level (CALM / TENSE / FIGHT).
+Press `q` to quit.
+
+```bash
+python live_detector.py
+```
+
+**3. Start the edge app — this connects the webcam to the website.** Keep the venv active and stay in `model/`:
+
+```bash
+python ../edge/earlyeye_edge.py                 # webcam 0 → model → dashboard (Windows: ..\edge\earlyeye_edge.py)
+python ../edge/earlyeye_edge.py --camera 1      # another webcam
+python ../edge/earlyeye_edge.py --camera clip.mp4 --no-post   # a video file; --no-post keeps alarms on the laptop
+```
+
+**4. Open the dashboard on the same laptop:** https://earlyeye.vercel.app. The **Grand Hall** camera (`CAM-AU-01`)
+shows your webcam live with skeletons, the level and the score. A `FIGHT` is posted to the API and appears as an
+incident; `TENSE` stays on the laptop. The camera shows as offline whenever the edge app is not running.
+
+Check it is working:
+
+| URL | Shows |
+|---|---|
+| http://127.0.0.1:8765/stream.mjpg | the annotated video |
+| http://127.0.0.1:8765/live.json | level, score, people, `pose_fps` (needs **≥ 15**, else accuracy drops; shown red on the video) |
+
+**One-command alternative:** `edge\run_edge.bat` (Windows) or `./edge/run_edge.sh` (macOS/Linux) creates
+`edge/.venv`, installs `edge/requirements.txt` on the first run and starts the edge app; options are passed through
+(`edge\run_edge.bat --camera 1`). `run_edge.bat all` also starts the recorded cameras of the demo wall.
+
+Troubleshooting: `No module named cv2` → the venv is not active (or use `venv\Scripts\python`). Webcam busy → close
+other apps using it (Zoom, Teams, the camera app). Low `pose_fps` → close other heavy apps; the pose model runs on the
+Intel GPU through OpenVINO when there is one, else on the CPU.
+
+### API and dashboard locally (optional — both are deployed)
+
 ```bash
 # API
 cd api && pip install -r requirements.txt && cp .env.example .env && uvicorn api.main:app --reload
@@ -86,9 +149,6 @@ cd api && pip install -r requirements.txt && cp .env.example .env && uvicorn api
 # Dashboard (works fully offline on mock data)
 cd web && npm install && npm run dev        # http://localhost:3000
 # or, for the demo: npm run build && npx next start -H 0.0.0.0 -p 3000
-
-# Edge: laptop webcam → API
-cd edge && pip install -r requirements.txt && ./run_edge.sh
 ```
 
 ### Phone preview, for guards only
