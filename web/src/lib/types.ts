@@ -80,6 +80,7 @@ export interface Camera {
   source?: CameraSource; // the one live webcam, or one of our labelled recordings
   recorded_at?: string; // ISO, +08:00; set for recordings
   edge_url?: string; // that camera's edge process (/health, /stream.mjpg, /clips/<id>.mp4). On-site view only.
+  video_url?: string; // custom video or benchmark demo MP4 URL
   sensitivity?: CameraSensitivity; // model preset for this camera (model/live_detector.py); default "strict"
 }
 
