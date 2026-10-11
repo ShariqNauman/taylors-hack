@@ -223,7 +223,7 @@ docs/    team plan, system proposal, work split, business case, hackathon brief
 
 ## Privacy
 
-12 body keypoints per person. No face points, no identities, no stored video — only the event record leaves the laptop. A human always decides; the system recommends one action and one person. Answers the desk and guards give are kept as training examples as stick figures only, never video. Staff names and pictures are employee data: only the security team sees them (the demo team uses illustrations, not photos of real people). Malaysia's PDPA still applies to CCTV, and minimal-data-by-design is what makes a site's review passable.
+17 pose keypoints per person, of which the five face points are used only to place the head — we never match or store a face. No identities, no stored video — only the event record leaves the laptop. A human always decides; the system recommends one action and one person. Answers the desk and guards give are kept as training examples as stick figures only, never video. Staff names and pictures are employee data: only the security team sees them (the demo team uses illustrations, not photos of real people). Malaysia's PDPA still applies to CCTV, and minimal-data-by-design is what makes a site's review passable.
 
 ## Limitations
 
