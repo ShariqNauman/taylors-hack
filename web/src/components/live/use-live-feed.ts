@@ -134,6 +134,8 @@ export function useLiveFeed(
       // Recordings are CCTV feeds for the wall (REC), not alarms: they never alarm or push a
       // guard. Only the live webcam does (brief §8.1; the loops would ring the phone forever).
       if (x.source === "recorded") continue;
+      // An edge incident left open from before this page load, with the camera calm now, is stale.
+      if (x.level === "calm" && Date.parse(inc.start_time) < DEMO_STARTED_AT) continue;
       const api = byId.get(inc.incident_id);
       byId.set(inc.incident_id, {
         ...inc,
@@ -154,7 +156,13 @@ export function useLiveFeed(
     }
     // A backup (<id>-B, a second guard sent by the desk) takes over its incident: the desk shows
     // one card, the latest guard's, so their "Sorted" closes it and "Push next" stops showing.
-    return [...byId.values()].filter((e) => !byId.has(`${e.incident_id}-B`));
+    // Live starts clean: only what began after this page load, plus the webcam's incident if it is
+    // still going on now. History stays on Incidents and Track record; a refresh starts a new demo.
+    return [...byId.values()].filter(
+      (e) =>
+        !byId.has(`${e.incident_id}-B`) &&
+        ((e as LiveEvent).isEdge || Date.parse(e.start_time) >= DEMO_STARTED_AT),
+    );
   }, [full.data, recent.data, edgeLive]);
 
   // Local overrides: operator decisions and early pushes. They survive polls until the server agrees.
@@ -562,8 +570,8 @@ export function useLiveFeed(
   );
 
   const pushesThisShift = useMemo(() => {
-    // Demo mode: the shift is this demo (since the page loaded), not the stored test history.
-    const since = usingMock ? Math.max(DEMO_STARTED_AT, Date.now() - SHIFT_MS) : Date.now() - SHIFT_MS;
+    // The shift on this screen is this demo (since the page loaded), not stored test history.
+    const since = Math.max(DEMO_STARTED_AT, Date.now() - SHIFT_MS);
     return events.filter((e) => e.pushed_at && Date.parse(e.pushed_at) >= since)
       .length;
   }, [events]);

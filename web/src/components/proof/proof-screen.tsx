@@ -220,7 +220,8 @@ export function ProofScreen() {
     refreshInterval: 10_000,
   });
   const apiDown = useAppStore((s) => s.apiDown);
-  const synthetic = usingMock || apiDown;
+  // The history behind the desk-answer sections is the bundled 8-week sample, also with the API.
+  const synthetic = usingMock || apiDown || true;
 
   const [tech, setTech] = useState(false);
   // Ticks, so a decision made on Live a moment ago counts here without a reload.

@@ -126,17 +126,20 @@ async function getJson<T>(path: string, mock: MockName): Promise<T> {
   return (await r.json()) as T;
 }
 
-let localEdgeAvailable: boolean | null = null;
+// Once the laptop's edge answered, keep it; a miss is retried (it may still be waking up).
+let localEdgeAvailable = false;
+let localEdgeCheckedAt = 0;
 
 export const getSite = () => getJson<Site>("/site", "site");
 export const getCameras = async () => {
   const list = await getJson<Camera[]>("/cameras", "cameras");
   let activeUrl = EDGE_URL;
   if (typeof window !== "undefined") {
-    if (localEdgeAvailable === null) {
+    if (!localEdgeAvailable && Date.now() - localEdgeCheckedAt > 5_000) {
+      localEdgeCheckedAt = Date.now();
       try {
         const r = await fetch("http://127.0.0.1:8765/health", {
-          signal: AbortSignal.timeout(300),
+          signal: AbortSignal.timeout(1500),
           cache: "no-store",
         });
         localEdgeAvailable = r.ok;
@@ -173,9 +176,29 @@ export async function getProof(): Promise<Proof & { source: "api" | "bundled" }>
 export const getReplay = () => getJson<Event[]>("/replay", "replay");
 
 /** GET /events?since=. The API filters by start_time only (brief §11), so callers also poll without `since`. */
+/** The site's cameras (public/mock/cameras.json). The database still holds an older seed on other cameras. */
+const CAMPUS_CAMERAS = new Set(["CAM-AU-01", "CAM-BC-03", "CAM-CT-04", "CAM-HC-01", "CAM-HC-02", "CAM-SC-06"]);
+
 export async function getEvents(since?: string): Promise<Event[]> {
   const q = since ? `?since=${encodeURIComponent(since)}` : "";
-  const list = await getJson<Event[]>(`/events${q}`, "events");
+  let list = await getJson<Event[]>(`/events${q}`, "events");
+  if (!usingMock && !useAppStore.getState().apiDown) {
+    // From the API: keep this campus's cameras only, and fill the history from the bundled
+    // 8-week sample (labelled synthetic on screen) wherever the database has no such incident.
+    list = list.filter((e) => CAMPUS_CAMERAS.has(e.camera_id));
+    try {
+      const r = await fetch(mockUrl("events"), { cache: "no-store" });
+      if (r.ok) {
+        const have = new Set(list.map((e) => e.incident_id));
+        const sample = ((await r.json()) as Event[]).filter(
+          (e) => !have.has(e.incident_id) && (!since || e.start_time >= since),
+        );
+        list = [...list, ...sample];
+      }
+    } catch {
+      // API rows only
+    }
+  }
   return list.map(normaliseEvent).filter((e) => !isRehearsal(e));
 }
 

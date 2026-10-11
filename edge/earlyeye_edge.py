@@ -79,7 +79,8 @@ class State:
         self.pose_fps = 0.0          # frames per second that reach the model (needs >= ~15 for full accuracy)
         self.capture_fps = 0.0       # frames per second the camera delivers
         self.jpeg = None             # newest annotated JPEG for /stream.mjpg
-        self.people = []             # [{id, kp: [[x,y,conf] x12]}] normalised 0-1
+        self.people = []             # [{id, kp: [[x,y,conf] x12], head: [x,y] | None}] normalised 0-1
+        self.pose = None             # (xy, conf) of all 17 keypoints, drawn with live_detector.draw_skeletons
         self.level = "CALM"
         self.score = 0.0
         self.feats: dict = {}
@@ -414,15 +415,17 @@ def run_model(s: State):
         while s.running:
             time.sleep(1 / STREAM_FPS)
             with s.lock:
-                frame, people, level, score = s.frame, s.people, s.level, s.score
+                frame, pose, level, score = s.frame, s.pose, s.level, s.score
                 pose_fps, cam_fps = s.pose_fps, s.capture_fps
             if frame is None:
                 continue
-            annotated = draw(frame.copy(), people, level, score, a)
+            annotated = frame.copy()
+            ld.draw_skeletons(annotated, pose)          # the live detector's own drawing (body + head dot)
+            annotated = draw(annotated, [], level, score, a)   # edge badge + camera label only
             colour = (0, 200, 0) if pose_fps >= MIN_POSE_FPS else (0, 0, 255)
-            # Bottom-left, clear of the level/score badge in the top-left corner.
-            cv2.putText(annotated, f"pose {pose_fps:4.1f} fps  camera {cam_fps:4.1f} fps", (10, annotated.shape[0] - 12),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.55, colour, 2, cv2.LINE_AA)
+            # Bottom-left, clear of the level/score badge (top-left) and above the camera bar (bottom).
+            cv2.putText(annotated, f"pose {pose_fps:4.1f} fps  camera {cam_fps:4.1f} fps",
+                        (10, annotated.shape[0] - 40), cv2.FONT_HERSHEY_SIMPLEX, 0.6, colour, 2, cv2.LINE_AA)
             if s.clips is not None:   # the clip shows what the model saw: skeletons, level and score
                 s.clips.add(annotated, time.time())
             ok, jpg = cv2.imencode(".jpg", annotated, [cv2.IMWRITE_JPEG_QUALITY, 70])
@@ -459,16 +462,21 @@ def run_model(s: State):
         while frame_times and frame_times[0] < t - ld.HISTORY_S:
             frame_times.popleft()
 
-        people = []
+        people, pose = [], None
         if res.keypoints is not None and len(res.boxes) > 0:
             xy, conf = res.keypoints.xy.cpu().numpy(), res.keypoints.conf.cpu().numpy()
+            pose = (xy, conf)
             ids = res.boxes.id.int().tolist() if res.boxes.id is not None else list(range(len(xy)))
             for p, pid in enumerate(ids):
+                face = [xy[p, k] for k in ld.FACE_POINTS if conf[p, k] >= ld.MIN_DRAW_CONF]
+                head = np.mean(face, axis=0) if face else None
                 people.append({"id": int(pid), "kp": [[round(float(xy[p, k, 0]) / w, 4),
                                                        round(float(xy[p, k, 1]) / h, 4),
-                                                       round(float(conf[p, k]), 2)] for k in COCO_12]})
+                                                       round(float(conf[p, k]), 2)] for k in COCO_12],
+                               "head": None if head is None else [round(float(head[0]) / w, 4),
+                                                                  round(float(head[1]) / h, 4)]})
         with s.lock:
-            s.people = people   # drawn by the stream thread
+            s.people, s.pose = people, pose   # drawn by the stream thread
 
         if t < next_score:
             continue
