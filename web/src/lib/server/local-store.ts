@@ -13,9 +13,13 @@ export interface LocalStore {
   /** Whole incidents the desk pushed (live webcam, replay demo, backup), like POST /events. */
   added: Record<string, Event>;
   slots: Record<string, Partial<PatrolSlot>>;
+  /** Posts added by hand on this server (POST /plan/slots). */
+  newSlots: Record<string, PatrolSlot>;
   checkins: Record<string, Checkin[]>;
   /** Guard app: Start my shift / End my shift. */
   staff: Record<string, { on_duty: boolean }>;
+  /** Web Push: phones registered for alarms with the app closed, by endpoint. */
+  pushSubs: Record<string, { staff: string; endpoint: string; subscription: unknown }>;
 }
 
 const FILE =
@@ -24,7 +28,7 @@ const FILE =
     ? "/tmp/earlyeye-local-store.json"
     : path.join(process.cwd(), ".local-store.json"));
 
-const empty = (): LocalStore => ({ events: {}, added: {}, slots: {}, checkins: {}, staff: {} });
+const empty = (): LocalStore => ({ events: {}, added: {}, slots: {}, newSlots: {}, checkins: {}, staff: {}, pushSubs: {} });
 let cache: LocalStore | null = null;
 let queue: Promise<unknown> = Promise.resolve();
 

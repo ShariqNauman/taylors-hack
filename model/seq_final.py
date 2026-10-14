@@ -26,7 +26,7 @@ INFO_JSON = Path("seq_final.json")
 
 def export(model, path):
     model.eval().cpu()
-    torch.onnx.export(model, torch.zeros(1, 20, 2, 17, 4), str(path), input_names=["x"],
+    torch.onnx.export(model, torch.zeros(1, 20, 2, 17, S.CHANNELS), str(path), input_names=["x"],
                       output_names=["logit"], opset_version=17, dynamo=False)
     model.to(S.DEV)
 
@@ -44,6 +44,9 @@ def main():
     w = pd.Series(dataset).map({"AIRTLab": wcfg["w_airtlab"], "SCF": wcfg["w_cctv"], "SCVD": wcfg["w_cctv"],
                                 "RLVS": 1.0}).fillna(1.0).to_numpy()
     w = np.where((dataset == "AIRTLab") & (y == 0), w * wcfg["hug_mult"], w).astype(np.float32)
+    if S.WEIGHTS_CSV.exists():  # v6: weights, own-camera labels and trainable flag shared with LightGBM
+        w, y6, ok6 = S.v6_table(d)
+        y, ok = y6.astype(np.float32), ok & ok6
     info = {"weights": wcfg}
 
     # ---- Training part only -> hold-out scores ----

@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import useSWR from "swr";
 import { getCameras, getSite } from "@/lib/api";
 import { useDetectSiteView } from "@/hooks/use-site-view";
@@ -24,9 +25,14 @@ export function PageShell({
     refreshInterval: 10_000,
   });
   useDetectSiteView(cameras);
+  // The site name lives in the browser tab title only.
+  useEffect(() => {
+    if (!site?.name || document.title.includes(site.name)) return;
+    document.title = `${document.title} · ${site.name}`;
+  }, [site?.name]);
   return (
     <>
-      <SiteHeader siteName={site?.name} cameraCount={cameras?.length}>
+      <SiteHeader cameras={cameras}>
         {headerRight}
       </SiteHeader>
       <main className="mx-auto flex max-w-[1680px] flex-col gap-4 px-4 pb-8 pt-4 sm:px-6">

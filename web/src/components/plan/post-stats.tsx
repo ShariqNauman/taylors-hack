@@ -3,7 +3,7 @@
 // Folded statistics: "Why these times" and "Did the posts work?", all counted from the incident log.
 import { useState } from "react";
 import { cn } from "@/lib/utils";
-import { coverage, dateOnly, DAY_SHORT, hh, myt, postIncidents, startHour } from "@/lib/posts";
+import { coverage, dateOnly, WINDOW_DAYS, DAY_SHORT, hh, myt, postIncidents, startHour } from "@/lib/posts";
 import type { Event } from "@/lib/types";
 import type { RosterPost } from "./post-roster";
 
@@ -22,7 +22,7 @@ export function statsFor(posts: RosterPost[], events: Event[], end: number) {
       counts,
       headline: all.length
         ? `${win.length} of ${all.length} incident${all.length === 1 ? "" : "s"} here happened between ${hh(h)} and ${hh(h + 1)}${extra}.`
-        : "No confirmed incidents here in the last 28 days.",
+        : `No confirmed incidents here in the last ${WINDOW_DAYS} days.`,
       dates: hits.length ? `Dates: ${hits.map((e) => `${DAY_SHORT[myt(e.start_time).wd]} ${dateOnly(e.start_time)}`).join(", ")}.` : "",
       win: win.length,
       all: all.length,
@@ -140,7 +140,7 @@ export function PostStats({ posts, events, end, assumption }: { posts: RosterPos
           )}
           <p className="m-0 rounded-[2px] border border-dashed border-ink bg-white px-3.5 py-2.5 text-[14px]">
             <span className="font-extrabold">Assumption: </span>
-            {assumption} Counts are confirmed or resolved incidents from the incident log, 28 days up to this morning&rsquo;s check.
+            {assumption} Counts are confirmed or resolved incidents from the incident log, {WINDOW_DAYS} days up to the last check.
           </p>
         </>
       )}

@@ -2,36 +2,36 @@
   "folds": [
     {
       "fold": 0,
-      "val_clip_auc": 0.9369400605770765,
-      "best_epoch": 10,
-      "test_clip_auc": 0.910595593902141
+      "val_clip_auc": 0.93237948731609,
+      "best_epoch": 15,
+      "test_clip_auc": 0.9062637979845204
     },
     {
       "fold": 1,
-      "val_clip_auc": 0.9297310770038044,
-      "best_epoch": 34,
-      "test_clip_auc": 0.9386351247203895
+      "val_clip_auc": 0.9273446601381824,
+      "best_epoch": 17,
+      "test_clip_auc": 0.9349213398435857
     },
     {
       "fold": 2,
-      "val_clip_auc": 0.9272398190045248,
-      "best_epoch": 16,
-      "test_clip_auc": 0.92923777342382
+      "val_clip_auc": 0.941373373921173,
+      "best_epoch": 4,
+      "test_clip_auc": 0.8949327634240852
     },
     {
       "fold": 3,
-      "val_clip_auc": 0.93343653250774,
+      "val_clip_auc": 0.940022583559169,
       "best_epoch": 25,
-      "test_clip_auc": 0.9330396330396331
+      "test_clip_auc": 0.9236137566137567
     },
     {
       "fold": 4,
-      "val_clip_auc": 0.9381686999868818,
-      "best_epoch": 17,
-      "test_clip_auc": 0.9062247376488621
+      "val_clip_auc": 0.900995730026623,
+      "best_epoch": 1,
+      "test_clip_auc": 0.889081541218638
     }
   ],
-  "oof_clip_auc": 0.9228452377182546,
+  "oof_clip_auc": 0.9070692141156297,
   "weights": {
     "num_leaves": 31,
     "learning_rate": 0.05,
@@ -46,6 +46,6 @@
   },
   "hidden": 64,
   "dropout": 0.3,
-  "params": 51393,
-  "minutes": 0.41853257417678835
+  "params": 77505,
+  "minutes": 0.45228056112925213
 }

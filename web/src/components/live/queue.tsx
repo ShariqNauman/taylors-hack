@@ -1,6 +1,7 @@
 "use client";
 
 import type { LiveEvent } from "./use-live-feed";
+import { HowItWorks } from "@/components/chrome/how-it-works";
 import { fmtTime, LEVEL_THEME, TYPE_LABEL } from "@/lib/format";
 import { LevelPill } from "@/components/chrome/level-pill";
 
@@ -22,9 +23,12 @@ export function Queue({
         <h2 id="queue-h" className="ee-display text-[24px]">
           Active now
         </h2>
-        <span className="font-mono text-[12px] text-muted-ink">
-          BY PRIORITY · ALL CAMERAS
-        </span>
+        <HowItWorks>
+          <span>Active now lists every camera above calm, highest priority first. Priority = severity × confidence × zone risk × people; zone risk comes from this site&apos;s zone table.</span>
+          <span>Tense stays on this screen and rings nobody. Fight likely or fight pushes one guard, at most 3 fight-likely pushes a shift.</span>
+          <span>EarlyEye sees 12 body points per person, never faces. The meters show the signals the model leans on most.</span>
+          <span>A guard&apos;s &ldquo;Nothing there&rdquo; is a hint; the desk still decides. Every Yes or No is saved as a label for that camera.</span>
+        </HowItWorks>
       </div>
       {events.length === 0 ? (
         <p className="py-2 text-[15px] text-ink-2">
@@ -68,10 +72,6 @@ export function Queue({
           );
         })
       )}
-      <p className="text-[12px] text-muted-ink">
-        Priority = severity × confidence × zone risk × people. Zone risk comes
-        from this site&apos;s zone table.
-      </p>
     </section>
   );
 }

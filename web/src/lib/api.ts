@@ -9,6 +9,7 @@ import type {
   Proof,
   PatrolSlot,
   Site,
+  SlotCreate,
   SlotPatch,
   StatusPatch,
 } from "./types";
@@ -20,7 +21,7 @@ import { useAppStore } from "./store/app-store";
  * API is unreachable, we fall back to the mock as well, so every screen
  * renders with the API down.
  */
-const API_URL = (process.env.NEXT_PUBLIC_API_URL ?? "").replace(/\/$/, "");
+export const API_URL = (process.env.NEXT_PUBLIC_API_URL ?? "").replace(/\/$/, "");
 
 export const usingMock = API_URL === "";
 
@@ -84,6 +85,9 @@ const API_RESOURCES = new Set(
     .map((x) => x.trim())
     .filter(Boolean),
 );
+
+/** Events (and so guard pushes) come from the API, not the laptop's demo store. */
+export const API_RESOURCES_HAS_EVENTS = API_RESOURCES.has("events");
 
 async function getJson<T>(path: string, mock: MockName): Promise<T> {
   if (!usingMock && API_RESOURCES.has(mock)) {
@@ -212,6 +216,9 @@ async function planWrite(
 export const patchSlot = (id: string, patch: SlotPatch) =>
   planWrite(`/plan/slots/${encodeURIComponent(id)}`, "PATCH", patch);
 
+/** POST /plan/slots: "+ Add a post" (source "manual"). */
+export const createSlot = (body: SlotCreate) => planWrite("/plan/slots", "POST", body);
+
 /** POST /plan/slots/:id/checkins: the guard is at the post. */
 export const postCheckin = (id: string, staff: string) =>
   planWrite(`/plan/slots/${encodeURIComponent(id)}/checkins`, "POST", {
@@ -296,6 +303,21 @@ export async function patchCamera(
     useAppStore.getState().setApiDown(true);
     return false;
   }
+}
+
+/** Desk sends another guard (API: POST /events/:id/backup → <id>-B pushed to them). */
+export async function sendBackup(
+  incident_id: string,
+  staff: string,
+  reason: "need_backup" | "no_answer",
+): Promise<void> {
+  const r = await fetch(`${API_URL}/events/${encodeURIComponent(incident_id)}/backup`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ staff, reason }),
+    signal: AbortSignal.timeout(API_TIMEOUT_MS * 2),
+  });
+  if (!r.ok) throw new PatchError(r.status, `backup ${incident_id} failed: ${r.status}`);
 }
 
 /** Back-compat alias. */

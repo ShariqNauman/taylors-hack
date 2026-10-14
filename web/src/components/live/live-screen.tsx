@@ -4,11 +4,13 @@ import { useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import useSWR from "swr";
 import { getCameras, getPatrolPlan, getSite, usingMock } from "@/lib/api";
-import { daysInclude, LEVEL_ORDER, mytWeekday } from "@/lib/format";
+import { LEVEL_ORDER, mytWeekday } from "@/lib/format";
 import { useAlarmStore, selectPulsingCameras } from "@/lib/store/alarm-store";
 import { useAppStore } from "@/lib/store/app-store";
 import { SYNTHETIC_POSES_IN_MOCKS } from "@/lib/mock-poses";
 import { useClock } from "@/hooks/use-clock";
+import { usePeople } from "@/hooks/use-people";
+import { activePosts, slotDays } from "@/lib/posts";
 import { PageShell } from "@/components/chrome/page-shell";
 import { LiveHeaderControls } from "./live-header-controls";
 import { DemoStrip } from "./demo-strip";
@@ -25,6 +27,10 @@ import { Campus3D } from "@/components/campus3d";
 const PUSH_BUDGET = 3;
 const LIVE_STALE_MS = 60_000;
 const ACTIVE_WINDOW_MS = 20 * 60_000;
+/** After the guard reports back, the card stays as "Handled" this long. */
+const HANDLED_MS = 2 * 60_000;
+const handledNow = (e: { outcome_at?: string | null }, now: number) =>
+  !!e.outcome_at && now - Date.parse(e.outcome_at) < HANDLED_MS;
 
 export function LiveScreen() {
   const params = useSearchParams();
@@ -55,7 +61,11 @@ export function LiveScreen() {
         .map((c) => c.edge_url!),
     [cameras],
   );
-  const feed = useLiveFeed(replayOn, edgeUrls);
+  const people = usePeople(now.getTime());
+  const feed = useLiveFeed(replayOn, edgeUrls, (e) => {
+    const cam = (cameras ?? []).find((c) => c.camera_id === e.camera_id);
+    return people.nearest(cam)[0]?.person.id ?? null;
+  });
   const mockOnSite = view === "onsite" && (usingMock || apiDown);
 
   const active = useMemo(
@@ -63,7 +73,12 @@ export function LiveScreen() {
       feed.events
         .filter(
           (e) =>
-            e.end_time == null &&
+            // Reported by the guard in the last 2 minutes: stays as "Handled".
+            (handledNow(e, Date.now()) && e.status !== "dismissed") ||
+            // A guard is on the way: stays until they report, even if the scene calms.
+            (!!e.pushed_to && !e.outcome && e.status === "pushed" && !!e.pushed_at &&
+              Date.now() - Date.parse(e.pushed_at) < 10 * 60_000 && (e.isReplay || e.isEdge || e.end_time == null)) ||
+            (e.end_time == null &&
             // An open record older than the window is stale history (the API cannot close
             // records yet); the edge and the replay are always current.
             (e.isEdge ||
@@ -73,7 +88,7 @@ export function LiveScreen() {
             (!mockOnSite || e.isEdge || e.isReplay) &&
             LEVEL_ORDER[e.level] >= LEVEL_ORDER.tense &&
             e.status !== "dismissed" &&
-            e.status !== "resolved",
+            e.status !== "resolved"),
         )
         .sort((a, b) => b.priority - a.priority),
     [feed.events, mockOnSite],
@@ -138,7 +153,25 @@ export function LiveScreen() {
 
   const [handover, setHandover] = useState(false);
   const wd = mytWeekday(now);
-  const todaySlot = plan?.slots.find((s) => daysInclude(s.days, wd));
+  // Today's posts, with who is on them (names, not call signs).
+  const todayPosts = activePosts(plan?.slots ?? []).filter((s) => slotDays(s.days).includes(wd));
+  const nameOf = (call: string | null | undefined) => {
+    const p = people.person(call);
+    return p ? `${p.name} (${p.id})` : (call ?? "nobody yet");
+  };
+  const patrolToday = todayPosts.length
+    ? `Posts today: ${todayPosts.map((s) => `${s.location} ${s.hours.slice(0, 5)}, ${nameOf(s.assigned_to)}`).join("; ")}.`
+    : null;
+
+  // How long the current incident's camera has been calm (for "camera agrees: calm").
+  const calmForS = (() => {
+    if (!current) return null;
+    const t = now.getTime();
+    if (current.end_time) return (t - Date.parse(current.end_time)) / 1000;
+    if (current.level !== "calm") return null;
+    const since = feed.calmSince(current.incident_id);
+    return since != null ? (t - since) / 1000 : null;
+  })();
 
   return (
     <PageShell
@@ -151,7 +184,7 @@ export function LiveScreen() {
         />
       }
     >
-      {strip && <DemoStrip mode={strip} onRestart={feed.replay.restart} />}
+      {strip && <DemoStrip mode={strip} onRestart={feed.replay.restart} location={liveCam?.location} />}
       <div className="grid gap-3.5 min-[1040px]:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
         <div className="order-2 min-w-0 min-[1040px]:order-1">
           <EvidencePanel
@@ -172,6 +205,9 @@ export function LiveScreen() {
             site={site}
             now={now}
             pulsing={!!current && pulsingCams.has(current.camera_id)}
+            people={people}
+            calmForS={calmForS}
+            handled={!!current && handledNow(current, now.getTime())}
             compact3d={
               current && site && cameras && plan && current.level !== "calm" ? (
                 <div className="flex flex-col gap-1.5">
@@ -227,11 +263,8 @@ export function LiveScreen() {
         budget={PUSH_BUDGET}
         events={feed.events}
         cameras={cameras ?? []}
-        patrolToday={
-          todaySlot
-            ? `Patrol slot today: ${todaySlot.location}, ${todaySlot.hours}.`
-            : null
-        }
+        patrolToday={patrolToday}
+        nameOf={nameOf}
       />
     </PageShell>
   );

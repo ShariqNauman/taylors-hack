@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { toast } from "sonner";
 import { fmtTime } from "@/lib/format";
+import { PersonByCall } from "@/components/chrome/person-tag";
 
 /** "Pushed to Guard B · 14:31:06" with the two-tier subline and a phone link. */
 export function pushToast(name: string, at: string | Date, location?: string) {
@@ -10,9 +11,8 @@ export function pushToast(name: string, at: string | Date, location?: string) {
     (id) => (
       <div className="flex max-w-[380px] items-start gap-3 rounded-[2px] bg-ink p-4 text-white">
         <div className="flex flex-col gap-1">
-          <span className="text-[17px] font-extrabold">
-            Pushed to {name} · {fmtTime(at)}
-          </span>
+          <span className="text-[13px] font-bold opacity-85">Pushed · {fmtTime(at)}</span>
+          <PersonByCall call={name} size={36} dark className="text-[17px]" />
           {location && (
             <span className="text-[13px] opacity-85">{location}</span>
           )}

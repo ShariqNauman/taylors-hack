@@ -48,14 +48,14 @@ CAM_W, CAM_H, CAM_FPS = 640, 480, 30   # requested webcam mode
 SCORE_EVERY_S = 0.5      # score a new window every 0.5 s (features use the last LONG_S = 2 s)
 HISTORY_S = 3.0          # how much pose history to keep for resampling
 SMOOTH_ALPHA = 0.6       # exponential smoothing: higher = reacts faster, lower = steadier
-# Sensitivity preset (ensemble). Both thresholds were chosen on the training part only (out-of-fold,
-# full-body clips): "strict" = 9% of normal clips reach FIGHT, "sensitive" = 15%. Hold-out results per
-# preset and guard: REPORT.md Part V5. Not yet tuned on our own webcam footage (tune_live.py).
+# Sensitivity preset (v6 ensemble). Thresholds chosen on the training part only (out-of-fold, full-body
+# clips): "strict" = 9% of normal clips reach FIGHT, "sensitive" = 15%. TENSE keeps v5's TENSE / FIGHT
+# ratio so the amber stage survives. Results: REPORT.md Part V6.
 SENSITIVITY = "strict"  # "strict" or "sensitive"
-TENSE_AT = 0.5          # smoothed score >= this -> TENSE
-FIGHT_AT = 0.656        # "strict": smoothed score >= this ...
-FIGHT_AT_SENSITIVE = 0.541   # "sensitive"
-FIGHT_AT_LGBM = 0.67    # used instead when predict.MODE == "lgbm" (strict)
+TENSE_AT = 0.385        # smoothed score >= this -> TENSE
+FIGHT_AT = 0.505        # "strict": smoothed score >= this ...
+FIGHT_AT_SENSITIVE = 0.439   # "sensitive"
+FIGHT_AT_LGBM = 0.581   # used instead when predict.MODE == "lgbm" (strict)
 MIN_DURATION = 1.0       # ... for at least this many seconds -> FIGHT
 FIGHT_HOLD = 2.0         # keep showing FIGHT this many seconds after it triggers
 # Guards (True = on). A hot window blocked by a guard is shown on the overlay ("blocked: PROX").
@@ -66,12 +66,12 @@ PROX_MAX = 2.0
 GUARD_TWO_KEY = False    # FIGHT needs a wrist moving toward the other person (>= 3 torso/s) or contact
 GUARD_K_OF_N = False     # longer persistence: the 1 s FIGHT count starts only once K_OF_N[0] of the last
                          # K_OF_N[1] windows are above FIGHT_AT (~2 s in all). Best lever if the room still
-                         # gives false alarms: hold-out hugs 11% -> 0%, normal 5.2% -> 1.9%, fights 64.5% -> 44.6%
+                         # gives false alarms (v5 hold-out: hugs 11% -> 0%, normal 5.2% -> 1.9%, fights -20 points)
 K_OF_N = (3, 4)
 GUARD_MIN_TRACK = False  # a person counts only once tracked for features.MIN_TRACK_S (1 s)
 CLIP_FEATURES = True     # clip features to the training 1st-99th percentile before scoring
 LOG_CSV = "live_features.csv"
-MIN_DRAW_CONF = 0.5      # only draw keypoints at least this confident
+MIN_DRAW_CONF = 0.3      # only draw keypoints at least this confident (display only; the model has its own)
 LABEL_KEYS = {"F": "fight", "H": "hug", "N": "normal"}  # hold key -> label; nothing held = normal
 LABEL_COLORS = {"fight": (0, 0, 220), "hug": (200, 120, 0), "normal": (90, 90, 90)}  # BGR
 KEY_HOLD_TIMEOUT = 0.6   # non-Windows fallback: key counts as held this long after its last repeat
@@ -79,7 +79,8 @@ KEY_HOLD_TIMEOUT = 0.6   # non-Windows fallback: key counts as held this long af
 # All 17 COCO keypoints, same as extract_keypoints_v2.py: the head features and the sequence model need
 # the face points (used only as head position). Only the 12 body points are drawn.
 KEYPOINTS = {name: i for i, name in enumerate(EXTRACT_KEYPOINTS)}
-BODY_POINTS = [KEYPOINTS[n] for n in KEYPOINTS if n not in ("nose", "l_eye", "r_eye", "l_ear", "r_ear")]
+FACE_POINTS = [KEYPOINTS[n] for n in ("nose", "l_eye", "r_eye", "l_ear", "r_ear")]
+BODY_POINTS = [KEYPOINTS[n] for n in KEYPOINTS if KEYPOINTS[n] not in FACE_POINTS]
 BONES = [(5, 7), (7, 9), (6, 8), (8, 10), (5, 6), (5, 11), (6, 12), (11, 12),
          (11, 13), (13, 15), (12, 14), (14, 16)]
 ACTIVE_FIGHT_AT = (FIGHT_AT_LGBM if predict_module.MODE == "lgbm"
@@ -241,6 +242,10 @@ def draw_skeletons(frame, pose):
                 cv2.line(frame, pts[a], pts[b], (255, 200, 0), 2)
         for pt in pts.values():
             cv2.circle(frame, pt, 3, (255, 255, 255), -1)
+        # Head as one dot (average of the confident face points): shows the head is tracked, no face mesh.
+        face = [xy[p, k] for k in FACE_POINTS if conf[p, k] >= MIN_DRAW_CONF]
+        if face:
+            cv2.circle(frame, tuple(map(int, np.mean(face, axis=0))), 7, (255, 200, 0), 2)
 
 
 def draw_hud(frame, s, label, model_name):

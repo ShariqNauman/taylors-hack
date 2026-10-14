@@ -46,13 +46,16 @@ export interface StaffShift {
 export interface Staff {
   name: string; // call sign ("Guard B"), used in nearest_staff / pushed_to / assigned_to
   zone_type: string;
-  on_duty: boolean;
-  post?: GeoPoint | null;
+  on_duty: boolean | null; // guard app Start / End my shift; null = never told us
+  post?: GeoPoint | null; // base post
   display_name?: string | null; // "Aiman Hakimi"
   photo_url?: string | null;
   role?: string | null; // "guard" | "warden" | "supervisor"
   shift?: StaffShift | null;
 }
+
+/** Where a post is: the map's point, when the supervisor picked one. */
+export type SlotSource = "model" | "manual";
 
 export interface Site {
   site_id: string;
@@ -77,7 +80,10 @@ export interface Camera {
   source?: CameraSource; // the one live webcam, or one of our labelled recordings
   recorded_at?: string; // ISO, +08:00; set for recordings
   edge_url?: string; // that camera's edge process (/health, /stream.mjpg, /clips/<id>.mp4). On-site view only.
+  sensitivity?: CameraSensitivity; // model preset for this camera (model/live_detector.py); default "strict"
 }
+
+export type CameraSensitivity = "strict" | "sensitive";
 
 export interface TopFeature {
   name: string;
@@ -146,6 +152,9 @@ export interface PatrolSlot {
   ended_at?: string | null;
   evidence?: string[]; // start_time of the incidents behind a suggestion
   checkins?: Checkin[];
+  geo?: GeoPoint | null; // manual posts: the point picked on the map
+  source?: SlotSource; // "manual" = added by the supervisor
+  changed_at?: string | null; // last edit of place / days / hours; the guard app says "Changed by your supervisor"
   location: string;
   days: string; // e.g. "Mon–Thu"
   hours: string; // e.g. "13:00–14:00"
@@ -166,6 +175,25 @@ export interface SlotPatch {
   status?: SlotStatus;
   assigned_to?: string | null;
   seen_at?: string;
+  // Edit (Plan drawer)
+  days?: string;
+  hours?: string;
+  location?: string;
+  zone_type?: string;
+  geo?: GeoPoint | null;
+  tip?: string | null;
+}
+
+/** POST /plan/slots: "+ Add a post". */
+export interface SlotCreate {
+  location: string;
+  zone_type: string;
+  geo?: GeoPoint | null;
+  days: string; // "Tue, Thu"
+  hours: string; // "17:00–18:00"
+  tip?: string | null;
+  assigned_to?: string | null;
+  source: "manual";
 }
 
 export interface Proof {
@@ -209,13 +237,16 @@ export interface Proof {
 
 export type Outcome = "sorted" | "hurt" | "backup" | "nothing";
 export interface CameraPatch {
-  zone_type: string;
+  zone_type?: string;
+  sensitivity?: CameraSensitivity; // Track record: "Make this camera stricter / more sensitive"
 }
 
 export interface StatusPatch {
   status?: Status;
   staff_note?: string;
   acked_at?: string;
+  pushed_to?: string; // desk "Push now": who and when, so the phone rings
+  pushed_at?: string;
   arrived_at?: string; // guard app: "I'm here"
   outcome?: Outcome; // guard app: "What did you find?"
   outcome_at?: string;

@@ -30,7 +30,7 @@ export function CameraWall({
   const view = useAppStore((s) => s.view);
   const counts = {
     live: cameras.filter((c) => cameraKind(c) === "live").length,
-    rec: cameras.filter((c) => cameraKind(c) === "recorded" && !!c.edge_url)
+    rec: cameras.filter((c) => c.source === "recorded")
       .length,
     black: cameras.filter((c) => cameraKind(c) === "black").length,
   };
@@ -43,9 +43,7 @@ export function CameraWall({
           </Link>
         </h2>
         <span className="font-mono text-[12px] text-muted-ink">
-          {view === "onsite"
-            ? `ON SITE: ${counts.live} LIVE WEBCAM · ${counts.rec} LABELLED RECORDINGS · ${counts.black} BLACK`
-            : "REMOTE: SKELETONS DURING INCIDENTS, PEOPLE COUNTS OTHERWISE"}
+          {`${counts.live} LIVE WEBCAM · ${counts.rec} RECORDINGS · ${counts.black} BLACK`}
         </span>
         <Link
           href="/cameras"

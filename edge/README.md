@@ -1,8 +1,10 @@
 # edge/ — the bridge between the live model and the dashboard
 
 `earlyeye_edge.py` runs the model team's live pipeline (`model/live_detector.py`: YOLO26n-pose + ByteTrack,
-`features.window_features`, `predict.py`, the same smoothing and CALM / TENSE / FIGHT thresholds). It imports
-that code read-only, and adds what the dashboard needs:
+`seq_features.window_inputs` (LightGBM features + CNN sequence), `predict.py` (v6 ensemble), and
+`guards.LevelLogic` with the same preset, thresholds, guards and single-person rule as `live_detector.py`).
+It imports that code read-only, and adds what the dashboard needs. On macOS (no OpenVINO) `predict.py` falls back
+to LightGBM alone with its own threshold.
 
 | Endpoint | What | Who uses it |
 |---|---|---|

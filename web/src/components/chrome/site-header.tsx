@@ -3,7 +3,10 @@
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { useSyncExternalStore } from "react";
 import { usingMock } from "@/lib/api";
+import { cameraKind } from "@/lib/camera-meta";
+import type { Camera } from "@/lib/types";
 import { useAppStore } from "@/lib/store/app-store";
 import { Logo } from "./logo";
 import { AlarmBanner } from "@/components/alarm/alarm-banner";
@@ -22,29 +25,28 @@ const NAV = [
  * The alarm banner renders directly under it.
  */
 export function SiteHeader({
-  siteName,
-  cameraCount,
+  cameras,
   children,
 }: {
-  siteName?: string;
-  cameraCount?: number;
+  cameras?: Camera[];
   children?: React.ReactNode;
 }) {
+  // Only what needs attention: cameras that are off.
+  const off = (cameras ?? []).filter((c) => cameraKind(c) === "black");
   const pathname = usePathname();
   const params = useSearchParams();
   const replay = params.get("replay") === "1";
   const apiDown = useAppStore((s) => s.apiDown);
   const view = useAppStore((s) => s.view);
+  // A deployed build (not this laptop or the hotspot) without NEXT_PUBLIC_API_URL: the shared
+  // demo store lives in one serverless instance, so it only syncs devices on the same server.
+  const deployedDemo = useDeployedDemo();
 
   return (
     <>
       <header className="sticky top-0 z-20 border-b border-line bg-white">
         <div className="mx-auto flex max-w-[1680px] flex-wrap items-center gap-x-5 gap-y-2 px-4 py-2.5 sm:px-6">
           <Logo />
-          <span className="hidden font-mono text-[13px] uppercase text-muted-ink md:inline">
-            {siteName ?? "Site"}
-            {cameraCount != null ? ` · ${cameraCount} cameras` : ""}
-          </span>
           <nav aria-label="Main" className="flex flex-wrap gap-0.5">
             {NAV.map((n) => {
               const active =
@@ -66,7 +68,15 @@ export function SiteHeader({
               );
             })}
           </nav>
-          <div className="ml-auto flex flex-wrap items-center gap-2.5">
+          <div className="ml-auto flex min-w-0 flex-wrap items-center gap-2.5">
+            {off.length > 0 && (
+              <Link
+                href={`/cameras?cam=${encodeURIComponent(off[0].camera_id)}`}
+                className="inline-flex min-h-7 items-center rounded-[1px] bg-ink px-2 font-mono text-[11px] font-bold tracking-[0.06em] text-white no-underline"
+              >
+                {off.length} CAMERA{off.length === 1 ? "" : "S"} OFF · {off[0].location.replace(/, corridor /i, " ").toUpperCase()}
+              </Link>
+            )}
             {children}
             <span
               className={cn(
@@ -87,17 +97,26 @@ export function SiteHeader({
                   ? "REMOTE LINK"
                   : "DETECTING…"}
             </span>
-            {(usingMock || apiDown) && (
+            {deployedDemo ? (
               <span
                 className="inline-flex min-h-7 items-center rounded-[1px] border border-dashed border-line-strong bg-white px-2 font-mono text-[11px] font-bold tracking-[0.06em] text-ink-2"
-                title={
-                  apiDown
-                    ? "API failed; showing mock data"
-                    : "No API configured; showing mock data"
-                }
+                title="This deployed link has no API: demo data. What you change is kept by this server, not shared with other people or devices reliably."
               >
-                MOCK DATA
+                DEMO DATA · CHANGES STAY ON THIS DEVICE
               </span>
+            ) : (
+              (usingMock || apiDown) && (
+                <span
+                  className="inline-flex min-h-7 items-center rounded-[1px] border border-dashed border-line-strong bg-white px-2 font-mono text-[11px] font-bold tracking-[0.06em] text-ink-2"
+                  title={
+                    apiDown
+                      ? "API failed; showing mock data"
+                      : "No API configured; showing mock data"
+                  }
+                >
+                  MOCK DATA
+                </span>
+              )
             )}
             {replay && (
               <span className="inline-flex min-h-7 items-center rounded-[1px] border border-ink bg-white px-2 font-mono text-[11px] font-bold tracking-[0.06em]">
@@ -109,5 +128,14 @@ export function SiteHeader({
       </header>
       <AlarmBanner />
     </>
+  );
+}
+
+const LOCAL_HOST = /^(localhost|127\.|\[::1\]|10\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.)|\.local$|\.localhost$|\.trycloudflare\.com$/;
+function useDeployedDemo(): boolean {
+  return useSyncExternalStore(
+    () => () => {},
+    () => usingMock && !LOCAL_HOST.test(window.location.hostname),
+    () => false,
   );
 }

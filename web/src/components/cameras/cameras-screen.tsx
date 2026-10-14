@@ -28,6 +28,7 @@ import { useAlarmStore, selectPulsingCameras } from "@/lib/store/alarm-store";
 import { useClock } from "@/hooks/use-clock";
 import { cn } from "@/lib/utils";
 import { PageShell } from "@/components/chrome/page-shell";
+import { HowItWorks } from "@/components/chrome/how-it-works";
 import { CameraFrame } from "@/components/skeleton/skeleton-view";
 import { CameraFeed } from "@/components/camera/camera-feed";
 import { CamerasMapBlock } from "@/components/map2d";
@@ -120,12 +121,12 @@ export function CamerasScreen() {
   return (
     <PageShell>
       <div className="flex flex-wrap items-end justify-between gap-3">
-        <div className="flex flex-col gap-1">
-          <span className="ee-label text-[12px]">
-            All cameras · {counts.live} live webcam · {counts.rec} labelled
-            recordings · {counts.black} black
-          </span>
+        <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1.5">
           <h1 className="ee-display text-[52px] sm:text-[60px]">Cameras</h1>
+          <HowItWorks>
+            <span>One live webcam on the demo laptop; the others are labelled recordings, never shown as live. A camera with no frames is black, with how long.</span>
+            <span>On site the desk sees video; anywhere else, stick figures only. The labels bar counts the desk&rsquo;s Yes and No answers for each camera.</span>
+          </HowItWorks>
         </div>
         <div
           role="group"

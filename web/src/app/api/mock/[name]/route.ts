@@ -3,6 +3,7 @@ import path from "path";
 import { NextResponse } from "next/server";
 import { readStore, updateStore } from "@/lib/server/local-store";
 import { withStore } from "@/lib/server/mock-plan";
+import { notify } from "@/lib/server/webpush";
 import type { Event, PatrolPlan, Site } from "@/lib/types";
 
 const ALLOWED = new Set([
@@ -38,6 +39,36 @@ function rebase(name: string, data: unknown): unknown {
   // Stable within a 15-minute bucket, so open incidents keep a fixed start time between polls.
   const anchor = Math.floor(now / BUCKET) * BUCKET;
   const shift = anchor - MOCK_NOW;
+  // History keeps its age relative to now, in whole weeks, so weekdays (and the planted
+  // Mon–Thu 13:00 patterns) stay true however long after the mock date this runs.
+  const WEEK = 7 * DAY;
+  const weeks = Math.max(0, Math.floor((now - MOCK_NOW) / WEEK)) * WEEK;
+  const ISO = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/;
+  const age = (v: unknown): unknown =>
+    !weeks
+      ? v
+      : typeof v === "string" && ISO.test(v)
+        ? toMyt(Date.parse(v) + weeks)
+        : Array.isArray(v)
+          ? v.map(age)
+          : v && typeof v === "object"
+            ? Object.fromEntries(Object.entries(v as Json).map(([k, x]) => [k, k === "t" ? x : age(x)]))
+            : v;
+  if (weeks && (name === "plan" || name === "hotspots")) data = age(data);
+  if (name === "plan" && data && typeof data === "object") {
+    // The 06:00 check happened this morning (or yesterday, before 06:00).
+    const myt = now + 8 * 3_600_000;
+    let check = Math.floor(myt / DAY) * DAY + 6 * 3_600_000 - 8 * 3_600_000;
+    if (check > now) check -= DAY;
+    const plan = data as { last_check?: string; slots?: Json[] };
+    return {
+      ...plan,
+      last_check: toMyt(check),
+      slots: (plan.slots ?? []).map((sl) =>
+        sl.status === "suggested" ? { ...sl, since: toMyt(check) } : sl,
+      ),
+    };
+  }
   if (name === "cameras" && Array.isArray(data)) {
     return data.map((c: Json) =>
       c.black_since
@@ -58,7 +89,7 @@ function rebase(name: string, data: unknown): unknown {
     return data.map((e: Json) => {
       const start = Date.parse(String(e.start_time));
       const recent = MOCK_NOW - start < 3 * 3_600_000 && start <= MOCK_NOW;
-      if (e.end_time !== null && !recent) return e;
+      if (e.end_time !== null && !recent) return age(e) as Json;
       return {
         ...e,
         start_time: move(e.start_time),
@@ -117,11 +148,15 @@ export async function POST(
   if (name === "events") {
     const e = body.event as Event | undefined;
     if (!e?.incident_id) return NextResponse.json({ detail: "Send event." }, { status: 422 });
-    await updateStore((s) => {
-      const base = body.reset ? undefined : s.added[e.incident_id];
+    const newPush = await updateStore((s) => {
+      const prev = s.added[e.incident_id];
+      const base = body.reset ? undefined : prev;
       s.added[e.incident_id] = { ...base, ...e, acked_at: null, arrived_at: null, outcome: null, outcome_at: null };
       if (body.reset) delete s.events[e.incident_id];
+      return !!e.pushed_to && (prev?.pushed_to !== e.pushed_to || prev?.pushed_at !== e.pushed_at);
     });
+    // A new push: wake that guard's phone, even with the app closed.
+    if (newPush) await notify(e.pushed_to);
     return NextResponse.json(e, { status: 201 });
   }
   if (name === "staff") {

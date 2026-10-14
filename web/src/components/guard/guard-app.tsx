@@ -28,8 +28,10 @@ import {
   myt,
   onShift,
   type Person,
+  postOnNow,
   rollingWeek,
   slotDays,
+  slotSpan,
   startHour,
   team,
 } from "@/lib/posts";
@@ -37,6 +39,7 @@ import type { Event, Level, Outcome, PatrolSlot } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { Avatar } from "@/components/plan/avatar";
 import { useGuardDevice } from "./use-guard-device";
+import { disablePush, enablePush, pushState, type PushState } from "@/lib/push";
 
 const ME_KEY = "ee-guard-staff";
 const SHIFT_KEY = "ee-guard-on-shift";
@@ -76,6 +79,8 @@ const store = {
     }
   },
 };
+/** One alarm per push: a new pushed_at on the same incident (a re-push) rings again. */
+const pushKey = (e: Event) => `${e.incident_id}|${e.pushed_at ?? ""}`;
 const secs = (a?: string | null, b?: string | null) => (a && b ? Math.max(1, Math.round((Date.parse(b) - Date.parse(a)) / 1000)) : null);
 
 function LevelChip({ level, big }: { level: Level; big?: boolean }) {
@@ -142,8 +147,8 @@ export function GuardApp() {
   const posts = useMemo(() => activePosts(plan?.slots ?? []), [plan]);
   const mine = posts.filter((s) => s.assigned_to === me);
 
-  const markHandled = (id: string) => {
-    handled.current.add(id);
+  const markHandled = (key: string) => {
+    handled.current.add(key);
     try {
       sessionStorage.setItem(HANDLED_KEY, JSON.stringify([...handled.current]));
     } catch {
@@ -153,7 +158,7 @@ export function GuardApp() {
 
   const raise = useCallback(
     (e: Event, test = false) => {
-      markHandled(e.incident_id);
+      markHandled(pushKey(e));
       setFlow({ kind: "alert", event: e, test });
       dev.ring();
     },
@@ -164,7 +169,7 @@ export function GuardApp() {
   useEffect(() => {
     if (!me || !shift || flow) return;
     const t = Date.now();
-    const next = events
+    const waiting = events
       .filter(
         (e) =>
           (e.pushed_to === me || (!e.pushed_to && e.nearest_staff === me && e.status === "pushed")) &&
@@ -172,10 +177,14 @@ export function GuardApp() {
           !e.acked_at &&
           e.end_time == null &&
           t - Date.parse(e.pushed_at ?? e.start_time) < FRESH_MS &&
-          !handled.current.has(e.incident_id),
+          !handled.current.has(pushKey(e)),
       )
-      .sort((a, b) => Date.parse(b.pushed_at ?? b.start_time) - Date.parse(a.pushed_at ?? a.start_time))[0];
-    if (next) raise(next);
+      .sort((a, b) => Date.parse(b.pushed_at ?? b.start_time) - Date.parse(a.pushed_at ?? a.start_time));
+    // Ring for the newest only. Older unanswered pushes and scenes already calm are history.
+    for (const e of waiting.slice(1)) markHandled(pushKey(e));
+    const next = waiting[0];
+    if (next && next.level === "calm") markHandled(pushKey(next));
+    else if (next) raise(next);
   }, [events, me, shift, flow, raise]);
 
   // Same browser as the desk (demo): the Live tab announces its pushes.
@@ -184,7 +193,7 @@ export function GuardApp() {
     const ch = new BroadcastChannel("earlyeye-push");
     ch.onmessage = (m: MessageEvent<{ type: string; event: Event }>) => {
       const e = m.data?.event;
-      if (m.data?.type !== "push" || !e || e.pushed_to !== me || handled.current.has(e.incident_id) || flow) return;
+      if (m.data?.type !== "push" || !e || e.pushed_to !== me || handled.current.has(pushKey(e)) || flow) return;
       raise(e);
     };
     return () => ch.close();
@@ -208,7 +217,17 @@ export function GuardApp() {
     setShift(false);
     setTab("today");
   };
+  const [push, setPush] = useState<PushState>("off");
+  useEffect(() => {
+    void pushState().then(setPush);
+  }, [shift]);
+  const turnOnPush = () => {
+    if (!me || !person) return;
+    void enablePush(me, person.first).then(setPush);
+  };
   const startShift = async () => {
+    // Ask for lock-screen alarms first, while the tap still counts (iPhone).
+    if (me && person) void enablePush(me, person.first).then(setPush);
     await dev.unlock();
     dev.keepAwake(true);
     store.set(SHIFT_KEY, me);
@@ -217,6 +236,7 @@ export function GuardApp() {
     if (me) void setOnDuty(me, true);
   };
   const endShift = () => {
+    void disablePush().then(() => setPush("off"));
     dev.keepAwake(false);
     store.set(SHIFT_KEY, null);
     setShift(false);
@@ -252,6 +272,9 @@ export function GuardApp() {
 
   // ── Alarm, over any tab ──
   if (flow?.kind === "alert" && live) {
+    // The level that rang the alarm, or worse if it has grown since.
+    const LV: Level[] = ["calm", "tense", "fight_likely", "fight"];
+    const alarmLevel = LV[Math.max(LV.indexOf(flow.event.level), LV.indexOf(live.level), 2)];
     const cam = cameras?.find((c) => c.camera_id === live.camera_id);
     const dist = fmtDistance(staffDistance(site, me, cam));
     const spot = cam?.geo?.floor ?? cam?.geo?.building;
@@ -261,8 +284,8 @@ export function GuardApp() {
           {flow.test && <span className="self-start rounded-[2px] bg-white px-2 py-0.5 font-mono text-[12px] font-bold text-[#C8241B]">TEST · NOT SENT TO THE DESK</span>}
           <span className="text-[15px] font-extrabold">{person.first}, you&rsquo;re the nearest guard</span>
           <span className="inline-flex items-center gap-2 self-start rounded-[2px] bg-white py-1 pr-3 pl-2 text-[16px] font-extrabold text-[#C8241B] uppercase">
-            <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d={GLYPH[live.level]} fill="#C8241B" /></svg>
-            {LEVEL_LABEL[live.level]}
+            <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d={GLYPH[alarmLevel]} fill="#C8241B" /></svg>
+            {LEVEL_LABEL[alarmLevel]}
           </span>
           <span className="ee-display text-[52px] leading-[0.92]">{live.location}</span>
           {(spot || dist) && <span className="text-[20px] font-extrabold">{[spot && spot[0].toUpperCase() + spot.slice(1), dist && `about ${dist.replace("~", "")} from you`].filter(Boolean).join(" · ")}</span>}
@@ -332,7 +355,6 @@ export function GuardApp() {
       <Frame header={header}>
         <div className="flex flex-col gap-2.5 px-4 pt-4 pb-[22px]">
           <h1 className="ee-display text-[40px] leading-[0.95]">What did you find?</h1>
-          <span className="text-[15px] text-ink-2">One tap. The desk sees it straight away.</span>
           {OUTCOMES.map((o, i) => (
             <button
               key={o.id}
@@ -372,7 +394,7 @@ export function GuardApp() {
     const label = OUTCOMES.find((o) => o.id === flow.outcome)?.label ?? "";
     const ackS = secs(live.pushed_at, live.acked_at);
     const thereS = secs(live.acked_at, live.arrived_at);
-    const myPostNow = mine.find((s) => slotDays(s.days).includes(myt(now).wd) && startHour(s.hours) === myt(now).hour);
+    const myPostNow = mine.find((s) => postOnNow(s, now));
     return (
       <Frame header={header}>
         <div className="flex flex-1 flex-col gap-3.5 px-4 py-[22px]">
@@ -399,7 +421,7 @@ export function GuardApp() {
             }}
             className="mt-auto min-h-16 rounded-[4px] bg-ink text-[20px] font-extrabold text-white"
           >
-            {myPostNow ? `Back to my post · until ${hh(startHour(myPostNow.hours) + 1)}` : "Back to today"}
+            {myPostNow ? `Back to my post · until ${hh(slotSpan(myPostNow.hours)[1])}` : "Back to today"}
           </button>
         </div>
       </Frame>
@@ -471,6 +493,8 @@ export function GuardApp() {
             );
           }}
           onEnd={endShift}
+          push={push}
+          onPushOn={turnOnPush}
           onSwitch={() => {
             endShift();
             store.set(ME_KEY, null);
@@ -532,7 +556,7 @@ function TodayTab({ person, mine, posts, now, onSeen, onCheckIn }: { person: Per
   const unseen = mine.filter((s) => !s.seen_at);
   const today = mine.filter((s) => slotDays(s.days).includes(n.wd)).sort((a, b) => startHour(a.hours) - startHour(b.hours));
   // The post running now, else the next one today, else the next day with one.
-  const current = today.find((s) => startHour(s.hours) === n.hour) ?? today.find((s) => startHour(s.hours) > n.hour) ?? null;
+  const current = today.find((s) => postOnNow(s, now)) ?? today.find((s) => startHour(s.hours) > n.hour) ?? null;
   const later = !current
     ? rollingWeek(now).slice(1).flatMap((d) => mine.filter((s) => slotDays(s.days).includes(d.wd)).map((s) => ({ s, d }))).sort((a, b) => a.d.i - b.d.i || startHour(a.s.hours) - startHour(b.s.hours))[0]
     : null;
@@ -545,9 +569,19 @@ function TodayTab({ person, mine, posts, now, onSeen, onCheckIn }: { person: Per
     <div className="flex flex-col gap-3 px-4 py-3.5">
       {unseen.map((s) => (
         <div key={s.id} className="flex flex-col gap-2 rounded-[4px] border-2 border-signal bg-signal-tint p-3.5">
-          <Kicker blue>NEW FROM YOUR SUPERVISOR{s.since ? ` · ${dayDate(s.since).toUpperCase()}` : ""}</Kicker>
-          <span className="text-[18px] leading-[1.3] font-extrabold">You have a standing post: {s.location}, {daysLabel(s.days)}, {s.hours}.</span>
-          <span className="text-[14px] text-ink-2">It stays in your schedule until your supervisor ends it.</span>
+          {s.changed_at ? (
+            <>
+              <Kicker blue>CHANGED BY YOUR SUPERVISOR · {dayDate(s.changed_at).toUpperCase()}, {hm(s.changed_at)}</Kicker>
+              <span className="text-[18px] leading-[1.3] font-extrabold">Your post is now: {s.location}, {daysLabel(s.days)}, {s.hours}.</span>
+              {s.tip && <span className="text-[14px] text-ink-2">{s.tip}</span>}
+            </>
+          ) : (
+            <>
+              <Kicker blue>NEW FROM YOUR SUPERVISOR{s.since ? ` · ${dayDate(s.since).toUpperCase()}` : ""}</Kicker>
+              <span className="text-[18px] leading-[1.3] font-extrabold">You have a standing post: {s.location}, {daysLabel(s.days)}, {s.hours}.</span>
+              <span className="text-[14px] text-ink-2">It stays in your schedule until your supervisor ends it.</span>
+            </>
+          )}
           <button type="button" onClick={() => onSeen(s)} className="min-h-[52px] rounded-[4px] bg-signal text-[18px] font-extrabold text-white">Got it</button>
         </div>
       ))}
@@ -567,8 +601,8 @@ function TodayTab({ person, mine, posts, now, onSeen, onCheckIn }: { person: Per
           <Kicker blue>AT YOUR POST · ✓ CHECKED IN {hm(checkin.at)}</Kicker>
           <span className="ee-display text-[34px] leading-none">{current.location}</span>
           <span className="text-[18px] font-extrabold">
-            Until {hh(startHour(current.hours) + 1)}
-            {startHour(current.hours) === n.hour ? ` · ${60 - n.minute} min left` : ""}
+            Until {hh(slotSpan(current.hours)[1])}
+            {postOnNow(current, now) ? ` · ${slotSpan(current.hours)[1] * 60 - (n.hour * 60 + n.minute)} min left` : ""}
           </span>
           <span className="text-[14px] leading-[1.45] text-ink-2">The desk can see you&rsquo;re here. If anything starts nearby, you get the alert first.</span>
         </div>
@@ -585,7 +619,7 @@ function TodayTab({ person, mine, posts, now, onSeen, onCheckIn }: { person: Per
         {(working
           ? [
               { t: person.from, text: n.hour >= person.from ? "Shift started" : "Shift starts", strong: false },
-              ...today.map((s) => ({ t: startHour(s.hours), text: `Post: ${s.location}, until ${hh(startHour(s.hours) + 1)}`, strong: true })),
+              ...today.map((s) => ({ t: startHour(s.hours), text: `Post: ${s.location}, until ${hh(slotSpan(s.hours)[1])}`, strong: true })),
               { t: person.to, text: "Shift ends", strong: false },
             ]
           : [{ t: -1, text: "Day off. Alerts still come while you're on duty.", strong: false }]
@@ -664,13 +698,24 @@ function AlertsTab({ me, events, now }: { me: string; events: Event[]; now: numb
   );
 }
 
-function MeTab({ person, site, dev, onTest, onEnd, onSwitch }: { person: Person; site?: string; dev: ReturnType<typeof useGuardDevice>; onTest: () => void; onEnd: () => void; onSwitch: () => void }) {
+const PUSH_WORDS: Record<PushState, string> = {
+  on: "On",
+  off: "Off",
+  blocked: "Blocked in settings",
+  "install-first": "Add to Home Screen first",
+  unsupported: "Not on this phone",
+  "not-configured": "Not set up on the server",
+  "needs-https": "Needs the https link",
+};
+
+function MeTab({ person, site, dev, push, onPushOn, onTest, onEnd, onSwitch }: { person: Person; site?: string; dev: ReturnType<typeof useGuardDevice>; push: PushState; onPushOn: () => void; onTest: () => void; onEnd: () => void; onSwitch: () => void }) {
   const rows: [string, string][] = [
     ["Shift", person.shiftLabel],
     ["Alert sound", dev.soundOn ? "On" : "Off"],
     ["Vibrate", dev.canVibrate ? "On" : "Not on this phone"],
     ["Screen stays awake on shift", dev.awake ? "On" : "Off"],
     ["Installed on this phone", dev.installed ? "✓" : "Not yet"],
+    ["Alarms with the app closed", PUSH_WORDS[push]],
   ];
   return (
     <div className="flex flex-col gap-3 px-4 py-[18px]">
@@ -689,6 +734,11 @@ function MeTab({ person, site, dev, onTest, onEnd, onSwitch }: { person: Person;
         <p className="m-0 text-[13px] leading-normal text-muted-ink">
           To install: iPhone, tap Share, then Add to Home Screen. Android, tap the menu, then Install app.
         </p>
+      )}
+      {(push === "off" || push === "not-configured") && (
+        <button type="button" onClick={onPushOn} className="min-h-[52px] rounded-[4px] bg-signal text-[17px] font-extrabold text-white">
+          Turn on alarms with the app closed
+        </button>
       )}
       <button type="button" onClick={onTest} className="min-h-[52px] rounded-[4px] border-2 border-ink bg-white text-[17px] font-extrabold">Test the alarm</button>
       <button type="button" onClick={onEnd} className="min-h-[52px] rounded-[4px] bg-ink text-[17px] font-extrabold text-white">End my shift</button>
